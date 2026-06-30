@@ -5,22 +5,23 @@ import { round3 } from "@/lib/units";
 
 interface NumberInputProps {
   label: string;
-  value: number;
+  value: number | null;
   unit?: string;
-  onChange: (value: number) => void;
+  onChange: (value: number | null) => void;
 }
 
-function formatValue(value: number): string {
-  return Number.isFinite(value) ? String(value) : "0";
+function formatValue(value: number | null): string {
+  if (value === null) return "—";
+  return Number.isFinite(value) ? String(value) : "—";
 }
 
-function parseInput(text: string): number {
+function parseInput(text: string): number | null {
   const trimmed = text.trim();
-  if (!trimmed || trimmed === "." || trimmed === "-" || trimmed === "-.") {
-    return 0;
+  if (!trimmed || trimmed === "—" || trimmed === "-" || trimmed === ".") {
+    return null;
   }
   const next = parseFloat(trimmed);
-  return Number.isFinite(next) ? round3(Math.max(0, next)) : 0;
+  return Number.isFinite(next) ? round3(Math.max(0, next)) : null;
 }
 
 export function NumberInput({ label, value, unit, onChange }: NumberInputProps) {
@@ -29,7 +30,7 @@ export function NumberInput({ label, value, unit, onChange }: NumberInputProps) 
 
   return (
     <label className="flex min-w-0 flex-col gap-1">
-      <span className="text-[11px] font-medium uppercase tracking-wider text-zinc-500">
+      <span className="text-[11px] font-medium uppercase tracking-wider text-[var(--muted)]">
         {label}
       </span>
       <div className="flex items-center gap-1">
@@ -37,17 +38,17 @@ export function NumberInput({ label, value, unit, onChange }: NumberInputProps) 
           type="text"
           inputMode="decimal"
           value={display}
-          onFocus={() => setDraft(formatValue(value))}
+          onFocus={() => setDraft(value === null ? "" : formatValue(value))}
           onChange={(event) => setDraft(event.target.value)}
           onBlur={() => {
             const next = parseInput(draft ?? display);
             setDraft(null);
             onChange(next);
           }}
-          className="w-full min-w-0 rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-3 text-lg font-mono tabular-nums text-zinc-50 outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+          className="w-full min-w-0 rounded-lg border border-[var(--input-border)] bg-[var(--input-bg)] px-3 py-3 text-lg font-mono tabular-nums text-[var(--input-text)] outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)]"
         />
         {unit ? (
-          <span className="shrink-0 text-sm font-mono text-zinc-500">{unit}</span>
+          <span className="shrink-0 text-sm font-mono text-[var(--muted)]">{unit}</span>
         ) : null}
       </div>
     </label>

@@ -1,8 +1,48 @@
 @import "tailwindcss";
 
-:root {
+:root,
+[data-theme="dark"] {
   --background: #09090b;
   --foreground: #fafafa;
+  --muted: #71717a;
+  --card: rgb(24 24 27 / 0.6);
+  --card-border: #27272a;
+  --input-bg: #18181b;
+  --input-border: #3f3f46;
+  --input-text: #fafafa;
+  --preview-bg: #09090b;
+  --rem-fill: #18181b;
+  --rem-stroke: #52525b;
+  --usable-stroke: #3f3f46;
+  --part-fill: #f59e0b22;
+  --part-stroke: #f59e0b;
+  --accent: #fbbf24;
+  --accent-hover: #f59e0b;
+  --btn-bg: #18181b;
+  --btn-border: #3f3f46;
+  --btn-text: #fafafa;
+}
+
+[data-theme="light"] {
+  --background: #f4f4f5;
+  --foreground: #18181b;
+  --muted: #71717a;
+  --card: rgb(255 255 255 / 0.9);
+  --card-border: #d4d4d8;
+  --input-bg: #ffffff;
+  --input-border: #d4d4d8;
+  --input-text: #18181b;
+  --preview-bg: #e4e4e7;
+  --rem-fill: #ffffff;
+  --rem-stroke: #a1a1aa;
+  --usable-stroke: #d4d4d8;
+  --part-fill: #f59e0b33;
+  --part-stroke: #d97706;
+  --accent: #d97706;
+  --accent-hover: #b45309;
+  --btn-bg: #ffffff;
+  --btn-border: #d4d4d8;
+  --btn-text: #18181b;
 }
 
 @theme inline {
@@ -17,7 +57,6 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
   -webkit-tap-highlight-color: transparent;
-  /* Respect iOS notch / Dynamic Island / status bar in standalone PWA mode. */
   padding-top: env(safe-area-inset-top, 0px);
 }
 

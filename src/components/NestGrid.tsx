@@ -1,16 +1,57 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
-import type { Margins, NestResult } from "@/lib/types";
+import { coalesce, isRemAxesSwapped } from "@/lib/nestcalc";
+import type { Margins, NestResult, RemRotation } from "@/lib/types";
 
 interface NestGridProps {
-  remnantWidth: number;
-  remnantHeight: number;
-  partWidth: number;
-  partHeight: number;
+  remnantWidth: number | null;
+  remnantHeight: number | null;
+  partWidth: number | null;
+  partHeight: number | null;
   margins: Margins;
-  gap: number;
+  gapX: number | null;
+  gapY: number | null;
+  remRotation: RemRotation;
   result: NestResult;
+  unitLabel: string;
+}
+
+function rotatedViewBox(
+  remW: number,
+  remH: number,
+  rotation: RemRotation,
+  pad: number,
+) {
+  const cx = remW / 2;
+  const cy = remH / 2;
+  const rad = (rotation * Math.PI) / 180;
+  const cos = Math.cos(rad);
+  const sin = Math.sin(rad);
+
+  const corners = [
+    { x: 0, y: 0 },
+    { x: remW, y: 0 },
+    { x: remW, y: remH },
+    { x: 0, y: remH },
+  ];
+
+  const rotated = corners.map(({ x, y }) => {
+    const dx = x - cx;
+    const dy = y - cy;
+    return {
+      x: cx + dx * cos - dy * sin,
+      y: cy + dx * sin + dy * cos,
+    };
+  });
+
+  const xs = rotated.map((point) => point.x);
+  const ys = rotated.map((point) => point.y);
+  const minX = Math.min(...xs) - pad;
+  const minY = Math.min(...ys) - pad;
+  const maxX = Math.max(...xs) + pad;
+  const maxY = Math.max(...ys) + pad;
+
+  return `${minX} ${minY} ${maxX - minX} ${maxY - minY}`;
 }
 
 export function NestGrid({
@@ -19,151 +60,90 @@ export function NestGrid({
   partWidth,
   partHeight,
   margins,
-  gap,
+  gapX,
+  gapY,
+  remRotation,
   result,
+  unitLabel,
 }: NestGridProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(1);
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
-  const pinchRef = useRef<{
-    distance: number;
-    scale: number;
-    origin: { x: number; y: number };
-  } | null>(null);
-  const panRef = useRef<{ x: number; y: number; ox: number; oy: number } | null>(
-    null,
-  );
-
-  const resetView = useCallback(() => {
-    setScale(1);
-    setOffset({ x: 0, y: 0 });
-  }, []);
-
-  const onPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (event.pointerType === "touch" && event.isPrimary) {
-      panRef.current = {
-        x: event.clientX,
-        y: event.clientY,
-        ox: offset.x,
-        oy: offset.y,
-      };
-      event.currentTarget.setPointerCapture(event.pointerId);
-    }
-  };
-
-  const onPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (panRef.current && event.buttons > 0) {
-      setOffset({
-        x: panRef.current.ox + (event.clientX - panRef.current.x),
-        y: panRef.current.oy + (event.clientY - panRef.current.y),
-      });
-    }
-  };
-
-  const onPointerUp = () => {
-    panRef.current = null;
-  };
-
-  const onTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
-    if (event.touches.length === 2) {
-      const [a, b] = [event.touches[0], event.touches[1]];
-      const distance = Math.hypot(
-        a.clientX - b.clientX,
-        a.clientY - b.clientY,
-      );
-      pinchRef.current = { distance, scale, origin: offset };
-    }
-  };
-
-  const onTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
-    if (event.touches.length === 2 && pinchRef.current) {
-      const [a, b] = [event.touches[0], event.touches[1]];
-      const distance = Math.hypot(
-        a.clientX - b.clientX,
-        a.clientY - b.clientY,
-      );
-      const nextScale = Math.min(
-        4,
-        Math.max(1, pinchRef.current.scale * (distance / pinchRef.current.distance)),
-      );
-      setScale(nextScale);
-    }
-  };
-
-  const onTouchEnd = () => {
-    pinchRef.current = null;
-  };
+  const remW = coalesce(remnantWidth);
+  const remH = coalesce(remnantHeight);
+  const partW = coalesce(partWidth);
+  const partH = coalesce(partHeight);
+  const gapAcross = coalesce(gapX);
+  const gapDown = coalesce(gapY);
+  const swapAxes = isRemAxesSwapped(remRotation);
 
   const MAX_PREVIEW_PARTS = 500;
   const totalParts = result.partsAcross * result.partsDown;
   const previewCapped = totalParts > MAX_PREVIEW_PARTS;
 
+  const physicalUsableW =
+    remW - coalesce(margins.left) - coalesce(margins.right);
+  const physicalUsableH =
+    remH - coalesce(margins.top) - coalesce(margins.bottom);
+
   const parts: { x: number; y: number }[] = [];
-  for (let row = 0; row < result.partsDown; row += 1) {
-    for (let col = 0; col < result.partsAcross; col += 1) {
+  for (let across = 0; across < result.partsAcross; across += 1) {
+    for (let down = 0; down < result.partsDown; down += 1) {
       if (parts.length >= MAX_PREVIEW_PARTS) break;
-      parts.push({
-        x: margins.left + col * (partWidth + gap),
-        y: margins.top + row * (partHeight + gap),
-      });
+      if (swapAxes) {
+        parts.push({
+          x: coalesce(margins.left) + down * (partH + gapDown),
+          y: coalesce(margins.top) + across * (partW + gapAcross),
+        });
+      } else {
+        parts.push({
+          x: coalesce(margins.left) + across * (partW + gapAcross),
+          y: coalesce(margins.top) + down * (partH + gapDown),
+        });
+      }
     }
     if (parts.length >= MAX_PREVIEW_PARTS) break;
   }
 
-  const maxDim = Math.max(remnantWidth, remnantHeight, 1);
-  const pad = maxDim * 0.04;
+  const maxDim = Math.max(remW, remH, 1);
+  const pad = maxDim * 0.12;
+  const labelSize = maxDim * 0.045;
+  const stroke = maxDim * 0.006;
+
+  const cx = remW / 2;
+  const cy = remH / 2;
+
+  const formatDim = (value: number | null) => {
+    const v = coalesce(value);
+    return value === null ? "—" : `${v} ${unitLabel}`;
+  };
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-between text-[11px] uppercase tracking-wider text-zinc-500">
-        <span>Nest preview</span>
-        <button
-          type="button"
-          onClick={resetView}
-          className="rounded-md px-2 py-1 text-amber-500 hover:bg-zinc-800"
-        >
-          Reset view
-        </button>
-      </div>
-      <div
-        ref={containerRef}
-        className="relative aspect-[4/3] w-full touch-none overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950"
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerCancel={onPointerUp}
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
-        onDoubleClick={resetView}
+    <div
+      className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-[var(--card-border)] bg-[var(--preview-bg)]"
+      aria-label="Nest preview"
+    >
+      <svg
+        viewBox={rotatedViewBox(remW, remH, remRotation, pad)}
+        className="h-full w-full"
+        preserveAspectRatio="xMidYMid meet"
       >
-        <svg
-          viewBox={`${-pad} ${-pad} ${remnantWidth + pad * 2} ${remnantHeight + pad * 2}`}
-          className="h-full w-full"
-          style={{
-            transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})`,
-            transformOrigin: "center center",
-          }}
-          preserveAspectRatio="xMidYMid meet"
-        >
+        <g transform={`rotate(${remRotation} ${cx} ${cy})`}>
           <rect
             x={0}
             y={0}
-            width={remnantWidth}
-            height={remnantHeight}
-            fill="#18181b"
-            stroke="#52525b"
-            strokeWidth={maxDim * 0.006}
+            width={remW}
+            height={remH}
+            fill="var(--rem-fill)"
+            stroke="var(--rem-stroke)"
+            strokeWidth={stroke}
             rx={maxDim * 0.01}
           />
 
           <rect
-            x={margins.left}
-            y={margins.top}
-            width={Math.max(0, result.usableWidth)}
-            height={Math.max(0, result.usableHeight)}
+            x={coalesce(margins.left)}
+            y={coalesce(margins.top)}
+            width={Math.max(0, physicalUsableW)}
+            height={Math.max(0, physicalUsableH)}
             fill="none"
-            stroke="#3f3f46"
+            stroke="var(--usable-stroke)"
             strokeDasharray={`${maxDim * 0.02} ${maxDim * 0.015}`}
             strokeWidth={maxDim * 0.004}
           />
@@ -173,21 +153,76 @@ export function NestGrid({
               key={index}
               x={part.x}
               y={part.y}
-              width={partWidth}
-              height={partHeight}
-              fill="#f59e0b22"
-              stroke="#f59e0b"
+              width={partW}
+              height={partH}
+              fill="var(--part-fill)"
+              stroke="var(--part-stroke)"
               strokeWidth={maxDim * 0.004}
               rx={maxDim * 0.005}
             />
           ))}
-        </svg>
-      </div>
-      <p className="text-center text-[11px] text-zinc-600">
-        {previewCapped
-          ? `Showing first ${MAX_PREVIEW_PARTS} of ${totalParts} parts · pinch to zoom · drag to pan`
-          : "Pinch to zoom · drag to pan · double-tap to reset"}
-      </p>
+
+          <text
+            x={remW / 2}
+            y={remH + labelSize * 0.9}
+            textAnchor="middle"
+            fill="var(--muted)"
+            fontSize={labelSize}
+            fontFamily="ui-monospace, monospace"
+          >
+            {formatDim(remnantWidth)}
+          </text>
+
+          <text
+            x={-labelSize * 0.35}
+            y={remH / 2}
+            textAnchor="middle"
+            fill="var(--muted)"
+            fontSize={labelSize}
+            fontFamily="ui-monospace, monospace"
+            transform={`rotate(-90 ${-labelSize * 0.35} ${remH / 2})`}
+          >
+            {formatDim(remnantHeight)}
+          </text>
+
+          {result.partsAcross > 0 ? (
+            <text
+              x={
+                coalesce(margins.left) +
+                Math.max(0, swapAxes ? physicalUsableH : physicalUsableW) / 2
+              }
+              y={Math.max(coalesce(margins.top) - labelSize * 0.35, labelSize)}
+              textAnchor="middle"
+              fill="var(--accent)"
+              fontSize={labelSize * 0.85}
+              fontFamily="ui-monospace, monospace"
+            >
+              {result.partsAcross} across
+            </text>
+          ) : null}
+
+          {result.partsDown > 0 ? (
+            <text
+              x={remW - labelSize * 0.5}
+              y={
+                coalesce(margins.top) +
+                Math.max(0, swapAxes ? physicalUsableW : physicalUsableH) / 2
+              }
+              textAnchor="start"
+              fill="var(--accent)"
+              fontSize={labelSize * 0.85}
+              fontFamily="ui-monospace, monospace"
+            >
+              {result.partsDown} down
+            </text>
+          ) : null}
+        </g>
+      </svg>
+      {previewCapped ? (
+        <p className="absolute bottom-1 left-0 right-0 text-center text-[10px] text-[var(--muted)]">
+          Showing first {MAX_PREVIEW_PARTS} of {totalParts} parts
+        </p>
+      ) : null}
     </div>
   );
 }
