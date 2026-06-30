@@ -39,7 +39,12 @@ export function NumberInput({ label, value, unit, onChange }: NumberInputProps) 
       <span className="text-[11px] font-medium uppercase tracking-wider text-[var(--muted)]">
         {label}
       </span>
-      <div className="flex items-center gap-1">
+      <div className="relative w-full min-w-0">
+        {unit ? (
+          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm font-mono text-[var(--muted)]">
+            {unit}
+          </span>
+        ) : null}
         <input
           type="text"
           inputMode="decimal"
@@ -53,13 +58,8 @@ export function NumberInput({ label, value, unit, onChange }: NumberInputProps) 
             setFocused(false);
             setDraft(null);
           }}
-          className="w-full min-w-0 rounded-lg border border-[var(--input-border)] bg-[var(--input-bg)] px-3 py-3 text-lg font-mono tabular-nums text-[var(--input-text)] outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)]"
+          className={`w-full min-w-0 rounded-lg border border-[var(--input-border)] bg-[var(--input-bg)] py-3 pr-3 text-lg font-mono tabular-nums text-[var(--input-text)] outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)] ${unit ? "pl-10" : "pl-3"}`}
         />
-        {unit ? (
-          <span className="shrink-0 text-sm font-mono text-[var(--muted)]">
-            {unit}
-          </span>
-        ) : null}
       </div>
     </label>
   );
