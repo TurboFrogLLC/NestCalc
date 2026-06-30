@@ -12,19 +12,29 @@ declare global {
 
 declare const self: ServiceWorkerGlobalScope;
 
+const isDocumentNavigation = ({ request }: { request: Request }) =>
+  request.mode === "navigate" || request.destination === "document";
+
 const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
   skipWaiting: true,
   clientsClaim: true,
-  navigationPreload: true,
+  // Navigation preload can delay offline fallbacks on iOS when the origin is unreachable.
+  navigationPreload: false,
+  precacheOptions: {
+    navigateFallback: "/",
+    navigateFallbackDenylist: [/^\/serwist\//, /^\/api\//, /^\/~offline/],
+  },
   runtimeCaching: defaultCache,
   fallbacks: {
     entries: [
       {
+        url: "/",
+        matcher: isDocumentNavigation,
+      },
+      {
         url: "/~offline",
-        matcher({ request }) {
-          return request.destination === "document";
-        },
+        matcher: isDocumentNavigation,
       },
     ],
   },
