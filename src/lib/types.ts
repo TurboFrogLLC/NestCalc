@@ -1,19 +1,25 @@
 export type Unit = "in" | "mm";
 
+export type ThemeMode = "dark" | "light";
+
+export type RemRotation = 0 | 90 | 180 | 270;
+
 export interface Margins {
-  left: number;
-  right: number;
-  top: number;
-  bottom: number;
+  left: number | null;
+  right: number | null;
+  top: number | null;
+  bottom: number | null;
 }
 
 export interface NestInputs {
-  partWidth: number;
-  partHeight: number;
-  remnantWidth: number;
-  remnantHeight: number;
+  partWidth: number | null;
+  partHeight: number | null;
+  remnantWidth: number | null;
+  remnantHeight: number | null;
   margins: Margins;
-  gap: number;
+  gapX: number | null;
+  gapY: number | null;
+  remRotation: RemRotation;
   unit: Unit;
 }
 

@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "NestCalc",
     short_name: "NestCalc",
     description:
-      "Quick rectangular nesting calculator for laser shop remnants and odd scraps.",
+      "Quick rectangular nesting calculator for laser shop rems and odd scraps.",
     start_url: "/",
     display: "standalone",
     orientation: "portrait",
