@@ -70,6 +70,8 @@ export function clearedInputs(unit: NestInputs["unit"]): NestInputs {
     margins: { left: null, right: null, top: null, bottom: null },
     gapX: null,
     gapY: null,
+    partLinked: false,
+    gapLinked: false,
     moveMarginsWithRotation: false,
     unit,
   };

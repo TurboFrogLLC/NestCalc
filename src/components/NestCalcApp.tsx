@@ -96,14 +96,11 @@ interface XYInputRowProps {
   xValue: number | null;
   yValue: number | null;
   unit: string;
+  linked: boolean;
   onXChange: (value: number | null) => void;
   onYChange: (value: number | null) => void;
-  onLink: () => void;
+  onLinkToggle: () => void;
   onSwap: () => void;
-}
-
-function valuesLinked(x: number | null, y: number | null): boolean {
-  return x === y;
 }
 
 function XYInputRow({
@@ -112,13 +109,12 @@ function XYInputRow({
   xValue,
   yValue,
   unit,
+  linked,
   onXChange,
   onYChange,
-  onLink,
+  onLinkToggle,
   onSwap,
 }: XYInputRowProps) {
-  const linked = valuesLinked(xValue, yValue);
-
   return (
     <div className="flex items-end gap-2">
       <div className="min-w-0 flex-1">
@@ -130,7 +126,7 @@ function XYInputRow({
         />
       </div>
       <div className="flex shrink-0 flex-col items-center justify-end gap-0.5 pb-[3px]">
-        <IconButton label="Link X and Y" onClick={onLink} active={linked}>
+        <IconButton label="Link X and Y" onClick={onLinkToggle} active={linked}>
           <Link2 className="h-3 w-3" strokeWidth={2} />
         </IconButton>
         <IconButton label="Swap X and Y" onClick={onSwap}>
@@ -247,11 +243,32 @@ export function NestCalcApp() {
           xValue={inputs.partWidth}
           yValue={inputs.partHeight}
           unit={unit}
-          onXChange={(value) => update({ partWidth: value })}
-          onYChange={(value) => update({ partHeight: value })}
-          onLink={() => {
+          linked={inputs.partLinked}
+          onXChange={(value) =>
+            update(
+              inputs.partLinked
+                ? { partWidth: value, partHeight: value }
+                : { partWidth: value },
+            )
+          }
+          onYChange={(value) =>
+            update(
+              inputs.partLinked
+                ? { partWidth: value, partHeight: value }
+                : { partHeight: value },
+            )
+          }
+          onLinkToggle={() => {
+            if (inputs.partLinked) {
+              update({ partLinked: false });
+              return;
+            }
             const linked = linkValues(inputs.partWidth, inputs.partHeight);
-            update({ partWidth: linked.x, partHeight: linked.y });
+            update({
+              partWidth: linked.x,
+              partHeight: linked.y,
+              partLinked: true,
+            });
           }}
           onSwap={() => {
             const swapped = swapValues(inputs.partWidth, inputs.partHeight);
@@ -270,11 +287,32 @@ export function NestCalcApp() {
           xValue={inputs.gapX}
           yValue={inputs.gapY}
           unit={unit}
-          onXChange={(value) => update({ gapX: value })}
-          onYChange={(value) => update({ gapY: value })}
-          onLink={() => {
+          linked={inputs.gapLinked}
+          onXChange={(value) =>
+            update(
+              inputs.gapLinked
+                ? { gapX: value, gapY: value }
+                : { gapX: value },
+            )
+          }
+          onYChange={(value) =>
+            update(
+              inputs.gapLinked
+                ? { gapX: value, gapY: value }
+                : { gapY: value },
+            )
+          }
+          onLinkToggle={() => {
+            if (inputs.gapLinked) {
+              update({ gapLinked: false });
+              return;
+            }
             const linked = linkValues(inputs.gapX, inputs.gapY);
-            update({ gapX: linked.x, gapY: linked.y });
+            update({
+              gapX: linked.x,
+              gapY: linked.y,
+              gapLinked: true,
+            });
           }}
           onSwap={() => {
             const swapped = swapValues(inputs.gapX, inputs.gapY);
