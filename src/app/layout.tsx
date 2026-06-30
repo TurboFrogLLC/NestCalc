@@ -53,8 +53,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistMono.variable} h-full`}>
-      <body className="min-h-full bg-zinc-950 font-sans text-zinc-100 antialiased">
+    <html lang="en" data-theme="dark" className={`${geistMono.variable} h-full`}>
+      <body className="min-h-full font-sans antialiased">
         <SerwistRegistration>{children}</SerwistRegistration>
       </body>
     </html>

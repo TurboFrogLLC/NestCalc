@@ -2,6 +2,10 @@ import type { Margins, NestInputs, NestResult } from "./types";
 
 const FIT_EPSILON = 1e-9;
 
+export function toNumber(value: number | null): number {
+  return value ?? 0;
+}
+
 export function partsInDimension(
   usable: number,
   part: number,
@@ -13,14 +17,30 @@ export function partsInDimension(
 }
 
 export function calculateNest(inputs: NestInputs): NestResult {
-  const { margins, gap, partWidth, partHeight, remnantWidth, remnantHeight } =
-    inputs;
+  const {
+    margins,
+    gapX,
+    gapY,
+    partWidth,
+    partHeight,
+    remnantWidth,
+    remnantHeight,
+  } = inputs;
 
-  const usableWidth = remnantWidth - margins.left - margins.right;
-  const usableHeight = remnantHeight - margins.top - margins.bottom;
+  const remW = toNumber(remnantWidth);
+  const remH = toNumber(remnantHeight);
+  const partW = toNumber(partWidth);
+  const partH = toNumber(partHeight);
+  const gapAcross = toNumber(gapX);
+  const gapDown = toNumber(gapY);
 
-  const partsAcross = partsInDimension(usableWidth, partWidth, gap);
-  const partsDown = partsInDimension(usableHeight, partHeight, gap);
+  const usableWidth =
+    remW - toNumber(margins.left) - toNumber(margins.right);
+  const usableHeight =
+    remH - toNumber(margins.top) - toNumber(margins.bottom);
+
+  const partsAcross = partsInDimension(usableWidth, partW, gapAcross);
+  const partsDown = partsInDimension(usableHeight, partH, gapDown);
 
   return {
     usableWidth,
@@ -31,7 +51,7 @@ export function calculateNest(inputs: NestInputs): NestResult {
   };
 }
 
-/** Rotate margin assignments 90° clockwise (remnant orientation change). */
+/** Rotate margin assignments 90° clockwise (rem orientation change). */
 export function rotateMarginsCW(margins: Margins): Margins {
   return {
     left: margins.bottom,

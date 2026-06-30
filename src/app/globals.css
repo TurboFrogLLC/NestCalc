@@ -1,8 +1,52 @@
 @import "tailwindcss";
 
-:root {
+:root,
+[data-theme="dark"] {
   --background: #09090b;
   --foreground: #fafafa;
+  --card: #18181b99;
+  --card-border: #27272a;
+  --input-bg: #18181b;
+  --input-border: #3f3f46;
+  --input-focus: #f59e0b;
+  --muted: #71717a;
+  --accent: #f59e0b;
+  --preview-bg: #09090b;
+  --preview-rem-fill: #18181b;
+  --preview-rem-stroke: #52525b;
+  --preview-usable-stroke: #3f3f46;
+  --part-fill: #f59e0b22;
+  --part-stroke: #f59e0b;
+  --label: #a1a1aa;
+  --label-muted: #71717a;
+  --btn-bg: #18181b;
+  --btn-border: #3f3f46;
+  --btn-hover-border: #f59e0b80;
+  --btn-hover-bg: #27272a;
+}
+
+[data-theme="light"] {
+  --background: #f4f4f5;
+  --foreground: #18181b;
+  --card: #ffffff;
+  --card-border: #d4d4d8;
+  --input-bg: #ffffff;
+  --input-border: #d4d4d8;
+  --input-focus: #d97706;
+  --muted: #71717a;
+  --accent: #d97706;
+  --preview-bg: #e4e4e7;
+  --preview-rem-fill: #fafafa;
+  --preview-rem-stroke: #a1a1aa;
+  --preview-usable-stroke: #d4d4d8;
+  --part-fill: #f59e0b33;
+  --part-stroke: #d97706;
+  --label: #52525b;
+  --label-muted: #71717a;
+  --btn-bg: #ffffff;
+  --btn-border: #d4d4d8;
+  --btn-hover-border: #d9770680;
+  --btn-hover-bg: #f4f4f5;
 }
 
 @theme inline {
@@ -17,6 +61,88 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
   -webkit-tap-highlight-color: transparent;
+}
+
+.text-muted {
+  color: var(--muted);
+}
+
+.text-accent {
+  color: var(--accent);
+}
+
+.bg-card {
+  background: var(--card);
+}
+
+.border-card {
+  border-color: var(--card-border);
+}
+
+.bg-preview {
+  background: var(--preview-bg);
+}
+
+.input-field {
+  background: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--foreground);
+}
+
+.input-field:focus {
+  border-color: var(--input-focus);
+  box-shadow: 0 0 0 1px var(--input-focus);
+}
+
+.btn-secondary {
+  background: var(--btn-bg);
+  border-color: var(--btn-border);
+  color: var(--foreground);
+}
+
+.btn-secondary:hover {
+  border-color: var(--btn-hover-border);
+  background: var(--btn-hover-bg);
+}
+
+.btn-icon {
+  background: var(--btn-bg);
+  border-color: var(--btn-border);
+  color: var(--muted);
+}
+
+.btn-icon:hover {
+  border-color: var(--btn-hover-border);
+  color: var(--accent);
+  background: var(--btn-hover-bg);
+}
+
+.fill-preview-rem {
+  fill: var(--preview-rem-fill);
+}
+
+.stroke-preview-rem {
+  stroke: var(--preview-rem-stroke);
+}
+
+.stroke-preview-usable {
+  stroke: var(--preview-usable-stroke);
+}
+
+.fill-part {
+  fill: var(--part-fill);
+}
+
+.stroke-part {
+  stroke: var(--part-stroke);
+}
+
+.fill-label {
+  fill: var(--label);
+}
+
+.fill-label-muted {
+  fill: var(--label-muted);
 }
 
 input[type="number"]::-webkit-inner-spin-button,

@@ -1,19 +1,23 @@
 export type Unit = "in" | "mm";
 
+export type Theme = "light" | "dark";
+
 export interface Margins {
-  left: number;
-  right: number;
-  top: number;
-  bottom: number;
+  left: number | null;
+  right: number | null;
+  top: number | null;
+  bottom: number | null;
 }
 
 export interface NestInputs {
-  partWidth: number;
-  partHeight: number;
-  remnantWidth: number;
-  remnantHeight: number;
+  partWidth: number | null;
+  partHeight: number | null;
+  remnantWidth: number | null;
+  remnantHeight: number | null;
+  gapX: number | null;
+  gapY: number | null;
   margins: Margins;
-  gap: number;
+  moveMarginsWithRotation: boolean;
   unit: Unit;
 }
 
