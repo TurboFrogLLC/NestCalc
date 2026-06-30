@@ -17,6 +17,8 @@ export interface NestInputs {
   margins: Margins;
   gapX: number | null;
   gapY: number | null;
+  partLinked: boolean;
+  gapLinked: boolean;
   moveMarginsWithRotation: boolean;
   unit: Unit;
 }

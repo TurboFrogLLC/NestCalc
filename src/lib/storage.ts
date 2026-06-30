@@ -11,6 +11,8 @@ export const DEFAULT_INPUTS: NestInputs = {
   margins: { left: 0.5, right: 0.25, top: 0.25, bottom: 0.25 },
   gapX: 0.125,
   gapY: 0.125,
+  partLinked: false,
+  gapLinked: false,
   moveMarginsWithRotation: false,
   unit: "in",
 };
@@ -46,6 +48,14 @@ function migrateLegacy(parsed: LegacyNestInputs): Partial<NestInputs> {
 
   if (next.moveMarginsWithRotation == null) {
     next.moveMarginsWithRotation = false;
+  }
+
+  if (next.partLinked == null) {
+    next.partLinked = false;
+  }
+
+  if (next.gapLinked == null) {
+    next.gapLinked = false;
   }
 
   return next;
