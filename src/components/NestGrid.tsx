@@ -34,7 +34,7 @@ export function NestGrid({
   const gapAcross = coalesce(gapX);
   const gapDown = coalesce(gapY);
   const marginLeft = coalesce(margins.left);
-  const marginTop = coalesce(margins.top);
+  const marginBottom = coalesce(margins.bottom);
 
   const MAX_PREVIEW_PARTS = 500;
   const totalParts = result.partsAcross * result.partsDown;
@@ -46,7 +46,7 @@ export function NestGrid({
       if (parts.length >= MAX_PREVIEW_PARTS) break;
       parts.push({
         x: marginLeft + col * (partW + gapAcross),
-        y: marginTop + row * (partH + gapDown),
+        y: marginBottom + row * (partH + gapDown),
       });
     }
     if (parts.length >= MAX_PREVIEW_PARTS) break;
@@ -56,6 +56,7 @@ export function NestGrid({
   const pad = maxDim * 0.12;
   const labelSize = maxDim * 0.045;
   const stroke = maxDim * 0.006;
+  const originMark = maxDim * 0.04;
 
   return (
     <div
@@ -67,41 +68,90 @@ export function NestGrid({
         className="h-full w-full"
         preserveAspectRatio="xMidYMid meet"
       >
-        <rect
-          x={0}
-          y={0}
-          width={remW}
-          height={remH}
-          fill="var(--rem-fill)"
-          stroke="var(--rem-stroke)"
-          strokeWidth={stroke}
-          rx={maxDim * 0.01}
-        />
-
-        <rect
-          x={marginLeft}
-          y={marginTop}
-          width={Math.max(0, result.usableWidth)}
-          height={Math.max(0, result.usableHeight)}
-          fill="none"
-          stroke="var(--usable-stroke)"
-          strokeDasharray={`${maxDim * 0.02} ${maxDim * 0.015}`}
-          strokeWidth={maxDim * 0.004}
-        />
-
-        {parts.map((part, index) => (
+        <g transform={`translate(0, ${remH}) scale(1, -1)`}>
           <rect
-            key={index}
-            x={part.x}
-            y={part.y}
-            width={partW}
-            height={partH}
-            fill="var(--part-fill)"
-            stroke="var(--part-stroke)"
-            strokeWidth={maxDim * 0.004}
-            rx={maxDim * 0.005}
+            x={0}
+            y={0}
+            width={remW}
+            height={remH}
+            fill="var(--rem-fill)"
+            stroke="var(--rem-stroke)"
+            strokeWidth={stroke}
+            rx={maxDim * 0.01}
           />
-        ))}
+
+          {marginLeft > 0 ? (
+            <rect
+              x={0}
+              y={0}
+              width={marginLeft}
+              height={remH}
+              fill="var(--margin-fill)"
+            />
+          ) : null}
+
+          {marginBottom > 0 ? (
+            <rect
+              x={0}
+              y={0}
+              width={remW}
+              height={marginBottom}
+              fill="var(--margin-fill)"
+            />
+          ) : null}
+
+          <rect
+            x={marginLeft}
+            y={marginBottom}
+            width={Math.max(0, result.usableWidth)}
+            height={Math.max(0, result.usableHeight)}
+            fill="none"
+            stroke="var(--usable-stroke)"
+            strokeDasharray={`${maxDim * 0.02} ${maxDim * 0.015}`}
+            strokeWidth={maxDim * 0.004}
+          />
+
+          {parts.map((part, index) => (
+            <rect
+              key={index}
+              x={part.x}
+              y={part.y}
+              width={partW}
+              height={partH}
+              fill="var(--part-fill)"
+              stroke="var(--part-stroke)"
+              strokeWidth={maxDim * 0.004}
+              rx={maxDim * 0.005}
+            />
+          ))}
+        </g>
+
+        <g>
+          <path
+            d={`M 0 ${remH} L ${originMark} ${remH} M 0 ${remH} L 0 ${remH - originMark}`}
+            fill="none"
+            stroke="var(--origin-stroke)"
+            strokeWidth={maxDim * 0.005}
+            strokeLinecap="square"
+          />
+          <circle
+            cx={0}
+            cy={remH}
+            r={maxDim * 0.008}
+            fill="var(--accent)"
+          />
+          <text
+            x={originMark * 0.35}
+            y={remH - originMark * 0.35}
+            textAnchor="start"
+            dominantBaseline="middle"
+            fill="var(--origin-stroke)"
+            fontSize={labelSize * 0.75}
+            fontFamily="var(--font-geist-mono), ui-monospace, monospace"
+          >
+            0,0
+          </text>
+        </g>
 
         <text
           x={remW / 2}
@@ -129,8 +179,12 @@ export function NestGrid({
         {result.partsAcross > 0 ? (
           <text
             x={marginLeft + result.usableWidth / 2}
-            y={Math.max(marginTop - maxDim * 0.02, labelSize)}
+            y={Math.max(
+              remH - marginBottom - result.usableHeight - maxDim * 0.02,
+              labelSize,
+            )}
             textAnchor="middle"
+            dominantBaseline="auto"
             fill="var(--accent)"
             fontSize={labelSize * 0.85}
             fontFamily="var(--font-geist-mono), ui-monospace, monospace"
@@ -142,7 +196,7 @@ export function NestGrid({
         {result.partsDown > 0 ? (
           <text
             x={marginLeft + result.usableWidth + maxDim * 0.02}
-            y={marginTop + result.usableHeight / 2}
+            y={remH - marginBottom - result.usableHeight / 2}
             textAnchor="start"
             dominantBaseline="middle"
             fill="var(--accent)"
