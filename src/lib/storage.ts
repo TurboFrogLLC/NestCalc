@@ -11,21 +11,38 @@ export const DEFAULT_INPUTS: NestInputs = {
   margins: { left: 0.5, right: 0.25, top: 0.25, bottom: 0.25 },
   gapX: 0.125,
   gapY: 0.125,
-  remRotation: 0,
+  moveMarginsWithRotation: false,
   unit: "in",
 };
 
-type LegacyNestInputs = NestInputs & { gap?: number };
+type LegacyNestInputs = Partial<NestInputs> & {
+  gap?: number;
+  remRotation?: number;
+};
 
-function migrateLegacy(parsed: Partial<LegacyNestInputs>): Partial<NestInputs> {
+function migrateLegacy(parsed: LegacyNestInputs): Partial<NestInputs> {
   const next: Partial<NestInputs> = { ...parsed };
+
   if (next.gapX == null && parsed.gap != null) {
     next.gapX = parsed.gap;
     next.gapY = parsed.gap;
   }
-  if (next.remRotation == null) {
-    next.remRotation = 0;
+
+  const rotation = parsed.remRotation ?? 0;
+  if (rotation === 90 || rotation === 270) {
+    next.remnantWidth = parsed.remnantHeight ?? next.remnantWidth;
+    next.remnantHeight = parsed.remnantWidth ?? next.remnantHeight;
+    next.gapX = parsed.gapY ?? next.gapX;
+    next.gapY = parsed.gapX ?? next.gapY;
   }
+
+  delete (next as LegacyNestInputs).remRotation;
+  delete (next as LegacyNestInputs).gap;
+
+  if (next.moveMarginsWithRotation == null) {
+    next.moveMarginsWithRotation = false;
+  }
+
   return next;
 }
 
@@ -36,18 +53,21 @@ export function loadInputs(): NestInputs {
     if (!raw) {
       const legacy = localStorage.getItem("nestcalc-state-v1");
       if (!legacy) return DEFAULT_INPUTS;
-      const parsed = migrateLegacy(JSON.parse(legacy) as Partial<LegacyNestInputs>);
+      const parsed = migrateLegacy(
+        JSON.parse(legacy) as LegacyNestInputs,
+      );
       return {
         ...DEFAULT_INPUTS,
         ...parsed,
         margins: { ...DEFAULT_INPUTS.margins, ...parsed.margins },
       };
     }
-    const parsed = migrateLegacy(JSON.parse(raw) as Partial<LegacyNestInputs>);
+    const parsed = migrateLegacy(JSON.parse(raw) as LegacyNestInputs);
     return {
       ...DEFAULT_INPUTS,
       ...parsed,
       margins: { ...DEFAULT_INPUTS.margins, ...parsed.margins },
+      moveMarginsWithRotation: parsed.moveMarginsWithRotation ?? false,
     };
   } catch {
     return DEFAULT_INPUTS;

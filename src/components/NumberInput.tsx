@@ -26,7 +26,13 @@ function parseInput(text: string): number | null {
 
 export function NumberInput({ label, value, unit, onChange }: NumberInputProps) {
   const [draft, setDraft] = useState<string | null>(null);
-  const display = draft ?? formatValue(value);
+  const [focused, setFocused] = useState(false);
+  const display = focused && draft !== null ? draft : formatValue(value);
+
+  const handleChange = (text: string) => {
+    setDraft(text);
+    onChange(parseInput(text));
+  };
 
   return (
     <label className="flex min-w-0 flex-col gap-1">
@@ -38,17 +44,21 @@ export function NumberInput({ label, value, unit, onChange }: NumberInputProps) 
           type="text"
           inputMode="decimal"
           value={display}
-          onFocus={() => setDraft(value === null ? "" : formatValue(value))}
-          onChange={(event) => setDraft(event.target.value)}
+          onFocus={() => {
+            setFocused(true);
+            setDraft(value === null ? "" : formatValue(value));
+          }}
+          onChange={(event) => handleChange(event.target.value)}
           onBlur={() => {
-            const next = parseInput(draft ?? display);
+            setFocused(false);
             setDraft(null);
-            onChange(next);
           }}
           className="w-full min-w-0 rounded-lg border border-[var(--input-border)] bg-[var(--input-bg)] px-3 py-3 text-lg font-mono tabular-nums text-[var(--input-text)] outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)]"
         />
         {unit ? (
-          <span className="shrink-0 text-sm font-mono text-[var(--muted)]">{unit}</span>
+          <span className="shrink-0 text-sm font-mono text-[var(--muted)]">
+            {unit}
+          </span>
         ) : null}
       </div>
     </label>

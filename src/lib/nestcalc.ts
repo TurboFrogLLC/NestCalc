@@ -1,13 +1,9 @@
-import type { NestInputs, NestResult, RemRotation } from "./types";
+import type { Margins, NestInputs, NestResult } from "./types";
 
 const FIT_EPSILON = 1e-9;
 
 export function coalesce(value: number | null | undefined): number {
   return value ?? 0;
-}
-
-export function isRemAxesSwapped(remRotation: RemRotation): boolean {
-  return remRotation === 90 || remRotation === 270;
 }
 
 export function partsInDimension(
@@ -29,7 +25,6 @@ export function calculateNest(inputs: NestInputs): NestResult {
     partHeight,
     remnantWidth,
     remnantHeight,
-    remRotation,
   } = inputs;
 
   const remW = coalesce(remnantWidth);
@@ -38,19 +33,11 @@ export function calculateNest(inputs: NestInputs): NestResult {
   const partH = coalesce(partHeight);
   const gapAcross = coalesce(gapX);
   const gapDown = coalesce(gapY);
-  const swapAxes = isRemAxesSwapped(remRotation);
 
-  const acrossRem = swapAxes ? remH : remW;
-  const downRem = swapAxes ? remW : remH;
-  const acrossMargins = swapAxes
-    ? coalesce(margins.top) + coalesce(margins.bottom)
-    : coalesce(margins.left) + coalesce(margins.right);
-  const downMargins = swapAxes
-    ? coalesce(margins.left) + coalesce(margins.right)
-    : coalesce(margins.top) + coalesce(margins.bottom);
-
-  const usableWidth = acrossRem - acrossMargins;
-  const usableHeight = downRem - downMargins;
+  const usableWidth =
+    remW - coalesce(margins.left) - coalesce(margins.right);
+  const usableHeight =
+    remH - coalesce(margins.top) - coalesce(margins.bottom);
 
   const partsAcross = partsInDimension(usableWidth, partW, gapAcross);
   const partsDown = partsInDimension(usableHeight, partH, gapDown);
@@ -64,8 +51,14 @@ export function calculateNest(inputs: NestInputs): NestResult {
   };
 }
 
-export function nextRemRotation(current: NestInputs["remRotation"]): NestInputs["remRotation"] {
-  return ((current + 90) % 360) as NestInputs["remRotation"];
+/** Rotate margin assignments 90° clockwise (rem orientation change). */
+export function rotateMarginsCW(margins: Margins): Margins {
+  return {
+    left: margins.bottom,
+    top: margins.left,
+    right: margins.top,
+    bottom: margins.right,
+  };
 }
 
 export function clearedInputs(unit: NestInputs["unit"]): NestInputs {
@@ -77,7 +70,7 @@ export function clearedInputs(unit: NestInputs["unit"]): NestInputs {
     margins: { left: null, right: null, top: null, bottom: null },
     gapX: null,
     gapY: null,
-    remRotation: 0,
+    moveMarginsWithRotation: false,
     unit,
   };
 }

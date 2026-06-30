@@ -2,8 +2,6 @@ export type Unit = "in" | "mm";
 
 export type ThemeMode = "dark" | "light";
 
-export type RemRotation = 0 | 90 | 180 | 270;
-
 export interface Margins {
   left: number | null;
   right: number | null;
@@ -19,7 +17,7 @@ export interface NestInputs {
   margins: Margins;
   gapX: number | null;
   gapY: number | null;
-  remRotation: RemRotation;
+  moveMarginsWithRotation: boolean;
   unit: Unit;
 }
 

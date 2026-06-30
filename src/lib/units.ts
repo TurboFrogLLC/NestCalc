@@ -15,3 +15,8 @@ export function convertValue(value: number, from: Unit, to: Unit): number {
 export function unitLabel(unit: Unit): string {
   return unit === "in" ? "in" : "mm";
 }
+
+export function formatDimension(value: number | null, unit: string): string {
+  if (value === null) return "—";
+  return `${value} ${unit}`;
+}
