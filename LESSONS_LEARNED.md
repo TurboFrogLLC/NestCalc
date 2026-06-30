@@ -1,0 +1,30 @@
+# LESSONS_LEARNED.md - NestCalc
+
+## Purpose
+
+Reusable lessons from merged PR closeout breakdowns for NestCalc. Advisory
+execution memory only — does not override `NestCalc_Build_Spec.md`, `AGENTS.md`,
+or explicit human direction.
+
+## How To Use
+
+Before implementation or PR closeout:
+
+1. Read `NestCalc_Build_Spec.md`.
+2. Read this file and identify relevant `L-nestcalc-*` labels.
+3. Treat matching lessons as preflight checks and regression risks.
+
+## Lesson Index
+
+| Label | Source | Lesson | Applies when |
+|---|---|---|---|
+| `L-nestcalc-next16-serwist-turbopack` | [PR #1](https://github.com/TurboFrogLLC/NestCalc/pull/1) | Next.js 16 production builds default to Turbopack; PWA service workers should use @serwist/turbopack (route handler + SerwistProvider at /serwist/sw.js), not @serwist/next/webpack. With src-dir, set swSrc to src/app/sw.ts. | Scaffolding or upgrading NestCalc/Next.js 16 PWAs with Serwist. |
+| `L-nestcalc-socket-transitive-triage` | [PR #1](https://github.com/TurboFrogLLC/NestCalc/pull/1) | Socket obfuscation alerts on eslint-config-next and @tailwindcss/postcss transitive dev deps are usually false positives; document dev-only triage in docs/SOCKET_SECURITY.md and post @SocketSecurity ignore comments after review — do not drop Next.js lint alignment to silence alerts. | Socket PR alerts on NestCalc or other Next.js eslint-config-next scaffolds. |
+| `L-nestcalc-postcss-override` | [PR #1](https://github.com/TurboFrogLLC/NestCalc/pull/1) | Next 16 may nest postcss below GHSA-qx2v-qp2m-jg93; add package.json overrides.postcss ^8.5.10 and re-run npm audit before merge — npm audit fix --force downgrades Next and must be avoided. | npm audit reports moderate postcss via next on NestCalc or similar Next 16 repos. |
+| `L-nestcalc-allowscripts-pin` | [PR #1](https://github.com/TurboFrogLLC/NestCalc/pull/1) | On npm v11+, pin allowScripts entries for @swc/core, esbuild, sharp, and unrs-resolver after reviewing install scripts; use npm approve-scripts --allow-scripts-pending to discover pending packages. | Initial Next.js 16 scaffold or dependency refresh shows allow-scripts warnings. |
+
+## Maintenance Rules
+
+- Append new rows only from final PR closeout breakdowns or human-approved retros.
+- Preserve stable `L-nestcalc-*` labels after merge; never rename existing labels.
+- Skip duplicate labels when appending.
