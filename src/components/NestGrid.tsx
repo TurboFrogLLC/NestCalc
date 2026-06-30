@@ -179,7 +179,10 @@ export function NestGrid({
         {result.partsAcross > 0 ? (
           <text
             x={marginLeft + result.usableWidth / 2}
-            y={remH - marginBottom - maxDim * 0.02}
+            y={Math.max(
+              remH - marginBottom - result.usableHeight - maxDim * 0.02,
+              labelSize,
+            )}
             textAnchor="middle"
             dominantBaseline="auto"
             fill="var(--accent)"
