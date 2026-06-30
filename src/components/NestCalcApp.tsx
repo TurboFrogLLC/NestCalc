@@ -67,17 +67,23 @@ function swapValues(
 interface IconButtonProps {
   label: string;
   onClick: () => void;
+  active?: boolean;
   children: React.ReactNode;
 }
 
-function IconButton({ label, onClick, children }: IconButtonProps) {
+function IconButton({ label, onClick, active = false, children }: IconButtonProps) {
   return (
     <button
       type="button"
       aria-label={label}
       title={label}
+      aria-pressed={active}
       onClick={onClick}
-      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[var(--btn-border)] bg-[var(--btn-bg)] text-[var(--muted)] transition-colors hover:border-[var(--accent-hover)] hover:text-[var(--accent)] active:scale-[0.97]"
+      className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border transition-colors active:scale-[0.97] ${
+        active
+          ? "border-[var(--accent)] bg-[var(--accent)] text-[var(--background)] hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)]"
+          : "border-[var(--btn-border)] bg-[var(--btn-bg)] text-[var(--muted)] hover:border-[var(--accent-hover)] hover:text-[var(--accent)]"
+      }`}
     >
       {children}
     </button>
@@ -96,6 +102,10 @@ interface XYInputRowProps {
   onSwap: () => void;
 }
 
+function valuesLinked(x: number | null, y: number | null): boolean {
+  return x === y;
+}
+
 function XYInputRow({
   xLabel,
   yLabel,
@@ -107,6 +117,8 @@ function XYInputRow({
   onLink,
   onSwap,
 }: XYInputRowProps) {
+  const linked = valuesLinked(xValue, yValue);
+
   return (
     <div className="flex items-end gap-2">
       <div className="min-w-0 flex-1">
@@ -117,8 +129,8 @@ function XYInputRow({
           onChange={onXChange}
         />
       </div>
-      <div className="flex shrink-0 items-end gap-1 pb-[1px]">
-        <IconButton label="Link X and Y" onClick={onLink}>
+      <div className="flex shrink-0 flex-col items-center gap-1 pb-[1px]">
+        <IconButton label="Link X and Y" onClick={onLink} active={linked}>
           <Link2 className="h-4 w-4" strokeWidth={2} />
         </IconButton>
         <IconButton label="Swap X and Y" onClick={onSwap}>
@@ -309,16 +321,16 @@ export function NestCalcApp() {
             onChange={(value) => updateMargin("right", value)}
           />
           <NumberInput
-            label="Top"
-            value={inputs.margins.top}
-            unit={unit}
-            onChange={(value) => updateMargin("top", value)}
-          />
-          <NumberInput
             label="Bottom"
             value={inputs.margins.bottom}
             unit={unit}
             onChange={(value) => updateMargin("bottom", value)}
+          />
+          <NumberInput
+            label="Top"
+            value={inputs.margins.top}
+            unit={unit}
+            onChange={(value) => updateMargin("top", value)}
           />
         </div>
         <label className="mt-3 flex cursor-pointer items-center gap-2 text-sm text-[var(--muted)]">
