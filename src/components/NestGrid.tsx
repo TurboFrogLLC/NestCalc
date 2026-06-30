@@ -94,14 +94,20 @@ export function NestGrid({
     pinchRef.current = null;
   };
 
+  const MAX_PREVIEW_PARTS = 500;
+  const totalParts = result.partsAcross * result.partsDown;
+  const previewCapped = totalParts > MAX_PREVIEW_PARTS;
+
   const parts: { x: number; y: number }[] = [];
   for (let row = 0; row < result.partsDown; row += 1) {
     for (let col = 0; col < result.partsAcross; col += 1) {
+      if (parts.length >= MAX_PREVIEW_PARTS) break;
       parts.push({
         x: margins.left + col * (partWidth + gap),
         y: margins.top + row * (partHeight + gap),
       });
     }
+    if (parts.length >= MAX_PREVIEW_PARTS) break;
   }
 
   const maxDim = Math.max(remnantWidth, remnantHeight, 1);
@@ -178,7 +184,9 @@ export function NestGrid({
         </svg>
       </div>
       <p className="text-center text-[11px] text-zinc-600">
-        Pinch to zoom · drag to pan · double-tap to reset
+        {previewCapped
+          ? `Showing first ${MAX_PREVIEW_PARTS} of ${totalParts} parts · pinch to zoom · drag to pan`
+          : "Pinch to zoom · drag to pan · double-tap to reset"}
       </p>
     </div>
   );

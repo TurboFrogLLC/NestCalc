@@ -1,12 +1,15 @@
 import type { Margins, NestInputs, NestResult } from "./types";
 
+const FIT_EPSILON = 1e-9;
+
 export function partsInDimension(
   usable: number,
   part: number,
   gap: number,
 ): number {
   if (usable < part || part <= 0) return 0;
-  return Math.floor((usable + gap) / (part + gap));
+  const quotient = (usable + gap) / (part + gap);
+  return Math.floor(quotient + FIT_EPSILON);
 }
 
 export function calculateNest(inputs: NestInputs): NestResult {
