@@ -56,6 +56,9 @@ export function NestGrid({
   const pad = maxDim * 0.12;
   const labelSize = maxDim * 0.045;
   const stroke = maxDim * 0.006;
+  const originMark = maxDim * 0.04;
+  const originLabelX = -pad * 0.45;
+  const originLabelY = remH + pad * 0.42;
 
   return (
     <div
@@ -127,21 +130,30 @@ export function NestGrid({
 
         <g>
           <path
-            d={`M ${-pad * 0.55} ${remH + pad * 0.35} L ${-pad * 0.55} ${remH + pad * 0.12} L ${-pad * 0.22} ${remH + pad * 0.12}`}
+            d={`M 0 ${remH} L ${originMark} ${remH} M 0 ${remH} L 0 ${remH - originMark}`}
             fill="none"
             stroke="var(--origin-stroke)"
             strokeWidth={maxDim * 0.005}
             strokeLinecap="square"
           />
           <circle
-            cx={-pad * 0.55}
-            cy={remH + pad * 0.35}
-            r={maxDim * 0.007}
+            cx={0}
+            cy={remH}
+            r={maxDim * 0.008}
             fill="var(--accent)"
           />
+          <line
+            x1={originLabelX}
+            y1={remH + pad * 0.22}
+            x2={0}
+            y2={remH}
+            stroke="var(--origin-stroke)"
+            strokeWidth={maxDim * 0.003}
+            strokeDasharray={`${maxDim * 0.015} ${maxDim * 0.01}`}
+          />
           <text
-            x={-pad * 0.55}
-            y={remH + pad * 0.52}
+            x={originLabelX}
+            y={originLabelY}
             textAnchor="middle"
             fill="var(--origin-stroke)"
             fontSize={labelSize * 0.7}
