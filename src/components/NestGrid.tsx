@@ -57,6 +57,8 @@ export function NestGrid({
   const labelSize = maxDim * 0.045;
   const stroke = maxDim * 0.006;
   const originMark = maxDim * 0.04;
+  const originLabelX = -pad * 0.45;
+  const originLabelY = remH + pad * 0.42;
 
   return (
     <div
@@ -140,13 +142,21 @@ export function NestGrid({
             r={maxDim * 0.008}
             fill="var(--accent)"
           />
+          <line
+            x1={originLabelX}
+            y1={remH + pad * 0.22}
+            x2={0}
+            y2={remH}
+            stroke="var(--origin-stroke)"
+            strokeWidth={maxDim * 0.003}
+            strokeDasharray={`${maxDim * 0.015} ${maxDim * 0.01}`}
+          />
           <text
-            x={originMark * 0.35}
-            y={remH - originMark * 0.35}
-            textAnchor="start"
-            dominantBaseline="middle"
+            x={originLabelX}
+            y={originLabelY}
+            textAnchor="middle"
             fill="var(--origin-stroke)"
-            fontSize={labelSize * 0.75}
+            fontSize={labelSize * 0.7}
             fontFamily="var(--font-geist-mono), ui-monospace, monospace"
           >
             0,0
@@ -189,7 +199,7 @@ export function NestGrid({
             fontSize={labelSize * 0.85}
             fontFamily="var(--font-geist-mono), ui-monospace, monospace"
           >
-            {result.partsAcross} across
+            {result.partsAcross}
           </text>
         ) : null}
 
@@ -203,7 +213,7 @@ export function NestGrid({
             fontSize={labelSize * 0.85}
             fontFamily="var(--font-geist-mono), ui-monospace, monospace"
           >
-            {result.partsDown} down
+            {result.partsDown}
           </text>
         ) : null}
       </svg>

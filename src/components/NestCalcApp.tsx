@@ -79,7 +79,7 @@ function IconButton({ label, onClick, active = false, children }: IconButtonProp
       title={label}
       aria-pressed={active}
       onClick={onClick}
-      className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border transition-colors active:scale-[0.97] ${
+      className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border transition-colors active:scale-[0.97] ${
         active
           ? "border-[var(--accent)] bg-[var(--accent)] text-[var(--background)] hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)]"
           : "border-[var(--btn-border)] bg-[var(--btn-bg)] text-[var(--muted)] hover:border-[var(--accent-hover)] hover:text-[var(--accent)]"
@@ -129,12 +129,12 @@ function XYInputRow({
           onChange={onXChange}
         />
       </div>
-      <div className="flex shrink-0 flex-col items-center gap-1 pb-[1px]">
+      <div className="flex shrink-0 flex-col items-center justify-end gap-0.5 pb-[3px]">
         <IconButton label="Link X and Y" onClick={onLink} active={linked}>
-          <Link2 className="h-4 w-4" strokeWidth={2} />
+          <Link2 className="h-3 w-3" strokeWidth={2} />
         </IconButton>
         <IconButton label="Swap X and Y" onClick={onSwap}>
-          <ArrowLeftRight className="h-4 w-4" strokeWidth={2} />
+          <ArrowLeftRight className="h-3 w-3" strokeWidth={2} />
         </IconButton>
       </div>
       <div className="min-w-0 flex-1">
