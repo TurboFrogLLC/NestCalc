@@ -17,6 +17,8 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
   -webkit-tap-highlight-color: transparent;
+  /* Respect iOS notch / Dynamic Island / status bar in standalone PWA mode. */
+  padding-top: env(safe-area-inset-top, 0px);
 }
 
 input[type="number"]::-webkit-inner-spin-button,
