@@ -30,10 +30,15 @@ function migrateLegacy(parsed: LegacyNestInputs): Partial<NestInputs> {
 
   const rotation = parsed.remRotation ?? 0;
   if (rotation === 90 || rotation === 270) {
-    next.remnantWidth = parsed.remnantHeight ?? next.remnantWidth;
-    next.remnantHeight = parsed.remnantWidth ?? next.remnantHeight;
-    next.gapX = parsed.gapY ?? next.gapX;
-    next.gapY = parsed.gapX ?? next.gapY;
+    const remnantWidth = next.remnantWidth;
+    const remnantHeight = next.remnantHeight;
+    next.remnantWidth = remnantHeight;
+    next.remnantHeight = remnantWidth;
+
+    const gapX = next.gapX;
+    const gapY = next.gapY;
+    next.gapX = gapY;
+    next.gapY = gapX;
   }
 
   delete (next as LegacyNestInputs).remRotation;
