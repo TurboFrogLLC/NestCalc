@@ -1,6 +1,6 @@
 export type Unit = "in" | "mm";
 
-export type Theme = "light" | "dark";
+export type ThemeMode = "dark" | "light";
 
 export interface Margins {
   left: number | null;
@@ -14,9 +14,9 @@ export interface NestInputs {
   partHeight: number | null;
   remnantWidth: number | null;
   remnantHeight: number | null;
+  margins: Margins;
   gapX: number | null;
   gapY: number | null;
-  margins: Margins;
   moveMarginsWithRotation: boolean;
   unit: Unit;
 }

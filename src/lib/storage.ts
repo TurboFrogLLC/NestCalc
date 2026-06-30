@@ -1,4 +1,4 @@
-import type { NestInputs, Theme } from "./types";
+import type { NestInputs, ThemeMode } from "./types";
 
 const STORAGE_KEY = "nestcalc-state-v2";
 const THEME_KEY = "nestcalc-theme";
@@ -8,54 +8,64 @@ export const DEFAULT_INPUTS: NestInputs = {
   partHeight: 1.5,
   remnantWidth: 12,
   remnantHeight: 8,
+  margins: { left: 0.5, right: 0.25, top: 0.25, bottom: 0.25 },
   gapX: 0.125,
   gapY: 0.125,
-  margins: { left: 0.5, right: 0.25, top: 0.25, bottom: 0.25 },
   moveMarginsWithRotation: false,
   unit: "in",
 };
 
-export const EMPTY_INPUTS: NestInputs = {
-  partWidth: null,
-  partHeight: null,
-  remnantWidth: null,
-  remnantHeight: null,
-  gapX: null,
-  gapY: null,
-  margins: { left: null, right: null, top: null, bottom: null },
-  moveMarginsWithRotation: false,
-  unit: "in",
+type LegacyNestInputs = Partial<NestInputs> & {
+  gap?: number;
+  remRotation?: number;
 };
 
-function migrateLegacyGap(parsed: Record<string, unknown>): {
-  gapX: number | null;
-  gapY: number | null;
-} {
-  if ("gapX" in parsed || "gapY" in parsed) {
-    return {
-      gapX: (parsed.gapX as number | null | undefined) ?? null,
-      gapY: (parsed.gapY as number | null | undefined) ?? null,
-    };
+function migrateLegacy(parsed: LegacyNestInputs): Partial<NestInputs> {
+  const next: Partial<NestInputs> = { ...parsed };
+
+  if (next.gapX == null && parsed.gap != null) {
+    next.gapX = parsed.gap;
+    next.gapY = parsed.gap;
   }
-  const legacyGap = parsed.gap as number | undefined;
-  return {
-    gapX: legacyGap ?? null,
-    gapY: legacyGap ?? null,
-  };
+
+  const rotation = parsed.remRotation ?? 0;
+  if (rotation === 90 || rotation === 270) {
+    next.remnantWidth = parsed.remnantHeight ?? next.remnantWidth;
+    next.remnantHeight = parsed.remnantWidth ?? next.remnantHeight;
+    next.gapX = parsed.gapY ?? next.gapX;
+    next.gapY = parsed.gapX ?? next.gapY;
+  }
+
+  delete (next as LegacyNestInputs).remRotation;
+  delete (next as LegacyNestInputs).gap;
+
+  if (next.moveMarginsWithRotation == null) {
+    next.moveMarginsWithRotation = false;
+  }
+
+  return next;
 }
 
 export function loadInputs(): NestInputs {
   if (typeof window === "undefined") return DEFAULT_INPUTS;
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return DEFAULT_INPUTS;
-    const parsed = JSON.parse(raw) as Partial<NestInputs> & { gap?: number };
-    const { gapX, gapY } = migrateLegacyGap(parsed as Record<string, unknown>);
+    if (!raw) {
+      const legacy = localStorage.getItem("nestcalc-state-v1");
+      if (!legacy) return DEFAULT_INPUTS;
+      const parsed = migrateLegacy(
+        JSON.parse(legacy) as LegacyNestInputs,
+      );
+      return {
+        ...DEFAULT_INPUTS,
+        ...parsed,
+        margins: { ...DEFAULT_INPUTS.margins, ...parsed.margins },
+      };
+    }
+    const parsed = migrateLegacy(JSON.parse(raw) as LegacyNestInputs);
     return {
       ...DEFAULT_INPUTS,
       ...parsed,
-      gapX,
-      gapY,
       margins: { ...DEFAULT_INPUTS.margins, ...parsed.margins },
       moveMarginsWithRotation: parsed.moveMarginsWithRotation ?? false,
     };
@@ -73,7 +83,7 @@ export function saveInputs(inputs: NestInputs): void {
   }
 }
 
-export function loadTheme(): Theme {
+export function loadTheme(): ThemeMode {
   if (typeof window === "undefined") return "dark";
   try {
     const stored = localStorage.getItem(THEME_KEY);
@@ -83,7 +93,7 @@ export function loadTheme(): Theme {
   }
 }
 
-export function saveTheme(theme: Theme): void {
+export function saveTheme(theme: ThemeMode): void {
   if (typeof window === "undefined") return;
   try {
     localStorage.setItem(THEME_KEY, theme);

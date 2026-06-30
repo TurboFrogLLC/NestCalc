@@ -1,6 +1,6 @@
 "use client";
 
-import { toNumber } from "@/lib/nestcalc";
+import { coalesce } from "@/lib/nestcalc";
 import type { Margins, NestResult } from "@/lib/types";
 import { formatDimension } from "@/lib/units";
 
@@ -13,7 +13,7 @@ interface NestGridProps {
   gapX: number | null;
   gapY: number | null;
   result: NestResult;
-  unit: string;
+  unitLabel: string;
 }
 
 export function NestGrid({
@@ -25,16 +25,16 @@ export function NestGrid({
   gapX,
   gapY,
   result,
-  unit,
+  unitLabel,
 }: NestGridProps) {
-  const remW = Math.max(toNumber(remnantWidth), 0.001);
-  const remH = Math.max(toNumber(remnantHeight), 0.001);
-  const partW = toNumber(partWidth);
-  const partH = toNumber(partHeight);
-  const gapAcross = toNumber(gapX);
-  const gapDown = toNumber(gapY);
-  const marginLeft = toNumber(margins.left);
-  const marginTop = toNumber(margins.top);
+  const remW = Math.max(coalesce(remnantWidth), 0.001);
+  const remH = Math.max(coalesce(remnantHeight), 0.001);
+  const partW = coalesce(partWidth);
+  const partH = coalesce(partHeight);
+  const gapAcross = coalesce(gapX);
+  const gapDown = coalesce(gapY);
+  const marginLeft = coalesce(margins.left);
+  const marginTop = coalesce(margins.top);
 
   const MAX_PREVIEW_PARTS = 500;
   const totalParts = result.partsAcross * result.partsDown;
@@ -55,10 +55,13 @@ export function NestGrid({
   const maxDim = Math.max(remW, remH, 1);
   const pad = maxDim * 0.12;
   const labelSize = maxDim * 0.045;
-  const stroke = maxDim * 0.004;
+  const stroke = maxDim * 0.006;
 
   return (
-    <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-card bg-preview">
+    <div
+      className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-[var(--card-border)] bg-[var(--preview-bg)]"
+      aria-label="Nest preview"
+    >
       <svg
         viewBox={`${-pad} ${-pad} ${remW + pad * 2} ${remH + pad * 2}`}
         className="h-full w-full"
@@ -69,8 +72,9 @@ export function NestGrid({
           y={0}
           width={remW}
           height={remH}
-          className="fill-preview-rem stroke-preview-rem"
-          strokeWidth={maxDim * 0.006}
+          fill="var(--rem-fill)"
+          stroke="var(--rem-stroke)"
+          strokeWidth={stroke}
           rx={maxDim * 0.01}
         />
 
@@ -80,9 +84,9 @@ export function NestGrid({
           width={Math.max(0, result.usableWidth)}
           height={Math.max(0, result.usableHeight)}
           fill="none"
-          className="stroke-preview-usable"
+          stroke="var(--usable-stroke)"
           strokeDasharray={`${maxDim * 0.02} ${maxDim * 0.015}`}
-          strokeWidth={stroke}
+          strokeWidth={maxDim * 0.004}
         />
 
         {parts.map((part, index) => (
@@ -92,8 +96,9 @@ export function NestGrid({
             y={part.y}
             width={partW}
             height={partH}
-            className="fill-part stroke-part"
-            strokeWidth={stroke}
+            fill="var(--part-fill)"
+            stroke="var(--part-stroke)"
+            strokeWidth={maxDim * 0.004}
             rx={maxDim * 0.005}
           />
         ))}
@@ -102,33 +107,33 @@ export function NestGrid({
           x={remW / 2}
           y={remH + pad * 0.55}
           textAnchor="middle"
-          className="fill-label"
+          fill="var(--muted)"
           fontSize={labelSize}
-          fontFamily="var(--font-geist-mono), monospace"
+          fontFamily="var(--font-geist-mono), ui-monospace, monospace"
         >
-          {formatDimension(remnantWidth, unit)}
+          {formatDimension(remnantWidth, unitLabel)}
         </text>
 
         <text
           x={-pad * 0.55}
           y={remH / 2}
           textAnchor="middle"
-          className="fill-label"
+          fill="var(--muted)"
           fontSize={labelSize}
-          fontFamily="var(--font-geist-mono), monospace"
+          fontFamily="var(--font-geist-mono), ui-monospace, monospace"
           transform={`rotate(-90, ${-pad * 0.55}, ${remH / 2})`}
         >
-          {formatDimension(remnantHeight, unit)}
+          {formatDimension(remnantHeight, unitLabel)}
         </text>
 
         {result.partsAcross > 0 ? (
           <text
             x={marginLeft + result.usableWidth / 2}
-            y={marginTop - maxDim * 0.02}
+            y={Math.max(marginTop - maxDim * 0.02, labelSize)}
             textAnchor="middle"
-            className="fill-label-muted"
+            fill="var(--accent)"
             fontSize={labelSize * 0.85}
-            fontFamily="var(--font-geist-mono), monospace"
+            fontFamily="var(--font-geist-mono), ui-monospace, monospace"
           >
             {result.partsAcross} across
           </text>
@@ -140,16 +145,16 @@ export function NestGrid({
             y={marginTop + result.usableHeight / 2}
             textAnchor="start"
             dominantBaseline="middle"
-            className="fill-label-muted"
+            fill="var(--accent)"
             fontSize={labelSize * 0.85}
-            fontFamily="var(--font-geist-mono), monospace"
+            fontFamily="var(--font-geist-mono), ui-monospace, monospace"
           >
             {result.partsDown} down
           </text>
         ) : null}
       </svg>
       {previewCapped ? (
-        <p className="absolute bottom-1 left-0 right-0 text-center text-[10px] text-muted">
+        <p className="absolute bottom-1 left-0 right-0 text-center text-[10px] text-[var(--muted)]">
           Showing first {MAX_PREVIEW_PARTS} of {totalParts} parts
         </p>
       ) : null}

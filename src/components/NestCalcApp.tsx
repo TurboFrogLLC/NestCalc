@@ -1,32 +1,34 @@
 "use client";
 
+import { useMemo } from "react";
 import {
   ArrowLeftRight,
   Link2,
   RotateCcw,
   RotateCw,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
 import { useNestInputs } from "@/hooks/useNestInputs";
-import { calculateNest, rotateMarginsCW } from "@/lib/nestcalc";
-import { EMPTY_INPUTS, loadTheme, saveTheme } from "@/lib/storage";
-import type { NestInputs, Theme, Unit } from "@/lib/types";
+import { useTheme } from "@/hooks/useTheme";
+import {
+  calculateNest,
+  clearedInputs,
+  rotateMarginsCW,
+} from "@/lib/nestcalc";
+import type { NestInputs, Unit } from "@/lib/types";
 import { convertValue, unitLabel } from "@/lib/units";
 import { NestGrid } from "./NestGrid";
 import { NumberInput } from "./NumberInput";
 
-function convertNullable(
-  value: number | null,
-  from: Unit,
-  to: Unit,
-): number | null {
-  if (value === null) return null;
-  return convertValue(value, from, to);
-}
+const toggleClass =
+  "min-h-11 rounded-xl border border-[var(--btn-border)] bg-[var(--btn-bg)] px-4 py-2 text-sm font-semibold text-[var(--accent)] transition-colors hover:border-[var(--accent-hover)] hover:bg-[var(--card)]";
+
+const rotateBtnClass =
+  "flex items-center gap-1 rounded-lg border border-[var(--btn-border)] bg-[var(--btn-bg)] px-2 py-1.5 text-xs font-semibold text-[var(--btn-text)] transition-colors hover:border-[var(--accent-hover)] hover:bg-[var(--card)] active:scale-[0.98]";
 
 function convertAll(inputs: NestInputs, to: Unit): NestInputs {
   const from = inputs.unit;
-  const cv = (value: number | null) => convertNullable(value, from, to);
+  const cv = (value: number | null) =>
+    value === null ? null : convertValue(value, from, to);
   return {
     ...inputs,
     unit: to,
@@ -66,62 +68,19 @@ interface IconButtonProps {
   label: string;
   onClick: () => void;
   children: React.ReactNode;
-  compact?: boolean;
 }
 
-function IconButton({ label, onClick, children, compact }: IconButtonProps) {
+function IconButton({ label, onClick, children }: IconButtonProps) {
   return (
     <button
       type="button"
       aria-label={label}
       title={label}
       onClick={onClick}
-      className={`btn-icon flex shrink-0 items-center justify-center rounded-lg border transition-colors active:scale-[0.97] ${
-        compact ? "h-10 w-10" : "h-[50px] w-10"
-      }`}
+      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[var(--btn-border)] bg-[var(--btn-bg)] text-[var(--muted)] transition-colors hover:border-[var(--accent-hover)] hover:text-[var(--accent)] active:scale-[0.97]"
     >
       {children}
     </button>
-  );
-}
-
-interface SummaryLineProps {
-  partsAcross: number;
-  partsDown: number;
-  totalParts: number;
-  prominent?: boolean;
-}
-
-function SummaryLine({
-  partsAcross,
-  partsDown,
-  totalParts,
-  prominent,
-}: SummaryLineProps) {
-  return (
-    <>
-      <span
-        className={`font-mono tabular-nums text-foreground ${
-          prominent ? "text-base font-bold" : "text-sm font-semibold"
-        }`}
-      >
-        X{partsAcross} | Y{partsDown}
-      </span>
-      <span
-        className={`font-mono tabular-nums ${
-          prominent ? "text-sm" : "text-xs"
-        } text-muted`}
-      >
-        Total Parts{" "}
-        <span
-          className={`font-bold text-accent ${
-            prominent ? "text-3xl" : "text-2xl"
-          }`}
-        >
-          {totalParts}
-        </span>
-      </span>
-    </>
   );
 }
 
@@ -180,14 +139,7 @@ function XYInputRow({
 
 export function NestCalcApp() {
   const { inputs, setInputs } = useNestInputs();
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window === "undefined") return "dark";
-    return loadTheme();
-  });
-
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-  }, [theme]);
+  const { theme, toggleTheme } = useTheme();
 
   const result = useMemo(() => calculateNest(inputs), [inputs]);
   const unit = unitLabel(inputs.unit);
@@ -206,13 +158,6 @@ export function NestCalcApp() {
     }));
   };
 
-  const toggleTheme = () => {
-    const next: Theme = theme === "dark" ? "light" : "dark";
-    setTheme(next);
-    saveTheme(next);
-    document.documentElement.dataset.theme = next;
-  };
-
   const toggleUnit = () => {
     setInputs((current) =>
       convertAll(current, current.unit === "in" ? "mm" : "in"),
@@ -220,11 +165,7 @@ export function NestCalcApp() {
   };
 
   const clearAll = () => {
-    setInputs((current) => ({
-      ...EMPTY_INPUTS,
-      unit: current.unit,
-      moveMarginsWithRotation: false,
-    }));
+    setInputs((current) => clearedInputs(current.unit));
   };
 
   const rotatePart = () => {
@@ -235,7 +176,7 @@ export function NestCalcApp() {
     }));
   };
 
-  const rotateRemnant = () => {
+  const rotateRem = () => {
     setInputs((current) => ({
       ...current,
       remnantWidth: current.remnantHeight,
@@ -250,40 +191,42 @@ export function NestCalcApp() {
 
   return (
     <div className="mx-auto flex w-full max-w-lg flex-col gap-4 px-4 py-5 pb-8">
-      <header className="flex items-center justify-between gap-2">
-        <h1 className="text-xl font-semibold tracking-tight">NestCalc</h1>
+      <header className="flex items-center justify-between gap-3">
+        <h1 className="text-xl font-semibold tracking-tight text-[var(--foreground)]">
+          NestCalc
+        </h1>
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={toggleTheme}
-            className="btn-secondary min-h-10 rounded-xl border px-3 py-2 text-sm font-semibold text-accent transition-colors"
-          >
+          <button type="button" onClick={toggleTheme} className={toggleClass}>
             {theme === "dark" ? "Light" : "Dark"}
           </button>
-          <button
-            type="button"
-            onClick={toggleUnit}
-            className="btn-secondary min-h-10 rounded-xl border px-3 py-2 text-sm font-semibold text-accent transition-colors"
-          >
+          <button type="button" onClick={toggleUnit} className={toggleClass}>
             {inputs.unit === "in" ? "in → mm" : "mm → in"}
           </button>
-          <IconButton label="Clear all fields" onClick={clearAll} compact>
-            <RotateCcw className="h-4 w-4" strokeWidth={2} />
-          </IconButton>
+          <button
+            type="button"
+            onClick={clearAll}
+            aria-label="Clear all fields"
+            className="flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-[var(--btn-border)] bg-[var(--btn-bg)] px-2 py-2 text-[var(--muted)] transition-colors hover:border-[var(--accent-hover)] hover:text-[var(--accent)]"
+          >
+            <RotateCcw className="h-5 w-5" strokeWidth={2} />
+          </button>
         </div>
       </header>
 
-      <section className="flex h-[50px] items-center justify-between rounded-lg border border-card bg-card px-3">
-        <SummaryLine
-          partsAcross={result.partsAcross}
-          partsDown={result.partsDown}
-          totalParts={result.totalParts}
-          prominent
-        />
+      <section className="flex h-[50px] items-center justify-between rounded-lg border border-[var(--card-border)] bg-[var(--card)] px-3">
+        <span className="font-mono text-base font-bold tabular-nums text-[var(--foreground)]">
+          X{result.partsAcross} | Y{result.partsDown}
+        </span>
+        <span className="font-mono text-sm tabular-nums text-[var(--muted)]">
+          Total Parts{" "}
+          <span className="text-3xl font-bold text-[var(--accent)]">
+            {result.totalParts}
+          </span>
+        </span>
       </section>
 
       <section className="flex flex-col gap-3">
-        <p className="text-[11px] font-medium uppercase tracking-wider text-muted">
+        <p className="text-[11px] font-medium uppercase tracking-wider text-[var(--muted)]">
           Part
         </p>
         <XYInputRow
@@ -306,7 +249,7 @@ export function NestCalcApp() {
       </section>
 
       <section className="flex flex-col gap-3">
-        <p className="text-[11px] font-medium uppercase tracking-wider text-muted">
+        <p className="text-[11px] font-medium uppercase tracking-wider text-[var(--muted)]">
           Gap
         </p>
         <XYInputRow
@@ -329,7 +272,7 @@ export function NestCalcApp() {
       </section>
 
       <section className="flex flex-col gap-3">
-        <p className="text-[11px] font-medium uppercase tracking-wider text-muted">
+        <p className="text-[11px] font-medium uppercase tracking-wider text-[var(--muted)]">
           Rem
         </p>
         <div className="grid grid-cols-2 gap-3">
@@ -349,7 +292,7 @@ export function NestCalcApp() {
       </section>
 
       <section>
-        <p className="mb-2 text-[11px] font-medium uppercase tracking-wider text-muted">
+        <p className="mb-2 text-[11px] font-medium uppercase tracking-wider text-[var(--muted)]">
           Margins
         </p>
         <div className="grid grid-cols-2 gap-3">
@@ -378,7 +321,7 @@ export function NestCalcApp() {
             onChange={(value) => updateMargin("bottom", value)}
           />
         </div>
-        <label className="mt-3 flex cursor-pointer items-center gap-2 text-sm text-muted">
+        <label className="mt-3 flex cursor-pointer items-center gap-2 text-sm text-[var(--muted)]">
           <input
             type="checkbox"
             checked={inputs.moveMarginsWithRotation}
@@ -391,36 +334,33 @@ export function NestCalcApp() {
         </label>
       </section>
 
-      <section className="rounded-2xl border border-card bg-card p-3">
+      <section className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-3">
         <div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-2">
-          <span className="font-mono text-sm font-semibold tabular-nums">
+          <span className="font-mono text-sm font-semibold tabular-nums text-[var(--foreground)]">
             X{result.partsAcross} | Y{result.partsDown}
           </span>
           <div className="flex items-center gap-1.5">
             <button
               type="button"
               onClick={rotatePart}
-              className="btn-secondary flex items-center gap-1 rounded-lg border px-2 py-1.5 text-xs font-semibold transition-colors"
+              className={rotateBtnClass}
             >
               <RotateCw className="h-3.5 w-3.5" strokeWidth={2} />
               Part 90°
             </button>
-            <button
-              type="button"
-              onClick={rotateRemnant}
-              className="btn-secondary flex items-center gap-1 rounded-lg border px-2 py-1.5 text-xs font-semibold transition-colors"
-            >
+            <button type="button" onClick={rotateRem} className={rotateBtnClass}>
               <RotateCw className="h-3.5 w-3.5" strokeWidth={2} />
               Rem 90°
             </button>
           </div>
-          <span className="ml-auto font-mono text-xs tabular-nums text-muted">
+          <span className="ml-auto font-mono text-xs tabular-nums text-[var(--muted)]">
             Total Parts{" "}
-            <span className="text-2xl font-bold text-accent">
+            <span className="text-2xl font-bold text-[var(--accent)]">
               {result.totalParts}
             </span>
           </span>
         </div>
+
         <NestGrid
           remnantWidth={inputs.remnantWidth}
           remnantHeight={inputs.remnantHeight}
@@ -430,7 +370,7 @@ export function NestCalcApp() {
           gapX={inputs.gapX}
           gapY={inputs.gapY}
           result={result}
-          unit={unit}
+          unitLabel={unit}
         />
       </section>
     </div>

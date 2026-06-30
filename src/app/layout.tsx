@@ -9,9 +9,9 @@ const geistMono = Geist_Mono({
 });
 
 const APP_NAME = "NestCalc";
-const APP_TITLE = "NestCalc — Remnant Nesting";
+const APP_TITLE = "NestCalc — Rem Nesting";
 const APP_DESCRIPTION =
-  "Quick rectangular nesting calculator for laser shop remnants. Independent margins, gap, and dual rotation.";
+  "Quick rectangular nesting calculator for laser shop rems. Independent margins, gap, and dual rotation.";
 
 export const metadata: Metadata = {
   applicationName: APP_NAME,
@@ -53,8 +53,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="dark" className={`${geistMono.variable} h-full`}>
-      <body className="min-h-full font-sans antialiased">
+    <html lang="en" className={`${geistMono.variable} h-full`} data-theme="dark">
+      <body className="min-h-full bg-[var(--background)] font-sans text-[var(--foreground)] antialiased">
         <SerwistRegistration>{children}</SerwistRegistration>
       </body>
     </html>
