@@ -21,9 +21,11 @@ The production runtime surface that ships to the installed PWA on iOS is minimal
 
 | Package              | Version     | Notes |
 |----------------------|-------------|-------|
+| `@clerk/nextjs`      | ^7.5.11     | Authentication / access gate (PR #9) |
 | `next`               | 16.2.9      | Core framework |
 | `react` / `react-dom`| 19.2.4      | UI library |
 | `serwist`            | ^9.5.11     | PWA / Service Worker (recommended path for Next.js 16 App Router) |
+| `lucide-react`       | ^1.22.0     | Icon set for shop-floor controls |
 
 These packages have clean security profiles and are the only ones that execute in the installed NestCalc PWA.
 

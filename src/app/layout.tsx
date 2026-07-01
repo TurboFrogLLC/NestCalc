@@ -1,3 +1,4 @@
+import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata, Viewport } from "next";
 import { Geist_Mono } from "next/font/google";
 import { SerwistRegistration } from "@/components/SerwistRegistration";
@@ -55,7 +56,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistMono.variable} h-full`} data-theme="dark">
       <body className="min-h-full bg-[var(--background)] font-sans text-[var(--foreground)] antialiased">
-        <SerwistRegistration>{children}</SerwistRegistration>
+        <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up">
+          <SerwistRegistration>{children}</SerwistRegistration>
+        </ClerkProvider>
       </body>
     </html>
   );

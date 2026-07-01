@@ -16,6 +16,7 @@ import {
 } from "@/lib/nestcalc";
 import type { NestInputs, Unit } from "@/lib/types";
 import { convertValue, unitLabel } from "@/lib/units";
+import { AuthControls } from "./AuthControls";
 import { NestGrid } from "./NestGrid";
 import { NumberInput } from "./NumberInput";
 
@@ -199,11 +200,12 @@ export function NestCalcApp() {
 
   return (
     <div className="mx-auto flex w-full max-w-lg flex-col gap-4 px-4 py-5 pb-8">
-      <header className="flex items-center justify-between gap-3">
+      <header className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-xl font-semibold tracking-tight text-[var(--foreground)]">
           NestCalc
         </h1>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center justify-end gap-1.5 sm:gap-2">
+          <AuthControls />
           <button type="button" onClick={toggleTheme} className={toggleClass}>
             {theme === "dark" ? "Light" : "Dark"}
           </button>
