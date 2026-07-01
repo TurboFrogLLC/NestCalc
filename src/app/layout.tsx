@@ -1,4 +1,4 @@
-import {ClerkProvider} from "@clerk/nextjs";
+import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata, Viewport } from "next";
 import { Geist_Mono } from "next/font/google";
 import { SerwistRegistration } from "@/components/SerwistRegistration";
