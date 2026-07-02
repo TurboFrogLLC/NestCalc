@@ -16,9 +16,11 @@ import {
 } from "@/lib/nestcalc";
 import type { NestInputs, Unit } from "@/lib/types";
 import { convertValue, unitLabel } from "@/lib/units";
+import { QuickValuesFocusProvider } from "@/hooks/useQuickValuesFocus";
 import { AuthControls } from "./AuthControls";
 import { NestGrid } from "./NestGrid";
 import { NumberInput } from "./NumberInput";
+import { QuickValuesBar } from "./QuickValuesBar";
 
 const toggleClass =
   "min-h-11 rounded-xl border border-[var(--btn-border)] bg-[var(--btn-bg)] px-4 py-2 text-sm font-semibold text-[var(--accent)] transition-colors hover:border-[var(--accent-hover)] hover:bg-[var(--card)]";
@@ -199,6 +201,8 @@ export function NestCalcApp() {
   };
 
   return (
+    <QuickValuesFocusProvider>
+    <QuickValuesBar />
     <div className="mx-auto flex w-full max-w-lg flex-col gap-4 px-4 py-5 pb-8">
       <header className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-xl font-semibold tracking-tight text-[var(--foreground)]">
@@ -235,10 +239,7 @@ export function NestCalcApp() {
         </span>
       </section>
 
-      <section className="flex flex-col gap-3">
-        <p className="text-[11px] font-medium uppercase tracking-wider text-[var(--muted)]">
-          Part
-        </p>
+      <section className="flex flex-col gap-2">
         <XYInputRow
           xLabel="X [PART]"
           yLabel="Y [PART]"
@@ -277,12 +278,6 @@ export function NestCalcApp() {
             update({ partWidth: swapped.x, partHeight: swapped.y });
           }}
         />
-      </section>
-
-      <section className="flex flex-col gap-3">
-        <p className="text-[11px] font-medium uppercase tracking-wider text-[var(--muted)]">
-          Gap
-        </p>
         <XYInputRow
           xLabel="X [GAP]"
           yLabel="Y [GAP]"
@@ -321,13 +316,7 @@ export function NestCalcApp() {
             update({ gapX: swapped.x, gapY: swapped.y });
           }}
         />
-      </section>
-
-      <section className="flex flex-col gap-3">
-        <p className="text-[11px] font-medium uppercase tracking-wider text-[var(--muted)]">
-          Rem
-        </p>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-2">
           <NumberInput
             label="X [REM]"
             value={inputs.remnantWidth}
@@ -341,13 +330,10 @@ export function NestCalcApp() {
             onChange={(value) => update({ remnantHeight: value })}
           />
         </div>
-      </section>
-
-      <section>
-        <p className="mb-2 text-[11px] font-medium uppercase tracking-wider text-[var(--muted)]">
+        <p className="pt-0.5 text-[11px] font-medium uppercase tracking-wider text-[var(--muted)]">
           Margins
         </p>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-2">
           <NumberInput
             label="Left"
             value={inputs.margins.left}
@@ -373,7 +359,7 @@ export function NestCalcApp() {
             onChange={(value) => updateMargin("top", value)}
           />
         </div>
-        <label className="mt-3 flex cursor-pointer items-center gap-2 text-sm text-[var(--muted)]">
+        <label className="mt-2 flex cursor-pointer items-center gap-2 text-sm text-[var(--muted)]">
           <input
             type="checkbox"
             checked={inputs.moveMarginsWithRotation}
@@ -426,5 +412,6 @@ export function NestCalcApp() {
         />
       </section>
     </div>
+    </QuickValuesFocusProvider>
   );
 }
