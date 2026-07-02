@@ -31,7 +31,7 @@ const unitBtnClass =
   "flex h-9 min-w-9 shrink-0 items-center justify-center rounded-lg border border-[var(--btn-border)] bg-[var(--btn-bg)] px-2 font-mono text-xs font-bold uppercase text-[var(--accent)] transition-colors hover:border-[var(--accent-hover)] hover:bg-[var(--card)] active:scale-[0.97]";
 
 const rotateBtnClass =
-  "flex shrink-0 items-center gap-0.5 rounded-md border border-[var(--btn-border)] bg-[var(--btn-bg)] px-1.5 py-1 text-[10px] font-semibold leading-none text-[var(--btn-text)] transition-colors hover:border-[var(--accent-hover)] hover:bg-[var(--card)] active:scale-[0.98] landscape-phone:px-1 landscape-phone:py-0.5";
+  "nestcalc-split-rotate-btn flex shrink-0 items-center gap-0.5 rounded-md border border-[var(--btn-border)] bg-[var(--btn-bg)] px-1.5 py-1 text-[10px] font-semibold leading-none text-[var(--btn-text)] transition-colors hover:border-[var(--accent-hover)] hover:bg-[var(--card)] active:scale-[0.98]";
 
 function convertAll(inputs: NestInputs, to: Unit): NestInputs {
   const from = inputs.unit;
@@ -215,7 +215,7 @@ export function NestCalcApp() {
   return (
     <QuickValuesFocusProvider>
       <QuickValuesBar />
-      <div className="mx-auto flex w-full max-w-lg flex-col gap-3 px-3 py-3 pb-6 landscape-phone:box-border landscape-phone:h-[100dvh] landscape-phone:max-h-[100dvh] landscape-phone:max-w-none landscape-phone:gap-2 landscape-phone:overflow-hidden landscape-phone:px-2 landscape-phone:py-2 landscape-phone:pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+      <div className="nestcalc-split-shell mx-auto flex w-full max-w-lg flex-col gap-3 px-3 py-3 pb-6">
         <header className="flex h-10 shrink-0 items-center gap-2">
           <h1 className="shrink-0 text-lg font-semibold tracking-tight text-[var(--foreground)]">
             NestCalc
@@ -256,9 +256,9 @@ export function NestCalcApp() {
           </div>
         </header>
 
-        <div className="flex min-h-0 flex-col gap-3 landscape-phone:flex-1 landscape-phone:flex-row landscape-phone:gap-2 landscape-phone:overflow-hidden">
-          <div className="nestcalc-inputs flex min-h-0 flex-col gap-2 landscape-phone:w-[44%] landscape-phone:shrink-0 landscape-phone:gap-1 landscape-phone:overflow-y-auto landscape-phone:overscroll-contain landscape-phone:pr-0.5">
-            <section className="flex h-9 shrink-0 items-center justify-between rounded-lg border border-[var(--card-border)] bg-[var(--card)] px-3 landscape-phone:hidden">
+        <div className="nestcalc-split-row flex min-h-0 flex-col gap-3">
+          <div className="nestcalc-split-inputs nestcalc-inputs flex min-h-0 flex-col gap-2">
+            <section className="nestcalc-split-hide flex h-9 shrink-0 items-center justify-between rounded-lg border border-[var(--card-border)] bg-[var(--card)] px-3">
               <span className="font-mono text-sm font-bold tabular-nums text-[var(--foreground)]">
                 X{result.partsAcross} | Y{result.partsDown}
               </span>
@@ -303,6 +303,20 @@ export function NestCalcApp() {
                 update({ partWidth: swapped.x, partHeight: swapped.y });
               }}
             />
+            <div className="grid grid-cols-2 gap-2">
+              <NumberInput
+                label="X [REM]"
+                value={inputs.remnantWidth}
+                unit={unit}
+                onChange={(value) => update({ remnantWidth: value })}
+              />
+              <NumberInput
+                label="Y [REM]"
+                value={inputs.remnantHeight}
+                unit={unit}
+                onChange={(value) => update({ remnantHeight: value })}
+              />
+            </div>
             <XYInputRow
               xLabel="X [GAP]"
               yLabel="Y [GAP]"
@@ -341,24 +355,10 @@ export function NestCalcApp() {
                 update({ gapX: swapped.x, gapY: swapped.y });
               }}
             />
-            <div className="grid grid-cols-2 gap-2 landscape-phone:gap-1">
-              <NumberInput
-                label="X [REM]"
-                value={inputs.remnantWidth}
-                unit={unit}
-                onChange={(value) => update({ remnantWidth: value })}
-              />
-              <NumberInput
-                label="Y [REM]"
-                value={inputs.remnantHeight}
-                unit={unit}
-                onChange={(value) => update({ remnantHeight: value })}
-              />
-            </div>
-            <p className="text-[11px] font-medium uppercase tracking-wider text-[var(--muted)] landscape-phone:pt-0 landscape-phone:text-[10px]">
+            <p className="nestcalc-split-compact-label text-[11px] font-medium uppercase tracking-wider text-[var(--muted)]">
               Margins
             </p>
-            <div className="grid grid-cols-2 gap-2 landscape-phone:gap-1">
+            <div className="grid grid-cols-2 gap-2">
               <NumberInput
                 label="Left"
                 value={inputs.margins.left}
@@ -384,7 +384,7 @@ export function NestCalcApp() {
                 onChange={(value) => updateMargin("top", value)}
               />
             </div>
-            <label className="flex shrink-0 cursor-pointer items-center gap-2 text-xs text-[var(--muted)] landscape-phone:mt-0 landscape-phone:text-[10px]">
+            <label className="nestcalc-split-compact-checkbox flex shrink-0 cursor-pointer items-center gap-2 text-xs text-[var(--muted)]">
               <input
                 type="checkbox"
                 checked={inputs.moveMarginsWithRotation}
@@ -397,8 +397,8 @@ export function NestCalcApp() {
             </label>
           </div>
 
-          <section className="flex min-h-0 flex-col rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-2 landscape-phone:min-w-0 landscape-phone:flex-1 landscape-phone:p-1.5">
-            <div className="mb-2 flex h-8 shrink-0 items-center gap-1.5 overflow-hidden landscape-phone:mb-1 landscape-phone:h-7">
+          <section className="nestcalc-split-preview flex min-h-0 flex-col rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-2">
+            <div className="nestcalc-split-preview-header mb-2 flex h-8 shrink-0 items-center gap-1.5 overflow-hidden">
               <span className="shrink-0 font-mono text-xs font-bold tabular-nums text-[var(--foreground)]">
                 X{result.partsAcross} | Y{result.partsDown}
               </span>
