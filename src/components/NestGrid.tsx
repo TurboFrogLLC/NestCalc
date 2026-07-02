@@ -64,7 +64,7 @@ export function NestGrid({
 
   return (
     <div
-      className={`relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-[var(--card-border)] bg-[var(--preview-bg)] landscape-phone:aspect-auto landscape-phone:min-h-0 landscape-phone:flex-1 ${className}`}
+      className={`nestcalc-split-preview-grid relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-[var(--card-border)] bg-[var(--preview-bg)] ${className}`}
       aria-label="Nest preview"
     >
       <svg
