@@ -6,11 +6,26 @@ This is currently the most reliable way to get real offline behavior for NestCal
 
 ---
 
+## Clerk Authentication (required)
+
+NestCalc gates the calculator behind [Clerk](https://clerk.com/). Authentication **will not work** without valid Clerk keys in the environment.
+
+Before starting the tunnel or production server:
+
+1. Copy `.env.example` to `.env.local` in the NestCalc project root.
+2. Fill in `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` from the [Clerk Dashboard](https://dashboard.clerk.com/) or run `clerk env pull`.
+3. Keep `NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in` and `NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up` as documented.
+
+For the tunnel URL (`https://nestcalc.wrecklesstoddler.com`), add the same variables to your production Clerk instance allowed origins and to any remote host (e.g. Vercel) that serves the app. Users must sign in once while online before the PWA can cache the calculator shell.
+
+---
+
 ## Prerequisites
 
 - You own `wrecklesstoddler.com` at Cloudflare (done)
 - You have `brew` installed on your Mac
 - NestCalc runs locally on port 3000 (`npm run start`)
+- Clerk env vars configured in `.env.local` (see above)
 
 ---
 
