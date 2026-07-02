@@ -4,8 +4,20 @@ export const nestcalcClerkAppearance = {
     colorPrimary: "#fbbf24",
     colorBackground: "#09090b",
     colorText: "#fafafa",
-    colorInputBackground: "#18181b",
-    colorInputText: "#fafafa",
+    colorInputBackground: "#1f2937",
+    colorInputText: "#f3f4f6",
+    colorNeutral: "#4b5563",
     borderRadius: "0.5rem",
   },
-} as const;
+  elements: {
+    formFieldInput: {
+      backgroundColor: "#1f2937",
+      borderColor: "#4b5563",
+      color: "#f3f4f6",
+      "&:focus": {
+        borderColor: "#fbbf24",
+        boxShadow: "0 0 0 1px #fbbf24",
+      },
+    },
+  },
+};
