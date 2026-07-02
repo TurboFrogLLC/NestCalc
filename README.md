@@ -12,7 +12,7 @@ Quick rectangular nesting calculator for laser job shop remnants and odd scraps.
 
 NestCalc uses [Clerk](https://clerk.com/) as an access gate. Signed-out users are redirected to `/sign-in` or `/sign-up`; the calculator is available after login.
 
-**Local development:** create `.env.local` (gitignored) with keys from the [Clerk Dashboard](https://dashboard.clerk.com/) or via `clerk init`:
+**Local development:** copy [`.env.example`](.env.example) to `.env.local` (gitignored) and fill in keys from the [Clerk Dashboard](https://dashboard.clerk.com/) or via `clerk init` / `clerk env pull`:
 
 - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
 - `CLERK_SECRET_KEY`
