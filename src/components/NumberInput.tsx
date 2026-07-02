@@ -1,7 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { round3 } from "@/lib/units";
+import { useEffect, useRef, useState } from "react";
+import { useQuickValuesFocus } from "@/hooks/useQuickValuesFocus";
+import {
+  finalizeNumericDraft,
+  parseNumericInput,
+  sanitizeNumericInput,
+} from "@/lib/numericInput";
 
 interface NumberInputProps {
   label: string;
@@ -15,27 +20,33 @@ function formatValue(value: number | null): string {
   return Number.isFinite(value) ? String(value) : "—";
 }
 
-function parseInput(text: string): number | null {
-  const trimmed = text.trim();
-  if (!trimmed || trimmed === "—" || trimmed === "-" || trimmed === ".") {
-    return null;
-  }
-  const next = parseFloat(trimmed);
-  return Number.isFinite(next) ? round3(Math.max(0, next)) : null;
-}
-
 export function NumberInput({ label, value, unit, onChange }: NumberInputProps) {
+  const { registerActiveInput, clearActiveInput } = useQuickValuesFocus();
   const [draft, setDraft] = useState<string | null>(null);
   const [focused, setFocused] = useState(false);
   const display = focused && draft !== null ? draft : formatValue(value);
+  const onChangeRef = useRef(onChange);
+
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
+
+  const controllerRef = useRef({
+    applyValue: (next: number) => {
+      const text = String(next);
+      setDraft(text);
+      onChangeRef.current(next);
+    },
+  });
 
   const handleChange = (text: string) => {
-    setDraft(text);
-    onChange(parseInput(text));
+    const sanitized = sanitizeNumericInput(text);
+    setDraft(sanitized);
+    onChange(parseNumericInput(sanitized));
   };
 
   return (
-    <label className="flex min-w-0 flex-col gap-1">
+    <label className="flex min-w-0 flex-col gap-0.5">
       <span className="text-[11px] font-medium uppercase tracking-wider text-[var(--muted)]">
         {label}
       </span>
@@ -52,13 +63,19 @@ export function NumberInput({ label, value, unit, onChange }: NumberInputProps) 
           onFocus={() => {
             setFocused(true);
             setDraft(value === null ? "" : formatValue(value));
+            registerActiveInput(controllerRef.current);
           }}
           onChange={(event) => handleChange(event.target.value)}
           onBlur={() => {
             setFocused(false);
+            if (draft !== null) {
+              const finalized = finalizeNumericDraft(draft);
+              onChange(parseNumericInput(finalized));
+            }
             setDraft(null);
+            clearActiveInput();
           }}
-          className={`w-full min-w-0 rounded-lg border border-[var(--input-border)] bg-[var(--input-bg)] py-3 pr-3 text-lg font-mono tabular-nums text-[var(--input-text)] outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)] ${unit ? "pl-10" : "pl-3"}`}
+          className={`w-full min-w-0 rounded-lg border border-[var(--input-border)] bg-[var(--input-bg)] py-2.5 pr-3 text-lg font-mono tabular-nums text-[var(--input-text)] outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)] ${unit ? "pl-10" : "pl-3"}`}
         />
       </div>
     </label>

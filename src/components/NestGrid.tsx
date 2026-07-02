@@ -142,15 +142,6 @@ export function NestGrid({
             r={maxDim * 0.008}
             fill="var(--accent)"
           />
-          <line
-            x1={originLabelX}
-            y1={remH + pad * 0.22}
-            x2={0}
-            y2={remH}
-            stroke="var(--origin-stroke)"
-            strokeWidth={maxDim * 0.003}
-            strokeDasharray={`${maxDim * 0.015} ${maxDim * 0.01}`}
-          />
           <text
             x={originLabelX}
             y={originLabelY}
@@ -189,14 +180,11 @@ export function NestGrid({
         {result.partsAcross > 0 ? (
           <text
             x={marginLeft + result.usableWidth / 2}
-            y={Math.max(
-              remH - marginBottom - result.usableHeight - maxDim * 0.02,
-              labelSize,
-            )}
+            y={remH - marginBottom - result.usableHeight - pad * 0.18}
             textAnchor="middle"
             dominantBaseline="auto"
             fill="var(--accent)"
-            fontSize={labelSize * 0.85}
+            fontSize={labelSize}
             fontFamily="var(--font-geist-mono), ui-monospace, monospace"
           >
             {result.partsAcross}
@@ -205,12 +193,12 @@ export function NestGrid({
 
         {result.partsDown > 0 ? (
           <text
-            x={marginLeft + result.usableWidth + maxDim * 0.02}
+            x={marginLeft + result.usableWidth + pad * 0.18}
             y={remH - marginBottom - result.usableHeight / 2}
             textAnchor="start"
             dominantBaseline="middle"
             fill="var(--accent)"
-            fontSize={labelSize * 0.85}
+            fontSize={labelSize}
             fontFamily="var(--font-geist-mono), ui-monospace, monospace"
           >
             {result.partsDown}
