@@ -5,7 +5,7 @@ import { QUICK_VALUES } from "@/lib/numericInput";
 import { useQuickValuesFocus } from "@/hooks/useQuickValuesFocus";
 
 function formatPreset(value: number): string {
-  return value.toFixed(3).replace(/0+$/, "").replace(/\.$/, "");
+  return `.${value.toFixed(3).split(".")[1]}`;
 }
 
 function subscribeViewport(onStoreChange: () => void) {
@@ -48,6 +48,7 @@ export function QuickValuesBar() {
             key={value}
             type="button"
             onMouseDown={(event) => event.preventDefault()}
+            onTouchStart={(event) => event.preventDefault()}
             onClick={() => activeInput.applyValue(value)}
             className="min-h-9 flex-1 rounded-md border border-[var(--btn-border)] bg-[var(--btn-bg)] px-1 py-1.5 font-mono text-xs font-semibold tabular-nums text-[var(--accent)] transition-colors active:scale-[0.97] hover:border-[var(--accent-hover)] hover:bg-[var(--preview-bg)]"
           >
