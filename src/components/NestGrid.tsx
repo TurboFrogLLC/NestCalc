@@ -14,6 +14,7 @@ interface NestGridProps {
   gapY: number | null;
   result: NestResult;
   unitLabel: string;
+  className?: string;
 }
 
 export function NestGrid({
@@ -26,6 +27,7 @@ export function NestGrid({
   gapY,
   result,
   unitLabel,
+  className = "",
 }: NestGridProps) {
   const remW = Math.max(coalesce(remnantWidth), 0.001);
   const remH = Math.max(coalesce(remnantHeight), 0.001);
@@ -62,7 +64,7 @@ export function NestGrid({
 
   return (
     <div
-      className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-[var(--card-border)] bg-[var(--preview-bg)]"
+      className={`relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-[var(--card-border)] bg-[var(--preview-bg)] landscape-phone:aspect-auto landscape-phone:min-h-0 landscape-phone:flex-1 ${className}`}
       aria-label="Nest preview"
     >
       <svg
@@ -180,7 +182,10 @@ export function NestGrid({
         {result.partsAcross > 0 ? (
           <text
             x={marginLeft + result.usableWidth / 2}
-            y={remH - marginBottom - result.usableHeight - pad * 0.18}
+            y={Math.max(
+              remH - marginBottom - result.usableHeight - pad * 0.55,
+              labelSize,
+            )}
             textAnchor="middle"
             dominantBaseline="auto"
             fill="var(--accent)"
@@ -193,7 +198,7 @@ export function NestGrid({
 
         {result.partsDown > 0 ? (
           <text
-            x={marginLeft + result.usableWidth + pad * 0.18}
+            x={marginLeft + result.usableWidth + pad * 0.55}
             y={remH - marginBottom - result.usableHeight / 2}
             textAnchor="start"
             dominantBaseline="middle"

@@ -4,8 +4,10 @@ import { useMemo } from "react";
 import {
   ArrowLeftRight,
   Link2,
+  Moon,
   RotateCcw,
   RotateCw,
+  Sun,
 } from "lucide-react";
 import { useNestInputs } from "@/hooks/useNestInputs";
 import { useTheme } from "@/hooks/useTheme";
@@ -22,11 +24,14 @@ import { NestGrid } from "./NestGrid";
 import { NumberInput } from "./NumberInput";
 import { QuickValuesBar } from "./QuickValuesBar";
 
-const toggleClass =
-  "min-h-11 rounded-xl border border-[var(--btn-border)] bg-[var(--btn-bg)] px-4 py-2 text-sm font-semibold text-[var(--accent)] transition-colors hover:border-[var(--accent-hover)] hover:bg-[var(--card)]";
+const iconBtnClass =
+  "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[var(--btn-border)] bg-[var(--btn-bg)] text-[var(--muted)] transition-colors hover:border-[var(--accent-hover)] hover:text-[var(--accent)] active:scale-[0.97]";
+
+const unitBtnClass =
+  "flex h-9 min-w-9 shrink-0 items-center justify-center rounded-lg border border-[var(--btn-border)] bg-[var(--btn-bg)] px-2 font-mono text-xs font-bold uppercase text-[var(--accent)] transition-colors hover:border-[var(--accent-hover)] hover:bg-[var(--card)] active:scale-[0.97]";
 
 const rotateBtnClass =
-  "flex items-center gap-1 rounded-lg border border-[var(--btn-border)] bg-[var(--btn-bg)] px-2 py-1.5 text-xs font-semibold text-[var(--btn-text)] transition-colors hover:border-[var(--accent-hover)] hover:bg-[var(--card)] active:scale-[0.98]";
+  "flex shrink-0 items-center gap-0.5 rounded-md border border-[var(--btn-border)] bg-[var(--btn-bg)] px-1.5 py-1 text-[10px] font-semibold leading-none text-[var(--btn-text)] transition-colors hover:border-[var(--accent-hover)] hover:bg-[var(--card)] active:scale-[0.98] landscape-phone:px-1 landscape-phone:py-0.5";
 
 function convertAll(inputs: NestInputs, to: Unit): NestInputs {
   const from = inputs.unit;
@@ -128,7 +133,7 @@ function XYInputRow({
           onChange={onXChange}
         />
       </div>
-      <div className="flex shrink-0 flex-col items-center justify-end gap-0.5 pb-[3px]">
+      <div className="nestcalc-xy-icons flex shrink-0 flex-col items-center justify-end gap-0.5 pb-[3px]">
         <IconButton label="Link X and Y" onClick={onLinkToggle} active={linked}>
           <Link2 className="h-3 w-3" strokeWidth={2} />
         </IconButton>
@@ -200,218 +205,228 @@ export function NestCalcApp() {
     }));
   };
 
+  const partsSummary = (
+    <span className="font-mono text-xs tabular-nums text-[var(--foreground)]">
+      Parts ={" "}
+      <span className="font-bold text-[var(--accent)]">{result.totalParts}</span>
+    </span>
+  );
+
   return (
     <QuickValuesFocusProvider>
-    <QuickValuesBar />
-    <div className="mx-auto flex w-full max-w-lg flex-col gap-4 px-4 py-5 pb-8">
-      <header className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-xl font-semibold tracking-tight text-[var(--foreground)]">
-          NestCalc
-        </h1>
-        <div className="flex flex-wrap items-center justify-end gap-1.5 sm:gap-2">
-          <AuthControls />
-          <button type="button" onClick={toggleTheme} className={toggleClass}>
-            {theme === "dark" ? "Light" : "Dark"}
-          </button>
-          <button type="button" onClick={toggleUnit} className={toggleClass}>
-            {inputs.unit === "in" ? "in → mm" : "mm → in"}
-          </button>
-          <button
-            type="button"
-            onClick={clearAll}
-            aria-label="Clear all fields"
-            className="flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-[var(--btn-border)] bg-[var(--btn-bg)] px-2 py-2 text-[var(--muted)] transition-colors hover:border-[var(--accent-hover)] hover:text-[var(--accent)]"
-          >
-            <RotateCcw className="h-5 w-5" strokeWidth={2} />
-          </button>
-        </div>
-      </header>
-
-      <section className="flex h-[50px] items-center justify-between rounded-lg border border-[var(--card-border)] bg-[var(--card)] px-3">
-        <span className="font-mono text-base font-bold tabular-nums text-[var(--foreground)]">
-          X{result.partsAcross} | Y{result.partsDown}
-        </span>
-        <span className="font-mono text-sm tabular-nums text-[var(--muted)]">
-          Total Parts{" "}
-          <span className="text-3xl font-bold text-[var(--accent)]">
-            {result.totalParts}
-          </span>
-        </span>
-      </section>
-
-      <section className="flex flex-col gap-2">
-        <XYInputRow
-          xLabel="X [PART]"
-          yLabel="Y [PART]"
-          xValue={inputs.partWidth}
-          yValue={inputs.partHeight}
-          unit={unit}
-          linked={inputs.partLinked}
-          onXChange={(value) =>
-            update(
-              inputs.partLinked
-                ? { partWidth: value, partHeight: value }
-                : { partWidth: value },
-            )
-          }
-          onYChange={(value) =>
-            update(
-              inputs.partLinked
-                ? { partWidth: value, partHeight: value }
-                : { partHeight: value },
-            )
-          }
-          onLinkToggle={() => {
-            if (inputs.partLinked) {
-              update({ partLinked: false });
-              return;
-            }
-            const linked = linkValues(inputs.partWidth, inputs.partHeight);
-            update({
-              partWidth: linked.x,
-              partHeight: linked.y,
-              partLinked: true,
-            });
-          }}
-          onSwap={() => {
-            const swapped = swapValues(inputs.partWidth, inputs.partHeight);
-            update({ partWidth: swapped.x, partHeight: swapped.y });
-          }}
-        />
-        <XYInputRow
-          xLabel="X [GAP]"
-          yLabel="Y [GAP]"
-          xValue={inputs.gapX}
-          yValue={inputs.gapY}
-          unit={unit}
-          linked={inputs.gapLinked}
-          onXChange={(value) =>
-            update(
-              inputs.gapLinked
-                ? { gapX: value, gapY: value }
-                : { gapX: value },
-            )
-          }
-          onYChange={(value) =>
-            update(
-              inputs.gapLinked
-                ? { gapX: value, gapY: value }
-                : { gapY: value },
-            )
-          }
-          onLinkToggle={() => {
-            if (inputs.gapLinked) {
-              update({ gapLinked: false });
-              return;
-            }
-            const linked = linkValues(inputs.gapX, inputs.gapY);
-            update({
-              gapX: linked.x,
-              gapY: linked.y,
-              gapLinked: true,
-            });
-          }}
-          onSwap={() => {
-            const swapped = swapValues(inputs.gapX, inputs.gapY);
-            update({ gapX: swapped.x, gapY: swapped.y });
-          }}
-        />
-        <div className="grid grid-cols-2 gap-2">
-          <NumberInput
-            label="X [REM]"
-            value={inputs.remnantWidth}
-            unit={unit}
-            onChange={(value) => update({ remnantWidth: value })}
-          />
-          <NumberInput
-            label="Y [REM]"
-            value={inputs.remnantHeight}
-            unit={unit}
-            onChange={(value) => update({ remnantHeight: value })}
-          />
-        </div>
-        <p className="pt-0.5 text-[11px] font-medium uppercase tracking-wider text-[var(--muted)]">
-          Margins
-        </p>
-        <div className="grid grid-cols-2 gap-2">
-          <NumberInput
-            label="Left"
-            value={inputs.margins.left}
-            unit={unit}
-            onChange={(value) => updateMargin("left", value)}
-          />
-          <NumberInput
-            label="Right"
-            value={inputs.margins.right}
-            unit={unit}
-            onChange={(value) => updateMargin("right", value)}
-          />
-          <NumberInput
-            label="Bottom"
-            value={inputs.margins.bottom}
-            unit={unit}
-            onChange={(value) => updateMargin("bottom", value)}
-          />
-          <NumberInput
-            label="Top"
-            value={inputs.margins.top}
-            unit={unit}
-            onChange={(value) => updateMargin("top", value)}
-          />
-        </div>
-        <label className="mt-2 flex cursor-pointer items-center gap-2 text-sm text-[var(--muted)]">
-          <input
-            type="checkbox"
-            checked={inputs.moveMarginsWithRotation}
-            onChange={(event) =>
-              update({ moveMarginsWithRotation: event.target.checked })
-            }
-            className="h-4 w-4 rounded border-[var(--input-border)] accent-[var(--accent)]"
-          />
-          Move margins with rotation
-        </label>
-      </section>
-
-      <section className="rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-3">
-        <div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-2">
-          <span className="font-mono text-sm font-semibold tabular-nums text-[var(--foreground)]">
-            X{result.partsAcross} | Y{result.partsDown}
-          </span>
-          <div className="flex items-center gap-1.5">
+      <QuickValuesBar />
+      <div className="mx-auto flex w-full max-w-lg flex-col gap-3 px-3 py-3 pb-6 landscape-phone:box-border landscape-phone:h-[100dvh] landscape-phone:max-h-[100dvh] landscape-phone:max-w-none landscape-phone:gap-2 landscape-phone:overflow-hidden landscape-phone:px-2 landscape-phone:py-2 landscape-phone:pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+        <header className="flex h-10 shrink-0 items-center gap-2">
+          <h1 className="shrink-0 text-lg font-semibold tracking-tight text-[var(--foreground)]">
+            NestCalc
+          </h1>
+          <div className="ml-auto flex items-center gap-1">
+            <AuthControls />
             <button
               type="button"
-              onClick={rotatePart}
-              className={rotateBtnClass}
+              onClick={toggleTheme}
+              aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+              title={theme === "dark" ? "Light mode" : "Dark mode"}
+              className={iconBtnClass}
             >
-              <RotateCw className="h-3.5 w-3.5" strokeWidth={2} />
-              Part 90°
+              {theme === "dark" ? (
+                <Sun className="h-4 w-4" strokeWidth={2} />
+              ) : (
+                <Moon className="h-4 w-4" strokeWidth={2} />
+              )}
             </button>
-            <button type="button" onClick={rotateRem} className={rotateBtnClass}>
-              <RotateCw className="h-3.5 w-3.5" strokeWidth={2} />
-              Rem 90°
+            <button
+              type="button"
+              onClick={toggleUnit}
+              aria-label={`Switch to ${inputs.unit === "in" ? "millimeters" : "inches"}`}
+              title={`Units: ${inputs.unit}`}
+              className={unitBtnClass}
+            >
+              {inputs.unit}
+            </button>
+            <button
+              type="button"
+              onClick={clearAll}
+              aria-label="Clear all fields"
+              title="Clear all"
+              className={iconBtnClass}
+            >
+              <RotateCcw className="h-4 w-4" strokeWidth={2} />
             </button>
           </div>
-          <span className="ml-auto font-mono text-xs tabular-nums text-[var(--muted)]">
-            Total Parts{" "}
-            <span className="text-2xl font-bold text-[var(--accent)]">
-              {result.totalParts}
-            </span>
-          </span>
-        </div>
+        </header>
 
-        <NestGrid
-          remnantWidth={inputs.remnantWidth}
-          remnantHeight={inputs.remnantHeight}
-          partWidth={inputs.partWidth}
-          partHeight={inputs.partHeight}
-          margins={inputs.margins}
-          gapX={inputs.gapX}
-          gapY={inputs.gapY}
-          result={result}
-          unitLabel={unit}
-        />
-      </section>
-    </div>
+        <div className="flex min-h-0 flex-col gap-3 landscape-phone:flex-1 landscape-phone:flex-row landscape-phone:gap-2 landscape-phone:overflow-hidden">
+          <div className="nestcalc-inputs flex min-h-0 flex-col gap-2 landscape-phone:w-[44%] landscape-phone:shrink-0 landscape-phone:gap-1 landscape-phone:overflow-y-auto landscape-phone:overscroll-contain landscape-phone:pr-0.5">
+            <section className="flex h-9 shrink-0 items-center justify-between rounded-lg border border-[var(--card-border)] bg-[var(--card)] px-3 landscape-phone:hidden">
+              <span className="font-mono text-sm font-bold tabular-nums text-[var(--foreground)]">
+                X{result.partsAcross} | Y{result.partsDown}
+              </span>
+              {partsSummary}
+            </section>
+
+            <XYInputRow
+              xLabel="X [PART]"
+              yLabel="Y [PART]"
+              xValue={inputs.partWidth}
+              yValue={inputs.partHeight}
+              unit={unit}
+              linked={inputs.partLinked}
+              onXChange={(value) =>
+                update(
+                  inputs.partLinked
+                    ? { partWidth: value, partHeight: value }
+                    : { partWidth: value },
+                )
+              }
+              onYChange={(value) =>
+                update(
+                  inputs.partLinked
+                    ? { partWidth: value, partHeight: value }
+                    : { partHeight: value },
+                )
+              }
+              onLinkToggle={() => {
+                if (inputs.partLinked) {
+                  update({ partLinked: false });
+                  return;
+                }
+                const linked = linkValues(inputs.partWidth, inputs.partHeight);
+                update({
+                  partWidth: linked.x,
+                  partHeight: linked.y,
+                  partLinked: true,
+                });
+              }}
+              onSwap={() => {
+                const swapped = swapValues(inputs.partWidth, inputs.partHeight);
+                update({ partWidth: swapped.x, partHeight: swapped.y });
+              }}
+            />
+            <XYInputRow
+              xLabel="X [GAP]"
+              yLabel="Y [GAP]"
+              xValue={inputs.gapX}
+              yValue={inputs.gapY}
+              unit={unit}
+              linked={inputs.gapLinked}
+              onXChange={(value) =>
+                update(
+                  inputs.gapLinked
+                    ? { gapX: value, gapY: value }
+                    : { gapX: value },
+                )
+              }
+              onYChange={(value) =>
+                update(
+                  inputs.gapLinked
+                    ? { gapX: value, gapY: value }
+                    : { gapY: value },
+                )
+              }
+              onLinkToggle={() => {
+                if (inputs.gapLinked) {
+                  update({ gapLinked: false });
+                  return;
+                }
+                const linked = linkValues(inputs.gapX, inputs.gapY);
+                update({
+                  gapX: linked.x,
+                  gapY: linked.y,
+                  gapLinked: true,
+                });
+              }}
+              onSwap={() => {
+                const swapped = swapValues(inputs.gapX, inputs.gapY);
+                update({ gapX: swapped.x, gapY: swapped.y });
+              }}
+            />
+            <div className="grid grid-cols-2 gap-2 landscape-phone:gap-1">
+              <NumberInput
+                label="X [REM]"
+                value={inputs.remnantWidth}
+                unit={unit}
+                onChange={(value) => update({ remnantWidth: value })}
+              />
+              <NumberInput
+                label="Y [REM]"
+                value={inputs.remnantHeight}
+                unit={unit}
+                onChange={(value) => update({ remnantHeight: value })}
+              />
+            </div>
+            <p className="text-[11px] font-medium uppercase tracking-wider text-[var(--muted)] landscape-phone:pt-0 landscape-phone:text-[10px]">
+              Margins
+            </p>
+            <div className="grid grid-cols-2 gap-2 landscape-phone:gap-1">
+              <NumberInput
+                label="Left"
+                value={inputs.margins.left}
+                unit={unit}
+                onChange={(value) => updateMargin("left", value)}
+              />
+              <NumberInput
+                label="Right"
+                value={inputs.margins.right}
+                unit={unit}
+                onChange={(value) => updateMargin("right", value)}
+              />
+              <NumberInput
+                label="Bottom"
+                value={inputs.margins.bottom}
+                unit={unit}
+                onChange={(value) => updateMargin("bottom", value)}
+              />
+              <NumberInput
+                label="Top"
+                value={inputs.margins.top}
+                unit={unit}
+                onChange={(value) => updateMargin("top", value)}
+              />
+            </div>
+            <label className="flex shrink-0 cursor-pointer items-center gap-2 text-xs text-[var(--muted)] landscape-phone:mt-0 landscape-phone:text-[10px]">
+              <input
+                type="checkbox"
+                checked={inputs.moveMarginsWithRotation}
+                onChange={(event) =>
+                  update({ moveMarginsWithRotation: event.target.checked })
+                }
+                className="h-3.5 w-3.5 rounded border-[var(--input-border)] accent-[var(--accent)]"
+              />
+              Move margins with rotation
+            </label>
+          </div>
+
+          <section className="flex min-h-0 flex-col rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-2 landscape-phone:min-w-0 landscape-phone:flex-1 landscape-phone:p-1.5">
+            <div className="mb-2 flex h-8 shrink-0 items-center gap-1.5 overflow-hidden landscape-phone:mb-1 landscape-phone:h-7">
+              <span className="shrink-0 font-mono text-xs font-bold tabular-nums text-[var(--foreground)]">
+                X{result.partsAcross} | Y{result.partsDown}
+              </span>
+              <button type="button" onClick={rotatePart} className={rotateBtnClass}>
+                <RotateCw className="h-3 w-3 shrink-0" strokeWidth={2} />
+                Part 90°
+              </button>
+              <button type="button" onClick={rotateRem} className={rotateBtnClass}>
+                <RotateCw className="h-3 w-3 shrink-0" strokeWidth={2} />
+                Rem 90°
+              </button>
+              <span className="ml-auto shrink-0">{partsSummary}</span>
+            </div>
+
+            <NestGrid
+              remnantWidth={inputs.remnantWidth}
+              remnantHeight={inputs.remnantHeight}
+              partWidth={inputs.partWidth}
+              partHeight={inputs.partHeight}
+              margins={inputs.margins}
+              gapX={inputs.gapX}
+              gapY={inputs.gapY}
+              result={result}
+              unitLabel={unit}
+            />
+          </section>
+        </div>
+      </div>
     </QuickValuesFocusProvider>
   );
 }
