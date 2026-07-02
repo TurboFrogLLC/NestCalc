@@ -257,7 +257,7 @@ export function NestCalcApp() {
         </header>
 
         <div className="flex min-h-0 flex-col gap-3 landscape-phone:flex-1 landscape-phone:flex-row landscape-phone:gap-2 landscape-phone:overflow-hidden">
-          <div className="nestcalc-inputs flex min-h-0 flex-col gap-2 landscape-phone:w-[44%] landscape-phone:shrink-0 landscape-phone:justify-between landscape-phone:gap-1 landscape-phone:overflow-hidden">
+          <div className="nestcalc-inputs flex min-h-0 flex-col gap-2 landscape-phone:w-[44%] landscape-phone:shrink-0 landscape-phone:gap-1 landscape-phone:overflow-y-auto landscape-phone:overscroll-contain landscape-phone:pr-0.5">
             <section className="flex h-9 shrink-0 items-center justify-between rounded-lg border border-[var(--card-border)] bg-[var(--card)] px-3 landscape-phone:hidden">
               <span className="font-mono text-sm font-bold tabular-nums text-[var(--foreground)]">
                 X{result.partsAcross} | Y{result.partsDown}
