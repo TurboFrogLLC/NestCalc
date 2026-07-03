@@ -10,14 +10,14 @@ Quick rectangular nesting calculator for laser job shop remnants and odd scraps.
 
 ## Clerk Authentication
 
-NestCalc uses [Clerk](https://clerk.com/) as an access gate. Signed-out users are redirected to `/sign-in` or `/sign-up`; the calculator is available after login.
+NestCalc uses [Clerk](https://clerk.com/) as an access gate. Signed-out users are redirected to `/sign-in`; the calculator is available after login. Public sign-up is disabled — new users submit a Request Access form on the sign-in page.
 
 **Local development:** copy [`.env.example`](.env.example) to `.env.local` (gitignored) and fill in keys from the [Clerk Dashboard](https://dashboard.clerk.com/) or via `clerk init` / `clerk env pull`:
 
 - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
 - `CLERK_SECRET_KEY`
 - `NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in`
-- `NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up`
+- `RESEND_API_KEY`, `ACCESS_REQUEST_ADMIN_EMAIL` (and optional `RESEND_FROM_EMAIL`) for the Request Access form
 
 **Deploy previews (e.g. Vercel):** add the same variables in the project environment settings. Use development keys for preview branches; configure a production Clerk instance before shipping to shop floor.
 

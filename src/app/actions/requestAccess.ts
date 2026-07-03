@@ -7,6 +7,9 @@ export type AccessRequestState =
   | { ok: false; error: string };
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MAX_NAME_LENGTH = 120;
+const MAX_EMAIL_LENGTH = 254;
+const MAX_REASON_LENGTH = 2000;
 
 function escapeHtml(value: string): string {
   return value
@@ -20,6 +23,11 @@ export async function submitAccessRequest(
   _prev: AccessRequestState | null,
   formData: FormData,
 ): Promise<AccessRequestState> {
+  const honeypot = formData.get("company")?.toString().trim() ?? "";
+  if (honeypot.length > 0) {
+    return { ok: true };
+  }
+
   const name = formData.get("name")?.toString().trim() ?? "";
   const email = formData.get("email")?.toString().trim() ?? "";
   const reason = formData.get("reason")?.toString().trim() ?? "";
@@ -28,8 +36,16 @@ export async function submitAccessRequest(
     return { ok: false, error: "Please enter your full name." };
   }
 
+  if (name.length > MAX_NAME_LENGTH) {
+    return { ok: false, error: "Name is too long." };
+  }
+
   if (!EMAIL_PATTERN.test(email)) {
     return { ok: false, error: "Please enter a valid email address." };
+  }
+
+  if (email.length > MAX_EMAIL_LENGTH) {
+    return { ok: false, error: "Email address is too long." };
   }
 
   if (reason.length < 10) {
@@ -37,6 +53,10 @@ export async function submitAccessRequest(
       ok: false,
       error: "Please describe why you need access (at least 10 characters).",
     };
+  }
+
+  if (reason.length > MAX_REASON_LENGTH) {
+    return { ok: false, error: "Reason is too long." };
   }
 
   const apiKey = process.env.RESEND_API_KEY;
@@ -63,7 +83,7 @@ export async function submitAccessRequest(
     from: fromEmail,
     to: adminEmail,
     replyTo: email,
-    subject: `NestCalc access request — ${name}`,
+    subject: `NestCalc access request — ${name.replace(/[\r\n]+/g, " ").slice(0, MAX_NAME_LENGTH)}`,
     text: [
       "New NestCalc access request",
       "",

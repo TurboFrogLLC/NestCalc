@@ -36,6 +36,14 @@ export function RequestAccessForm() {
 
   return (
     <form action={formAction} className="flex flex-col gap-3">
+      <input
+        type="text"
+        name="company"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="pointer-events-none absolute h-0 w-0 opacity-0"
+      />
       <div>
         <label htmlFor="access-name" className={labelClass}>
           Full name
@@ -46,6 +54,7 @@ export function RequestAccessForm() {
           type="text"
           required
           minLength={2}
+          maxLength={120}
           autoComplete="name"
           className={inputClass}
           placeholder="Jane Smith"
@@ -61,6 +70,7 @@ export function RequestAccessForm() {
           name="email"
           type="email"
           required
+          maxLength={254}
           autoComplete="email"
           className={inputClass}
           placeholder="jane@shop.example"
@@ -76,6 +86,7 @@ export function RequestAccessForm() {
           name="reason"
           required
           minLength={10}
+          maxLength={2000}
           rows={3}
           className={`${inputClass} resize-y`}
           placeholder="Briefly describe your role and why you need access to NestCalc."
