@@ -111,6 +111,51 @@ interface XYInputRowProps {
   onSwap: () => void;
 }
 
+interface DualInputRowProps {
+  leftLabel: string;
+  rightLabel: string;
+  leftValue: number | null;
+  rightValue: number | null;
+  unit: string;
+  onLeftChange: (value: number | null) => void;
+  onRightChange: (value: number | null) => void;
+}
+
+function DualInputRow({
+  leftLabel,
+  rightLabel,
+  leftValue,
+  rightValue,
+  unit,
+  onLeftChange,
+  onRightChange,
+}: DualInputRowProps) {
+  return (
+    <div className="flex items-end gap-2">
+      <div className="min-w-0 flex-1">
+        <NumberInput
+          label={leftLabel}
+          value={leftValue}
+          unit={unit}
+          onChange={onLeftChange}
+        />
+      </div>
+      <div
+        className="nestcalc-xy-icons flex w-6 shrink-0 flex-col items-center justify-end gap-0.5 pb-[3px]"
+        aria-hidden="true"
+      />
+      <div className="min-w-0 flex-1">
+        <NumberInput
+          label={rightLabel}
+          value={rightValue}
+          unit={unit}
+          onChange={onRightChange}
+        />
+      </div>
+    </div>
+  );
+}
+
 function XYInputRow({
   xLabel,
   yLabel,
@@ -217,8 +262,9 @@ export function NestCalcApp() {
       <QuickValuesBar />
       <div className="nestcalc-split-shell mx-auto flex w-full max-w-lg flex-col gap-3 px-3 py-3 pb-6">
         <header className="flex h-10 shrink-0 items-center gap-2">
-          <h1 className="shrink-0 text-lg font-semibold tracking-tight text-[var(--foreground)]">
-            NestCalc
+          <h1 className="shrink-0 text-lg font-semibold tracking-tight">
+            <span className="text-[var(--foreground)]">Nest</span>
+            <span className="text-[var(--quick-value)]">Calc</span>
           </h1>
           <div className="ml-auto flex items-center gap-1">
             <AuthControls />
@@ -303,20 +349,15 @@ export function NestCalcApp() {
                 update({ partWidth: swapped.x, partHeight: swapped.y });
               }}
             />
-            <div className="grid grid-cols-2 gap-2">
-              <NumberInput
-                label="X [REM]"
-                value={inputs.remnantWidth}
-                unit={unit}
-                onChange={(value) => update({ remnantWidth: value })}
-              />
-              <NumberInput
-                label="Y [REM]"
-                value={inputs.remnantHeight}
-                unit={unit}
-                onChange={(value) => update({ remnantHeight: value })}
-              />
-            </div>
+            <DualInputRow
+              leftLabel="X [REM]"
+              rightLabel="Y [REM]"
+              leftValue={inputs.remnantWidth}
+              rightValue={inputs.remnantHeight}
+              unit={unit}
+              onLeftChange={(value) => update({ remnantWidth: value })}
+              onRightChange={(value) => update({ remnantHeight: value })}
+            />
             <XYInputRow
               xLabel="X [GAP]"
               yLabel="Y [GAP]"
@@ -358,32 +399,24 @@ export function NestCalcApp() {
             <p className="nestcalc-split-compact-label text-[11px] font-medium uppercase tracking-wider text-[var(--muted)]">
               Margins
             </p>
-            <div className="grid grid-cols-2 gap-2">
-              <NumberInput
-                label="Left"
-                value={inputs.margins.left}
-                unit={unit}
-                onChange={(value) => updateMargin("left", value)}
-              />
-              <NumberInput
-                label="Right"
-                value={inputs.margins.right}
-                unit={unit}
-                onChange={(value) => updateMargin("right", value)}
-              />
-              <NumberInput
-                label="Bottom"
-                value={inputs.margins.bottom}
-                unit={unit}
-                onChange={(value) => updateMargin("bottom", value)}
-              />
-              <NumberInput
-                label="Top"
-                value={inputs.margins.top}
-                unit={unit}
-                onChange={(value) => updateMargin("top", value)}
-              />
-            </div>
+            <DualInputRow
+              leftLabel="Left"
+              rightLabel="Right"
+              leftValue={inputs.margins.left}
+              rightValue={inputs.margins.right}
+              unit={unit}
+              onLeftChange={(value) => updateMargin("left", value)}
+              onRightChange={(value) => updateMargin("right", value)}
+            />
+            <DualInputRow
+              leftLabel="Bottom"
+              rightLabel="Top"
+              leftValue={inputs.margins.bottom}
+              rightValue={inputs.margins.top}
+              unit={unit}
+              onLeftChange={(value) => updateMargin("bottom", value)}
+              onRightChange={(value) => updateMargin("top", value)}
+            />
             <label className="nestcalc-split-compact-checkbox flex shrink-0 cursor-pointer items-center gap-2 text-xs text-[var(--muted)]">
               <input
                 type="checkbox"
@@ -399,7 +432,7 @@ export function NestCalcApp() {
 
           <section className="nestcalc-split-preview flex min-h-0 flex-col rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-2">
             <div className="nestcalc-split-preview-header mb-2 flex h-8 shrink-0 items-center gap-1.5 overflow-hidden">
-              <span className="shrink-0 font-mono text-xs font-bold tabular-nums text-[var(--foreground)]">
+              <span className="nestcalc-split-preview-header-text shrink-0 font-mono text-xs font-bold tabular-nums text-[var(--foreground)]">
                 X{result.partsAcross} | Y{result.partsDown}
               </span>
               <button type="button" onClick={rotatePart} className={rotateBtnClass}>
