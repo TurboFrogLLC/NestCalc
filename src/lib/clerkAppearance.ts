@@ -78,6 +78,18 @@ export const nestcalcClerkAppearance = {
   },
 };
 
+/** Sign-in only: hide Clerk footer links to public sign-up. */
+export const nestcalcSignInAppearance = {
+  ...nestcalcClerkAppearance,
+  elements: {
+    ...nestcalcClerkAppearance.elements,
+    footer: { display: "none" },
+    footerAction: { display: "none" },
+    footerActionLink: { display: "none" },
+    footerActionText: { display: "none" },
+  },
+};
+
 /** Dark popover + profile modal for UserButton on the shop-floor dark UI. */
 export const nestcalcUserButtonAppearance = {
   ...nestcalcClerkAppearance,
