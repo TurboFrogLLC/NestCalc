@@ -14,7 +14,7 @@ Before starting the tunnel or production server:
 
 1. Copy `.env.example` to `.env.local` in the NestCalc project root.
 2. Fill in `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` from the [Clerk Dashboard](https://dashboard.clerk.com/) or run `clerk env pull`.
-3. Keep `NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in` and `NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up` as documented.
+3. Keep `NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in` as documented. Configure `RESEND_API_KEY` and `ACCESS_REQUEST_ADMIN_EMAIL` so the Request Access form can email the admin.
 
 For the tunnel URL (`https://nestcalc.wrecklesstoddler.com`), add the same variables to your production Clerk instance allowed origins and to any remote host (e.g. Vercel) that serves the app. Users must sign in once while online before the PWA can cache the calculator shell.
 

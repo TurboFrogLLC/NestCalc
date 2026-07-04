@@ -56,7 +56,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistMono.variable} h-full`} data-theme="dark">
       <body className="min-h-full bg-[var(--background)] font-sans text-[var(--foreground)] antialiased">
-        <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up">
+        <ClerkProvider signInUrl="/sign-in">
           <SerwistRegistration>{children}</SerwistRegistration>
         </ClerkProvider>
       </body>
