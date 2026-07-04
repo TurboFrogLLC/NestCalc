@@ -161,6 +161,7 @@ Performance target: Instant feel on modern iPhone for typical shop remnants.
 **Status:** Ready for implementation planning. All core concepts have direct, widely-used proof-of-concept references in rectangular packing literature and production software (shelf/guillotine algorithms, decoupled spacing, post-placement straight-cut determination).
 
 This spec lives at:  
-**`/home/workdir/artifacts/nestcalc/AutoNest_Spec.md`**
+**`docs/AutoNest_Spec.md`**
 
-Download the latest version from there. All future related files for this feature go in the same folder.
+Related planning docs in the same folder: `docs/roadmap.md` and
+`docs/AutoNest_Integration_Analysis.md`.
