@@ -70,20 +70,6 @@ export async function submitAccessRequest(
     return { ok: false, error: "Email address is too long." };
   }
 
-  const normalizedEmail = email.toLowerCase();
-  if (
-    checkRateLimit(
-      `access-request:email:${normalizedEmail}`,
-      EMAIL_RATE_LIMIT.maxAttempts,
-      EMAIL_RATE_LIMIT.windowMs,
-    ).limited
-  ) {
-    return {
-      ok: false,
-      error: "Too many requests for this email. Please try again later.",
-    };
-  }
-
   if (reason.length < 10) {
     return {
       ok: false,
@@ -107,6 +93,20 @@ export async function submitAccessRequest(
     return {
       ok: false,
       error: "Request service is temporarily unavailable. Please try again later.",
+    };
+  }
+
+  const normalizedEmail = email.toLowerCase();
+  if (
+    checkRateLimit(
+      `access-request:email:${normalizedEmail}`,
+      EMAIL_RATE_LIMIT.maxAttempts,
+      EMAIL_RATE_LIMIT.windowMs,
+    ).limited
+  ) {
+    return {
+      ok: false,
+      error: "Too many requests for this email. Please try again later.",
     };
   }
 
