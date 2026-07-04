@@ -14,12 +14,16 @@ test.skip(
   !hasRequiredEnv,
   "Missing Clerk E2E env: CLERK_SECRET_KEY, NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY or CLERK_PUBLISHABLE_KEY, E2E_CLERK_USER_EMAIL, and E2E_CLERK_USER_PASSWORD.",
 );
-test.skip(
-  hasRequiredEnv && !fs.existsSync(authFile),
-  "Clerk auth storage state was not created by the setup project.",
-);
 
 test.use({ storageState: authFile });
+
+test.beforeAll(() => {
+  if (!fs.existsSync(authFile)) {
+    throw new Error(
+      "Clerk auth storage state was not created by the setup project.",
+    );
+  }
+});
 
 test("authenticated user reaches the NestCalc calculator shell", async ({
   page,
