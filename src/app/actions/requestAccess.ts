@@ -1,6 +1,8 @@
 "use server";
 
+import { headers } from "next/headers";
 import { Resend } from "resend";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 export type AccessRequestState =
   | { ok: true }
@@ -10,6 +12,17 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_NAME_LENGTH = 120;
 const MAX_EMAIL_LENGTH = 254;
 const MAX_REASON_LENGTH = 2000;
+const IP_RATE_LIMIT = { maxAttempts: 5, windowMs: 60 * 60 * 1000 };
+const EMAIL_RATE_LIMIT = { maxAttempts: 3, windowMs: 24 * 60 * 60 * 1000 };
+
+function getClientIp(headerList: Headers): string {
+  const forwarded = headerList.get("x-forwarded-for");
+  return (
+    forwarded?.split(",")[0]?.trim() ??
+    headerList.get("x-real-ip")?.trim() ??
+    "unknown"
+  );
+}
 
 function escapeHtml(value: string): string {
   return value
@@ -26,6 +39,15 @@ export async function submitAccessRequest(
   const honeypot = formData.get("company")?.toString().trim() ?? "";
   if (honeypot.length > 0) {
     return { ok: true };
+  }
+
+  const headerList = await headers();
+  const clientIp = getClientIp(headerList);
+  if (checkRateLimit(`access-request:ip:${clientIp}`, IP_RATE_LIMIT.maxAttempts, IP_RATE_LIMIT.windowMs).limited) {
+    return {
+      ok: false,
+      error: "Too many requests. Please try again later.",
+    };
   }
 
   const name = formData.get("name")?.toString().trim() ?? "";
@@ -46,6 +68,20 @@ export async function submitAccessRequest(
 
   if (email.length > MAX_EMAIL_LENGTH) {
     return { ok: false, error: "Email address is too long." };
+  }
+
+  const normalizedEmail = email.toLowerCase();
+  if (
+    checkRateLimit(
+      `access-request:email:${normalizedEmail}`,
+      EMAIL_RATE_LIMIT.maxAttempts,
+      EMAIL_RATE_LIMIT.windowMs,
+    ).limited
+  ) {
+    return {
+      ok: false,
+      error: "Too many requests for this email. Please try again later.",
+    };
   }
 
   if (reason.length < 10) {
