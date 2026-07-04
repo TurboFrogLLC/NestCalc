@@ -12,12 +12,20 @@ import {
 import { useNestInputs } from "@/hooks/useNestInputs";
 import { useTheme } from "@/hooks/useTheme";
 import {
-  calculateNest,
-  clearedInputs,
-  rotateMarginsCW,
-} from "@/lib/nestcalc";
-import type { NestInputs, Unit } from "@/lib/types";
-import { convertValue, unitLabel } from "@/lib/units";
+  clearManualInputs,
+  createManualNestSession,
+  rotateManualPart,
+  rotateManualRemnant,
+  swapManualGap,
+  swapManualPart,
+  toggleManualGapLink,
+  toggleManualPartLink,
+  toggleManualUnit,
+  updateManualField,
+  updateManualMargin,
+} from "@/lib/nestSession";
+import type { NestInputs } from "@/lib/types";
+import { unitLabel } from "@/lib/units";
 import { QuickValuesFocusProvider } from "@/hooks/useQuickValuesFocus";
 import { AuthControls } from "./AuthControls";
 import { NestGrid } from "./NestGrid";
@@ -32,45 +40,6 @@ const unitBtnClass =
 
 const rotateBtnClass =
   "nestcalc-split-rotate-btn flex shrink-0 items-center gap-0.5 rounded-md border border-[var(--btn-border)] bg-[var(--btn-bg)] px-1.5 py-1 text-[10px] font-semibold leading-none text-[var(--btn-text)] transition-colors hover:border-[var(--accent-hover)] hover:bg-[var(--card)] active:scale-[0.98]";
-
-function convertAll(inputs: NestInputs, to: Unit): NestInputs {
-  const from = inputs.unit;
-  const cv = (value: number | null) =>
-    value === null ? null : convertValue(value, from, to);
-  return {
-    ...inputs,
-    unit: to,
-    partWidth: cv(inputs.partWidth),
-    partHeight: cv(inputs.partHeight),
-    remnantWidth: cv(inputs.remnantWidth),
-    remnantHeight: cv(inputs.remnantHeight),
-    gapX: cv(inputs.gapX),
-    gapY: cv(inputs.gapY),
-    margins: {
-      left: cv(inputs.margins.left),
-      right: cv(inputs.margins.right),
-      top: cv(inputs.margins.top),
-      bottom: cv(inputs.margins.bottom),
-    },
-  };
-}
-
-function linkValues(
-  x: number | null,
-  y: number | null,
-): { x: number | null; y: number | null } {
-  if (x === null && y === null) return { x: null, y: null };
-  if (x === null) return { x: y, y };
-  if (y === null) return { x, y: x };
-  return { x, y: x };
-}
-
-function swapValues(
-  x: number | null,
-  y: number | null,
-): { x: number | null; y: number | null } {
-  return { x: y, y: x };
-}
 
 interface IconButtonProps {
   label: string;
@@ -202,7 +171,8 @@ export function NestCalcApp() {
   const { inputs, setInputs } = useNestInputs();
   const { theme, toggleTheme } = useTheme();
 
-  const result = useMemo(() => calculateNest(inputs), [inputs]);
+  const session = useMemo(() => createManualNestSession(inputs), [inputs]);
+  const result = session.result;
   const unit = unitLabel(inputs.unit);
 
   const update = (patch: Partial<NestInputs>) => {
@@ -213,41 +183,23 @@ export function NestCalcApp() {
     key: keyof NestInputs["margins"],
     value: number | null,
   ) => {
-    setInputs((current) => ({
-      ...current,
-      margins: { ...current.margins, [key]: value },
-    }));
+    setInputs((current) => updateManualMargin(current, key, value));
   };
 
   const toggleUnit = () => {
-    setInputs((current) =>
-      convertAll(current, current.unit === "in" ? "mm" : "in"),
-    );
+    setInputs(toggleManualUnit);
   };
 
   const clearAll = () => {
-    setInputs((current) => clearedInputs(current.unit));
+    setInputs(clearManualInputs);
   };
 
   const rotatePart = () => {
-    setInputs((current) => ({
-      ...current,
-      partWidth: current.partHeight,
-      partHeight: current.partWidth,
-    }));
+    setInputs(rotateManualPart);
   };
 
   const rotateRem = () => {
-    setInputs((current) => ({
-      ...current,
-      remnantWidth: current.remnantHeight,
-      remnantHeight: current.remnantWidth,
-      gapX: current.gapY,
-      gapY: current.gapX,
-      margins: current.moveMarginsWithRotation
-        ? rotateMarginsCW(current.margins)
-        : current.margins,
-    }));
+    setInputs(rotateManualRemnant);
   };
 
   const partsSummary = (
@@ -319,35 +271,17 @@ export function NestCalcApp() {
               unit={unit}
               linked={inputs.partLinked}
               onXChange={(value) =>
-                update(
-                  inputs.partLinked
-                    ? { partWidth: value, partHeight: value }
-                    : { partWidth: value },
+                setInputs((current) =>
+                  updateManualField(current, "partWidth", value),
                 )
               }
               onYChange={(value) =>
-                update(
-                  inputs.partLinked
-                    ? { partWidth: value, partHeight: value }
-                    : { partHeight: value },
+                setInputs((current) =>
+                  updateManualField(current, "partHeight", value),
                 )
               }
-              onLinkToggle={() => {
-                if (inputs.partLinked) {
-                  update({ partLinked: false });
-                  return;
-                }
-                const linked = linkValues(inputs.partWidth, inputs.partHeight);
-                update({
-                  partWidth: linked.x,
-                  partHeight: linked.y,
-                  partLinked: true,
-                });
-              }}
-              onSwap={() => {
-                const swapped = swapValues(inputs.partWidth, inputs.partHeight);
-                update({ partWidth: swapped.x, partHeight: swapped.y });
-              }}
+              onLinkToggle={() => setInputs(toggleManualPartLink)}
+              onSwap={() => setInputs(swapManualPart)}
             />
             <DualInputRow
               leftLabel="X [REM]"
@@ -366,35 +300,17 @@ export function NestCalcApp() {
               unit={unit}
               linked={inputs.gapLinked}
               onXChange={(value) =>
-                update(
-                  inputs.gapLinked
-                    ? { gapX: value, gapY: value }
-                    : { gapX: value },
+                setInputs((current) =>
+                  updateManualField(current, "gapX", value),
                 )
               }
               onYChange={(value) =>
-                update(
-                  inputs.gapLinked
-                    ? { gapX: value, gapY: value }
-                    : { gapY: value },
+                setInputs((current) =>
+                  updateManualField(current, "gapY", value),
                 )
               }
-              onLinkToggle={() => {
-                if (inputs.gapLinked) {
-                  update({ gapLinked: false });
-                  return;
-                }
-                const linked = linkValues(inputs.gapX, inputs.gapY);
-                update({
-                  gapX: linked.x,
-                  gapY: linked.y,
-                  gapLinked: true,
-                });
-              }}
-              onSwap={() => {
-                const swapped = swapValues(inputs.gapX, inputs.gapY);
-                update({ gapX: swapped.x, gapY: swapped.y });
-              }}
+              onLinkToggle={() => setInputs(toggleManualGapLink)}
+              onSwap={() => setInputs(swapManualGap)}
             />
             <p className="nestcalc-split-compact-label text-[11px] font-medium uppercase tracking-wider text-[var(--muted)]">
               Margins
