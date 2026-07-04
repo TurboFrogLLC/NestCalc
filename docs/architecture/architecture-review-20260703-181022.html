@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Architecture review - NestCalc - codebase-design rerun</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+      mermaid.initialize({ startOnLoad: true, theme: "neutral", securityLevel: "loose" });
+    </script>
+    <style>
+      body { background: #f8f7f4; }
+      .deep { background: linear-gradient(135deg, #0f172a, #1f2937); color: white; }
+      .module { border: 1px solid #cbd5e1; background: white; border-radius: 0.5rem; padding: 0.75rem; }
+      .shallow { border-color: #f59e0b; background: #fff7ed; }
+      .leak { color: #991b1b; border-color: #fca5a5; background: #fef2f2; }
+      .seam { border-top: 2px dashed #64748b; }
+      .strong { background: #d1fae5; color: #065f46; border-color: #6ee7b7; }
+      .worth { background: #fef3c7; color: #92400e; border-color: #fcd34d; }
+      .spec { background: #e2e8f0; color: #334155; border-color: #cbd5e1; }
+      .mass { display: grid; grid-template-columns: 6rem 1fr; gap: .5rem; align-items: center; }
+      .mass div { border-radius: .35rem; display:flex; align-items:center; justify-content:center; font-size:.7rem; font-weight:700; text-transform:uppercase; }
+      .interface-wide { height: 3.4rem; background:#f59e0b; color:#111827; }
+      .implementation-thin { height: 2.1rem; background:#64748b; color:white; }
+      .interface-small { height: 1.2rem; background:#34d399; color:#064e3b; }
+      .implementation-deep { height: 4.8rem; background:#0f172a; color:white; }
+      code { background: #f1f5f9; padding: .1rem .25rem; border-radius: .25rem; }
+    </style>
+  </head>
+  <body class="text-slate-900 font-sans">
+    <main class="max-w-6xl mx-auto px-6 py-10 space-y-10">
+      <header class="space-y-4">
+        <div>
+          <p class="text-xs uppercase tracking-wider text-slate-500">Architecture review - rerun with global codebase-design - 2026-07-03</p>
+          <h1 class="text-4xl font-semibold tracking-tight">NestCalc</h1>
+        </div>
+        <div class="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-950">
+          This rerun used the advisory <code>codebase-design</code> skill vocabulary. The scan applies its vocabulary and rules: depth is leverage at the interface, the deletion test, the interface is the test surface, one adapter means a hypothetical seam, two adapters means a real one, and replace shallow-module tests with tests at the deepened module interface.
+        </div>
+        <div class="grid gap-3 sm:grid-cols-4 text-xs">
+          <div class="module"><span class="font-bold">solid box</span><br />module</div>
+          <div class="module"><span class="font-bold">dashed rule</span><br />seam</div>
+          <div class="module leak"><span class="font-bold">red box</span><br />leakage</div>
+          <div class="module deep"><span class="font-bold">dark box</span><br />deep module</div>
+        </div>
+        <div class="rounded-lg border border-slate-200 bg-white p-4 text-sm text-slate-700">
+          No <code>CONTEXT.md</code> or ADRs were present. Domain vocabulary came from NestCalc build specs, current code, NestCalc PR #1-#17, and NanoTate PR #1-#19: Rem, Part, Gap, Margins, Quick Values, Nest Preview, Clerk access gate, Serwist offline shell, and Codex browser proof.
+        </div>
+      </header>
+
+      <section class="space-y-10">
+        <article id="codex-verification" class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm space-y-5">
+          <div class="flex flex-wrap items-center gap-2">
+            <h2 class="text-2xl font-semibold">Deepen the Codex verification module</h2>
+            <span class="rounded-full border px-2 py-1 text-xs font-bold strong">Strong</span>
+            <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-xs">local-substitutable + mock</span>
+          </div>
+          <div>
+            <p class="text-xs uppercase tracking-wider text-slate-500">Files</p>
+            <p class="font-mono text-sm">package.json · playwright.config.ts · e2e/* · vitest.config.ts · src/**/*.test.ts · GOAL.md · docs/WORKFLOW.md · docs/ARCHITECTURE_REVIEW_TODO.md</p>
+          </div>
+          <div class="grid gap-5 lg:grid-cols-2">
+            <div class="rounded-lg border border-slate-200 bg-stone-50 p-4">
+              <p class="mb-3 text-xs font-bold uppercase tracking-wider text-slate-500">Before</p>
+              <div class="space-y-2">
+                <div class="module shallow">lint and build are the only repo-local proof interface</div>
+                <div class="module leak">Clerk sign-in proof lives in PR comments</div>
+                <div class="module leak">mobile screenshots are ad hoc</div>
+                <div class="module leak">calculator behavior has no test surface</div>
+                <div class="mass"><div class="interface-wide">wide human interface</div><div class="implementation-thin">thin automation</div></div>
+              </div>
+            </div>
+            <div class="rounded-lg border border-slate-200 bg-stone-50 p-4">
+              <p class="mb-3 text-xs font-bold uppercase tracking-wider text-slate-500">After</p>
+              <div class="space-y-2">
+                <div class="module deep">Codex verification module</div>
+                <div class="seam"></div>
+                <div class="grid grid-cols-3 gap-2 text-xs">
+                  <div class="module">Vitest adapter</div>
+                  <div class="module">Clerk test adapter</div>
+                  <div class="module">Playwright screenshot adapter</div>
+                </div>
+                <div class="mass"><div class="interface-small">small proof interface</div><div class="implementation-deep">deep evidence</div></div>
+              </div>
+            </div>
+          </div>
+          <p><span class="font-semibold">Problem:</span> NestCalc has no deep verification module, so the interface for proving changes is scattered across humans, PR comments, GitHub checks, and screenshots.</p>
+          <p><span class="font-semibold">Solution:</span> Copy the NanoTate shape: Vitest for in-process modules, Playwright with official Clerk testing for authenticated shell proof, and workflow docs that make browser/PWA evidence a normal interface.</p>
+          <ul class="grid gap-1 text-sm sm:grid-cols-2">
+            <li>locality: proof lives in repo</li>
+            <li>leverage: every PR reuses it</li>
+            <li>interface is the test surface</li>
+            <li>replace ad hoc evidence</li>
+          </ul>
+        </article>
+
+        <article id="nest-session" class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm space-y-5">
+          <div class="flex flex-wrap items-center gap-2">
+            <h2 class="text-2xl font-semibold">Deepen the Nest session module</h2>
+            <span class="rounded-full border px-2 py-1 text-xs font-bold strong">Strong</span>
+            <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-xs">in-process</span>
+          </div>
+          <div>
+            <p class="text-xs uppercase tracking-wider text-slate-500">Files</p>
+            <p class="font-mono text-sm">src/components/NestCalcApp.tsx · src/hooks/useNestInputs.ts · src/lib/nestcalc.ts · src/lib/units.ts · src/lib/storage.ts · src/lib/types.ts</p>
+          </div>
+          <div class="grid gap-5 lg:grid-cols-2">
+            <div class="rounded-lg border border-slate-200 bg-stone-50 p-4">
+              <p class="mb-3 text-xs font-bold uppercase tracking-wider text-slate-500">Before</p>
+              <pre class="mermaid">
+flowchart TD
+  UI[NestCalcApp.tsx] --> Patch[Partial NestInputs patches]
+  UI --> Calc[calculateNest]
+  UI --> Units[convertValue]
+  UI --> Storage[useNestInputs]
+  UI --> Link[linkValues]
+  UI --> Rotate[rotateRem / rotatePart]
+  Patch -. leakage .-> Tests[No stable test surface]
+              </pre>
+            </div>
+            <div class="rounded-lg border border-slate-200 bg-stone-50 p-4">
+              <p class="mb-3 text-xs font-bold uppercase tracking-wider text-slate-500">After</p>
+              <pre class="mermaid">
+flowchart TD
+  UI[Shop-floor UI module] --> Session[Deep Nest session module]
+  Session --> Calc[fit math implementation]
+  Session --> Units[unit conversion implementation]
+  Session --> Persist[storage adapter]
+  Tests[Vitest] --> Session
+              </pre>
+            </div>
+          </div>
+          <p><span class="font-semibold">Problem:</span> Rem rotation, Part rotation, Link, Swap, unit conversion, storage hydration, and live result calculation are shallow across the UI seam.</p>
+          <p><span class="font-semibold">Solution:</span> Deepen the Nest session module so user intent, state transition, persistence, and result calculation have one in-process interface and one test surface.</p>
+          <ul class="grid gap-1 text-sm sm:grid-cols-2">
+            <li>deletion test: complexity returns to UI</li>
+            <li>locality: rotation bugs concentrate</li>
+            <li>leverage: one interface, many controls</li>
+            <li>no adapter needed</li>
+          </ul>
+        </article>
+
+        <article id="shop-floor-shell" class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm space-y-5">
+          <div class="flex flex-wrap items-center gap-2">
+            <h2 class="text-2xl font-semibold">Deepen the shop-floor shell module</h2>
+            <span class="rounded-full border px-2 py-1 text-xs font-bold worth">Worth exploring</span>
+            <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-xs">local-substitutable</span>
+          </div>
+          <div>
+            <p class="text-xs uppercase tracking-wider text-slate-500">Files</p>
+            <p class="font-mono text-sm">src/components/NestCalcApp.tsx · src/components/NumberInput.tsx · src/components/QuickValuesBar.tsx · src/hooks/useQuickValuesFocus.tsx · src/app/globals.css · src/components/AuthControls.tsx</p>
+          </div>
+          <div class="grid gap-5 lg:grid-cols-2">
+            <div class="rounded-lg border border-slate-200 bg-stone-50 p-4">
+              <p class="mb-3 text-xs font-bold uppercase tracking-wider text-slate-500">Before</p>
+              <div class="space-y-2 text-sm">
+                <div class="module shallow">Header controls</div>
+                <div class="module shallow">Input deck</div>
+                <div class="module shallow">Quick Values keyboard bar</div>
+                <div class="module shallow">desktop + phone landscape CSS</div>
+                <div class="module leak">PR #13-#16 repeatedly edit the same module</div>
+              </div>
+            </div>
+            <div class="rounded-lg border border-slate-200 bg-stone-50 p-4">
+              <p class="mb-3 text-xs font-bold uppercase tracking-wider text-slate-500">After</p>
+              <div class="space-y-2 text-sm">
+                <div class="module deep">Shop-floor shell module</div>
+                <div class="seam"></div>
+                <div class="grid grid-cols-2 gap-2">
+                  <div class="module">Header implementation</div>
+                  <div class="module">Input deck implementation</div>
+                  <div class="module">Quick Values implementation</div>
+                  <div class="module">layout implementation</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p><span class="font-semibold">Problem:</span> Shop-floor layout knowledge leaks across JSX and global CSS; small visual changes require broad context and are hard to prove without screenshots.</p>
+          <p><span class="font-semibold">Solution:</span> Deepen the shell module after verification exists, with Playwright screenshots as the local-substitutable adapter for desktop, portrait, and landscape behavior.</p>
+          <ul class="grid gap-1 text-sm sm:grid-cols-2">
+            <li>locality: layout rules concentrate</li>
+            <li>leverage: one shell, three viewports</li>
+            <li>test through browser interface</li>
+            <li>internal seams stay private</li>
+          </ul>
+        </article>
+
+        <article id="pwa-access" class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm space-y-5">
+          <div class="flex flex-wrap items-center gap-2">
+            <h2 class="text-2xl font-semibold">Deepen the PWA access gate module</h2>
+            <span class="rounded-full border px-2 py-1 text-xs font-bold worth">Worth exploring</span>
+            <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-xs">mock + local-substitutable</span>
+          </div>
+          <div>
+            <p class="text-xs uppercase tracking-wider text-slate-500">Files</p>
+            <p class="font-mono text-sm">src/proxy.ts · src/app/layout.tsx · src/app/sw.ts · src/app/serwist/[path]/route.ts · src/app/~offline/page.tsx · src/app/sign-in/[[...sign-in]]/page.tsx · .env.example · README.md · TUNNEL_SETUP.md</p>
+          </div>
+          <div class="grid gap-5 lg:grid-cols-2">
+            <div class="rounded-lg border border-slate-200 bg-stone-50 p-4">
+              <p class="mb-3 text-xs font-bold uppercase tracking-wider text-slate-500">Before</p>
+              <pre class="mermaid">
+flowchart TD
+  Proxy[src/proxy.ts] --> Clerk[Clerk]
+  Proxy --> Offline[/~offline public]
+  Layout[src/app/layout.tsx] --> Provider[ClerkProvider URLs]
+  SW[src/app/sw.ts] --> Serwist[Serwist fallback]
+  Docs[README + .env.example] -. drift .-> Routes[sign-up policy]
+              </pre>
+            </div>
+            <div class="rounded-lg border border-slate-200 bg-stone-50 p-4">
+              <p class="mb-3 text-xs font-bold uppercase tracking-wider text-slate-500">After</p>
+              <pre class="mermaid">
+flowchart TD
+  Gate[Deep PWA access gate module] --> ClerkAdapter[Clerk adapter]
+  Gate --> SerwistAdapter[Serwist/offline adapter]
+  Gate --> RoutePolicy[route policy implementation]
+  Gate --> OperatorDocs[env and setup implementation]
+  Playwright[Playwright auth proof] --> Gate
+              </pre>
+            </div>
+          </div>
+          <p><span class="font-semibold">Problem:</span> Clerk is true external, Serwist is local-substitutable, and route policy spans both; the seam is real, but the current interface is implicit and docs have already drifted around sign-up removal.</p>
+          <p><span class="font-semibold">Solution:</span> Deepen PWA access gate policy after PR #17 lands locally, using Clerk testing as the mock adapter and offline-shell checks as the local-substitutable adapter.</p>
+          <ul class="grid gap-1 text-sm sm:grid-cols-2">
+            <li>two adapters justify seam</li>
+            <li>locality: auth/offline policy</li>
+            <li>leverage: docs follow policy</li>
+            <li>avoid hypothetical ports</li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="rounded-xl border border-emerald-200 bg-emerald-50 p-6">
+        <p class="text-xs uppercase tracking-wider text-emerald-700">Top recommendation</p>
+        <h2 class="text-2xl font-semibold text-emerald-950">Deepen Codex verification infrastructure first</h2>
+        <p class="mt-2 text-emerald-950">This is the right first module because the other candidates depend on a stable test surface. NanoTate already supplies the working adapter pattern for the same Next.js 16, Clerk, Serwist, Vercel, and Playwright stack. After that, deepen the in-process Nest session module and replace scattered shallow tests or PR-comment proof with tests at that interface.</p>
+        <a class="mt-4 inline-block rounded-md bg-emerald-700 px-3 py-2 text-sm font-semibold text-white" href="#codex-verification">Jump to candidate</a>
+      </section>
+    </main>
+  </body>
+</html>

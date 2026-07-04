@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "vitest run",
+    "test:unit": "vitest run",
+    "test:e2e": "npm run build && playwright test --project=public",
+    "test:e2e:auth": "npm run build && playwright test --project=authenticated"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.5.11",
@@ -23,10 +27,15 @@
   "allowScripts": {
     "@swc/core@1.15.32": true,
     "esbuild@0.28.1": true,
+    "fsevents@2.3.2": true,
+    "fsevents@2.3.3": true,
     "sharp@0.34.5": true,
     "unrs-resolver@1.12.2": true
   },
   "devDependencies": {
+    "@clerk/backend": "^3.10.0",
+    "@clerk/testing": "^2.2.2",
+    "@playwright/test": "^1.61.1",
     "@serwist/turbopack": "^9.5.11",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
@@ -36,6 +45,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.9"
   }
 }
