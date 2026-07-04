@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { expect, test } from "@playwright/test";
+import { visiblePartsSummary } from "./locators";
 
 const authFile = path.join(__dirname, "../playwright/.clerk/user.json");
 const hasRequiredEnv = Boolean(
@@ -33,5 +34,5 @@ test("authenticated user reaches the NestCalc calculator shell", async ({
   await expect(page.getByRole("heading", { name: "NestCalc" })).toBeVisible();
   await expect(page.getByLabel("X [PART]")).toBeVisible();
   await expect(page.getByLabel("Y [REM]")).toBeVisible();
-  await expect(page.getByText("Parts =")).toBeVisible();
+  await expect(visiblePartsSummary(page)).toBeVisible();
 });

@@ -3,6 +3,7 @@ import { clerk, clerkSetup } from "@clerk/testing/playwright";
 import { expect, test as setup } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
+import { visiblePartsSummary } from "./locators";
 
 const authFile = path.join(__dirname, "../playwright/.clerk/user.json");
 
@@ -58,7 +59,7 @@ setup("create Clerk test user and save auth state", async ({ page }) => {
   await page.goto("/");
 
   await expect(page.getByRole("heading", { name: "NestCalc" })).toBeVisible();
-  await expect(page.getByText("Parts =")).toBeVisible();
+  await expect(visiblePartsSummary(page)).toBeVisible();
 
   fs.mkdirSync(path.dirname(authFile), { recursive: true });
   await page.context().storageState({ path: authFile });
