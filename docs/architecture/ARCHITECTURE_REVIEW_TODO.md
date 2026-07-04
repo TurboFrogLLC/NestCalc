@@ -3,8 +3,7 @@
 Source report: [architecture-review-20260703-181022.html](./architecture-review-20260703-181022.html)
 
 This todo comes from the `improve-codebase-architecture` rerun that used the
-global `codebase-design` skill installed at
-`/Users/computer/.agents/skills/codebase-design`.
+repo-advisory `codebase-design` skill vocabulary.
 
 ## Recommended Order
 

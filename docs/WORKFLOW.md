@@ -28,7 +28,9 @@ Use these checks before closeout when the touched surface warrants them:
 
 Treat missing Clerk authenticated E2E values as blocked auth proof, not a pass.
 The public Playwright suite still covers the public PWA/offline shell and
-manifest without signing in.
+manifest without signing in, but the Playwright `webServer` still needs valid
+Clerk test-mode `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` in
+`.env.local` so `next start` can boot behind `clerkMiddleware`.
 
 ## Clerk Authenticated E2E Env
 
