@@ -35,6 +35,7 @@ import type {
 import { unitLabel } from "@/lib/units";
 import { QuickValuesFocusProvider } from "@/hooks/useQuickValuesFocus";
 import { AuthControls } from "./AuthControls";
+import { AutoNestPreview } from "./AutoNestPreview";
 import { NestGrid } from "./NestGrid";
 import { NumberInput } from "./NumberInput";
 import { QuickValuesBar } from "./QuickValuesBar";
@@ -329,6 +330,8 @@ export function NestCalcApp() {
   const isAutoNest = session.mode === "autonest";
   const autoNestResult =
     session.result.mode === "autonest" ? session.result.autoNest : null;
+  const computedAutoNest =
+    autoNestResult?.status === "computed" ? autoNestResult.twoGroup : null;
   const manualRotationLocked = session.controls.manualRotationLocked;
 
   const setInputs = (updater: ManualInputsUpdater) => {
@@ -402,10 +405,17 @@ export function NestCalcApp() {
     setInputs(rotateManualRemnant);
   };
 
+  const previewPartsTotal = computedAutoNest?.totalParts ?? result.totalParts;
+  const previewHeaderGridLabel = computedAutoNest
+    ? computedAutoNest.blanks
+        .map((blank) => `${blank.group.orientation} x${blank.group.count}`)
+        .join(" | ")
+    : `X${result.partsAcross} | Y${result.partsDown}`;
+
   const partsSummary = (
     <span className="font-mono text-xs tabular-nums text-[var(--foreground)]">
       Parts ={" "}
-      <span className="font-bold text-[var(--accent)]">{result.totalParts}</span>
+      <span className="font-bold text-[var(--accent)]">{previewPartsTotal}</span>
     </span>
   );
 
@@ -458,7 +468,7 @@ export function NestCalcApp() {
           <div className="nestcalc-split-inputs nestcalc-inputs flex min-h-0 flex-col gap-2">
             <section className="nestcalc-split-hide flex h-9 shrink-0 items-center justify-between rounded-lg border border-[var(--card-border)] bg-[var(--card)] px-3">
               <span className="font-mono text-sm font-bold tabular-nums text-[var(--foreground)]">
-                X{result.partsAcross} | Y{result.partsDown}
+                {previewHeaderGridLabel}
               </span>
               {partsSummary}
             </section>
@@ -620,7 +630,7 @@ export function NestCalcApp() {
           <section className="nestcalc-split-preview flex min-h-0 flex-col rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-2">
             <div className="nestcalc-split-preview-header mb-2 flex h-8 shrink-0 items-center gap-1.5 overflow-hidden">
               <span className="nestcalc-split-preview-header-text shrink-0 font-mono text-xs font-bold tabular-nums text-[var(--foreground)]">
-                X{result.partsAcross} | Y{result.partsDown}
+                {previewHeaderGridLabel}
               </span>
               <button
                 type="button"
@@ -645,17 +655,26 @@ export function NestCalcApp() {
               <span className="ml-auto shrink-0">{partsSummary}</span>
             </div>
 
-            <NestGrid
-              remnantWidth={inputs.remnantWidth}
-              remnantHeight={inputs.remnantHeight}
-              partWidth={inputs.partWidth}
-              partHeight={inputs.partHeight}
-              margins={inputs.margins}
-              gapX={inputs.gapX}
-              gapY={inputs.gapY}
-              result={result}
-              unitLabel={unit}
-            />
+            {computedAutoNest ? (
+              <AutoNestPreview
+                twoGroup={computedAutoNest}
+                remnantWidth={inputs.remnantWidth}
+                remnantHeight={inputs.remnantHeight}
+                unitLabel={unit}
+              />
+            ) : (
+              <NestGrid
+                remnantWidth={inputs.remnantWidth}
+                remnantHeight={inputs.remnantHeight}
+                partWidth={inputs.partWidth}
+                partHeight={inputs.partHeight}
+                margins={inputs.margins}
+                gapX={inputs.gapX}
+                gapY={inputs.gapY}
+                result={result}
+                unitLabel={unit}
+              />
+            )}
           </section>
         </div>
       </div>

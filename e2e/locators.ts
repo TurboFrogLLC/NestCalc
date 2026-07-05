@@ -39,3 +39,26 @@ export function rotatePartButton(page: Page) {
 export function rotateRemButton(page: Page) {
   return page.getByRole("button", { name: "Rotate Rem 90°" });
 }
+
+export function manualNestPreview(page: Page) {
+  return page.locator('[aria-label="Nest preview"]');
+}
+
+export function autoNestPreview(page: Page) {
+  return page.getByRole("img", { name: "AutoNest computed preview" });
+}
+
+export function autoNestPreviewGroup(
+  page: Page,
+  orientation: "0deg" | "90deg",
+) {
+  return page.getByTestId(`autonest-preview-group-${orientation}`);
+}
+
+export function autoNestTrimLine(page: Page) {
+  return page.getByTestId("autonest-trim-line");
+}
+
+export function autoNestTrimSummary(page: Page) {
+  return page.getByTestId("autonest-preview-trim-summary");
+}

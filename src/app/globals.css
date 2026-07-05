@@ -27,6 +27,12 @@
   --btn-text: #fafafa;
   --quick-value: #67e8f9;
   --quick-value-border: #22d3ee;
+  --autonest-zero-fill: rgb(34 211 238 / 0.18);
+  --autonest-zero-stroke: #22d3ee;
+  --autonest-ninety-fill: rgb(16 185 129 / 0.18);
+  --autonest-ninety-stroke: #10b981;
+  --autonest-blank-stroke: rgb(250 250 250 / 0.32);
+  --autonest-trim-stroke: #fb7185;
 }
 
 [data-theme="light"] {
@@ -53,6 +59,12 @@
   --btn-text: #18181b;
   --quick-value: #0891b2;
   --quick-value-border: #06b6d4;
+  --autonest-zero-fill: rgb(8 145 178 / 0.18);
+  --autonest-zero-stroke: #0891b2;
+  --autonest-ninety-fill: rgb(5 150 105 / 0.18);
+  --autonest-ninety-stroke: #059669;
+  --autonest-blank-stroke: rgb(24 24 27 / 0.32);
+  --autonest-trim-stroke: #be123c;
 }
 
 @theme inline {
@@ -79,6 +91,24 @@ input[type="number"]::-webkit-outer-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
   appearance: textfield;
+}
+
+.autonest-preview-group-zero {
+  fill: var(--autonest-zero-fill);
+  stroke: var(--autonest-zero-stroke);
+}
+
+.autonest-preview-group-ninety {
+  fill: var(--autonest-ninety-fill);
+  stroke: var(--autonest-ninety-stroke);
+}
+
+.autonest-preview-trim-line {
+  stroke: var(--autonest-trim-stroke);
+}
+
+.autonest-preview-summary {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 @media ((orientation: landscape) and (max-height: 500px)), (min-width: 768px) {
