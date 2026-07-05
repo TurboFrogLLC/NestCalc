@@ -3,7 +3,6 @@ import { calculateNest, clearedInputs } from "./nestcalc";
 import {
   calculateManualNest,
   clearManualInputs,
-  createAutoNestPlaceholderResult,
   createManualNestSession,
   createNestSession,
   rotateManualPart,
@@ -217,22 +216,41 @@ describe("mode-aware nest session", () => {
     expect(session.controls.manualRotationLocked).toBe(false);
   });
 
-  it("exposes an explicit AutoNest not-ready result without calculating layouts", () => {
-    const session = createNestSession({ ...baseState, mode: "autonest" });
-
-    expect(session.result).toEqual({
+  it("calculates AutoNest results through the session boundary", () => {
+    const autoNestInputs: NestInputs = {
+      ...baseInputs,
+      partWidth: 6,
+      partHeight: 4,
+      remnantWidth: 10,
+      remnantHeight: 10,
+      gapX: 0,
+      gapY: 0,
+    };
+    const session = createNestSession({
+      ...baseState,
       mode: "autonest",
-      autoNest: {
-        status: "not-ready",
-        reason: "engine-not-implemented",
-        bestUniform: calculateNest(baseInputs),
+      manualInputs: autoNestInputs,
+      autoNestSettings: {
+        globalClampMargin: 0,
+        overrideGlobalMargins: false,
+        marginOverrides: { left: null, right: null, top: null, bottom: null },
+      },
+    });
+
+    expect(session.result.mode).toBe("autonest");
+    if (session.result.mode !== "autonest") return;
+
+    expect(session.result.autoNest).toMatchObject({
+      status: "computed",
+      bestUniform: {
+        totalParts: 2,
+      },
+      twoGroup: {
+        totalParts: 3,
       },
     });
     expect(session.controls.manualRotationLocked).toBe(true);
-    expect(createAutoNestPlaceholderResult(baseInputs)).toMatchObject({
-      status: "not-ready",
-      reason: "engine-not-implemented",
-    });
+    expect(session.manual.result).toEqual(calculateNest(autoNestInputs));
   });
 
   it("converts dimensioned AutoNest settings with the active unit", () => {
