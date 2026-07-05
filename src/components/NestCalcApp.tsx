@@ -173,6 +173,8 @@ function formatFallbackReason(
   switch (reason) {
     case "insufficient-inputs":
       return "insufficient inputs";
+    case "search-budget-exceeded":
+      return "search budget exceeded";
     case "two-group-not-useful":
       return "two-group not useful";
     case "engine-unavailable":
