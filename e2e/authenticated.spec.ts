@@ -1,7 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import { expect, test } from "@playwright/test";
-import { visiblePartsSummary } from "./locators";
+import {
+  autoNestToggle,
+  rotatePartButton,
+  rotateRemButton,
+  visiblePartsSummary,
+} from "./locators";
 
 const authFile = path.join(__dirname, "../playwright/.clerk/user.json");
 const hasRequiredEnv = Boolean(
@@ -29,10 +34,38 @@ test.beforeAll(() => {
 test("authenticated user reaches the NestCalc calculator shell", async ({
   page,
 }) => {
+  await page.addInitScript(() => {
+    window.localStorage.removeItem("nestcalc-app-state-v3");
+    window.localStorage.removeItem("nestcalc-state-v2");
+    window.localStorage.removeItem("nestcalc-state-v1");
+  });
   await page.goto("/");
 
   await expect(page.getByRole("heading", { name: "NestCalc" })).toBeVisible();
   await expect(page.getByLabel("X [PART]")).toBeVisible();
   await expect(page.getByLabel("Y [REM]")).toBeVisible();
   await expect(visiblePartsSummary(page)).toBeVisible();
+
+  await expect(autoNestToggle(page)).toHaveAttribute("aria-pressed", "false");
+  await expect(rotatePartButton(page)).toBeEnabled();
+  await expect(rotateRemButton(page)).toBeEnabled();
+
+  await autoNestToggle(page).click();
+
+  await expect(autoNestToggle(page)).toHaveAttribute("aria-pressed", "true");
+  await expect(
+    page.getByText("AutoNest: Two groups (0° + 90°)"),
+  ).toBeVisible();
+  await expect(page.getByText(/Best uniform/)).toBeVisible();
+  await expect(rotatePartButton(page)).toBeDisabled();
+  await expect(rotateRemButton(page)).toBeDisabled();
+
+  await autoNestToggle(page).click();
+
+  await expect(autoNestToggle(page)).toHaveAttribute("aria-pressed", "false");
+  await expect(
+    page.getByText("AutoNest: Two groups (0° + 90°)"),
+  ).toBeHidden();
+  await expect(rotatePartButton(page)).toBeEnabled();
+  await expect(rotateRemButton(page)).toBeEnabled();
 });

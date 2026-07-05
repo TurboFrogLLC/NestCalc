@@ -9,22 +9,22 @@ import {
   RotateCw,
   Sun,
 } from "lucide-react";
-import { useNestInputs } from "@/hooks/useNestInputs";
+import { useNestAppState } from "@/hooks/useNestInputs";
 import { useTheme } from "@/hooks/useTheme";
 import {
   clearManualInputs,
-  createManualNestSession,
+  createNestSession,
   rotateManualPart,
   rotateManualRemnant,
   swapManualGap,
   swapManualPart,
   toggleManualGapLink,
   toggleManualPartLink,
-  toggleManualUnit,
+  toggleNestSessionUnit,
   updateManualField,
   updateManualMargin,
 } from "@/lib/nestSession";
-import type { NestInputs } from "@/lib/types";
+import type { AutoNestResult, NestAppState, NestInputs } from "@/lib/types";
 import { unitLabel } from "@/lib/units";
 import { QuickValuesFocusProvider } from "@/hooks/useQuickValuesFocus";
 import { AuthControls } from "./AuthControls";
@@ -39,7 +39,7 @@ const unitBtnClass =
   "flex h-9 min-w-9 shrink-0 items-center justify-center rounded-lg border border-[var(--btn-border)] bg-[var(--btn-bg)] px-2 font-mono text-xs font-bold uppercase text-[var(--accent)] transition-colors hover:border-[var(--accent-hover)] hover:bg-[var(--card)] active:scale-[0.97]";
 
 const rotateBtnClass =
-  "nestcalc-split-rotate-btn flex shrink-0 items-center gap-0.5 rounded-md border border-[var(--btn-border)] bg-[var(--btn-bg)] px-1.5 py-1 text-[10px] font-semibold leading-none text-[var(--btn-text)] transition-colors hover:border-[var(--accent-hover)] hover:bg-[var(--card)] active:scale-[0.98]";
+  "nestcalc-split-rotate-btn flex shrink-0 items-center gap-0.5 rounded-md border border-[var(--btn-border)] bg-[var(--btn-bg)] px-1.5 py-1 text-[10px] font-semibold leading-none text-[var(--btn-text)] transition-colors hover:border-[var(--accent-hover)] hover:bg-[var(--card)] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-[var(--btn-border)] disabled:hover:bg-[var(--btn-bg)] disabled:active:scale-100";
 
 interface IconButtonProps {
   label: string;
@@ -167,13 +167,95 @@ function XYInputRow({
   );
 }
 
+function formatFallbackReason(
+  reason: Extract<AutoNestResult, { status: "fallback" }>["reason"],
+) {
+  switch (reason) {
+    case "insufficient-inputs":
+      return "insufficient inputs";
+    case "two-group-not-useful":
+      return "two-group not useful";
+    case "engine-unavailable":
+      return "engine unavailable";
+  }
+}
+
+function AutoNestComparison({ result }: { result: AutoNestResult }) {
+  if (result.status === "computed") {
+    const delta = result.twoGroup.totalParts - result.bestUniform.totalParts;
+
+    return (
+      <span>
+        Best uniform{" "}
+        <strong className="text-[var(--foreground)]">
+          {result.bestUniform.totalParts}
+        </strong>{" "}
+        | AutoNest two-group{" "}
+        <strong className="text-[var(--accent)]">
+          {result.twoGroup.totalParts}
+        </strong>{" "}
+        ({delta >= 0 ? "+" : ""}
+        {delta})
+      </span>
+    );
+  }
+
+  if (result.status === "fallback") {
+    return (
+      <span>
+        Best uniform{" "}
+        <strong className="text-[var(--foreground)]">
+          {result.bestUniform.totalParts}
+        </strong>{" "}
+        | Fallback{" "}
+        <strong className="text-[var(--accent)]">
+          {result.fallback.totalParts}
+        </strong>{" "}
+        ({formatFallbackReason(result.reason)})
+      </span>
+    );
+  }
+
+  return (
+    <span>
+      Best uniform{" "}
+      <strong className="text-[var(--foreground)]">
+        {result.bestUniform.totalParts}
+      </strong>{" "}
+      | AutoNest not ready
+    </span>
+  );
+}
+
+type ManualInputsUpdater = NestInputs | ((current: NestInputs) => NestInputs);
+
+function updateManualInputs(
+  state: NestAppState,
+  updater: ManualInputsUpdater,
+): NestAppState {
+  return {
+    ...state,
+    manualInputs:
+      typeof updater === "function" ? updater(state.manualInputs) : updater,
+  };
+}
+
 export function NestCalcApp() {
-  const { inputs, setInputs } = useNestInputs();
+  const { state, setState } = useNestAppState();
   const { theme, toggleTheme } = useTheme();
 
-  const session = useMemo(() => createManualNestSession(inputs), [inputs]);
-  const result = session.result;
+  const session = useMemo(() => createNestSession(state), [state]);
+  const inputs = session.manual.inputs;
+  const result = session.manual.result;
   const unit = unitLabel(inputs.unit);
+  const isAutoNest = session.mode === "autonest";
+  const autoNestResult =
+    session.result.mode === "autonest" ? session.result.autoNest : null;
+  const manualRotationLocked = session.controls.manualRotationLocked;
+
+  const setInputs = (updater: ManualInputsUpdater) => {
+    setState((current) => updateManualInputs(current, updater));
+  };
 
   const update = (patch: Partial<NestInputs>) => {
     setInputs((current) => ({ ...current, ...patch }));
@@ -187,7 +269,14 @@ export function NestCalcApp() {
   };
 
   const toggleUnit = () => {
-    setInputs(toggleManualUnit);
+    setState(toggleNestSessionUnit);
+  };
+
+  const toggleAutoNest = () => {
+    setState((current) => ({
+      ...current,
+      mode: current.mode === "autonest" ? "manual" : "autonest",
+    }));
   };
 
   const clearAll = () => {
@@ -195,10 +284,12 @@ export function NestCalcApp() {
   };
 
   const rotatePart = () => {
+    if (manualRotationLocked) return;
     setInputs(rotateManualPart);
   };
 
   const rotateRem = () => {
+    if (manualRotationLocked) return;
     setInputs(rotateManualRemnant);
   };
 
@@ -262,6 +353,38 @@ export function NestCalcApp() {
               </span>
               {partsSummary}
             </section>
+
+            <section className="flex min-h-9 shrink-0 flex-wrap items-center gap-2 rounded-lg border border-[var(--card-border)] bg-[var(--card)] px-2 py-1">
+              <button
+                type="button"
+                aria-pressed={isAutoNest}
+                onClick={toggleAutoNest}
+                className={`rounded-md border px-2.5 py-1 text-xs font-semibold transition-colors active:scale-[0.98] ${
+                  isAutoNest
+                    ? "border-[var(--accent)] bg-[var(--accent)] text-[var(--background)] hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)]"
+                    : "border-[var(--btn-border)] bg-[var(--btn-bg)] text-[var(--btn-text)] hover:border-[var(--accent-hover)] hover:text-[var(--accent)]"
+                }`}
+              >
+                AutoNest
+              </button>
+              <span className="min-w-0 flex-1 text-[11px] font-medium leading-tight text-[var(--muted)]">
+                {isAutoNest ? "AutoNest active" : "Manual"}
+              </span>
+            </section>
+
+            {autoNestResult ? (
+              <section
+                aria-live="polite"
+                className="flex shrink-0 flex-col gap-1 rounded-lg border border-[var(--card-border)] bg-[var(--card)] px-3 py-2"
+              >
+                <p className="text-[11px] font-semibold leading-tight text-[var(--foreground)]">
+                  AutoNest: Two groups (0° + 90°)
+                </p>
+                <p className="text-[11px] leading-tight text-[var(--muted)]">
+                  <AutoNestComparison result={autoNestResult} />
+                </p>
+              </section>
+            ) : null}
 
             <XYInputRow
               xLabel="X [PART]"
@@ -351,11 +474,23 @@ export function NestCalcApp() {
               <span className="nestcalc-split-preview-header-text shrink-0 font-mono text-xs font-bold tabular-nums text-[var(--foreground)]">
                 X{result.partsAcross} | Y{result.partsDown}
               </span>
-              <button type="button" onClick={rotatePart} className={rotateBtnClass}>
+              <button
+                type="button"
+                aria-label="Rotate Part 90°"
+                onClick={rotatePart}
+                disabled={manualRotationLocked}
+                className={rotateBtnClass}
+              >
                 <RotateCw className="h-3 w-3 shrink-0" strokeWidth={2} />
                 Part 90°
               </button>
-              <button type="button" onClick={rotateRem} className={rotateBtnClass}>
+              <button
+                type="button"
+                aria-label="Rotate Rem 90°"
+                onClick={rotateRem}
+                disabled={manualRotationLocked}
+                className={rotateBtnClass}
+              >
                 <RotateCw className="h-3 w-3 shrink-0" strokeWidth={2} />
                 Rem 90°
               </button>
