@@ -160,21 +160,42 @@ describe("calculateAutoNest", () => {
   });
 
   it("falls back for negative gaps or margins instead of returning invalid geometry", () => {
-    expect(
-      calculateAutoNest({ ...baseInputs, gapX: -0.125 }, zeroMarginSettings),
-    ).toMatchObject({
+    const negativeGap = calculateAutoNest(
+      { ...baseInputs, gapX: -6 },
+      zeroMarginSettings,
+    );
+
+    expect(negativeGap).toMatchObject({
       status: "fallback",
       reason: "insufficient-inputs",
+      bestUniform: {
+        usableWidth: 0,
+        usableHeight: 0,
+        partsAcross: 0,
+        partsDown: 0,
+        totalParts: 0,
+      },
+      fallback: {
+        totalParts: 0,
+      },
+    });
+    expect(Number.isFinite(negativeGap.bestUniform.totalParts)).toBe(true);
+
+    const negativeMargin = calculateAutoNest(baseInputs, {
+      ...zeroMarginSettings,
+      globalClampMargin: -1,
     });
 
-    expect(
-      calculateAutoNest(baseInputs, {
-        ...zeroMarginSettings,
-        globalClampMargin: -1,
-      }),
-    ).toMatchObject({
+    expect(negativeMargin).toMatchObject({
       status: "fallback",
       reason: "insufficient-inputs",
+      bestUniform: {
+        totalParts: 0,
+      },
+      fallback: {
+        totalParts: 0,
+      },
     });
+    expect(negativeMargin.bestUniform.usableWidth).toBe(0);
   });
 });

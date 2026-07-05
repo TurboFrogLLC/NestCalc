@@ -13,6 +13,16 @@ import type {
 
 const FIT_EPSILON = 1e-9;
 
+function emptyNestResult(): NestResult {
+  return {
+    usableWidth: 0,
+    usableHeight: 0,
+    partsAcross: 0,
+    partsDown: 0,
+    totalParts: 0,
+  };
+}
+
 interface OrientedPart {
   orientation: AutoNestGroupOrientation;
   width: number;
@@ -510,16 +520,18 @@ export function calculateAutoNest(
   settings: AutoNestSettings,
 ): AutoNestResult {
   const margins = effectiveAutoNestMargins(settings);
-  const bestUniform = calculateBestUniformNest(inputs, settings);
 
   if (!hasUsableAutoNestInputs(inputs, margins)) {
+    const safeFallback = emptyNestResult();
     return {
       status: "fallback",
       reason: "insufficient-inputs",
-      bestUniform,
-      fallback: bestUniform,
+      bestUniform: safeFallback,
+      fallback: safeFallback,
     };
   }
+
+  const bestUniform = calculateBestUniformNest(inputs, settings);
 
   const twoGroup = findBestTwoGroupCandidate(inputs, margins);
 
