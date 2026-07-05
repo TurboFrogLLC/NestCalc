@@ -3,18 +3,21 @@ import { calculateNest, clearedInputs } from "./nestcalc";
 import {
   calculateManualNest,
   clearManualInputs,
+  createAutoNestPlaceholderResult,
   createManualNestSession,
+  createNestSession,
   rotateManualPart,
   rotateManualRemnant,
   swapManualGap,
   swapManualPart,
   toggleManualGapLink,
   toggleManualPartLink,
+  toggleNestSessionUnit,
   toggleManualUnit,
   updateManualField,
   updateManualMargin,
 } from "./nestSession";
-import type { NestInputs } from "./types";
+import type { NestAppState, NestInputs } from "./types";
 
 const baseInputs: NestInputs = {
   partWidth: 10,
@@ -187,5 +190,67 @@ describe("manual nest session", () => {
     expect(clearManualInputs({ ...baseInputs, unit: "mm" })).toEqual(
       clearedInputs("mm"),
     );
+  });
+});
+
+describe("mode-aware nest session", () => {
+  const baseState: NestAppState = {
+    version: 3,
+    mode: "manual",
+    manualInputs: baseInputs,
+    autoNestSettings: {
+      globalClampMargin: 0.53,
+      overrideGlobalMargins: true,
+      marginOverrides: { left: 0.5, right: 0.25, top: null, bottom: 1 },
+    },
+  };
+
+  it("wraps manual mode results without changing the NestResult contract", () => {
+    const session = createNestSession(baseState);
+
+    expect(session.mode).toBe("manual");
+    expect(session.manual.result).toEqual(calculateNest(baseInputs));
+    expect(session.result).toEqual({
+      mode: "manual",
+      manual: calculateNest(baseInputs),
+    });
+    expect(session.controls.manualRotationLocked).toBe(false);
+  });
+
+  it("exposes an explicit AutoNest not-ready result without calculating layouts", () => {
+    const session = createNestSession({ ...baseState, mode: "autonest" });
+
+    expect(session.result).toEqual({
+      mode: "autonest",
+      autoNest: {
+        status: "not-ready",
+        reason: "engine-not-implemented",
+        bestUniform: calculateNest(baseInputs),
+      },
+    });
+    expect(session.controls.manualRotationLocked).toBe(true);
+    expect(createAutoNestPlaceholderResult(baseInputs)).toMatchObject({
+      status: "not-ready",
+      reason: "engine-not-implemented",
+    });
+  });
+
+  it("converts dimensioned AutoNest settings with the active unit", () => {
+    expect(toggleNestSessionUnit(baseState)).toMatchObject({
+      manualInputs: {
+        unit: "mm",
+        partWidth: 254,
+        partHeight: 127,
+      },
+      autoNestSettings: {
+        globalClampMargin: 13.462,
+        marginOverrides: {
+          left: 12.7,
+          right: 6.35,
+          top: null,
+          bottom: 25.4,
+        },
+      },
+    });
   });
 });

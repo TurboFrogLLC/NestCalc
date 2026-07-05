@@ -5,12 +5,16 @@ import {
   useEffect,
   useSyncExternalStore,
 } from "react";
-import { DEFAULT_INPUTS, loadInputs, saveInputs } from "@/lib/storage";
-import type { NestInputs } from "@/lib/types";
+import {
+  DEFAULT_NEST_APP_STATE,
+  loadNestAppState,
+  saveNestAppState,
+} from "@/lib/storage";
+import type { NestAppState, NestInputs } from "@/lib/types";
 
 const STORAGE_EVENT = "nestcalc-storage";
 
-let snapshot: NestInputs = DEFAULT_INPUTS;
+let snapshot: NestAppState = DEFAULT_NEST_APP_STATE;
 const listeners = new Set<() => void>();
 
 function emit() {
@@ -29,26 +33,26 @@ function getSnapshot() {
 }
 
 function getServerSnapshot() {
-  return DEFAULT_INPUTS;
+  return DEFAULT_NEST_APP_STATE;
 }
 
 let hydrated = false;
 
-export function useNestInputs() {
+export function useNestAppState() {
   useEffect(() => {
     if (hydrated) return;
     hydrated = true;
-    snapshot = loadInputs();
+    snapshot = loadNestAppState();
     emit();
   }, []);
 
-  const inputs = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const state = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
-  const setInputs = useCallback(
-    (updater: NestInputs | ((current: NestInputs) => NestInputs)) => {
+  const setState = useCallback(
+    (updater: NestAppState | ((current: NestAppState) => NestAppState)) => {
       snapshot =
         typeof updater === "function" ? updater(snapshot) : updater;
-      saveInputs(snapshot);
+      saveNestAppState(snapshot);
       emit();
       if (typeof window !== "undefined") {
         window.dispatchEvent(new Event(STORAGE_EVENT));
@@ -56,6 +60,27 @@ export function useNestInputs() {
     },
     [],
   );
+
+  return { state, setState };
+}
+
+export function useNestInputs() {
+  const { state, setState } = useNestAppState();
+
+  const setInputs = useCallback(
+    (updater: NestInputs | ((current: NestInputs) => NestInputs)) => {
+      setState((current) => ({
+        ...current,
+        manualInputs:
+          typeof updater === "function"
+            ? updater(current.manualInputs)
+            : updater,
+      }));
+    },
+    [setState],
+  );
+
+  const inputs = state.manualInputs;
 
   return { inputs, setInputs };
 }

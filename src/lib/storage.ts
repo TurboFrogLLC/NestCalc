@@ -1,6 +1,14 @@
-import type { NestInputs, ThemeMode } from "./types";
+import type {
+  AutoNestSettings,
+  Margins,
+  NestAppState,
+  NestInputs,
+  NestMode,
+  ThemeMode,
+} from "./types";
 
-const STORAGE_KEY = "nestcalc-state-v2";
+const STORAGE_KEY = "nestcalc-app-state-v3";
+const LEGACY_INPUTS_KEY = "nestcalc-state-v2";
 const THEME_KEY = "nestcalc-theme";
 
 export const DEFAULT_INPUTS: NestInputs = {
@@ -17,9 +25,33 @@ export const DEFAULT_INPUTS: NestInputs = {
   unit: "in",
 };
 
+export const DEFAULT_AUTONEST_SETTINGS: AutoNestSettings = {
+  globalClampMargin: 0.53,
+  overrideGlobalMargins: false,
+  marginOverrides: { left: null, right: null, top: null, bottom: null },
+};
+
+export const DEFAULT_NEST_APP_STATE: NestAppState = {
+  version: 3,
+  mode: "manual",
+  manualInputs: DEFAULT_INPUTS,
+  autoNestSettings: DEFAULT_AUTONEST_SETTINGS,
+};
+
 type LegacyNestInputs = Partial<NestInputs> & {
   gap?: number;
   remRotation?: number;
+};
+
+type StoredAutoNestSettings = Partial<AutoNestSettings> & {
+  marginOverrides?: Partial<Margins>;
+};
+
+type StoredNestAppState = Partial<
+  Omit<NestAppState, "autoNestSettings" | "manualInputs">
+> & {
+  manualInputs?: LegacyNestInputs;
+  autoNestSettings?: StoredAutoNestSettings;
 };
 
 function migrateLegacy(parsed: LegacyNestInputs): Partial<NestInputs> {
@@ -61,38 +93,86 @@ function migrateLegacy(parsed: LegacyNestInputs): Partial<NestInputs> {
   return next;
 }
 
-export function loadInputs(): NestInputs {
-  if (typeof window === "undefined") return DEFAULT_INPUTS;
+function normalizeManualInputs(inputs: LegacyNestInputs = {}): NestInputs {
+  const parsed = migrateLegacy(inputs);
+
+  return {
+    ...DEFAULT_INPUTS,
+    ...parsed,
+    margins: { ...DEFAULT_INPUTS.margins, ...parsed.margins },
+    moveMarginsWithRotation: parsed.moveMarginsWithRotation ?? false,
+  };
+}
+
+function normalizeAutoNestSettings(
+  settings: StoredAutoNestSettings = {},
+): AutoNestSettings {
+  return {
+    ...DEFAULT_AUTONEST_SETTINGS,
+    ...settings,
+    marginOverrides: {
+      ...DEFAULT_AUTONEST_SETTINGS.marginOverrides,
+      ...settings.marginOverrides,
+    },
+  };
+}
+
+function normalizeMode(mode: NestMode | undefined): NestMode {
+  return mode === "autonest" ? "autonest" : "manual";
+}
+
+function normalizeAppState(state: StoredNestAppState = {}): NestAppState {
+  return {
+    version: 3,
+    mode: normalizeMode(state.mode),
+    manualInputs: normalizeManualInputs(state.manualInputs),
+    autoNestSettings: normalizeAutoNestSettings(state.autoNestSettings),
+  };
+}
+
+function loadLegacyManualState(): NestAppState {
+  const raw =
+    localStorage.getItem(LEGACY_INPUTS_KEY) ??
+    localStorage.getItem("nestcalc-state-v1");
+
+  if (!raw) return DEFAULT_NEST_APP_STATE;
+
+  return normalizeAppState({
+    mode: "manual",
+    manualInputs: JSON.parse(raw) as LegacyNestInputs,
+  });
+}
+
+export function loadNestAppState(): NestAppState {
+  if (typeof window === "undefined") return DEFAULT_NEST_APP_STATE;
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      const legacy = localStorage.getItem("nestcalc-state-v1");
-      if (!legacy) return DEFAULT_INPUTS;
-      const parsed = migrateLegacy(
-        JSON.parse(legacy) as LegacyNestInputs,
-      );
-      return {
-        ...DEFAULT_INPUTS,
-        ...parsed,
-        margins: { ...DEFAULT_INPUTS.margins, ...parsed.margins },
-      };
-    }
-    const parsed = migrateLegacy(JSON.parse(raw) as LegacyNestInputs);
-    return {
-      ...DEFAULT_INPUTS,
-      ...parsed,
-      margins: { ...DEFAULT_INPUTS.margins, ...parsed.margins },
-      moveMarginsWithRotation: parsed.moveMarginsWithRotation ?? false,
-    };
+    if (!raw) return loadLegacyManualState();
+
+    return normalizeAppState(JSON.parse(raw) as StoredNestAppState);
   } catch {
-    return DEFAULT_INPUTS;
+    return DEFAULT_NEST_APP_STATE;
   }
+}
+
+export function saveNestAppState(state: NestAppState): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch {
+    // Ignore quota / private mode errors.
+  }
+}
+
+export function loadInputs(): NestInputs {
+  return loadNestAppState().manualInputs;
 }
 
 export function saveInputs(inputs: NestInputs): void {
   if (typeof window === "undefined") return;
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(inputs));
+    const current = loadNestAppState();
+    saveNestAppState({ ...current, manualInputs: inputs });
   } catch {
     // Ignore quota / private mode errors.
   }
