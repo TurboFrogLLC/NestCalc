@@ -2,7 +2,11 @@ import fs from "node:fs";
 import path from "node:path";
 import { expect, test } from "@playwright/test";
 import {
+  autoNestMarginOverrideInput,
+  autoNestSettingsButton,
   autoNestToggle,
+  globalClampMarginInput,
+  overrideGlobalMarginsCheckbox,
   rotatePartButton,
   rotateRemButton,
   visiblePartsSummary,
@@ -47,22 +51,56 @@ test("authenticated user reaches the NestCalc calculator shell", async ({
   await expect(visiblePartsSummary(page)).toBeVisible();
 
   await expect(autoNestToggle(page)).toHaveAttribute("aria-pressed", "false");
+  await expect(autoNestSettingsButton(page)).toBeHidden();
   await expect(rotatePartButton(page)).toBeEnabled();
   await expect(rotateRemButton(page)).toBeEnabled();
 
   await autoNestToggle(page).click();
 
   await expect(autoNestToggle(page)).toHaveAttribute("aria-pressed", "true");
+  await expect(autoNestSettingsButton(page)).toBeVisible();
   await expect(
     page.getByText("AutoNest: Two groups (0° + 90°)"),
   ).toBeVisible();
-  await expect(page.getByText(/Best uniform/)).toBeVisible();
+  await expect(page.getByText(/Best uniform: \d+ \| Using uniform:/)).toBeVisible();
   await expect(rotatePartButton(page)).toBeDisabled();
   await expect(rotateRemButton(page)).toBeDisabled();
+
+  await autoNestSettingsButton(page).click();
+
+  await expect(globalClampMarginInput(page)).toBeVisible();
+  await globalClampMarginInput(page).fill("0.75");
+  await expect(globalClampMarginInput(page)).toHaveValue("0.75");
+
+  await expect(overrideGlobalMarginsCheckbox(page)).not.toBeChecked();
+  await expect(
+    autoNestMarginOverrideInput(page, "Left margin override"),
+  ).toBeHidden();
+
+  await overrideGlobalMarginsCheckbox(page).check();
+
+  await expect(
+    autoNestMarginOverrideInput(page, "Left margin override"),
+  ).toBeVisible();
+  await expect(
+    autoNestMarginOverrideInput(page, "Right margin override"),
+  ).toBeVisible();
+  await expect(
+    autoNestMarginOverrideInput(page, "Top margin override"),
+  ).toBeVisible();
+  await expect(
+    autoNestMarginOverrideInput(page, "Bottom margin override"),
+  ).toBeVisible();
+
+  await autoNestMarginOverrideInput(page, "Left margin override").fill("0.5");
+  await expect(
+    autoNestMarginOverrideInput(page, "Left margin override"),
+  ).toHaveValue("0.5");
 
   await autoNestToggle(page).click();
 
   await expect(autoNestToggle(page)).toHaveAttribute("aria-pressed", "false");
+  await expect(autoNestSettingsButton(page)).toBeHidden();
   await expect(
     page.getByText("AutoNest: Two groups (0° + 90°)"),
   ).toBeHidden();
