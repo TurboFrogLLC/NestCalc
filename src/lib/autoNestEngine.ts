@@ -12,6 +12,7 @@ import type {
 } from "./types";
 
 const FIT_EPSILON = 1e-9;
+const TWO_GROUP_SEARCH_CANDIDATE_BUDGET = 20_000;
 
 function emptyNestResult(): NestResult {
   return {
@@ -342,6 +343,60 @@ function packedGroupForGrid(
   };
 }
 
+function estimateTwoGroupSearchCandidates(
+  inputs: NestInputs,
+  margins: Margins,
+): number {
+  const remnantWidth = coalesce(inputs.remnantWidth);
+  const remnantHeight = coalesce(inputs.remnantHeight);
+  const gapX = coalesce(inputs.gapX);
+  const gapY = coalesce(inputs.gapY);
+  const usableWidth =
+    remnantWidth - coalesce(margins.left) - coalesce(margins.right);
+  const usableHeight =
+    remnantHeight - coalesce(margins.top) - coalesce(margins.bottom);
+  const parts: [OrientedPart, OrientedPart] = [
+    {
+      orientation: "0deg",
+      width: coalesce(inputs.partWidth),
+      height: coalesce(inputs.partHeight),
+    },
+    {
+      orientation: "90deg",
+      width: coalesce(inputs.partHeight),
+      height: coalesce(inputs.partWidth),
+    },
+  ];
+  let candidates = 0;
+
+  for (const [firstPart] of [
+    parts,
+    [parts[1], parts[0]] as [OrientedPart, OrientedPart],
+  ]) {
+    const verticalRowsFirst = partsInDimension(
+      usableHeight,
+      firstPart.height,
+      gapY,
+    );
+
+    if (verticalRowsFirst > 0) {
+      candidates += partsInDimension(usableWidth, firstPart.width, gapX);
+    }
+
+    const horizontalColumnsFirst = partsInDimension(
+      usableWidth,
+      firstPart.width,
+      gapX,
+    );
+
+    if (horizontalColumnsFirst > 0) {
+      candidates += partsInDimension(usableHeight, firstPart.height, gapY);
+    }
+  }
+
+  return candidates;
+}
+
 function findBestTwoGroupCandidate(
   inputs: NestInputs,
   margins: Margins,
@@ -532,6 +587,21 @@ export function calculateAutoNest(
   }
 
   const bestUniform = calculateBestUniformNest(inputs, settings);
+
+  // The two-group search checks one possible first-group split per loop.
+  // 20,000 split candidates is well above practical shop remnant grids while
+  // keeping pathological ratios out of the synchronous render path.
+  if (
+    estimateTwoGroupSearchCandidates(inputs, margins) >
+    TWO_GROUP_SEARCH_CANDIDATE_BUDGET
+  ) {
+    return {
+      status: "fallback",
+      reason: "search-budget-exceeded",
+      bestUniform,
+      fallback: bestUniform,
+    };
+  }
 
   const twoGroup = findBestTwoGroupCandidate(inputs, margins);
 

@@ -141,6 +141,38 @@ describe("calculateAutoNest", () => {
     });
   });
 
+  it("falls back explicitly before evaluating an impractical two-group search", () => {
+    const result = calculateAutoNest(
+      {
+        ...baseInputs,
+        partWidth: 1,
+        partHeight: 1,
+        remnantWidth: 10_050,
+        remnantHeight: 2,
+      },
+      zeroMarginSettings,
+    );
+
+    expect(result).toMatchObject({
+      status: "fallback",
+      reason: "search-budget-exceeded",
+      bestUniform: {
+        usableWidth: 10_050,
+        usableHeight: 2,
+        totalParts: 20_100,
+      },
+      fallback: {
+        totalParts: 20_100,
+      },
+    });
+    expect(result.status).toBe("fallback");
+    if (result.status !== "fallback") return;
+
+    expect(result.fallback).toEqual(result.bestUniform);
+    expect(Number.isFinite(result.fallback.usableWidth)).toBe(true);
+    expect(Number.isFinite(result.fallback.usableHeight)).toBe(true);
+  });
+
   it("falls back for insufficient part or remnant inputs", () => {
     const result = calculateAutoNest(
       { ...baseInputs, partWidth: null },

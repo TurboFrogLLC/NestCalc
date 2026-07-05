@@ -1,33 +1,33 @@
 # GOAL.md - NestCalc
 
-## Active Goal: AutoNest Minimal UI Activation
+## Active Goal: AutoNest Engine Performance Guard
 
 ### Objective
 
-Activate AutoNest as an opt-in mode in the existing calculator UI using the
-already-merged mode state, settings model, session boundary, and pure AutoNest
-engine.
+Add a deterministic performance guard around AutoNest calculation so extreme
+inputs cannot lock the UI render path when AutoNest mode is active.
 
-This is a narrow UI activation slice, not the full AutoNest visualization pass.
-The goal is for an authenticated operator to turn AutoNest on, see that the app
-is evaluating the two-group engine, see a compact comparison against best
-uniform, and have conflicting manual rotation controls locked while AutoNest is
-active.
+This is a narrow engine/session safety slice. It should keep normal shop-floor
+AutoNest results unchanged, but short-circuit impractically large search spaces
+to a clear fallback result before the two-group search can run for too long.
 
-Manual mode must remain the default and must behave exactly as it does today
-when AutoNest is off.
+Manual mode, the current AutoNest UI, Clerk, PWA, storage schema, and the full
+AutoNest preview/settings roadmap are out of scope.
 
 ### Why This Is Next
 
-PR #21 added the manual session boundary. PR #22 added mode-aware app state,
-AutoNest settings, storage migration, and result vocabulary. PR #23 added the
-pure AutoNest engine and wired it through `createNestSession()`.
+PR #24 made AutoNest visible in the calculator UI. A Codex review thread flagged
+that `calculateAutoNest()` now runs synchronously from the render/session path,
+so extreme part/remnant ratios can lock the UI while the engine loops through a
+very large two-group candidate search.
 
-The app edge is still manual-only: `NestCalcApp` uses `useNestInputs()` and
-`createManualNestSession()` directly, so the AutoNest engine is not yet visible
-to an operator. The smallest useful next step is to wire the existing app state
-and session result into the UI without taking on the full trim-line preview or
-settings-gear UI.
+The current hotspot is `findBestTwoGroupCandidate()` in
+`src/lib/autoNestEngine.ts`: it iterates possible first-group columns/rows for
+both orientations. That is fine for typical shop remnants, but it is unbounded
+for pathological inputs.
+
+The best next move is to guard the pure engine search before adding full preview
+or settings UI.
 
 ### Required Reading
 
@@ -40,19 +40,13 @@ Read these before editing code:
 - `docs/AutoNest_Spec.md`
 - `docs/roadmap.md`
 - `docs/AutoNest_Integration_Analysis.md`
-- `NestCalc_Build_Spec_V3.md`
-- `src/components/NestCalcApp.tsx`
-- `src/components/NestGrid.tsx`
-- `src/hooks/useNestInputs.ts`
-- `src/lib/types.ts`
-- `src/lib/nestSession.ts`
 - `src/lib/autoNestEngine.ts`
-- `src/lib/storage.ts`
-- `src/lib/nestSession.test.ts`
 - `src/lib/autoNestEngine.test.ts`
-- `src/lib/storage.test.ts`
+- `src/lib/nestSession.ts`
+- `src/lib/nestSession.test.ts`
+- `src/lib/types.ts`
+- `src/components/NestCalcApp.tsx`
 - `e2e/authenticated.spec.ts`
-- `e2e/public.spec.ts`
 - `e2e/locators.ts`
 
 Relevant lessons to account for:
@@ -60,11 +54,10 @@ Relevant lessons to account for:
 - `L-nestcalc-autonest-app-state-v3`
 - `L-nestcalc-autonest-pure-engine-module`
 - `L-nestcalc-autonest-thin-blank-guard`
+- `L-nestcalc-autonest-minimal-ui-activation`
+- `L-nestcalc-rotate-aria-label-e2e`
 - `L-nestcalc-session-boundary-test-surface`
 - `L-nestcalc-playwright-clerk-boot`
-- `L-nestcalc-playwright-auth-setup-order`
-- `L-nestcalc-e2e-split-layout-locator`
-- `L-nestcalc-goal-required-docs-commit`
 - `L-nestcalc-grok-review-role-separation`
 - `L-nestcalc-codex-stale-sha-guard`
 - `L-nestcalc-pr-branch-main-sync`
@@ -76,12 +69,8 @@ Start with repo hygiene and authority-file preflight.
 Use the smallest useful skill set:
 
 - `codex-repo-hygiene-gate`
-- `vercel-plugin:nextjs` or local Next.js docs for Next 16 conventions if code
-  changes require framework-specific judgment
-- `vercel-plugin:react-best-practices` for the UI component pass if useful
-- `playwright` / browser proof for visible UI behavior
-- `clerk-testing` only for authenticated E2E proof and only with local Clerk
-  test env values
+- `tdd` or equivalent test-first discipline for the guard behavior
+- `diagnosing-bugs` only if an existing regression/failure appears
 - GitHub / PR workflow skills for closeout
 
 If read-only sub-agents are useful during execution, launch every read-only
@@ -90,102 +79,101 @@ and final decisions.
 
 ### Scope
 
-Wire the existing mode-aware state and session result into the app UI.
+Add a deterministic guard for AutoNest engine work.
 
-Expected product behavior:
+Expected behavior:
 
-- Add an opt-in AutoNest toggle on the main calculator screen.
-- Default remains Manual / AutoNest off.
-- When AutoNest is off, the current manual UI, numbers, preview, input behavior,
-  and persistence behavior remain unchanged.
-- When AutoNest is on, show a clear label:
-  `AutoNest: Two groups (0° + 90°)`.
-- When AutoNest is on, disable/lock the manual `Rotate Part 90°` and
-  `Rotate Rem 90°` controls so they cannot create conflicting manual-rotation
-  state while AutoNest is active.
-- When AutoNest is on, call the existing `createNestSession()` path and display
-  a compact no-preview comparison:
-  - best uniform total parts
-  - AutoNest two-group total parts and delta when `computed`
-  - fallback total parts and fallback reason when `fallback`
-- Keep the existing `NestGrid` rendering the current manual preview/baseline
-  result. Do not make `NestGrid` draw AutoNest groups or trim lines in this
-  goal.
-- Unit toggle should use the existing session-aware unit path so dimensioned
-  AutoNest settings convert with manual inputs.
+- Estimate or bound the candidate search before expensive two-group iteration.
+- For normal, practical shop-floor inputs, return the same `computed` or
+  `fallback` results as today.
+- For extreme inputs that would produce an impractically large search space,
+  skip the two-group search and return a safe fallback to `bestUniform`.
+- Make the fallback reason explicit if the existing result vocabulary cannot
+  clearly distinguish the guard path.
+- Keep `bestUniform` populated for guarded fallback results.
+- Preserve invalid-input handling and the existing thin-blank guard.
+- Keep all engine behavior deterministic.
+
+The guard may use one of these implementation shapes:
+
+- a preflight search-budget estimate before `findBestTwoGroupCandidate()`
+- a bounded candidate counter inside the two-group search
+- a small combination of both if needed for correctness and clarity
+
+Prefer a simple, readable threshold with tests over a clever optimizer. If a
+threshold is introduced, document why it exists in code or tests and mention it
+in closeout.
 
 Allowed implementation files:
 
-- `src/components/NestCalcApp.tsx`
-- `src/hooks/useNestInputs.ts` only for a tiny state-access helper if needed
-- `src/lib/nestSession.ts` only for narrow UI-facing selectors/helpers if needed
-- `src/lib/types.ts` only for narrow additive type clarity if needed
-- `src/lib/nestSession.test.ts`
-- `e2e/authenticated.spec.ts`
-- `e2e/locators.ts`
+- `src/lib/autoNestEngine.ts`
+- `src/lib/autoNestEngine.test.ts`
+- `src/lib/types.ts` only if adding a narrow fallback reason
+- `src/lib/nestSession.ts` only if a tiny session-facing adapter is needed
+- `src/lib/nestSession.test.ts` only if session behavior needs coverage
+- `src/components/NestCalcApp.tsx` only if a new fallback reason must be
+  formatted for the existing compact UI
 
-Prefer not to touch these files:
+Prefer not to touch:
 
 - `src/components/NestGrid.tsx`
-- `src/lib/autoNestEngine.ts`
+- `src/hooks/useNestInputs.ts`
 - `src/lib/storage.ts`
 - `src/lib/nestcalc.ts`
-- `e2e/public.spec.ts`
+- `e2e/*`
 
-Only touch preferred-avoid files if TypeScript compatibility or targeted proof
-requires a tiny adapter. Stop if a larger change to those files appears needed.
+Only touch preferred-avoid files if TypeScript compatibility or existing tests
+require a tiny adapter. Stop if larger UI, storage, or browser-test changes
+appear necessary.
 
 ### Out Of Scope
 
 Do not implement any of the following in this goal:
 
+- web worker execution
+- async/deferred React calculation state
+- debounce/throttle UI behavior
 - full AutoNest preview rendering
-- color-coded 0-degree / 90-degree groups
-- trim-line SVG drawing or trim-line labels
-- achieved-margin annotations in the preview
-- blank-size overlay rendering
 - settings gear UI
-- editable global clamp margin UI
-- editable override-four-margins UI
+- editable AutoNest settings UI
 - storage schema changes
-- AutoNest engine algorithm changes
-- manual calculator math changes
-- broad shell/layout redesign
 - Clerk auth, request-access, routes, middleware, `.env*`, Vercel, or PWA changes
 - native iOS work
-- historical spec rewrites
+- broad algorithm replacement such as MaxRects/guillotine library adoption
+- broad layout or component refactors
 
-### Protected Manual Behaviors
+### Protected Behaviors
 
-Manual calculator behavior must remain exactly intact when AutoNest is off:
+Manual calculator behavior must remain exactly intact:
 
-- default/manual mode behavior remains unchanged
-- manual result numbers remain unchanged for equivalent inputs
-- existing preview remains unchanged
-- remnant rotation swaps remnant X/Y and gap X/Y
-- part rotation swaps part X/Y only
-- margins remain fixed on remnant rotation by default
-- margins rotate only when `moveMarginsWithRotation` is enabled
-- linked Part X/Y and Gap X/Y behavior remains unchanged
-- Swap Part and Swap Gap behavior remains unchanged
-- unit toggle conversion remains unchanged for manual inputs
-- Clear returns the same current manual default state
+- manual mode remains default
+- manual result numbers remain unchanged
+- manual preview remains unchanged
+- manual rotations, link/swap, clear, margins, and unit conversion remain
+  unchanged
 - existing Clerk-gated app behavior remains unchanged
 
-### UI Guidance
+AutoNest behavior must remain stable for existing practical cases:
 
-Keep the interface shop-floor simple and compact.
+- current computed test cases still compute the same total parts, trim line, and
+  blank geometry
+- current fallback test cases still fall back for the same reasons unless the
+  new guard explicitly covers only extreme search-budget cases
+- invalid or insufficient inputs still return safe zero fallback values
+- `calculateBestUniformNest()` behavior remains unchanged
 
-- Do not add a marketing or explanatory section.
-- Prefer a small segmented/toggle control near the existing calculator controls.
-- Use clear state text only where it helps the operator understand the active
-  mode.
-- Use existing colors, borders, spacing, and control density.
-- Avoid nested cards or a large results panel in this slice.
-- The compact AutoNest result line should fit mobile and desktop layouts without
-  pushing the calculator into a new page structure.
-- Disabled rotation controls must look disabled and expose accessible disabled
-  state.
+### Performance Guard Guidance
+
+The guard exists to prevent UI lockups, not to make AutoNest globally optimal.
+
+Choose a deterministic budget that is clearly above normal expected shop-floor
+inputs and low enough that pathological inputs cannot freeze a browser render.
+The exact value is a scoped engineering decision for this goal, but it must be
+covered by tests and reported in closeout.
+
+Do not silently clamp dimensions or part counts. If the search is skipped due to
+budget, return a clear fallback result rather than pretending a two-group result
+was evaluated.
 
 ### Verification
 
@@ -195,44 +183,29 @@ Run and report:
 - `npm run lint`
 - `npm run build`
 - `npm run test`
-- `npm run test:e2e`
-- `npm run test:e2e:auth`
 
-Because this is UI-visible work, browser proof is required before closeout.
-If Playwright fails inside the managed sandbox with macOS Chromium permission
-errors, rerun the required browser proof outside the sandbox rather than
-weakening verification.
+Playwright is not required if this remains a non-visual engine/session guard.
+Run `npm run test:e2e` and `npm run test:e2e:auth` only if the implementation
+touches browser-visible behavior, locators, UI formatting beyond a tiny fallback
+string, Clerk/PWA surfaces, or app-shell interaction behavior.
 
-If valid Clerk test env values are missing, report the affected public or
-authenticated Playwright proof as blocked by missing valid Clerk env, not
-passed. Do not commit secrets or `.env.local`.
-
-E2E expectations:
-
-- Add or update authenticated Playwright coverage so a signed-in user can see
-  the AutoNest toggle.
-- Prove toggling AutoNest on shows the active AutoNest label or compact result.
-- Prove AutoNest mode disables the rotate controls.
-- Preserve the existing authenticated shell assertion.
-
-Public/offline Playwright coverage should remain unchanged unless the UI change
-requires a locator update.
+If Playwright becomes required and valid Clerk test env values are missing,
+report the affected proof as blocked by missing valid Clerk env, not passed. Do
+not commit secrets or `.env.local`.
 
 ### Acceptance Criteria
 
 This goal is complete when:
 
-- AutoNest can be toggled on/off from the calculator UI.
-- Manual mode is still the default.
-- Manual mode visual output and behavior remain unchanged when AutoNest is off.
-- AutoNest mode visibly announces `AutoNest: Two groups (0° + 90°)`.
-- AutoNest mode displays a compact comparison from the existing
-  `createNestSession()` / `calculateAutoNest()` path.
-- AutoNest mode disables manual part/remnant rotation controls.
-- Existing manual session and engine tests still pass.
-- Browser proof covers the new visible behavior when Clerk env allows it.
-- No full AutoNest preview, settings gear, storage schema, Clerk, PWA, route, or
-  manual math changes were introduced.
+- AutoNest has a deterministic search/performance guard.
+- Extreme inputs return quickly with a safe fallback to `bestUniform`.
+- The guarded fallback is explicit and tested.
+- Existing practical AutoNest computed/fallback tests still pass unchanged.
+- New tests cover the guard path and prove it does not return invalid geometry.
+- Manual session behavior remains unchanged.
+- No storage, Clerk, PWA, route, settings UI, preview, or manual math changes
+  were introduced.
+- lint, build, and unit tests pass.
 
 ### Required Execution Closeout
 
@@ -246,8 +219,9 @@ At closeout:
 - push the feature branch
 - open a ready-for-review PR to `main`, not a draft
 - include verification evidence in the PR body
-- mention explicitly that full AutoNest preview, settings gear, Clerk, PWA,
-  storage schema, and manual calculator math were not changed
+- mention explicitly that UI layout, full AutoNest preview, settings gear,
+  Clerk, PWA, storage schema, routes, and manual calculator math were not
+  changed
 - trigger or request the normal review loop after the PR opens
 
 GitHub auth, push, and PR creation are publication steps that may need to run
@@ -262,15 +236,15 @@ rejected, or PR creation fails for a real GitHub/remote reason.
 
 Stop and ask for direction before proceeding if:
 
-- a full AutoNest preview becomes necessary to complete the goal
-- settings gear UI becomes necessary to complete the goal
+- preventing the lockup appears to require async React state, a web worker, or
+  broader UI scheduling work
+- the guard would change normal practical AutoNest outputs
 - storage/schema changes become necessary
-- the AutoNest engine algorithm needs to change
 - current manual calculator math needs to change
 - Clerk, PWA, route, env, or deployment changes appear necessary
-- the UI work starts expanding into a broad layout redesign
-- required browser proof cannot run because both sandbox and authorized
-  outside-sandbox execution paths are unavailable
+- browser-visible behavior changes enough that new Playwright proof is required
+  but cannot run because both sandbox and authorized outside-sandbox execution
+  paths are unavailable
 
 ### Expected Closeout Evidence
 
@@ -280,9 +254,9 @@ The implementation closeout should include:
 - feature branch name
 - implementation commit hash
 - PR URL
-- summary of visible behavior added
+- guard strategy and threshold/budget used
 - summary of protected surfaces left untouched
 - tests added or updated
 - verification command results
-- browser proof status, including Clerk env blockers if applicable
-- residual risks before the full AutoNest preview/settings goal
+- whether Playwright was not required or was run
+- residual risks before full AutoNest preview/settings work

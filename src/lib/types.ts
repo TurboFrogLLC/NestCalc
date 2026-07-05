@@ -93,6 +93,7 @@ export type AutoNestResult =
       reason:
         | "engine-unavailable"
         | "insufficient-inputs"
+        | "search-budget-exceeded"
         | "two-group-not-useful";
       bestUniform: NestResult;
       fallback: NestResult;
