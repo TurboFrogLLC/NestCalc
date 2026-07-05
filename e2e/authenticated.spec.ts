@@ -161,6 +161,7 @@ test("authenticated user sees computed AutoNest preview and returns to manual pr
   await expect(autoNestToggle(page)).toHaveAttribute("aria-pressed", "true");
   await expect(autoNestPreview(page)).toBeVisible();
   await expect(manualNestPreview(page)).toBeHidden();
+  await expect(visiblePartsSummary(page)).toContainText("Parts = 3");
   await expect(autoNestPreviewGroup(page, "0deg")).toContainText("0deg x2");
   await expect(autoNestPreviewGroup(page, "90deg")).toContainText("90deg x1");
   await expect(autoNestTrimLine(page)).toBeVisible();

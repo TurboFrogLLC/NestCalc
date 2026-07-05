@@ -405,10 +405,17 @@ export function NestCalcApp() {
     setInputs(rotateManualRemnant);
   };
 
+  const previewPartsTotal = computedAutoNest?.totalParts ?? result.totalParts;
+  const previewHeaderGridLabel = computedAutoNest
+    ? computedAutoNest.blanks
+        .map((blank) => `${blank.group.orientation} x${blank.group.count}`)
+        .join(" | ")
+    : `X${result.partsAcross} | Y${result.partsDown}`;
+
   const partsSummary = (
     <span className="font-mono text-xs tabular-nums text-[var(--foreground)]">
       Parts ={" "}
-      <span className="font-bold text-[var(--accent)]">{result.totalParts}</span>
+      <span className="font-bold text-[var(--accent)]">{previewPartsTotal}</span>
     </span>
   );
 
@@ -623,7 +630,7 @@ export function NestCalcApp() {
           <section className="nestcalc-split-preview flex min-h-0 flex-col rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-2">
             <div className="nestcalc-split-preview-header mb-2 flex h-8 shrink-0 items-center gap-1.5 overflow-hidden">
               <span className="nestcalc-split-preview-header-text shrink-0 font-mono text-xs font-bold tabular-nums text-[var(--foreground)]">
-                X{result.partsAcross} | Y{result.partsDown}
+                {previewHeaderGridLabel}
               </span>
               <button
                 type="button"
