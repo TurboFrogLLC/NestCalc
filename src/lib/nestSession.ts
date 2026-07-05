@@ -1,6 +1,6 @@
+import { calculateAutoNest } from "./autoNestEngine";
 import { calculateNest, clearedInputs, rotateMarginsCW } from "./nestcalc";
 import type {
-  AutoNestResult,
   AutoNestSettings,
   Margins,
   NestAppState,
@@ -72,16 +72,6 @@ export function calculateManualNest(inputs: NestInputs): NestResult {
   return calculateNest(inputs);
 }
 
-export function createAutoNestPlaceholderResult(
-  inputs: NestInputs,
-): AutoNestResult {
-  return {
-    status: "not-ready",
-    reason: "engine-not-implemented",
-    bestUniform: calculateNest(inputs),
-  };
-}
-
 export function createNestSession(state: NestAppState): NestSession {
   const manual = createManualNestSession(state.manualInputs);
   const result: NestSessionResult =
@@ -89,7 +79,10 @@ export function createNestSession(state: NestAppState): NestSession {
       ? { mode: "manual", manual: manual.result }
       : {
           mode: "autonest",
-          autoNest: createAutoNestPlaceholderResult(state.manualInputs),
+          autoNest: calculateAutoNest(
+            state.manualInputs,
+            state.autoNestSettings,
+          ),
         };
 
   return {
