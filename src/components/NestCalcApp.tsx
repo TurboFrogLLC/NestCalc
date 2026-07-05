@@ -468,7 +468,7 @@ export function NestCalcApp() {
           <div className="nestcalc-split-inputs nestcalc-inputs flex min-h-0 flex-col gap-2">
             <section className="nestcalc-split-hide flex h-9 shrink-0 items-center justify-between rounded-lg border border-[var(--card-border)] bg-[var(--card)] px-3">
               <span className="font-mono text-sm font-bold tabular-nums text-[var(--foreground)]">
-                X{result.partsAcross} | Y{result.partsDown}
+                {previewHeaderGridLabel}
               </span>
               {partsSummary}
             </section>

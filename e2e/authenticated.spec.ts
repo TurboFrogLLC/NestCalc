@@ -172,6 +172,7 @@ test("authenticated user sees computed AutoNest preview and returns to manual pr
   ).toBeVisible();
 
   await page.setViewportSize({ width: 390, height: 844 });
+  await expect(page.getByText(/0deg x2 \| 90deg x1/)).toBeVisible();
   await expect(autoNestPreview(page)).toBeVisible();
   await expect(autoNestPreviewGroup(page, "0deg")).toBeVisible();
   await expect(autoNestPreviewGroup(page, "90deg")).toBeVisible();
