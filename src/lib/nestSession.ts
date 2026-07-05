@@ -1,5 +1,14 @@
 import { calculateNest, clearedInputs, rotateMarginsCW } from "./nestcalc";
-import type { Margins, NestInputs, NestResult, Unit } from "./types";
+import type {
+  AutoNestResult,
+  AutoNestSettings,
+  Margins,
+  NestAppState,
+  NestInputs,
+  NestResult,
+  NestSessionResult,
+  Unit,
+} from "./types";
 import { convertValue } from "./units";
 
 type NumericField =
@@ -13,6 +22,16 @@ type NumericField =
 export interface ManualNestSession {
   inputs: NestInputs;
   result: NestResult;
+}
+
+export interface NestSession {
+  mode: NestAppState["mode"];
+  state: NestAppState;
+  manual: ManualNestSession;
+  result: NestSessionResult;
+  controls: {
+    manualRotationLocked: boolean;
+  };
 }
 
 function convertNullableValue(
@@ -51,6 +70,37 @@ export function createManualNestSession(
 
 export function calculateManualNest(inputs: NestInputs): NestResult {
   return calculateNest(inputs);
+}
+
+export function createAutoNestPlaceholderResult(
+  inputs: NestInputs,
+): AutoNestResult {
+  return {
+    status: "not-ready",
+    reason: "engine-not-implemented",
+    bestUniform: calculateNest(inputs),
+  };
+}
+
+export function createNestSession(state: NestAppState): NestSession {
+  const manual = createManualNestSession(state.manualInputs);
+  const result: NestSessionResult =
+    state.mode === "manual"
+      ? { mode: "manual", manual: manual.result }
+      : {
+          mode: "autonest",
+          autoNest: createAutoNestPlaceholderResult(state.manualInputs),
+        };
+
+  return {
+    mode: state.mode,
+    state,
+    manual,
+    result,
+    controls: {
+      manualRotationLocked: state.mode === "autonest",
+    },
+  };
 }
 
 export function updateManualField(
@@ -182,5 +232,39 @@ export function toggleManualUnit(inputs: NestInputs): NestInputs {
       top: cv(inputs.margins.top),
       bottom: cv(inputs.margins.bottom),
     },
+  };
+}
+
+export function convertAutoNestSettingsUnit(
+  settings: AutoNestSettings,
+  from: Unit,
+  to: Unit,
+): AutoNestSettings {
+  const cv = (value: number | null) => convertNullableValue(value, from, to);
+
+  return {
+    ...settings,
+    globalClampMargin: cv(settings.globalClampMargin),
+    marginOverrides: {
+      left: cv(settings.marginOverrides.left),
+      right: cv(settings.marginOverrides.right),
+      top: cv(settings.marginOverrides.top),
+      bottom: cv(settings.marginOverrides.bottom),
+    },
+  };
+}
+
+export function toggleNestSessionUnit(state: NestAppState): NestAppState {
+  const from = state.manualInputs.unit;
+  const nextManualInputs = toggleManualUnit(state.manualInputs);
+
+  return {
+    ...state,
+    manualInputs: nextManualInputs,
+    autoNestSettings: convertAutoNestSettingsUnit(
+      state.autoNestSettings,
+      from,
+      nextManualInputs.unit,
+    ),
   };
 }
