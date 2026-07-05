@@ -3,9 +3,14 @@ import path from "node:path";
 import { expect, test } from "@playwright/test";
 import {
   autoNestMarginOverrideInput,
+  autoNestPreview,
+  autoNestPreviewGroup,
   autoNestSettingsButton,
+  autoNestTrimLine,
+  autoNestTrimSummary,
   autoNestToggle,
   globalClampMarginInput,
+  manualNestPreview,
   overrideGlobalMarginsCheckbox,
   rotatePartButton,
   rotateRemButton,
@@ -19,6 +24,48 @@ const hasRequiredEnv = Boolean(
     process.env.E2E_CLERK_USER_EMAIL &&
     process.env.E2E_CLERK_USER_PASSWORD,
 );
+
+function clearNestStorage() {
+  window.localStorage.removeItem("nestcalc-app-state-v3");
+  window.localStorage.removeItem("nestcalc-state-v2");
+  window.localStorage.removeItem("nestcalc-state-v1");
+}
+
+function seedComputedAutoNestState() {
+  window.localStorage.removeItem("nestcalc-app-state-v3");
+  window.localStorage.removeItem("nestcalc-state-v2");
+  window.localStorage.removeItem("nestcalc-state-v1");
+  window.localStorage.setItem(
+    "nestcalc-app-state-v3",
+    JSON.stringify({
+      version: 3,
+      mode: "autonest",
+      manualInputs: {
+        partWidth: 6,
+        partHeight: 4,
+        remnantWidth: 10,
+        remnantHeight: 10,
+        margins: { left: 0, right: 0, top: 0, bottom: 0 },
+        gapX: 0,
+        gapY: 0,
+        partLinked: false,
+        gapLinked: false,
+        moveMarginsWithRotation: false,
+        unit: "in",
+      },
+      autoNestSettings: {
+        globalClampMargin: 0,
+        overrideGlobalMargins: false,
+        marginOverrides: {
+          left: null,
+          right: null,
+          top: null,
+          bottom: null,
+        },
+      },
+    }),
+  );
+}
 
 test.skip(
   !hasRequiredEnv,
@@ -38,11 +85,7 @@ test.beforeAll(() => {
 test("authenticated user reaches the NestCalc calculator shell", async ({
   page,
 }) => {
-  await page.addInitScript(() => {
-    window.localStorage.removeItem("nestcalc-app-state-v3");
-    window.localStorage.removeItem("nestcalc-state-v2");
-    window.localStorage.removeItem("nestcalc-state-v1");
-  });
+  await page.addInitScript(clearNestStorage);
   await page.goto("/");
 
   await expect(page.getByRole("heading", { name: "NestCalc" })).toBeVisible();
@@ -106,4 +149,36 @@ test("authenticated user reaches the NestCalc calculator shell", async ({
   ).toBeHidden();
   await expect(rotatePartButton(page)).toBeEnabled();
   await expect(rotateRemButton(page)).toBeEnabled();
+});
+
+test("authenticated user sees computed AutoNest preview and returns to manual preview", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.addInitScript(seedComputedAutoNestState);
+  await page.goto("/");
+
+  await expect(autoNestToggle(page)).toHaveAttribute("aria-pressed", "true");
+  await expect(autoNestPreview(page)).toBeVisible();
+  await expect(manualNestPreview(page)).toBeHidden();
+  await expect(autoNestPreviewGroup(page, "0deg")).toContainText("0deg x2");
+  await expect(autoNestPreviewGroup(page, "90deg")).toContainText("90deg x1");
+  await expect(autoNestTrimLine(page)).toBeVisible();
+  await expect(autoNestTrimSummary(page)).toContainText(/Trim vertical @ \d/);
+  await expect(page.getByText(/Offset X\d/)).toBeVisible();
+  await expect(
+    page.getByText(/AutoNest two-group:\s*3\s*\(\+1\)/),
+  ).toBeVisible();
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(autoNestPreview(page)).toBeVisible();
+  await expect(autoNestPreviewGroup(page, "0deg")).toBeVisible();
+  await expect(autoNestPreviewGroup(page, "90deg")).toBeVisible();
+  await expect(autoNestTrimSummary(page)).toBeVisible();
+
+  await autoNestToggle(page).click();
+
+  await expect(autoNestToggle(page)).toHaveAttribute("aria-pressed", "false");
+  await expect(autoNestPreview(page)).toBeHidden();
+  await expect(manualNestPreview(page)).toBeVisible();
 });

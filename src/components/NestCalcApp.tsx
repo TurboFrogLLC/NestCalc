@@ -35,6 +35,7 @@ import type {
 import { unitLabel } from "@/lib/units";
 import { QuickValuesFocusProvider } from "@/hooks/useQuickValuesFocus";
 import { AuthControls } from "./AuthControls";
+import { AutoNestPreview } from "./AutoNestPreview";
 import { NestGrid } from "./NestGrid";
 import { NumberInput } from "./NumberInput";
 import { QuickValuesBar } from "./QuickValuesBar";
@@ -329,6 +330,8 @@ export function NestCalcApp() {
   const isAutoNest = session.mode === "autonest";
   const autoNestResult =
     session.result.mode === "autonest" ? session.result.autoNest : null;
+  const computedAutoNest =
+    autoNestResult?.status === "computed" ? autoNestResult.twoGroup : null;
   const manualRotationLocked = session.controls.manualRotationLocked;
 
   const setInputs = (updater: ManualInputsUpdater) => {
@@ -645,17 +648,26 @@ export function NestCalcApp() {
               <span className="ml-auto shrink-0">{partsSummary}</span>
             </div>
 
-            <NestGrid
-              remnantWidth={inputs.remnantWidth}
-              remnantHeight={inputs.remnantHeight}
-              partWidth={inputs.partWidth}
-              partHeight={inputs.partHeight}
-              margins={inputs.margins}
-              gapX={inputs.gapX}
-              gapY={inputs.gapY}
-              result={result}
-              unitLabel={unit}
-            />
+            {computedAutoNest ? (
+              <AutoNestPreview
+                twoGroup={computedAutoNest}
+                remnantWidth={inputs.remnantWidth}
+                remnantHeight={inputs.remnantHeight}
+                unitLabel={unit}
+              />
+            ) : (
+              <NestGrid
+                remnantWidth={inputs.remnantWidth}
+                remnantHeight={inputs.remnantHeight}
+                partWidth={inputs.partWidth}
+                partHeight={inputs.partHeight}
+                margins={inputs.margins}
+                gapX={inputs.gapX}
+                gapY={inputs.gapY}
+                result={result}
+                unitLabel={unit}
+              />
+            )}
           </section>
         </div>
       </div>
