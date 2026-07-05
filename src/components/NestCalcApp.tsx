@@ -1,12 +1,13 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   ArrowLeftRight,
   Link2,
   Moon,
   RotateCcw,
   RotateCw,
+  Settings,
   Sun,
 } from "lucide-react";
 import { useNestAppState } from "@/hooks/useNestInputs";
@@ -24,7 +25,13 @@ import {
   updateManualField,
   updateManualMargin,
 } from "@/lib/nestSession";
-import type { AutoNestResult, NestAppState, NestInputs } from "@/lib/types";
+import type {
+  AutoNestResult,
+  AutoNestSettings,
+  Margins,
+  NestAppState,
+  NestInputs,
+} from "@/lib/types";
 import { unitLabel } from "@/lib/units";
 import { QuickValuesFocusProvider } from "@/hooks/useQuickValuesFocus";
 import { AuthControls } from "./AuthControls";
@@ -182,17 +189,84 @@ function formatFallbackReason(
   }
 }
 
+function AutoNestSettingsPanel({
+  settings,
+  unit,
+  onGlobalClampMarginChange,
+  onOverrideGlobalMarginsChange,
+  onMarginOverrideChange,
+}: {
+  settings: AutoNestSettings;
+  unit: string;
+  onGlobalClampMarginChange: (value: number | null) => void;
+  onOverrideGlobalMarginsChange: (value: boolean) => void;
+  onMarginOverrideChange: (key: keyof Margins, value: number | null) => void;
+}) {
+  return (
+    <section
+      id="autonest-settings-panel"
+      className="flex shrink-0 flex-col gap-2 rounded-lg border border-[var(--card-border)] bg-[var(--card)] px-3 py-2"
+    >
+      <NumberInput
+        label="Global Clamp Margin"
+        value={settings.globalClampMargin}
+        unit={unit}
+        onChange={onGlobalClampMarginChange}
+      />
+      <label className="flex shrink-0 cursor-pointer items-center gap-2 text-xs text-[var(--muted)]">
+        <input
+          type="checkbox"
+          checked={settings.overrideGlobalMargins}
+          onChange={(event) =>
+            onOverrideGlobalMarginsChange(event.target.checked)
+          }
+          className="h-3.5 w-3.5 rounded border-[var(--input-border)] accent-[var(--accent)]"
+        />
+        Override global margins
+      </label>
+      {settings.overrideGlobalMargins ? (
+        <div className="grid grid-cols-2 gap-2">
+          <NumberInput
+            label="Left margin override"
+            value={settings.marginOverrides.left}
+            unit={unit}
+            onChange={(value) => onMarginOverrideChange("left", value)}
+          />
+          <NumberInput
+            label="Right margin override"
+            value={settings.marginOverrides.right}
+            unit={unit}
+            onChange={(value) => onMarginOverrideChange("right", value)}
+          />
+          <NumberInput
+            label="Bottom margin override"
+            value={settings.marginOverrides.bottom}
+            unit={unit}
+            onChange={(value) => onMarginOverrideChange("bottom", value)}
+          />
+          <NumberInput
+            label="Top margin override"
+            value={settings.marginOverrides.top}
+            unit={unit}
+            onChange={(value) => onMarginOverrideChange("top", value)}
+          />
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
 function AutoNestComparison({ result }: { result: AutoNestResult }) {
   if (result.status === "computed") {
     const delta = result.twoGroup.totalParts - result.bestUniform.totalParts;
 
     return (
       <span>
-        Best uniform{" "}
+        Best uniform:{" "}
         <strong className="text-[var(--foreground)]">
           {result.bestUniform.totalParts}
         </strong>{" "}
-        | AutoNest two-group{" "}
+        | AutoNest two-group:{" "}
         <strong className="text-[var(--accent)]">
           {result.twoGroup.totalParts}
         </strong>{" "}
@@ -205,11 +279,11 @@ function AutoNestComparison({ result }: { result: AutoNestResult }) {
   if (result.status === "fallback") {
     return (
       <span>
-        Best uniform{" "}
+        Best uniform:{" "}
         <strong className="text-[var(--foreground)]">
           {result.bestUniform.totalParts}
         </strong>{" "}
-        | Fallback{" "}
+        | Using uniform:{" "}
         <strong className="text-[var(--accent)]">
           {result.fallback.totalParts}
         </strong>{" "}
@@ -220,7 +294,7 @@ function AutoNestComparison({ result }: { result: AutoNestResult }) {
 
   return (
     <span>
-      Best uniform{" "}
+      Best uniform:{" "}
       <strong className="text-[var(--foreground)]">
         {result.bestUniform.totalParts}
       </strong>{" "}
@@ -245,11 +319,13 @@ function updateManualInputs(
 export function NestCalcApp() {
   const { state, setState } = useNestAppState();
   const { theme, toggleTheme } = useTheme();
+  const [autoNestSettingsOpen, setAutoNestSettingsOpen] = useState(false);
 
   const session = useMemo(() => createNestSession(state), [state]);
   const inputs = session.manual.inputs;
   const result = session.manual.result;
   const unit = unitLabel(inputs.unit);
+  const autoNestSettings = state.autoNestSettings;
   const isAutoNest = session.mode === "autonest";
   const autoNestResult =
     session.result.mode === "autonest" ? session.result.autoNest : null;
@@ -275,9 +351,40 @@ export function NestCalcApp() {
   };
 
   const toggleAutoNest = () => {
+    if (isAutoNest) {
+      setAutoNestSettingsOpen(false);
+    }
+
     setState((current) => ({
       ...current,
       mode: current.mode === "autonest" ? "manual" : "autonest",
+    }));
+  };
+
+  const updateAutoNestSettings = (
+    updater:
+      | AutoNestSettings
+      | ((current: AutoNestSettings) => AutoNestSettings),
+  ) => {
+    setState((current) => ({
+      ...current,
+      autoNestSettings:
+        typeof updater === "function"
+          ? updater(current.autoNestSettings)
+          : updater,
+    }));
+  };
+
+  const updateAutoNestMarginOverride = (
+    key: keyof Margins,
+    value: number | null,
+  ) => {
+    updateAutoNestSettings((current) => ({
+      ...current,
+      marginOverrides: {
+        ...current.marginOverrides,
+        [key]: value,
+      },
     }));
   };
 
@@ -372,7 +479,46 @@ export function NestCalcApp() {
               <span className="min-w-0 flex-1 text-[11px] font-medium leading-tight text-[var(--muted)]">
                 {isAutoNest ? "AutoNest active" : "Manual"}
               </span>
+              {isAutoNest ? (
+                <button
+                  type="button"
+                  aria-label="AutoNest settings"
+                  aria-expanded={autoNestSettingsOpen}
+                  aria-controls="autonest-settings-panel"
+                  title="AutoNest settings"
+                  onClick={() =>
+                    setAutoNestSettingsOpen((current) => !current)
+                  }
+                  className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md border transition-colors active:scale-[0.97] ${
+                    autoNestSettingsOpen
+                      ? "border-[var(--accent)] bg-[var(--accent)] text-[var(--background)] hover:border-[var(--accent-hover)] hover:bg-[var(--accent-hover)]"
+                      : "border-[var(--btn-border)] bg-[var(--btn-bg)] text-[var(--muted)] hover:border-[var(--accent-hover)] hover:text-[var(--accent)]"
+                  }`}
+                >
+                  <Settings className="h-3.5 w-3.5" strokeWidth={2} />
+                </button>
+              ) : null}
             </section>
+
+            {isAutoNest && autoNestSettingsOpen ? (
+              <AutoNestSettingsPanel
+                settings={autoNestSettings}
+                unit={unit}
+                onGlobalClampMarginChange={(value) =>
+                  updateAutoNestSettings((current) => ({
+                    ...current,
+                    globalClampMargin: value,
+                  }))
+                }
+                onOverrideGlobalMarginsChange={(value) =>
+                  updateAutoNestSettings((current) => ({
+                    ...current,
+                    overrideGlobalMargins: value,
+                  }))
+                }
+                onMarginOverrideChange={updateAutoNestMarginOverride}
+              />
+            ) : null}
 
             {autoNestResult ? (
               <section
