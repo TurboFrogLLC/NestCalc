@@ -5,6 +5,7 @@ import type {
   AutoNestGroupResult,
   AutoNestResult,
   AutoNestSettings,
+  AutoNestTrimEdgePolicy,
   Margins,
   NestInputs,
   NestResult,
@@ -52,6 +53,8 @@ interface Candidate {
   };
 }
 
+type RequiredMarginPair = [Margins, Margins];
+
 function finitePositive(value: number | null): value is number {
   return typeof value === "number" && Number.isFinite(value) && value > 0;
 }
@@ -85,9 +88,41 @@ function effectiveAutoNestMargins(settings: AutoNestSettings): Margins {
   };
 }
 
+function trimEdgePolicy(settings: AutoNestSettings): AutoNestTrimEdgePolicy {
+  return settings.trimEdgePolicy === "full" ||
+    settings.trimEdgePolicy === "shared"
+    ? settings.trimEdgePolicy
+    : "open";
+}
+
+function requiredMarginsForSplit(
+  settings: AutoNestSettings,
+  outer: Margins,
+  orientation: TrimLineOrientation,
+): RequiredMarginPair {
+  const policy = trimEdgePolicy(settings);
+  if (policy === "full") return [{ ...outer }, { ...outer }];
+
+  const shared =
+    policy === "shared" ? coalesce(settings.sharedTrimClearance) : 0;
+
+  if (orientation === "vertical") {
+    return [
+      { ...outer, right: 0 },
+      { ...outer, left: shared },
+    ];
+  }
+
+  return [
+    { ...outer, bottom: 0 },
+    { ...outer, top: shared },
+  ];
+}
+
 function hasUsableAutoNestInputs(
   inputs: NestInputs,
   margins: Margins,
+  settings: AutoNestSettings,
 ): boolean {
   const gapsAreValid =
     finiteNonNegative(coalesce(inputs.gapX)) &&
@@ -98,6 +133,9 @@ function hasUsableAutoNestInputs(
     margins.top,
     margins.bottom,
   ].every((value) => finiteNonNegative(coalesce(value)));
+  const sharedClearanceIsValid =
+    trimEdgePolicy(settings) !== "shared" ||
+    finiteNonNegative(coalesce(settings.sharedTrimClearance));
 
   return (
     finitePositive(inputs.partWidth) &&
@@ -105,7 +143,8 @@ function hasUsableAutoNestInputs(
     finitePositive(inputs.remnantWidth) &&
     finitePositive(inputs.remnantHeight) &&
     gapsAreValid &&
-    marginsAreValid
+    marginsAreValid &&
+    sharedClearanceIsValid
   );
 }
 
@@ -181,6 +220,7 @@ function makeBlank(
 function usefulBlankThreshold(
   inputs: NestInputs,
   margins: Margins,
+  settings: AutoNestSettings,
 ): number {
   const partMin = Math.min(coalesce(inputs.partWidth), coalesce(inputs.partHeight));
   const largestMargin = Math.max(
@@ -188,6 +228,9 @@ function usefulBlankThreshold(
     coalesce(margins.right),
     coalesce(margins.top),
     coalesce(margins.bottom),
+    trimEdgePolicy(settings) === "shared"
+      ? coalesce(settings.sharedTrimClearance)
+      : 0,
   );
 
   // Conservative sliver guard: each physical blank must have room for at
@@ -218,12 +261,13 @@ function achievedMarginsAreValid(
 
 function candidateIsUseful(
   candidate: Candidate,
-  margins: Margins,
+  requiredMargins: RequiredMarginPair,
   threshold: number,
 ): boolean {
   return candidate.blanks.every(
-    (blank) =>
-      blankIsUseful(blank, threshold) && achievedMarginsAreValid(blank, margins),
+    (blank, index) =>
+      blankIsUseful(blank, threshold) &&
+      achievedMarginsAreValid(blank, requiredMargins[index]),
   );
 }
 
@@ -263,20 +307,25 @@ function verticalCandidate(
   second: PackedGroup,
   remnantWidth: number,
   remnantHeight: number,
-  margins: Margins,
+  requiredMargins: RequiredMarginPair,
 ): Candidate | null {
+  const [firstMargins, secondMargins] = requiredMargins;
   const firstWidth =
-    coalesce(margins.left) + first.boundingBox.width + coalesce(margins.right);
+    coalesce(firstMargins.left) +
+    first.boundingBox.width +
+    coalesce(firstMargins.right);
   const secondMinimumWidth =
-    coalesce(margins.left) + second.boundingBox.width + coalesce(margins.right);
+    coalesce(secondMargins.left) +
+    second.boundingBox.width +
+    coalesce(secondMargins.right);
 
   if (firstWidth + secondMinimumWidth > remnantWidth + FIT_EPSILON) {
     return null;
   }
 
   const secondWidth = remnantWidth - firstWidth;
-  const firstBlank = makeBlank(firstWidth, remnantHeight, margins, first);
-  const secondBlank = makeBlank(secondWidth, remnantHeight, margins, second);
+  const firstBlank = makeBlank(firstWidth, remnantHeight, firstMargins, first);
+  const secondBlank = makeBlank(secondWidth, remnantHeight, secondMargins, second);
 
   return {
     totalParts: first.count + second.count,
@@ -297,20 +346,25 @@ function horizontalCandidate(
   second: PackedGroup,
   remnantWidth: number,
   remnantHeight: number,
-  margins: Margins,
+  requiredMargins: RequiredMarginPair,
 ): Candidate | null {
+  const [firstMargins, secondMargins] = requiredMargins;
   const firstHeight =
-    coalesce(margins.top) + first.boundingBox.height + coalesce(margins.bottom);
+    coalesce(firstMargins.top) +
+    first.boundingBox.height +
+    coalesce(firstMargins.bottom);
   const secondMinimumHeight =
-    coalesce(margins.top) + second.boundingBox.height + coalesce(margins.bottom);
+    coalesce(secondMargins.top) +
+    second.boundingBox.height +
+    coalesce(secondMargins.bottom);
 
   if (firstHeight + secondMinimumHeight > remnantHeight + FIT_EPSILON) {
     return null;
   }
 
   const secondHeight = remnantHeight - firstHeight;
-  const firstBlank = makeBlank(remnantWidth, firstHeight, margins, first);
-  const secondBlank = makeBlank(remnantWidth, secondHeight, margins, second);
+  const firstBlank = makeBlank(remnantWidth, firstHeight, firstMargins, first);
+  const secondBlank = makeBlank(remnantWidth, secondHeight, secondMargins, second);
 
   return {
     totalParts: first.count + second.count,
@@ -346,15 +400,38 @@ function packedGroupForGrid(
 function estimateTwoGroupSearchCandidates(
   inputs: NestInputs,
   margins: Margins,
+  settings: AutoNestSettings,
 ): number {
   const remnantWidth = coalesce(inputs.remnantWidth);
   const remnantHeight = coalesce(inputs.remnantHeight);
   const gapX = coalesce(inputs.gapX);
   const gapY = coalesce(inputs.gapY);
-  const usableWidth =
-    remnantWidth - coalesce(margins.left) - coalesce(margins.right);
-  const usableHeight =
-    remnantHeight - coalesce(margins.top) - coalesce(margins.bottom);
+  const verticalFirstMargins = requiredMarginsForSplit(
+    settings,
+    margins,
+    "vertical",
+  )[0];
+  const horizontalFirstMargins = requiredMarginsForSplit(
+    settings,
+    margins,
+    "horizontal",
+  )[0];
+  const verticalUsableWidth =
+    remnantWidth -
+    coalesce(verticalFirstMargins.left) -
+    coalesce(verticalFirstMargins.right);
+  const verticalUsableHeight =
+    remnantHeight -
+    coalesce(verticalFirstMargins.top) -
+    coalesce(verticalFirstMargins.bottom);
+  const horizontalUsableWidth =
+    remnantWidth -
+    coalesce(horizontalFirstMargins.left) -
+    coalesce(horizontalFirstMargins.right);
+  const horizontalUsableHeight =
+    remnantHeight -
+    coalesce(horizontalFirstMargins.top) -
+    coalesce(horizontalFirstMargins.bottom);
   const parts: [OrientedPart, OrientedPart] = [
     {
       orientation: "0deg",
@@ -374,23 +451,31 @@ function estimateTwoGroupSearchCandidates(
     [parts[1], parts[0]] as [OrientedPart, OrientedPart],
   ]) {
     const verticalRowsFirst = partsInDimension(
-      usableHeight,
+      verticalUsableHeight,
       firstPart.height,
       gapY,
     );
 
     if (verticalRowsFirst > 0) {
-      candidates += partsInDimension(usableWidth, firstPart.width, gapX);
+      candidates += partsInDimension(
+        verticalUsableWidth,
+        firstPart.width,
+        gapX,
+      );
     }
 
     const horizontalColumnsFirst = partsInDimension(
-      usableWidth,
+      horizontalUsableWidth,
       firstPart.width,
       gapX,
     );
 
     if (horizontalColumnsFirst > 0) {
-      candidates += partsInDimension(usableHeight, firstPart.height, gapY);
+      candidates += partsInDimension(
+        horizontalUsableHeight,
+        firstPart.height,
+        gapY,
+      );
     }
   }
 
@@ -400,6 +485,7 @@ function estimateTwoGroupSearchCandidates(
 function findBestTwoGroupCandidate(
   inputs: NestInputs,
   margins: Margins,
+  settings: AutoNestSettings,
 ): Candidate | null {
   const remnantWidth = coalesce(inputs.remnantWidth);
   const remnantHeight = coalesce(inputs.remnantHeight);
@@ -417,7 +503,17 @@ function findBestTwoGroupCandidate(
       height: coalesce(inputs.partWidth),
     },
   ];
-  const threshold = usefulBlankThreshold(inputs, margins);
+  const threshold = usefulBlankThreshold(inputs, margins, settings);
+  const verticalMargins = requiredMarginsForSplit(
+    settings,
+    margins,
+    "vertical",
+  );
+  const horizontalMargins = requiredMarginsForSplit(
+    settings,
+    margins,
+    "horizontal",
+  );
   let best: Candidate | null = null;
 
   for (const [firstPart, secondPart] of [
@@ -425,17 +521,23 @@ function findBestTwoGroupCandidate(
     [parts[1], parts[0]] as [OrientedPart, OrientedPart],
   ]) {
     const verticalRowsFirst = partsInDimension(
-      remnantHeight - coalesce(margins.top) - coalesce(margins.bottom),
+      remnantHeight -
+        coalesce(verticalMargins[0].top) -
+        coalesce(verticalMargins[0].bottom),
       firstPart.height,
       gapY,
     );
     const verticalRowsSecond = partsInDimension(
-      remnantHeight - coalesce(margins.top) - coalesce(margins.bottom),
+      remnantHeight -
+        coalesce(verticalMargins[1].top) -
+        coalesce(verticalMargins[1].bottom),
       secondPart.height,
       gapY,
     );
     const maxFirstVerticalColumns = partsInDimension(
-      remnantWidth - coalesce(margins.left) - coalesce(margins.right),
+      remnantWidth -
+        coalesce(verticalMargins[0].left) -
+        coalesce(verticalMargins[0].right),
       firstPart.width,
       gapX,
     );
@@ -453,14 +555,14 @@ function findBestTwoGroupCandidate(
         gapY,
       );
       const firstWidth =
-        coalesce(margins.left) +
+        coalesce(verticalMargins[0].left) +
         firstGroup.boundingBox.width +
-        coalesce(margins.right);
+        coalesce(verticalMargins[0].right);
       const secondAvailableWidth =
         remnantWidth -
         firstWidth -
-        coalesce(margins.left) -
-        coalesce(margins.right);
+        coalesce(verticalMargins[1].left) -
+        coalesce(verticalMargins[1].right);
       const secondColumns = partsInDimension(
         secondAvailableWidth,
         secondPart.width,
@@ -483,12 +585,12 @@ function findBestTwoGroupCandidate(
         secondGroup,
         remnantWidth,
         remnantHeight,
-        margins,
+        verticalMargins,
       );
 
       if (
         candidate &&
-        candidateIsUseful(candidate, margins, threshold) &&
+        candidateIsUseful(candidate, verticalMargins, threshold) &&
         isBetterCandidate(candidate, best)
       ) {
         best = candidate;
@@ -496,17 +598,23 @@ function findBestTwoGroupCandidate(
     }
 
     const horizontalColumnsFirst = partsInDimension(
-      remnantWidth - coalesce(margins.left) - coalesce(margins.right),
+      remnantWidth -
+        coalesce(horizontalMargins[0].left) -
+        coalesce(horizontalMargins[0].right),
       firstPart.width,
       gapX,
     );
     const horizontalColumnsSecond = partsInDimension(
-      remnantWidth - coalesce(margins.left) - coalesce(margins.right),
+      remnantWidth -
+        coalesce(horizontalMargins[1].left) -
+        coalesce(horizontalMargins[1].right),
       secondPart.width,
       gapX,
     );
     const maxFirstHorizontalRows = partsInDimension(
-      remnantHeight - coalesce(margins.top) - coalesce(margins.bottom),
+      remnantHeight -
+        coalesce(horizontalMargins[0].top) -
+        coalesce(horizontalMargins[0].bottom),
       firstPart.height,
       gapY,
     );
@@ -524,14 +632,14 @@ function findBestTwoGroupCandidate(
         gapY,
       );
       const firstHeight =
-        coalesce(margins.top) +
+        coalesce(horizontalMargins[0].top) +
         firstGroup.boundingBox.height +
-        coalesce(margins.bottom);
+        coalesce(horizontalMargins[0].bottom);
       const secondAvailableHeight =
         remnantHeight -
         firstHeight -
-        coalesce(margins.top) -
-        coalesce(margins.bottom);
+        coalesce(horizontalMargins[1].top) -
+        coalesce(horizontalMargins[1].bottom);
       const secondRows = partsInDimension(
         secondAvailableHeight,
         secondPart.height,
@@ -554,12 +662,12 @@ function findBestTwoGroupCandidate(
         secondGroup,
         remnantWidth,
         remnantHeight,
-        margins,
+        horizontalMargins,
       );
 
       if (
         candidate &&
-        candidateIsUseful(candidate, margins, threshold) &&
+        candidateIsUseful(candidate, horizontalMargins, threshold) &&
         isBetterCandidate(candidate, best)
       ) {
         best = candidate;
@@ -576,7 +684,7 @@ export function calculateAutoNest(
 ): AutoNestResult {
   const margins = effectiveAutoNestMargins(settings);
 
-  if (!hasUsableAutoNestInputs(inputs, margins)) {
+  if (!hasUsableAutoNestInputs(inputs, margins, settings)) {
     const safeFallback = emptyNestResult();
     return {
       status: "fallback",
@@ -592,7 +700,7 @@ export function calculateAutoNest(
   // 20,000 split candidates is well above practical shop remnant grids while
   // keeping pathological ratios out of the synchronous render path.
   if (
-    estimateTwoGroupSearchCandidates(inputs, margins) >
+    estimateTwoGroupSearchCandidates(inputs, margins, settings) >
     TWO_GROUP_SEARCH_CANDIDATE_BUDGET
   ) {
     return {
@@ -603,7 +711,7 @@ export function calculateAutoNest(
     };
   }
 
-  const twoGroup = findBestTwoGroupCandidate(inputs, margins);
+  const twoGroup = findBestTwoGroupCandidate(inputs, margins, settings);
 
   if (!twoGroup || twoGroup.totalParts <= bestUniform.totalParts) {
     return {

@@ -17,6 +17,33 @@ export function globalClampMarginInput(page: Page) {
   return page.getByLabel("Global Clamp Margin");
 }
 
+export function autoNestTrimPolicyGroup(page: Page) {
+  return page.getByRole("group", {
+    name: "Internal trim edge margin policy",
+  });
+}
+
+export function autoNestTrimPolicyOption(
+  page: Page,
+  label: "Open" | "Shared" | "Full",
+) {
+  return autoNestTrimPolicyGroup(page).getByRole("radio", {
+    name: label,
+    exact: true,
+  });
+}
+
+export function autoNestTrimPolicySegment(
+  page: Page,
+  label: "Open" | "Shared" | "Full",
+) {
+  return autoNestTrimPolicyGroup(page).getByText(label, { exact: true });
+}
+
+export function autoNestSharedTrimClearanceInput(page: Page) {
+  return page.getByLabel("Shared trim clearance");
+}
+
 export function overrideGlobalMarginsCheckbox(page: Page) {
   return page.getByRole("checkbox", { name: "Override global margins" });
 }

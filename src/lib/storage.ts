@@ -1,5 +1,6 @@
 import type {
   AutoNestSettings,
+  AutoNestTrimEdgePolicy,
   Margins,
   NestAppState,
   NestInputs,
@@ -27,6 +28,8 @@ export const DEFAULT_INPUTS: NestInputs = {
 
 export const DEFAULT_AUTONEST_SETTINGS: AutoNestSettings = {
   globalClampMargin: 0.53,
+  trimEdgePolicy: "open",
+  sharedTrimClearance: 0.53,
   overrideGlobalMargins: false,
   marginOverrides: { left: null, right: null, top: null, bottom: null },
 };
@@ -106,10 +109,28 @@ function normalizeManualInputs(inputs: LegacyNestInputs = {}): NestInputs {
 
 function normalizeAutoNestSettings(
   settings: StoredAutoNestSettings = {},
+  unit: NestInputs["unit"] = "in",
 ): AutoNestSettings {
+  const unitDefault = unit === "mm" ? 13.462 : 0.53;
+  const globalClampMargin =
+    settings.globalClampMargin === undefined
+      ? unitDefault
+      : settings.globalClampMargin;
+  const trimEdgePolicy: AutoNestTrimEdgePolicy =
+    settings.trimEdgePolicy === "full" ||
+    settings.trimEdgePolicy === "shared"
+      ? settings.trimEdgePolicy
+      : "open";
+
   return {
     ...DEFAULT_AUTONEST_SETTINGS,
     ...settings,
+    globalClampMargin,
+    trimEdgePolicy,
+    sharedTrimClearance:
+      settings.sharedTrimClearance === undefined
+        ? globalClampMargin
+        : settings.sharedTrimClearance,
     marginOverrides: {
       ...DEFAULT_AUTONEST_SETTINGS.marginOverrides,
       ...settings.marginOverrides,
@@ -122,11 +143,16 @@ function normalizeMode(mode: NestMode | undefined): NestMode {
 }
 
 function normalizeAppState(state: StoredNestAppState = {}): NestAppState {
+  const manualInputs = normalizeManualInputs(state.manualInputs);
+
   return {
     version: 3,
     mode: normalizeMode(state.mode),
-    manualInputs: normalizeManualInputs(state.manualInputs),
-    autoNestSettings: normalizeAutoNestSettings(state.autoNestSettings),
+    manualInputs,
+    autoNestSettings: normalizeAutoNestSettings(
+      state.autoNestSettings,
+      manualInputs.unit,
+    ),
   };
 }
 

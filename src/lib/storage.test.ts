@@ -67,7 +67,11 @@ describe("storage compatibility", () => {
       version: 3,
       mode: "manual",
       manualInputs: persisted,
-      autoNestSettings: DEFAULT_AUTONEST_SETTINGS,
+      autoNestSettings: {
+        ...DEFAULT_AUTONEST_SETTINGS,
+        globalClampMargin: 13.462,
+        sharedTrimClearance: 13.462,
+      },
     });
   });
 
@@ -130,6 +134,8 @@ describe("storage compatibility", () => {
       },
       autoNestSettings: {
         globalClampMargin: 12.7,
+        trimEdgePolicy: "shared",
+        sharedTrimClearance: 1.27,
         overrideGlobalMargins: true,
         marginOverrides: { left: 1, right: 2, top: 3, bottom: 4 },
       },
@@ -165,6 +171,65 @@ describe("storage compatibility", () => {
     });
   });
 
+  it("lazily migrates missing trim policy and clearance without rewriting storage", () => {
+    const { localStorage } = installLocalStorage({
+      "nestcalc-app-state-v3": JSON.stringify({
+        version: 3,
+        mode: "autonest",
+        manualInputs: { ...DEFAULT_INPUTS, unit: "mm" },
+        autoNestSettings: { globalClampMargin: 12.7 },
+      }),
+    });
+
+    expect(loadNestAppState().autoNestSettings).toMatchObject({
+      globalClampMargin: 12.7,
+      trimEdgePolicy: "open",
+      sharedTrimClearance: 12.7,
+    });
+    expect(localStorage.setItem).not.toHaveBeenCalled();
+  });
+
+  it.each(["full", "open", "shared"] as const)(
+    "preserves explicit %s trim policy settings",
+    (trimEdgePolicy) => {
+      installLocalStorage({
+        "nestcalc-app-state-v3": JSON.stringify({
+          version: 3,
+          manualInputs: DEFAULT_INPUTS,
+          autoNestSettings: {
+            globalClampMargin: 0.53,
+            trimEdgePolicy,
+            sharedTrimClearance: 0.03,
+          },
+        }),
+      });
+
+      expect(loadNestAppState().autoNestSettings).toMatchObject({
+        trimEdgePolicy,
+        sharedTrimClearance: 0.03,
+      });
+    },
+  );
+
+  it("normalizes an invalid runtime policy to open", () => {
+    installLocalStorage({
+      "nestcalc-app-state-v3": JSON.stringify({
+        version: 3,
+        manualInputs: DEFAULT_INPUTS,
+        autoNestSettings: {
+          globalClampMargin: 0.53,
+          trimEdgePolicy: "diagonal",
+          sharedTrimClearance: null,
+        },
+      }),
+    });
+
+    expect(loadNestAppState().autoNestSettings).toMatchObject({
+      trimEdgePolicy: "open",
+      sharedTrimClearance: null,
+    });
+  });
+
   it("saves manual inputs under the wrapped storage key while preserving mode and settings", () => {
     const { values } = installLocalStorage();
     const inputs = { ...DEFAULT_INPUTS, partWidth: 8 };
@@ -185,6 +250,8 @@ describe("storage compatibility", () => {
       manualInputs: DEFAULT_INPUTS,
       autoNestSettings: {
         globalClampMargin: 1,
+        trimEdgePolicy: "full",
+        sharedTrimClearance: 0.25,
         overrideGlobalMargins: true,
         marginOverrides: { left: 0.1, right: null, top: 0.2, bottom: null },
       },

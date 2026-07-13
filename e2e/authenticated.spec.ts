@@ -6,6 +6,10 @@ import {
   autoNestPreview,
   autoNestPreviewGroup,
   autoNestSettingsButton,
+  autoNestSharedTrimClearanceInput,
+  autoNestTrimPolicyGroup,
+  autoNestTrimPolicyOption,
+  autoNestTrimPolicySegment,
   autoNestTrimLine,
   autoNestTrimSummary,
   autoNestToggle,
@@ -55,6 +59,41 @@ function seedComputedAutoNestState() {
       },
       autoNestSettings: {
         globalClampMargin: 0,
+        trimEdgePolicy: "open",
+        sharedTrimClearance: 0,
+        overrideGlobalMargins: false,
+        marginOverrides: {
+          left: null,
+          right: null,
+          top: null,
+          bottom: null,
+        },
+      },
+    }),
+  );
+}
+
+function seedTrimPolicyFixtureState() {
+  window.localStorage.setItem(
+    "nestcalc-app-state-v3",
+    JSON.stringify({
+      version: 3,
+      mode: "autonest",
+      manualInputs: {
+        partWidth: 6,
+        partHeight: 4,
+        remnantWidth: 11.1,
+        remnantHeight: 10,
+        margins: { left: 0, right: 0, top: 0, bottom: 0 },
+        gapX: 0,
+        gapY: 0,
+        partLinked: false,
+        gapLinked: false,
+        moveMarginsWithRotation: false,
+        unit: "in",
+      },
+      autoNestSettings: {
+        globalClampMargin: 0.53,
         overrideGlobalMargins: false,
         marginOverrides: {
           left: null,
@@ -105,7 +144,9 @@ test("authenticated user reaches the NestCalc calculator shell", async ({
   await expect(
     page.getByText("AutoNest: Two groups (0° + 90°)"),
   ).toBeVisible();
-  await expect(page.getByText(/Best uniform: \d+ \| Using uniform:/)).toBeVisible();
+  await expect(
+    page.getByText(/Best uniform: \d+ \| AutoNest two-group:/),
+  ).toBeVisible();
   await expect(rotatePartButton(page)).toBeDisabled();
   await expect(rotateRemButton(page)).toBeDisabled();
 
@@ -172,7 +213,6 @@ test("authenticated user sees computed AutoNest preview and returns to manual pr
   ).toBeVisible();
 
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect(page.getByText(/0deg x2 \| 90deg x1/)).toBeVisible();
   await expect(autoNestPreview(page)).toBeVisible();
   await expect(autoNestPreviewGroup(page, "0deg")).toBeVisible();
   await expect(autoNestPreviewGroup(page, "90deg")).toBeVisible();
@@ -183,4 +223,58 @@ test("authenticated user sees computed AutoNest preview and returns to manual pr
   await expect(autoNestToggle(page)).toHaveAttribute("aria-pressed", "false");
   await expect(autoNestPreview(page)).toBeHidden();
   await expect(manualNestPreview(page)).toBeVisible();
+});
+
+test("authenticated user controls the trim-edge policy for Fixture 2", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.addInitScript(seedTrimPolicyFixtureState);
+  await page.goto("/");
+  await autoNestSettingsButton(page).click();
+
+  await expect(autoNestTrimPolicyGroup(page)).toBeVisible();
+  await expect(autoNestTrimPolicyOption(page, "Open")).toBeChecked();
+  await expect(autoNestSharedTrimClearanceInput(page)).toBeHidden();
+  await expect(visiblePartsSummary(page)).toContainText("Parts = 3");
+
+  await autoNestTrimPolicySegment(page, "Full").click();
+  await expect(autoNestTrimPolicyOption(page, "Full")).toBeChecked();
+  await expect(autoNestSharedTrimClearanceInput(page)).toBeHidden();
+  await expect(visiblePartsSummary(page)).toContainText("Parts = 2");
+  await expect(page.getByText(/Best uniform:\s*2\s*\| Using uniform:\s*2/)).toBeVisible();
+
+  await autoNestTrimPolicySegment(page, "Open").click();
+  await expect(visiblePartsSummary(page)).toContainText("Parts = 3");
+  await expect(page.getByText(/AutoNest two-group:\s*3\s*\(\+1\)/)).toBeVisible();
+
+  await autoNestTrimPolicySegment(page, "Shared").click();
+  await expect(autoNestSharedTrimClearanceInput(page)).toBeVisible();
+  await autoNestSharedTrimClearanceInput(page).fill("0.03");
+  await expect(visiblePartsSummary(page)).toContainText("Parts = 3");
+  await autoNestSharedTrimClearanceInput(page).fill("0.05");
+  await expect(visiblePartsSummary(page)).toContainText("Parts = 2");
+  await expect(rotatePartButton(page)).toBeDisabled();
+  await expect(rotateRemButton(page)).toBeDisabled();
+
+  await expect
+    .poll(async () =>
+      page.evaluate(() => {
+        const raw = window.localStorage.getItem("nestcalc-app-state-v3");
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        return [
+          parsed.autoNestSettings.trimEdgePolicy,
+          parsed.autoNestSettings.sharedTrimClearance,
+        ];
+      }),
+    )
+    .toEqual(["shared", 0.05]);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(autoNestTrimPolicyGroup(page)).toBeInViewport();
+  await expect(autoNestSharedTrimClearanceInput(page)).toBeInViewport();
+  await autoNestSharedTrimClearanceInput(page).fill("0.03");
+  await expect(autoNestPreview(page)).toBeVisible();
+  await expect(autoNestTrimSummary(page)).toBeVisible();
 });

@@ -4,6 +4,8 @@ export type ThemeMode = "dark" | "light";
 
 export type NestMode = "manual" | "autonest";
 
+export type AutoNestTrimEdgePolicy = "full" | "open" | "shared";
+
 export interface Margins {
   left: number | null;
   right: number | null;
@@ -35,6 +37,8 @@ export interface NestResult {
 
 export interface AutoNestSettings {
   globalClampMargin: number | null;
+  trimEdgePolicy: AutoNestTrimEdgePolicy;
+  sharedTrimClearance: number | null;
   overrideGlobalMargins: boolean;
   marginOverrides: Margins;
 }

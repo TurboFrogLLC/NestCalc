@@ -2,7 +2,7 @@
 
 **Project:** NestCalc  
 **Date:** July 2026  
-**Status:** Draft v7 — Simple Orthogonal Grid Packing + Post-Facto Trim Line + Operator-First  
+**Status:** Draft v8 — Explicit Internal Trim-Edge Margin Policy
 **Author:** RecklessToddler + Grok  
 **Location:** `docs/AutoNest_Spec.md`
 
@@ -31,7 +31,7 @@ This is the key simplification and the reason we can keep the implementation lig
 
 - **Inner nest group** — Each orientation (0° group and 90° group) is packed **independently and tightly** using only the user-defined gap between parts (no margins inside the group). This creates its own minimal bounding rectangle (“imaginary tight blank size”).
 
-- **Outer blank** — The actual piece(s) cut from the remnant. The full user-defined margins are applied around each inner group when fitting them onto the remnant.
+- **Outer blank** — The actual piece(s) cut from the remnant. Configured outer margins remain on remnant-facing edges. Internal trim-facing requirements follow the explicit policy in section 4.1.
 
 - **Simple orthogonal grid / level / shelf packing only** — Because we are dealing exclusively with rectangles and squares (no irregular shapes, no part-in-part, no L/T/U nesting), we use standard, well-proven rectangular packing methods: shelf packing, level-oriented packing, or Bottom-Left-Fill (BLF) variants. These produce clean, predictable grids that operators understand immediately. No complex no-fit-polygon (NFP) logic is needed or wanted in v1.
 
@@ -88,6 +88,8 @@ When AutoNest toggle is active, manual part/remnant rotation controls are **disa
 - Accessed via a small gear icon (keeps the main calculator clean and “light n tite”).
 - **Global Clamp Margin**: Single value (example default: 0.530") that applies to the origin/clamp sides. This is the most common setting most operators will use.
 - Toggle/checkbox: **“Override global margins”** — when enabled, shows all four margin inputs (Left / Right / Top / Bottom) for full flexibility on special jobs.
+- Segmented **Open | Shared | Full** internal trim-edge policy control. `open` is the default.
+- **Shared Trim Clearance** appears only for `shared` and is initialized from the normalized Global Clamp Margin for new or migrated state.
 - The override mode is intentionally secondary so the main UI stays simple. Most of the time users stay in global mode.
 
 **Preview:**
@@ -104,6 +106,32 @@ When AutoNest toggle is active, manual part/remnant rotation controls are **disa
 
 The operator looks at the numbers and the visual for a few seconds and knows exactly what to do on the machine. That is the entire point.
 
+### 5.1 Internal Trim-Edge Margin Policy
+
+Let the configured outer margins be `L`, `R`, `T`, and `B`, and let `C` be the non-negative shared trim clearance. Blank 1 is the origin-side left/top blank. Blank 2 starts physically at the trim line and is the non-origin right/bottom blank.
+
+- `full`: preserve the original full-margin model on every edge of both blanks.
+- `open` (default): require zero margin on both trim-facing edges.
+- `shared`: require zero on Blank 1's trim-facing edge and assign all `C` to Blank 2's leading trim-facing edge.
+
+For a vertical trim, required envelopes are:
+
+- `full`: Blank 1 `[L,R,T,B]`; Blank 2 `[L,R,T,B]`.
+- `open`: Blank 1 `[L,0,T,B]`; Blank 2 `[0,R,T,B]`.
+- `shared`: Blank 1 `[L,0,T,B]`; Blank 2 `[C,R,T,B]`.
+
+For a horizontal trim, required envelopes are:
+
+- `full`: Blank 1 `[L,R,T,B]`; Blank 2 `[L,R,T,B]`.
+- `open`: Blank 1 `[L,R,T,0]`; Blank 2 `[L,R,0,B]`.
+- `shared`: Blank 1 `[L,R,T,0]`; Blank 2 `[L,R,C,B]`.
+
+Candidate dimensions, fit validation, and achieved-margin reporting use these per-blank envelopes. Achieved margins report actual geometry: open internal edges are `0`; Blank 2's shared leading edge is `C`; outer/trailing edges report their residual clearance. The trim line and suggested origin offset remain the physical start of Blank 2.
+
+The policy affects only two-group geometry. Best-uniform math continues to apply the configured outer margins around the whole remnant. Equal-count two-group candidates still fall back, and ranking tie-breakers, the 20,000-candidate search budget, and the useful-blank guard remain unchanged. The useful-blank guard includes `C` when it is the largest active clearance.
+
+The additive persisted shape remains `nestcalc-app-state-v3`. Missing or invalid policy values normalize lazily to `open`; missing shared clearance initializes from the normalized global clamp margin in the active unit without writing during load. Unit changes convert shared clearance with the other dimensioned AutoNest settings.
+
 ## 6. Algorithm Approach (High-Level) — Keep It Simple
 
 1. Run existing uniform 0° calculation.
@@ -111,7 +139,7 @@ The operator looks at the numbers and the visual for a few seconds and knows exa
 3. For two-group path:
    - Pack the 0° parts independently into a tight bounding rectangle using simple shelf/level/grid packing + user gap only.
    - Pack the 90° parts independently into their own tight bounding rectangle (same method).
-   - Take the two resulting minimal rectangles and find the best position for a single straight trim line on the original remnant so both rectangles fit with proper anchored margins on the origin sides and full margins on the trim-facing edges.
+   - Take the two resulting minimal rectangles and find the best position for a single straight trim line on the original remnant so both rectangles fit their policy-specific required-margin envelopes.
    - The trim line position is calculated **after** the two groups are packed (post-facto). This is deliberate and matches real-world practice in guillotine/shelf-based rectangular nesting.
 4. Score by total parts + preference for clean, usable blanks.
 5. Return best result or graceful fallback to uniform.
@@ -144,7 +172,7 @@ Performance target: Instant feel on modern iPhone for typical shop remnants.
 - Post-facto calculation of best straight trim line position.
 - Color-coded preview + trim line + blank sizes + **actual achieved margins per side of each blank** + offset.
 - Comparison vs best uniform.
-- **Settings gear icon** with Global Clamp Margin + Override toggle for full 4-margin control.
+- **Settings gear icon** with Global Clamp Margin, Open/Shared/Full trim-edge policy, conditional Shared Trim Clearance, and Override toggle for full outer-margin control.
 - Full protection of manual calculator.
 
 **Phase 2**
