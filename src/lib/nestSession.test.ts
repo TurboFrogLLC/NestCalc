@@ -13,6 +13,7 @@ import {
   toggleManualPartLink,
   toggleNestSessionUnit,
   toggleManualUnit,
+  updateNestSessionMargin,
   updateManualField,
   updateManualMargin,
 } from "./nestSession";
@@ -276,5 +277,96 @@ describe("mode-aware nest session", () => {
         },
       },
     });
+  });
+
+  it("seeds and enables AutoNest overrides on the first main-margin edit", () => {
+    const initial: NestAppState = {
+      ...baseState,
+      mode: "autonest",
+      autoNestSettings: {
+        ...baseState.autoNestSettings,
+        globalClampMargin: 0.53,
+        overrideGlobalMargins: false,
+        marginOverrides: { left: 9, right: 8, top: 7, bottom: 6 },
+      },
+    };
+
+    const next = updateNestSessionMargin(initial, "left", 0.5);
+
+    expect(next.autoNestSettings).toMatchObject({
+      globalClampMargin: 0.53,
+      overrideGlobalMargins: true,
+      marginOverrides: {
+        left: 0.5,
+        right: 0.53,
+        top: 0.53,
+        bottom: 0.53,
+      },
+    });
+    expect(next.manualInputs).toBe(initial.manualInputs);
+  });
+
+  it("updates only the selected active AutoNest side after overrides are enabled", () => {
+    const initial: NestAppState = { ...baseState, mode: "autonest" };
+    const next = updateNestSessionMargin(initial, "bottom", 0);
+
+    expect(next.autoNestSettings.marginOverrides).toEqual({
+      left: 0.5,
+      right: 0.25,
+      top: null,
+      bottom: 0,
+    });
+    expect(next.manualInputs.margins).toEqual(baseInputs.margins);
+  });
+
+  it("keeps main-margin edits isolated to Manual state in Manual mode", () => {
+    const next = updateNestSessionMargin(baseState, "top", 1.25);
+
+    expect(next.manualInputs.margins).toEqual({
+      left: 1,
+      right: 2,
+      top: 1.25,
+      bottom: 4,
+    });
+    expect(next.autoNestSettings).toBe(baseState.autoNestSettings);
+  });
+
+  it("does not enable AutoNest overrides when the submitted value matches the effective margin", () => {
+    const initial: NestAppState = {
+      ...baseState,
+      mode: "autonest",
+      autoNestSettings: {
+        ...baseState.autoNestSettings,
+        globalClampMargin: 0.53,
+        overrideGlobalMargins: false,
+        marginOverrides: { left: 9, right: 8, top: 7, bottom: 6 },
+      },
+    };
+
+    const next = updateNestSessionMargin(initial, "left", 0.53);
+
+    expect(next).toBe(initial);
+  });
+
+  it("preserves inherited null overrides when the submitted value matches the effective margin", () => {
+    const initial: NestAppState = {
+      ...baseState,
+      mode: "autonest",
+      autoNestSettings: {
+        ...baseState.autoNestSettings,
+        globalClampMargin: 0.53,
+        overrideGlobalMargins: true,
+        marginOverrides: {
+          left: 0.5,
+          right: 0.25,
+          top: null,
+          bottom: 0.25,
+        },
+      },
+    };
+
+    const next = updateNestSessionMargin(initial, "top", 0.53);
+
+    expect(next).toBe(initial);
   });
 });

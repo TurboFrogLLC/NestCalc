@@ -89,3 +89,26 @@ export function autoNestTrimLine(page: Page) {
 export function autoNestTrimSummary(page: Page) {
   return page.getByTestId("autonest-preview-trim-summary");
 }
+
+export function mainMarginInput(
+  page: Page,
+  label: "Left" | "Right" | "Top" | "Bottom",
+) {
+  return page.getByRole("textbox", {
+    name: new RegExp(`^${label} (?:in|mm)$`),
+  });
+}
+
+export function autoNestPart(
+  page: Page,
+  orientation: "0deg" | "90deg",
+) {
+  return page.getByTestId(`autonest-part-${orientation}`);
+}
+
+export function autoNestGroupBounds(
+  page: Page,
+  orientation: "0deg" | "90deg",
+) {
+  return page.getByTestId(`autonest-group-bounds-${orientation}`);
+}

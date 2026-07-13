@@ -20,6 +20,10 @@ function formatValue(value: number | null): string {
   return Number.isFinite(value) ? String(value) : "—";
 }
 
+function valuesEqual(a: number | null, b: number | null): boolean {
+  return a === b;
+}
+
 export function NumberInput({ label, value, unit, onChange }: NumberInputProps) {
   const { registerActiveInput, clearActiveInput } = useQuickValuesFocus();
   const [draft, setDraft] = useState<string | null>(null);
@@ -70,7 +74,10 @@ export function NumberInput({ label, value, unit, onChange }: NumberInputProps) 
             setFocused(false);
             if (draft !== null) {
               const finalized = finalizeNumericDraft(draft);
-              onChange(parseNumericInput(finalized));
+              const parsed = parseNumericInput(finalized);
+              if (!valuesEqual(parsed, value)) {
+                onChange(parsed);
+              }
             }
             setDraft(null);
             clearActiveInput();

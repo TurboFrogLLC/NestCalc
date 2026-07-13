@@ -1,4 +1,7 @@
-import { calculateAutoNest } from "./autoNestEngine";
+import {
+  calculateAutoNest,
+  effectiveAutoNestMargins,
+} from "./autoNestEngine";
 import { calculateNest, clearedInputs, rotateMarginsCW } from "./nestcalc";
 import type {
   AutoNestSettings,
@@ -57,6 +60,10 @@ function swapValues(
   y: number | null,
 ): { x: number | null; y: number | null } {
   return { x: y, y: x };
+}
+
+function valuesEqual(a: number | null, b: number | null): boolean {
+  return a === b;
 }
 
 export function createManualNestSession(
@@ -131,6 +138,41 @@ export function updateManualMargin(
   return {
     ...inputs,
     margins: { ...inputs.margins, [key]: value },
+  };
+}
+
+export function updateNestSessionMargin(
+  state: NestAppState,
+  key: keyof Margins,
+  value: number | null,
+): NestAppState {
+  if (state.mode === "manual") {
+    return {
+      ...state,
+      manualInputs: updateManualMargin(state.manualInputs, key, value),
+    };
+  }
+
+  const settings = state.autoNestSettings;
+  const effective = effectiveAutoNestMargins(settings);
+  if (valuesEqual(effective[key], value)) {
+    return state;
+  }
+
+  const seededOverrides = settings.overrideGlobalMargins
+    ? settings.marginOverrides
+    : effective;
+
+  return {
+    ...state,
+    autoNestSettings: {
+      ...settings,
+      overrideGlobalMargins: true,
+      marginOverrides: {
+        ...seededOverrides,
+        [key]: value,
+      },
+    },
   };
 }
 

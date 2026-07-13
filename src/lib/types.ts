@@ -63,10 +63,20 @@ export interface AutoNestBoundingBox {
   height: number;
 }
 
+export interface AutoNestGroupGrid {
+  columns: number;
+  rows: number;
+  partWidth: number;
+  partHeight: number;
+  gapX: number;
+  gapY: number;
+}
+
 export interface AutoNestGroupResult {
   orientation: AutoNestGroupOrientation;
   count: number;
   boundingBox: AutoNestBoundingBox;
+  grid: AutoNestGroupGrid;
 }
 
 export interface AutoNestBlankResult {

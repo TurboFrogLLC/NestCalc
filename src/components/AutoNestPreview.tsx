@@ -22,6 +22,19 @@ interface BlankPlacement {
   height: number;
 }
 
+interface PartPlacement {
+  blankIndex: number;
+  orientation: AutoNestBlankResult["group"]["orientation"];
+  row: number;
+  column: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+const MAX_PREVIEW_PARTS = 500;
+
 function coalesce(value: number | null | undefined): number {
   return typeof value === "number" && Number.isFinite(value) ? value : 0;
 }
@@ -94,6 +107,35 @@ function getBlankPlacements(
   ];
 }
 
+function getPartPlacements(placements: BlankPlacement[]): PartPlacement[] {
+  const parts: PartPlacement[] = [];
+
+  for (const placement of placements) {
+    const { blank } = placement;
+    const { grid } = blank.group;
+    const groupX = placement.x + coalesce(blank.achievedMargins.left);
+    const groupY = placement.y + coalesce(blank.achievedMargins.top);
+
+    for (let row = 0; row < grid.rows; row += 1) {
+      for (let column = 0; column < grid.columns; column += 1) {
+        if (parts.length >= MAX_PREVIEW_PARTS) return parts;
+        parts.push({
+          blankIndex: placement.index,
+          orientation: blank.group.orientation,
+          row,
+          column,
+          x: groupX + column * (grid.partWidth + grid.gapX),
+          y: groupY + row * (grid.partHeight + grid.gapY),
+          width: grid.partWidth,
+          height: grid.partHeight,
+        });
+      }
+    }
+  }
+
+  return parts;
+}
+
 export function AutoNestPreview({
   twoGroup,
   remnantWidth,
@@ -109,6 +151,8 @@ export function AutoNestPreview({
   const stroke = maxDim * 0.006;
   const trim = twoGroup.trimLine;
   const placements = getBlankPlacements(twoGroup);
+  const parts = getPartPlacements(placements);
+  const previewCapped = twoGroup.totalParts > MAX_PREVIEW_PARTS;
 
   return (
     <div
@@ -140,8 +184,6 @@ export function AutoNestPreview({
             const marginTop = coalesce(blank.achievedMargins.top);
             const groupX = x + marginLeft;
             const groupY = y + marginTop;
-            const labelX = x + width / 2;
-            const labelY = y + height / 2;
 
             return (
               <g key={`${blank.group.orientation}-${placement.index}`}>
@@ -160,55 +202,50 @@ export function AutoNestPreview({
                   y={groupY}
                   width={Math.max(0, blank.group.boundingBox.width)}
                   height={Math.max(0, blank.group.boundingBox.height)}
-                  className={groupClassName(blank.group.orientation)}
-                  strokeWidth={stroke}
-                  rx={maxDim * 0.008}
+                  className="autonest-preview-group-bounds"
+                  strokeWidth={stroke * 0.5}
+                  strokeDasharray={`${maxDim * 0.01} ${maxDim * 0.008}`}
+                  data-testid={`autonest-group-bounds-${blank.group.orientation}`}
                 />
-                <text
-                  x={labelX}
-                  y={labelY - labelSize * 0.15}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  fill="var(--foreground)"
-                  fontSize={labelSize}
-                  fontFamily="var(--font-geist-mono), ui-monospace, monospace"
-                  fontWeight={700}
-                >
-                  {blank.group.orientation} x{blank.group.count}
-                </text>
-                <text
-                  x={labelX}
-                  y={labelY + labelSize * 1.05}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  fill="var(--muted)"
-                  fontSize={labelSize * 0.72}
-                  fontFamily="var(--font-geist-mono), ui-monospace, monospace"
-                >
-                  {formatDim(width, height, unitLabel)}
-                </text>
               </g>
             );
           })}
 
-          {trim.orientation === "vertical" ? (
+          {parts.map((part) => (
             <rect
-              x={trim.position - stroke * 0.7}
-              y={0}
-              width={stroke * 1.4}
-              height={remH}
+              key={`${part.blankIndex}-${part.row}-${part.column}`}
+              x={part.x}
+              y={part.y}
+              width={part.width}
+              height={part.height}
+              className={groupClassName(part.orientation)}
+              strokeWidth={stroke * 0.65}
+              rx={maxDim * 0.004}
+              data-testid={`autonest-part-${part.orientation}`}
+              data-blank-index={part.blankIndex}
+              data-row={part.row}
+              data-column={part.column}
+            />
+          ))}
+
+          {trim.orientation === "vertical" ? (
+            <line
+              x1={trim.position}
+              y1={0}
+              x2={trim.position}
+              y2={remH}
               className="autonest-preview-trim-line"
-              fill="var(--autonest-trim-stroke)"
+              vectorEffect="non-scaling-stroke"
               data-testid="autonest-trim-line"
             />
           ) : (
-            <rect
-              x={0}
-              y={trim.position - stroke * 0.7}
-              width={remW}
-              height={stroke * 1.4}
+            <line
+              x1={0}
+              y1={trim.position}
+              x2={remW}
+              y2={trim.position}
               className="autonest-preview-trim-line"
-              fill="var(--autonest-trim-stroke)"
+              vectorEffect="non-scaling-stroke"
               data-testid="autonest-trim-line"
             />
           )}
@@ -239,6 +276,11 @@ export function AutoNestPreview({
       </div>
 
       <div className="autonest-preview-summary grid shrink-0 gap-1 border-t border-[var(--card-border)] bg-[var(--card)] px-2 py-1.5 font-mono text-[10px] leading-tight text-[var(--muted)]">
+        {previewCapped ? (
+          <div data-testid="autonest-preview-cap">
+            Showing first {MAX_PREVIEW_PARTS} of {twoGroup.totalParts} parts
+          </div>
+        ) : null}
         {twoGroup.blanks.map((blank, index) => (
           <div
             key={blank.group.orientation}
