@@ -2,7 +2,7 @@
 
 **Project:** NestCalc  
 **Date:** July 2026  
-**Status:** Draft v8 — Explicit Internal Trim-Edge Margin Policy
+**Status:** Draft v9 — Truthful Per-Part Preview And Active Margins
 **Author:** RecklessToddler + Grok  
 **Location:** `docs/AutoNest_Spec.md`
 
@@ -91,9 +91,20 @@ When AutoNest toggle is active, manual part/remnant rotation controls are **disa
 - Segmented **Open | Shared | Full** internal trim-edge policy control. `open` is the default.
 - **Shared Trim Clearance** appears only for `shared` and is initialized from the normalized Global Clamp Margin for new or migrated state.
 - The override mode is intentionally secondary so the main UI stays simple. Most of the time users stay in global mode.
+- While AutoNest is active, the main four margin fields show and edit the
+  effective AutoNest margins. The first main-field edit in global mode seeds
+  all four overrides from the global value and enables overrides atomically.
+  Switching back to Manual restores the untouched Manual margin fields.
 
 **Preview:**
 - One remnant view showing two color-coded groups separated by a straight trim line.
+- Computed group results expose deterministic grid metadata (`columns`, `rows`,
+  oriented part width/height, and X/Y gaps), and the preview draws one rectangle
+  per physical part from that metadata. Group bounds remain outlines only.
+- The preview renders at most 500 part rectangles and explicitly reports when
+  the computed result exceeds that display cap.
+- The physical trim is one non-scaling SVG line authored at `3pt` (four CSS
+  pixels); it is not a filled band and does not scale with the remnant viewBox.
 - Trim line clearly visible and labeled.
 - Blank sizes for each group (3 decimal places).
 - **Actual achieved margins shown on each side of each resulting blank** (especially trim-facing sides and non-origin sides). This makes the real available room/slops immediately visible without extra math.

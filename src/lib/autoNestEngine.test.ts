@@ -70,6 +70,79 @@ describe("calculateAutoNest", () => {
       result.twoGroup.blanks.find((blank) => blank.group.orientation === "90deg")
         ?.group.boundingBox,
     ).toEqual({ width: 4, height: 6 });
+
+    for (const blank of result.twoGroup.blanks) {
+      const { grid } = blank.group;
+      expect(blank.group.count).toBe(grid.columns * grid.rows);
+      expect(blank.group.boundingBox.width).toBeCloseTo(
+        grid.columns * grid.partWidth + (grid.columns - 1) * grid.gapX,
+      );
+      expect(blank.group.boundingBox.height).toBeCloseTo(
+        grid.rows * grid.partHeight + (grid.rows - 1) * grid.gapY,
+      );
+    }
+  });
+
+  it("returns truthful per-part grids for the operator fixture without changing the selected result", () => {
+    const result = calculateAutoNest(
+      {
+        ...baseInputs,
+        partWidth: 2,
+        partHeight: 6,
+        remnantWidth: 12,
+        remnantHeight: 11,
+        gapX: 0.125,
+        gapY: 0.125,
+      },
+      {
+        ...zeroMarginSettings,
+        globalClampMargin: 0.53,
+      },
+    );
+
+    expect(result.status).toBe("computed");
+    if (result.status !== "computed") return;
+
+    expect(result.bestUniform.totalParts).toBe(5);
+    expect(result.twoGroup.totalParts).toBe(6);
+    expect(result.twoGroup.trimLine).toEqual({
+      orientation: "vertical",
+      position: 6.53,
+    });
+
+    const ninety = result.twoGroup.blanks.find(
+      (blank) => blank.group.orientation === "90deg",
+    );
+    const zero = result.twoGroup.blanks.find(
+      (blank) => blank.group.orientation === "0deg",
+    );
+
+    expect(ninety?.group).toEqual({
+      orientation: "90deg",
+      count: 4,
+      boundingBox: { width: 6, height: 8.375 },
+      grid: {
+        columns: 1,
+        rows: 4,
+        partWidth: 6,
+        partHeight: 2,
+        gapX: 0.125,
+        gapY: 0.125,
+      },
+    });
+    expect(zero?.group).toEqual({
+      orientation: "0deg",
+      count: 2,
+      boundingBox: { width: 4.125, height: 6 },
+      grid: {
+        columns: 2,
+        rows: 1,
+        partWidth: 2,
+        partHeight: 6,
+        gapX: 0.125,
+        gapY: 0.125,
+      },
+    });
   });
 
   it("uses AutoNest clamp margins as full clearance around both trim blanks", () => {
@@ -101,6 +174,14 @@ describe("calculateAutoNest", () => {
           orientation: "90deg",
           count: 1,
           boundingBox: { width: 4, height: 6 },
+          grid: {
+            columns: 1,
+            rows: 1,
+            partWidth: 4,
+            partHeight: 6,
+            gapX: 0,
+            gapY: 0,
+          },
         },
       },
       {
@@ -111,9 +192,87 @@ describe("calculateAutoNest", () => {
           orientation: "0deg",
           count: 2,
           boundingBox: { width: 6, height: 8 },
+          grid: {
+            columns: 1,
+            rows: 2,
+            partWidth: 6,
+            partHeight: 4,
+            gapX: 0,
+            gapY: 0,
+          },
         },
       },
     ]);
+  });
+
+  it("keeps asymmetric named edges truthful without swapping Top and Bottom", () => {
+    const result = calculateAutoNest(
+      {
+        ...baseInputs,
+        partWidth: 2,
+        partHeight: 6,
+        remnantWidth: 12,
+        remnantHeight: 11,
+        gapX: 0.125,
+        gapY: 0.125,
+      },
+      {
+        ...zeroMarginSettings,
+        trimEdgePolicy: "full",
+        overrideGlobalMargins: true,
+        marginOverrides: {
+          left: 0.5,
+          right: 0.25,
+          top: 0.75,
+          bottom: 0.125,
+        },
+      },
+    );
+
+    expect(result.status).toBe("computed");
+    if (result.status !== "computed") return;
+
+    expect(result.twoGroup.totalParts).toBe(6);
+    expect(result.twoGroup.trimLine).toEqual({
+      orientation: "vertical",
+      position: 6.75,
+    });
+    expect(result.twoGroup.suggestedOriginOffset).toEqual({ x: 6.75, y: 0 });
+    expect(result.twoGroup.blanks[0].achievedMargins).toEqual({
+      left: 0.5,
+      right: 0.25,
+      top: 0.75,
+      bottom: 1.875,
+    });
+    expect(result.twoGroup.blanks[1].achievedMargins).toEqual({
+      left: 0.5,
+      right: 0.625,
+      top: 0.75,
+      bottom: 4.25,
+    });
+  });
+
+  it("returns complete metadata for computed results above the 500-part preview cap", () => {
+    const result = calculateAutoNest(
+      {
+        ...baseInputs,
+        partWidth: 6,
+        partHeight: 4,
+        remnantWidth: 122,
+        remnantHeight: 100,
+      },
+      zeroMarginSettings,
+    );
+
+    expect(result.status).toBe("computed");
+    if (result.status !== "computed") return;
+    expect(result.twoGroup.totalParts).toBeGreaterThan(500);
+    expect(
+      result.twoGroup.blanks.reduce(
+        (total, blank) => total + blank.group.grid.columns * blank.group.grid.rows,
+        0,
+      ),
+    ).toBe(result.twoGroup.totalParts);
   });
 
   it("keeps Fixture 2 at uniform 2 under the full trim-edge policy", () => {

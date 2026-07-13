@@ -38,6 +38,7 @@ interface PackedGroup {
     width: number;
     height: number;
   };
+  grid: AutoNestGroupResult["grid"];
 }
 
 interface Candidate {
@@ -68,7 +69,7 @@ function gridSpan(count: number, size: number, gap: number): number {
   return count * size + Math.max(0, count - 1) * gap;
 }
 
-function effectiveAutoNestMargins(settings: AutoNestSettings): Margins {
+export function effectiveAutoNestMargins(settings: AutoNestSettings): Margins {
   const globalMargin = coalesce(settings.globalClampMargin);
 
   if (!settings.overrideGlobalMargins) {
@@ -192,6 +193,7 @@ function toGroupResult(group: PackedGroup): AutoNestGroupResult {
     orientation: group.orientation,
     count: group.count,
     boundingBox: group.boundingBox,
+    grid: group.grid,
   };
 }
 
@@ -393,6 +395,14 @@ function packedGroupForGrid(
     boundingBox: {
       width: gridSpan(columns, part.width, gapX),
       height: gridSpan(rows, part.height, gapY),
+    },
+    grid: {
+      columns,
+      rows,
+      partWidth: part.width,
+      partHeight: part.height,
+      gapX,
+      gapY,
     },
   };
 }

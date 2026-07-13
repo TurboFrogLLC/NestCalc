@@ -105,6 +105,14 @@ input[type="number"] {
 
 .autonest-preview-trim-line {
   stroke: var(--autonest-trim-stroke);
+  stroke-width: 3pt;
+  stroke-linecap: butt;
+  fill: none;
+}
+
+.autonest-preview-group-bounds {
+  fill: none;
+  stroke: var(--autonest-blank-stroke);
 }
 
 .autonest-preview-summary {

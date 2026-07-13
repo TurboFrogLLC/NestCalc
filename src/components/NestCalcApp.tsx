@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useNestAppState } from "@/hooks/useNestInputs";
 import { useTheme } from "@/hooks/useTheme";
+import { effectiveAutoNestMargins } from "@/lib/autoNestEngine";
 import {
   clearManualInputs,
   createNestSession,
@@ -23,7 +24,7 @@ import {
   toggleManualPartLink,
   toggleNestSessionUnit,
   updateManualField,
-  updateManualMargin,
+  updateNestSessionMargin,
 } from "@/lib/nestSession";
 import type {
   AutoNestResult,
@@ -208,6 +209,8 @@ function AutoNestSettingsPanel({
   onOverrideGlobalMarginsChange: (value: boolean) => void;
   onMarginOverrideChange: (key: keyof Margins, value: number | null) => void;
 }) {
+  const effectiveMargins = effectiveAutoNestMargins(settings);
+
   return (
     <section
       id="autonest-settings-panel"
@@ -269,25 +272,25 @@ function AutoNestSettingsPanel({
         <div className="grid grid-cols-2 gap-2">
           <NumberInput
             label="Left margin override"
-            value={settings.marginOverrides.left}
+            value={effectiveMargins.left}
             unit={unit}
             onChange={(value) => onMarginOverrideChange("left", value)}
           />
           <NumberInput
             label="Right margin override"
-            value={settings.marginOverrides.right}
+            value={effectiveMargins.right}
             unit={unit}
             onChange={(value) => onMarginOverrideChange("right", value)}
           />
           <NumberInput
             label="Bottom margin override"
-            value={settings.marginOverrides.bottom}
+            value={effectiveMargins.bottom}
             unit={unit}
             onChange={(value) => onMarginOverrideChange("bottom", value)}
           />
           <NumberInput
             label="Top margin override"
-            value={settings.marginOverrides.top}
+            value={effectiveMargins.top}
             unit={unit}
             onChange={(value) => onMarginOverrideChange("top", value)}
           />
@@ -373,6 +376,9 @@ export function NestCalcApp() {
   const computedAutoNest =
     autoNestResult?.status === "computed" ? autoNestResult.twoGroup : null;
   const manualRotationLocked = session.controls.manualRotationLocked;
+  const activeMargins = isAutoNest
+    ? effectiveAutoNestMargins(autoNestSettings)
+    : inputs.margins;
 
   const setInputs = (updater: ManualInputsUpdater) => {
     setState((current) => updateManualInputs(current, updater));
@@ -386,7 +392,7 @@ export function NestCalcApp() {
     key: keyof NestInputs["margins"],
     value: number | null,
   ) => {
-    setInputs((current) => updateManualMargin(current, key, value));
+    setState((current) => updateNestSessionMargin(current, key, value));
   };
 
   const toggleUnit = () => {
@@ -646,13 +652,13 @@ export function NestCalcApp() {
               onSwap={() => setInputs(swapManualGap)}
             />
             <p className="nestcalc-split-compact-label text-[11px] font-medium uppercase tracking-wider text-[var(--muted)]">
-              Margins
+              {isAutoNest ? "AutoNest Margins" : "Margins"}
             </p>
             <DualInputRow
               leftLabel="Left"
               rightLabel="Right"
-              leftValue={inputs.margins.left}
-              rightValue={inputs.margins.right}
+              leftValue={activeMargins.left}
+              rightValue={activeMargins.right}
               unit={unit}
               onLeftChange={(value) => updateMargin("left", value)}
               onRightChange={(value) => updateMargin("right", value)}
@@ -660,8 +666,8 @@ export function NestCalcApp() {
             <DualInputRow
               leftLabel="Bottom"
               rightLabel="Top"
-              leftValue={inputs.margins.bottom}
-              rightValue={inputs.margins.top}
+              leftValue={activeMargins.bottom}
+              rightValue={activeMargins.top}
               unit={unit}
               onLeftChange={(value) => updateMargin("bottom", value)}
               onRightChange={(value) => updateMargin("top", value)}
