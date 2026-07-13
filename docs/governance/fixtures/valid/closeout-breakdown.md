@@ -1,7 +1,7 @@
 ## PR Closeout Breakdown + Re-Review
 
 **PR:** #28 Add advisory governed goal pipeline v1  
-**Reviewed commit:** `ccd8119979bd2501dac3bd53a0f2d234ae7cf1cb`  
+**Reviewed commit:** `400543611f5615950fe484dae72c2623b7c2ffc6`  
 **Flow ID:** `NC-20260713-7a10e239`  
 **Mode:** Closeout / PR comment + canonical lessons capture
 
@@ -10,7 +10,7 @@
 ### 1. Summary
 
 - **Scope:** Advisory governance module, schemas, fixtures, tests, workflow docs — no product surfaces
-- **Commits:** `fdb9b43` (goal memory) → `7a10e23` (implementation) → `ccd8119` (Grok closeout procedures)
+- **Commits:** `fdb9b43` (goal memory) → `7a10e23` (implementation) → `4005436` (Grok closeout procedures)
 - **Status:** Ready to merge after Codex review
 - **Tests:** governance 11/11, lint/build/unit 42/42, advisory check 6/6 valid + 6/6 invalid
 
@@ -57,7 +57,7 @@ Vercel preview — Ready
 
 | Severity | Item | Recommendation |
 |----------|------|----------------|
-| important | Codex review still pending | Wait for Codex review at `ccd8119` before merge |
+| important | Codex review still pending | Wait for Codex review at `4005436` before merge |
 | follow-up | Enforcement promotion | Separate goal after two clean advisory product cycles |
 | follow-up | Post-merge goal template | First post-merge goal must use `goal-template-v1.md` |
 
@@ -72,7 +72,7 @@ Vercel preview — Ready
 
 **Signal:** suspend-merge
 **Rationale:** Implementation and verification are complete, but Codex review requested on the PR has not returned a decision at reviewed HEAD.
-**Human action:** Wait for Codex review on PR #28 at `ccd8119`, then merge when satisfied or request scoped follow-up.
+**Human action:** Wait for Codex review on PR #28 at `4005436`, then merge when satisfied or request scoped follow-up.
 
 ### Overall Assessment
 
