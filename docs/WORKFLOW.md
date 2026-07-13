@@ -36,6 +36,18 @@ Keep planning, implementation, review evidence, and durable repo authority files
 distinct. Architecture reviews, task lists, and PR comments do not replace
 `AGENTS.md`, this workflow file, build specs, or approved lessons.
 
+## Advisory Governed Goal Pipeline
+
+NestCalc governance v1 is repository-local and advisory. Run
+`npm run governance:check` during goal preflight and closeout. Future goals use
+`docs/governance/goal-template-v1.md`; generated handoff, closeout, and
+post-merge artifacts stay under the gitignored `.nestcalc/governance/`
+directory. `scripts/nestcalc-governance.py` is the single command interface for
+goal validation, sanitized handoff creation, closeout validation, and
+stale-state-safe post-merge capture/verification. It never merges, deletes
+branches, or applies lessons. Promotion to enforce mode is a separate goal and
+requires the criteria in `docs/governance/README.md`.
+
 ## Autonomous Goal-Grilling Cycle
 
 Use this cycle when the human asks to prepare the next `GOAL.md` with the

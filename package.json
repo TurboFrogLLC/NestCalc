@@ -9,6 +9,8 @@
     "lint": "eslint",
     "test": "vitest run",
     "test:unit": "vitest run",
+    "test:governance": "python3 -m unittest discover -s test/governance -p 'test_*.py'",
+    "governance:check": "python3 scripts/nestcalc-governance.py check",
     "test:e2e": "npm run build && playwright test --project=public",
     "test:e2e:auth": "npm run build && playwright test --project=authenticated"
   },

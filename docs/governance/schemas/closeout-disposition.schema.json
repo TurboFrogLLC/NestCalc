@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/TurboFrogLLC/NestCalc/docs/governance/schemas/closeout-disposition.schema.json",
+  "title": "NestCalcCloseoutDispositionV1",
+  "type": "object",
+  "required": ["schema_version", "flow_id", "status", "disposition", "human_action_required", "goal_memory_commit", "implementation_commit", "reviewed_commit", "pr", "limitations"],
+  "properties": {
+    "schema_version": {"const": "nestcalc-closeout-v1"},
+    "flow_id": {"type": "string", "pattern": "^NC-[0-9]{8}-[0-9a-f]{8}$"},
+    "status": {"enum": ["completed", "blocked"]},
+    "disposition": {"enum": ["merge-ready", "suspend-merge", "rollback-required"]},
+    "human_action_required": {"type": "string", "minLength": 1},
+    "goal_memory_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "implementation_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "reviewed_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "pr": {
+      "type": "object",
+      "required": ["number", "url", "state", "draft", "ready_for_review"],
+      "properties": {
+        "number": {"type": ["integer", "null"], "minimum": 1},
+        "url": {"type": ["string", "null"], "pattern": "^https://github.com/TurboFrogLLC/NestCalc/pull/[0-9]+$"},
+        "state": {"enum": ["open", "closed", "merged", "unavailable"]},
+        "draft": {"type": "boolean"},
+        "ready_for_review": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    },
+    "blocker": {"type": ["string", "null"]},
+    "limitations": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

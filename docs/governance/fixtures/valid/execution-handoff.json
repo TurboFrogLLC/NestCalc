@@ -1,0 +1,22 @@
+{
+  "schema_version": "nestcalc-execution-handoff-v1",
+  "flow_id": "NC-20260712-a1b2c3d4",
+  "repository": "TurboFrogLLC/NestCalc",
+  "goal_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "goal_memory_commit": "1111111111111111111111111111111111111111",
+  "branch_intent": "codex/governance-fixture",
+  "execution_route": "codex-cli",
+  "publication_route": "feature-pr",
+  "prompt_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "agent_roster": {
+    "orchestrator": "codex-cli",
+    "read_only_agents": [
+      {
+        "lane": "contract-review",
+        "requested_model": "gpt-5.4-mini",
+        "observed_model": null,
+        "status": "unavailable"
+      }
+    ]
+  }
+}

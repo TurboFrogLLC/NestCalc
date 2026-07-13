@@ -15,6 +15,7 @@
 /playwright/.clerk/
 /playwright-report/
 /test-results/
+/.nestcalc/governance/
 
 # next.js
 /.next/
@@ -26,6 +27,8 @@
 # misc
 .DS_Store
 *.pem
+__pycache__/
+*.py[cod]
 
 # debug
 npm-debug.log*
