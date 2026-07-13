@@ -1,258 +1,224 @@
 # GOAL.md - NestCalc
 
-## Active Goal: AutoNest Preview Visualization Slice
+## Active Goal: AutoNest Ranking And Fallback Investigation v1
 
 ### Objective
 
-Add the first AutoNest-specific preview visualization for computed two-group
-results.
+Prove with hand math, pure engine output, and live browser evidence why AutoNest
+reports or falls back to best-uniform nesting in a case where an operator can
+visually place mixed `0deg` and `90deg` parts on one remnant using one straight
+trim.
 
-This goal should let an operator see the practical AutoNest output: two
-orientation groups, one straight trim split, compact blank/group labels, and
-the already-computed geometry from the pure AutoNest engine.
+This is an investigation goal. Produce a precise root-cause classification and
+a bounded follow-on fix sketch. Do not implement a product fix, change manual
+calculator math, or open a product-fix PR before the RCA is reviewed.
 
-Keep this as a visualization slice only. Do not change the AutoNest engine,
-storage schema, Clerk, PWA, routes, or manual calculator math.
+### Required Deliverables
 
-### Why This Is Next
-
-PR #23 added the pure AutoNest engine. PR #24 exposed AutoNest mode in the UI.
-PR #25 added the performance guard. PR #26 added the settings gear and polished
-result copy. The next highest-leverage step is to make successful AutoNest
-results inspectable without expanding the algorithm or changing operator input
-behavior.
-
-The current manual `NestGrid` is a single-result uniform preview. AutoNest has
-different geometry: two blank regions, two group orientations, and one trim
-line. Use a separate AutoNest preview path so the manual preview contract stays
-stable.
+1. A math-backed RCA of the AutoNest ranking and fallback decision.
+2. A minimal deterministic reproduction with exact part, remnant, gap, and
+   AutoNest margin inputs.
+3. A known-good control fixture proving the existing computed path.
+4. Pure engine output for both fixtures, including status, fallback reason,
+   uniform count, two-group count when present, blank geometry, trim geometry,
+   achieved margins, and origin offset.
+5. Live AutoNest-on screenshots showing the toggle state, settings used,
+   comparison copy, counts, and preview or fallback geometry.
+6. A defect classification selecting one or more of:
+   - incomplete two-group search undercounts a valid mixed layout;
+   - useful-blank or budget policy over-rejects a candidate;
+   - ranking or tie-break behavior is wrong;
+   - engine output is correct but UI comparison messaging is wrong;
+   - full margins on both trim blanks conflict with the operator's expected
+     shared/zero trim-edge margin model;
+   - the operator-visible layout lies outside the specified two-group model.
+7. A follow-on fix goal sketch naming the smallest correct seam, without
+   applying the fix.
 
 ### Required Reading
-
-Read these before editing code:
 
 - `AGENTS.md`
 - `GOAL.md`
 - `docs/WORKFLOW.md`
 - `LESSONS_LEARNED.md`
 - `docs/AutoNest_Spec.md`
-- `docs/roadmap.md`
 - `docs/AutoNest_Integration_Analysis.md`
-- `src/components/NestCalcApp.tsx`
-- `src/components/NestGrid.tsx`
-- `src/app/globals.css`
-- `src/lib/types.ts`
-- `src/lib/nestSession.ts`
 - `src/lib/autoNestEngine.ts`
 - `src/lib/autoNestEngine.test.ts`
-- `e2e/authenticated.spec.ts`
-- `e2e/locators.ts`
-- `e2e/public.spec.ts`
-
-Relevant lessons to account for:
-
-- `L-nestcalc-split-layout-css`
-- `L-nestcalc-autonest-app-state-v3`
-- `L-nestcalc-autonest-minimal-ui-activation`
-- `L-nestcalc-autonest-search-budget-guard`
-- `L-nestcalc-autonest-settings-gear-ui`
-- `L-nestcalc-playwright-clerk-boot`
-- `L-nestcalc-playwright-auth-setup-order`
-- `L-nestcalc-e2e-split-layout-locator`
-- `L-nestcalc-grok-review-role-separation`
-- `L-nestcalc-codex-stale-sha-guard`
-- `L-nestcalc-pr-branch-main-sync`
-
-### Required Skills And Agent Model
-
-Start with repo hygiene and authority-file preflight.
-
-Use the smallest useful skill set:
-
-- `codex-repo-hygiene-gate`
-- `vercel-plugin:react-best-practices` or local React judgment for component
-  structure
-- `playwright` / browser proof for visible UI behavior
-- `clerk-testing` only for authenticated E2E proof and only with local Clerk
-  test env values
-- GitHub / PR workflow skills for closeout
-
-If read-only sub-agents are useful during execution, launch every read-only
-sub-agent with model override `gpt-5.4-mini`. The orchestrator owns all writes
-and final decisions.
-
-### Scope
-
-Add a separate AutoNest preview visualization for computed AutoNest results.
-
-Expected behavior:
-
-- Keep manual mode rendering through the existing `NestGrid` path.
-- Keep fallback and not-ready AutoNest states on the existing manual baseline
-  preview; do not draw fake two-group geometry for fallback results.
-- When AutoNest mode has `autoNest.status === "computed"`, render an
-  AutoNest-specific preview using `autoNest.twoGroup`.
-- Show the remnant/available preview frame in the same general preview area
-  where the manual grid currently appears.
-- Show two distinct blank/group regions from `twoGroup.blanks`.
-- Show the straight trim line from `twoGroup.trimLine`.
-- Label each group with orientation (`0deg` / `90deg`) and part count.
-- Show each blank size compactly.
-- Show achieved margins per blank compactly, using the existing active unit.
-- Show suggested origin offset compactly.
-- Keep labels short and positioned so they do not overlap at mobile or desktop
-  sizes.
-- Keep the existing compact result summary from PR #26 intact unless a tiny
-  wording or spacing adjustment is needed for fit.
-
-Implementation guidance:
-
-- Prefer a new component such as `src/components/AutoNestPreview.tsx`.
-- Reuse existing preview-shell CSS where practical, but add focused AutoNest
-  classes if needed.
-- Use deterministic SVG/div rendering; no canvas, pan/zoom, drag handles, or
-  animation in this slice.
-- Use the already-computed `AutoNestResult` data. Add only tiny presentational
-  helpers if needed for formatting or scaling.
-- If very dense geometry would make labels unreadable, keep the visual labels
-  compact and put detailed margin/offset text in a small adjacent summary row.
-
-Allowed implementation files:
-
+- `src/lib/nestSession.ts`
 - `src/components/NestCalcApp.tsx`
 - `src/components/AutoNestPreview.tsx`
-- `src/app/globals.css`
 - `e2e/authenticated.spec.ts`
 - `e2e/locators.ts`
 
-Allowed only if necessary for targeted tests or types:
+Apply these lessons:
 
-- `src/lib/types.ts`
-- `src/lib/nestSession.ts`
-- `src/lib/autoNestEngine.ts`
-- `src/lib/autoNestEngine.test.ts`
+- `L-nestcalc-autonest-not-ready-result`
+- `L-nestcalc-autonest-thin-blank-guard`
+- `L-nestcalc-autonest-search-budget-guard`
+- `L-nestcalc-autonest-computed-preview`
+- `L-nestcalc-goal-grilling-authority-sync`
+- `L-nestcalc-readonly-subagent-model`
+- `L-nestcalc-goal-required-docs-commit`
 
-Do not touch `src/components/NestGrid.tsx` unless a tiny non-behavioral export or
-shared formatting adapter is clearly necessary. Stop if making `NestGrid`
-mode-aware seems required.
+### Investigation Questions
 
-### Out Of Scope
+Map and prove the following from source:
 
-Do not implement any of the following in this goal:
+- the decision path from insufficient inputs through budget fallback,
+  two-group-not-useful fallback, and computed result;
+- the exact strict acceptance predicate comparing two-group and best-uniform
+  counts;
+- candidate tie-breakers after total part count;
+- `usefulBlankThreshold`, blank usefulness, and achieved-margin validation;
+- vertical and horizontal candidate margin allocation at the trim;
+- the constrained column/row sweep and geometries it cannot represent;
+- realistic candidate-budget behavior;
+- the relationship between manual input margins and AutoNest settings margins;
+- UI copy and preview selection for computed versus fallback results.
 
-- AutoNest engine algorithm changes
-- search-budget changes
-- storage schema or migration changes
-- settings model changes
-- calculator input behavior changes
-- manual calculator math changes
-- manual preview behavior changes
-- fallback geometry synthesis
-- export, print, clipboard, or cut-list features
-- pan/zoom, drag, measuring tools, or interactive preview editing
-- route, Clerk, request-access, middleware, `.env*`, Vercel, or PWA changes
-- native iOS work
-- broad shell/layout redesign
+Rank and test these hypotheses from evidence, not intuition:
 
-### Protected Behaviors
+- H1: constrained search undercounts mixed layouts.
+- H2: full margins on both trim blanks consume space the operator expects to
+  share or omit at the trim.
+- H3: the useful-blank threshold rejects a usable second blank.
+- H4: equal part count correctly falls back under current policy even when a
+  mixed layout is operationally preferable.
+- H5: UI copy misrepresents correct engine output.
+- H6: realistic inputs exceed the search budget.
+- H7: AutoNest settings margins differ from the manual margins the operator is
+  viewing or expecting.
 
-Manual calculator behavior must remain exactly intact:
+### Required Fixtures
 
-- manual mode remains default
-- manual result numbers remain unchanged
-- manual preview remains unchanged
-- manual rotations, link/swap, clear, margins, and unit conversion remain
-  unchanged
-- existing Clerk-gated app behavior remains unchanged
+#### Fixture 1: computed-path control
 
-AutoNest behavior must remain stable:
+- Part: `6 x 4`
+- Remnant: `10 x 10`
+- Gaps: `0 x 0`
+- Manual margins: all `0`
+- AutoNest margins: all `0`
+- Expected best uniform: `2`
+- Expected two-group result: `3`
+- Expected status: `computed`
 
-- AutoNest toggle behavior remains unchanged.
-- AutoNest settings behavior remains unchanged.
-- Manual rotate controls remain locked while AutoNest is active.
-- Existing engine output, result totals, trim-line data, and fallback reasons
-  remain unchanged.
-- Existing storage loading/saving semantics remain unchanged.
+#### Fixture 2: minimal operator-visible mismatch
 
-### UI Guidance
+Find the smallest clear case where a mixed `0deg` and `90deg` placement is
+visually possible under an operator-reasonable one-trim interpretation while
+the current engine falls back to uniform or undercounts it. Prefer a fixture
+that isolates one hypothesis. If no supplied shop dimensions exist, derive the
+fixture deterministically and include a second run using the default global
+clamp margin near `0.53`.
 
-Keep the preview shop-floor simple and compact.
+For each fixture, show by hand:
 
-- The operator should immediately understand which group is `0deg`, which group
-  is `90deg`, and where the straight trim split is.
-- Use restrained color coding for the two groups.
-- Use short labels and compact numeric formatting.
-- Avoid nested cards and avoid a large secondary results panel.
-- Do not add visible instructional text about how to use the app.
-- Ensure preview text and controls do not overlap at phone and desktop widths.
-- Keep the visual style aligned with the existing calculator surface.
+- uniform `0deg` rows, columns, and total;
+- uniform `90deg` rows, columns, and total;
+- selected best uniform;
+- vertical and horizontal two-group candidate dimensions;
+- margin consumption on each blank and at the trim;
+- useful-blank threshold;
+- expected candidate count under the current implementation;
+- expected count under the operator's proposed interpretation;
+- the precise comparison that selects computed or fallback.
+
+### Feedback Loop
+
+Before forming the final root-cause conclusion, establish one fast,
+deterministic, agent-runnable command that exercises the actual AutoNest
+ranking path and can distinguish the reported mismatch from correct behavior.
+
+Use existing engine tests or a temporary, uncommitted harness. Do not add a
+regression test or product source change during this investigation unless the
+human later approves the fix goal.
+
+Required baseline command:
+
+- `npx vitest run src/lib/autoNestEngine.test.ts`
+
+Any temporary harness or generated JSON must remain uncommitted and be removed
+or clearly identified before closeout.
+
+### Browser Evidence
+
+Run the local app with existing valid local environment values. Never print,
+copy, or commit secrets.
+
+Capture Fixture 1, Fixture 2, and any margin-sensitive variant with AutoNest
+enabled. Evidence must show, where applicable:
+
+- AutoNest toggle with `aria-pressed=true`;
+- AutoNest settings and active margins;
+- best-uniform versus two-group or fallback comparison copy;
+- visible part count;
+- computed `0deg` and `90deg` groups and trim line, or the fallback manual
+  preview proving that no mixed geometry is rendered.
+
+Store screenshots under `output/playwright/autonest-rca/` and do not commit
+binary artifacts unless explicitly requested.
+
+If Clerk prevents authenticated access, use the existing official Clerk E2E
+setup and local test credentials. If proof remains unavailable, report the
+exact blocker; do not add an auth bypass or weaken the evidence claim.
+
+### Agent Pattern
+
+The main agent owns all decisions and writes. Use bounded parallel read-only
+evidence lanes for engine math, UI/browser wiring, and authority constraints.
+
+The configured `gpt-5.4-mini` model is unavailable in the current runtime. The
+human explicitly approved `gpt-5.4` as the substitute for this cycle. Record
+that substitution in the RCA; do not imply exact model compliance.
+
+### Protected Surfaces
+
+Do not change:
+
+- `src/lib/nestcalc.ts` or manual calculator math;
+- AutoNest engine, tests, session wiring, UI, or copy during the investigation;
+- Clerk auth, request-access, routes, middleware, or `.env*` files;
+- Vercel configuration or credentials;
+- PWA service worker, cache, manifest, or offline behavior;
+- governance pipeline implementation;
+- native iOS work.
+
+Reading AutoNest product code and running existing tests/browser flows is
+allowed. `GOAL.md` is the only tracked file authorized to change in this cycle.
 
 ### Verification
 
 Run and report:
 
 - `git diff --check`
-- `npm run lint`
-- `npm run build`
-- `npm run test`
-- `npm run test:e2e`
-- `npm run test:e2e:auth`
+- `git status --porcelain=v1`
+- `npx vitest run src/lib/autoNestEngine.test.ts`
+- the deterministic pure-engine reproduction command
+- live browser evidence for both fixtures when authenticated access is
+  available
 
-Because this is visual UI work, browser proof is required before closeout:
+Full lint/build/unit suites are not required unless source code unexpectedly
+changes. Any source change is a stop condition requiring renewed approval.
 
-- desktop screenshot/proof of a computed AutoNest preview
-- mobile viewport screenshot/proof of the same preview without overlap
-- assertion that the two group labels and trim-line preview are visible
-- assertion that manual mode still shows the existing manual preview path
+### Hard Stops
 
-If Playwright fails inside the managed sandbox with macOS Chromium permission
-errors, rerun the required browser proof outside the sandbox rather than
-weakening verification.
+- Do not commit `GOAL.md` without explicit human approval.
+- Do not implement an engine or UI fix during this investigation.
+- Do not open a product-fix PR.
+- Do not modify manual calculator math under any circumstance in this goal.
+- Stop before a proposed fix that expands beyond AutoNest engine/UI comparison.
+- Preserve and report unrelated or governance-branch work rather than mixing it
+  into this branch.
 
-If valid Clerk test env values are missing, report the affected public or
-authenticated Playwright proof as blocked by missing valid Clerk env, not
-passed. Do not commit secrets or `.env.local`.
+### Acceptance Gate
 
-E2E expectations:
+The investigation is complete only when the evidence can explain with math why
+AutoNest claims uniform is better or falls back for a case where mixed
+orientation is visually possible. Any remaining uncertainty must be narrowed
+to a clearly stated product-policy or operator-model decision.
 
-- Extend authenticated Playwright coverage for the computed AutoNest preview.
-- Use deterministic inputs or seeded local storage to reach a computed
-  two-group result.
-- Prove the AutoNest preview renders two groups, a trim split, and compact
-  geometry text.
-- Prove toggling back to manual mode returns to the manual preview.
-
-### Git And PR Closeout
-
-Implementation must happen off `main` on a feature branch.
-
-The implementation closeout must:
-
-- commit `GOAL.md` separately before implementation
-- commit implementation files separately from `GOAL.md`
-- push the feature branch outside the sandbox when GitHub auth requires it
-- open a ready-for-review GitHub PR, not a draft
-- include the exact verification evidence in the PR body
-- trigger `@codex review`
-- stop if GitHub auth, push, or PR creation is blocked rather than silently
-  leaving only a local branch
-
-### Stopping Conditions
-
-Stop and report before broadening scope if:
-
-- computed AutoNest preview requires engine shape changes
-- manual preview behavior would need to change
-- `NestGrid` would need to become mode-aware
-- storage or migration changes appear necessary
-- browser proof cannot be produced because valid Clerk env is missing or
-  Playwright cannot run even outside the sandbox
-- the UI requires a broad layout redesign to fit
-
-### Done Means
-
-- A separate AutoNest preview path renders computed two-group AutoNest results.
-- Manual preview remains unchanged in manual mode and AutoNest fallback states.
-- Unit/build/lint checks pass.
-- Browser proof covers desktop and mobile computed preview behavior.
-- A ready-for-review PR is open on GitHub with verification evidence.
+Return the branch and hygiene status, goal summary, flagged decisions, both math
+worksheets, engine output, ranked hypothesis results, exact root-cause lines,
+screenshot paths and captions, what is not broken, recommended next step, and a
+confidence percentage against this gate.
