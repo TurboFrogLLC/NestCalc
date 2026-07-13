@@ -1,0 +1,21 @@
+{
+  "schema_version": "nestcalc-closeout-v1",
+  "flow_id": "NC-20260712-a1b2c3d4",
+  "status": "blocked",
+  "disposition": "suspend-merge",
+  "human_action_required": "Restore GitHub authentication, then retry publication.",
+  "goal_memory_commit": "1111111111111111111111111111111111111111",
+  "implementation_commit": "2222222222222222222222222222222222222222",
+  "reviewed_commit": "2222222222222222222222222222222222222222",
+  "pr": {
+    "number": null,
+    "url": null,
+    "state": "unavailable",
+    "draft": false,
+    "ready_for_review": false
+  },
+  "blocker": "gh pr create failed: authentication token is unavailable",
+  "limitations": [
+    "No PR exists because publication is externally blocked."
+  ]
+}

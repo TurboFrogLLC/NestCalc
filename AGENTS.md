@@ -57,6 +57,10 @@ one active objective and must not become an execution transcript.
 - PR review and critique only unless the human explicitly directs otherwise.
 - Findings are brought back to chat, triaged, and converted into scoped follow-up
   goals or commits.
+- PR closeout uses the global `pr-closeout-breakdown` skill: post the breakdown
+  comment with section 8 merge disposition, validate with
+  `validate-closeout-breakdown`, and preview lesson persistence to the canonical
+  checkout.
 
 ### Human
 

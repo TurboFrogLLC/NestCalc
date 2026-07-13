@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/TurboFrogLLC/NestCalc/docs/governance/schemas/execution-handoff.schema.json",
+  "title": "NestCalcExecutionHandoffV1",
+  "type": "object",
+  "required": ["schema_version", "flow_id", "repository", "goal_sha256", "goal_memory_commit", "branch_intent", "execution_route", "publication_route", "prompt_sha256", "agent_roster"],
+  "properties": {
+    "schema_version": {"const": "nestcalc-execution-handoff-v1"},
+    "flow_id": {"type": "string", "pattern": "^NC-[0-9]{8}-[0-9a-f]{8}$"},
+    "repository": {"const": "TurboFrogLLC/NestCalc"},
+    "goal_sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "goal_memory_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "branch_intent": {"type": "string", "pattern": "^codex/"},
+    "execution_route": {"const": "codex-cli"},
+    "publication_route": {"const": "feature-pr"},
+    "prompt_sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "agent_roster": {"type": "object"}
+  },
+  "additionalProperties": false
+}

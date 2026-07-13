@@ -1,0 +1,13 @@
+{
+  "schema_version": "nestcalc-closeout-v1",
+  "flow_id": "NC-20260712-a1b2c3d4",
+  "status": "completed",
+  "disposition": "merge-ready",
+  "human_action_required": "Merge it.",
+  "goal_memory_commit": "1111111111111111111111111111111111111111",
+  "implementation_commit": "1111111111111111111111111111111111111111",
+  "reviewed_commit": "2222222222222222222222222222222222222222",
+  "pr": {"number": 99, "url": "https://github.com/TurboFrogLLC/NestCalc/pull/99", "state": "open", "draft": true, "ready_for_review": false},
+  "blocker": null,
+  "limitations": []
+}

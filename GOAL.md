@@ -1,258 +1,272 @@
 # GOAL.md - NestCalc
 
-## Active Goal: AutoNest Preview Visualization Slice
+## Active Goal: NestCalc Governed Goal Pipeline v1
 
 ### Objective
 
-Add the first AutoNest-specific preview visualization for computed two-group
-results.
+Adopt the first executable subset of NanoTate's autonomous governance cycle for
+NestCalc.
 
-This goal should let an operator see the practical AutoNest output: two
-orientation groups, one straight trim split, compact blank/group labels, and
-the already-computed geometry from the pure AutoNest engine.
+Create an advisory, repository-local governance module that binds one active
+`GOAL.md` objective to its separately committed goal memory, thin Codex CLI
+handoff, feature branch intent, required ready-for-review PR, closeout
+disposition, and post-merge lesson/cleanup evidence.
 
-Keep this as a visualization slice only. Do not change the AutoNest engine,
-storage schema, Clerk, PWA, routes, or manual calculator math.
+This is a governance-only goal. It must not change NestCalc product behavior,
+runtime dependencies, deployment behavior, authentication, PWA behavior, or
+calculator code.
 
 ### Why This Is Next
 
-PR #23 added the pure AutoNest engine. PR #24 exposed AutoNest mode in the UI.
-PR #25 added the performance guard. PR #26 added the settings gear and polished
-result copy. The next highest-leverage step is to make successful AutoNest
-results inspectable without expanding the algorithm or changing operator input
-behavior.
+NestCalc already follows the NanoTate workflow in prose, but repeated execution
+cycles have exposed gaps that prose cannot reliably prevent:
 
-The current manual `NestGrid` is a single-result uniform preview. AutoNest has
-different geometry: two blank regions, two group orientations, and one trim
-line. Use a separate AutoNest preview path so the manual preview contract stays
-stable.
+- completed goals can remain active after merge;
+- goal-memory and implementation commit separation is manually enforced;
+- CLI closeout has occasionally omitted the required open PR;
+- requested read-only sub-agent models are not mechanically compared with the
+  runtime's available or observed model;
+- closeout, lesson persistence, and post-merge cleanup evidence are assembled
+  manually.
+
+NanoTate now has an executable golden pipeline. NestCalc should adopt the
+smallest coherent subset that addresses these observed failures, beginning in
+advisory mode and proving it on deterministic fixtures before any enforcement
+is considered.
 
 ### Required Reading
 
-Read these before editing code:
+Read these before editing:
 
 - `AGENTS.md`
 - `GOAL.md`
 - `docs/WORKFLOW.md`
 - `LESSONS_LEARNED.md`
-- `docs/AutoNest_Spec.md`
-- `docs/roadmap.md`
-- `docs/AutoNest_Integration_Analysis.md`
-- `src/components/NestCalcApp.tsx`
-- `src/components/NestGrid.tsx`
-- `src/app/globals.css`
-- `src/lib/types.ts`
-- `src/lib/nestSession.ts`
-- `src/lib/autoNestEngine.ts`
-- `src/lib/autoNestEngine.test.ts`
-- `e2e/authenticated.spec.ts`
-- `e2e/locators.ts`
-- `e2e/public.spec.ts`
+- `docs/SKILL_AND_PLUGIN_RECOMMENDATIONS.md`
+- `docs/architecture/ARCHITECTURE_REVIEW_TODO.md`
+- `README.md`
+- NanoTate `AGENTS.md`
+- NanoTate `docs/governance/README.md`
+- NanoTate `docs/governance/golden-pipeline-manifest.json`
+- NanoTate `scripts/validate-golden-pipeline.py`
+- NanoTate `scripts/validate-traceability.py`
+- NanoTate `scripts/create-execution-handoff.py`
+- NanoTate `scripts/validate-closeout-disposition.py`
+- NanoTate `scripts/persist-lessons.py`
+- NanoTate `scripts/capture-post-merge-snapshot.py`
+- NanoTate `scripts/verify-post-merge-snapshot.py`
+- NanoTate goal, execution-handoff, closeout-disposition, and post-merge
+  snapshot schemas
 
-Relevant lessons to account for:
+Relevant NestCalc lessons:
 
-- `L-nestcalc-split-layout-css`
-- `L-nestcalc-autonest-app-state-v3`
-- `L-nestcalc-autonest-minimal-ui-activation`
-- `L-nestcalc-autonest-search-budget-guard`
-- `L-nestcalc-autonest-settings-gear-ui`
-- `L-nestcalc-playwright-clerk-boot`
-- `L-nestcalc-playwright-auth-setup-order`
-- `L-nestcalc-e2e-split-layout-locator`
+- `L-nestcalc-goal-required-docs-commit`
 - `L-nestcalc-grok-review-role-separation`
 - `L-nestcalc-codex-stale-sha-guard`
 - `L-nestcalc-pr-branch-main-sync`
+- `L-nestcalc-goal-grilling-authority-sync`
+- `L-nestcalc-readonly-subagent-model`
 
-### Required Skills And Agent Model
+### Governing Design
 
-Start with repo hygiene and authority-file preflight.
+Implement one deep repository-local governance module with a small command
+interface. Prefer a single implementation entry point such as
+`scripts/nestcalc-governance.py` with focused subcommands over a collection of
+unrelated pass-through scripts.
 
-Use the smallest useful skill set:
+The required command interface is:
 
-- `codex-repo-hygiene-gate`
-- `vercel-plugin:react-best-practices` or local React judgment for component
-  structure
-- `playwright` / browser proof for visible UI behavior
-- `clerk-testing` only for authenticated E2E proof and only with local Clerk
-  test env values
-- GitHub / PR workflow skills for closeout
+- `check`: run every advisory governance validation and return one summarized
+  disposition;
+- `validate-goal`: validate active-goal structure and metadata;
+- `create-handoff`: create a sanitized execution handoff from committed goal
+  memory and a prompt file;
+- `validate-closeout`: validate PR publication and closeout disposition
+  evidence;
+- `capture-post-merge`: capture cleanup and lesson-persistence state without
+  deleting branches or changing files;
+- `verify-post-merge`: revalidate captured state before destructive cleanup or
+  lesson application.
 
-If read-only sub-agents are useful during execution, launch every read-only
-sub-agent with model override `gpt-5.4-mini`. The orchestrator owns all writes
-and final decisions.
+Callers and tests should use this interface. Internal parsing, hashing, schema
+validation, Git inspection, sanitization, and report formatting remain
+implementation details.
+
+### Required Contracts
+
+Add a focused `docs/governance/` authority surface containing:
+
+- a concise README explaining the NestCalc pipeline and artifact lifecycle;
+- an advisory/enforce mode file, initially set to `advisory`;
+- a manifest declaring the v1 contracts and required paths;
+- schemas for goal metadata, execution handoff, closeout disposition, and
+  post-merge snapshot;
+- valid and invalid fixtures for deterministic tests.
+
+The contracts must establish these invariants:
+
+1. `GOAL.md` contains exactly one active objective.
+2. Goal metadata identifies a NestCalc flow, active title, goal-memory commit,
+   intended `codex/` feature branch, skills, protected surfaces, and agent
+   roster/model requirements.
+3. Goal-memory commit and implementation commit are distinct.
+4. Execution handoff records a sanitized prompt hash, goal-memory commit,
+   branch intent, `codex-cli` execution route, and `feature-pr` publication
+   route.
+5. A completed implementation closeout requires an open, non-draft,
+   ready-for-review PR URL and reviewed commit SHA. A blocked closeout must
+   report the exact blocker instead of claiming completion.
+6. Closeout disposition is one of `merge-ready`, `suspend-merge`, or
+   `rollback-required` and names required human action.
+7. Post-merge evidence protects against stale-state cleanup by recording and
+   rechecking branch tip, merged PR identity, main SHA, working-tree state, and
+   pending lesson state before destructive commands.
+8. Artifacts reject likely secrets and never copy `.env*` values, Clerk values,
+   credentials, prompt plaintext, or user data.
+9. Requested and observed read-only sub-agent models are recorded. A required
+   model that is unavailable or mismatched is reported explicitly and cannot be
+   represented as passing evidence.
+
+Define an unambiguous hash canonicalization rule so metadata can be validated
+without a self-referential file hash. Keep timestamps and generated runtime
+artifacts out of committed authority unless they are deterministic fixtures.
 
 ### Scope
 
-Add a separate AutoNest preview visualization for computed AutoNest results.
+Required implementation work:
 
-Expected behavior:
+- Add the governance contracts, schemas, fixtures, and concise documentation.
+- Add the deep governance command module and focused automated tests.
+- Add package scripts for the aggregate check and targeted governance tests.
+- Add a deterministic v1 goal template and migration instructions while
+  preserving this active bootstrap goal unchanged during implementation.
+- Ensure generated handoff, closeout, and snapshot artifacts are local-only and
+  gitignored.
+- Prove advisory mode reports both valid and invalid fixture outcomes
+  deterministically.
+- Prove enforce mode fails closed in tests without enabling enforce mode for
+  normal NestCalc development.
+- Prove handoff generation requires a separately committed goal-memory commit
+  and `codex/` feature branch intent.
+- Prove successful implementation closeout requires an open, non-draft PR.
+- Document the later promotion criteria from advisory to enforce; do not perform
+  that promotion in this goal.
 
-- Keep manual mode rendering through the existing `NestGrid` path.
-- Keep fallback and not-ready AutoNest states on the existing manual baseline
-  preview; do not draw fake two-group geometry for fallback results.
-- When AutoNest mode has `autoNest.status === "computed"`, render an
-  AutoNest-specific preview using `autoNest.twoGroup`.
-- Show the remnant/available preview frame in the same general preview area
-  where the manual grid currently appears.
-- Show two distinct blank/group regions from `twoGroup.blanks`.
-- Show the straight trim line from `twoGroup.trimLine`.
-- Label each group with orientation (`0deg` / `90deg`) and part count.
-- Show each blank size compactly.
-- Show achieved margins per blank compactly, using the existing active unit.
-- Show suggested origin offset compactly.
-- Keep labels short and positioned so they do not overlap at mobile or desktop
-  sizes.
-- Keep the existing compact result summary from PR #26 intact unless a tiny
-  wording or spacing adjustment is needed for fit.
+Allowed implementation surfaces:
 
-Implementation guidance:
+- `GOAL.md`
+- `package.json`
+- `package-lock.json` only if an already-available dependency must be recorded
+- `.gitignore`
+- `scripts/nestcalc-governance.py`
+- narrowly scoped helper modules under `scripts/` if the single module would
+  otherwise become difficult to test
+- focused tests under `test/governance/` or the repository's established test
+  location
+- `docs/governance/**`
+- `docs/WORKFLOW.md` only for the minimum durable command and lifecycle update
+- `AGENTS.md` only if the executable governance routing cannot be accurately
+  described without a narrow update
 
-- Prefer a new component such as `src/components/AutoNestPreview.tsx`.
-- Reuse existing preview-shell CSS where practical, but add focused AutoNest
-  classes if needed.
-- Use deterministic SVG/div rendering; no canvas, pan/zoom, drag handles, or
-  animation in this slice.
-- Use the already-computed `AutoNestResult` data. Add only tiny presentational
-  helpers if needed for formatting or scaling.
-- If very dense geometry would make labels unreadable, keep the visual labels
-  compact and put detailed margin/offset text in a small adjacent summary row.
+### Autonomous Execution Pattern
 
-Allowed implementation files:
+Codex CLI must act as orchestrator and begin with repo hygiene and authority
+preflight.
 
-- `src/components/NestCalcApp.tsx`
-- `src/components/AutoNestPreview.tsx`
-- `src/app/globals.css`
-- `e2e/authenticated.spec.ts`
-- `e2e/locators.ts`
-
-Allowed only if necessary for targeted tests or types:
-
-- `src/lib/types.ts`
-- `src/lib/nestSession.ts`
-- `src/lib/autoNestEngine.ts`
-- `src/lib/autoNestEngine.test.ts`
-
-Do not touch `src/components/NestGrid.tsx` unless a tiny non-behavioral export or
-shared formatting adapter is clearly necessary. Stop if making `NestGrid`
-mode-aware seems required.
+- Use bounded parallel read-only evidence lanes only where they are distinct.
+- Request `gpt-5.4-mini` for every read-only sub-agent, as required by current
+  NestCalc authority.
+- The orchestrator owns all writes and final decisions.
+- Record requested and observed sub-agent model evidence when the runtime makes
+  it available.
+- If `gpt-5.4-mini` is unavailable, do not substitute another model and do not
+  fabricate a passing routing receipt. Continue with orchestrator-local
+  evidence gathering only when scope can still be proven, and report the model
+  lane as an explicit limitation.
+- Plan first, act after. Do not use plan mode.
+- Keep the goal-memory commit separate from all implementation commits.
 
 ### Out Of Scope
 
-Do not implement any of the following in this goal:
+Do not adopt NanoTate's full reference/enterprise profile in this goal:
 
-- AutoNest engine algorithm changes
-- search-budget changes
-- storage schema or migration changes
-- settings model changes
-- calculator input behavior changes
-- manual calculator math changes
-- manual preview behavior changes
-- fallback geometry synthesis
-- export, print, clipboard, or cut-list features
-- pan/zoom, drag, measuring tools, or interactive preview editing
-- route, Clerk, request-access, middleware, `.env*`, Vercel, or PWA changes
-- native iOS work
-- broad shell/layout redesign
+- no nine-phase enterprise rollout framework;
+- no MCP, plugin, or global skill registry;
+- no LangGraph wrapper;
+- no supply-chain/SBOM framework;
+- no signed or multi-party approval system;
+- no Git hooks, GitHub ruleset changes, branch-protection changes, or required
+  status-check configuration;
+- no global skill installation or edits outside this repository;
+- no automatic merge, branch deletion, reset, lesson application, or other
+  destructive operation;
+- no committed runtime trace history or generated reports;
+- no Vercel or production deployment changes.
 
-### Protected Behaviors
+Do not change product surfaces:
 
-Manual calculator behavior must remain exactly intact:
-
-- manual mode remains default
-- manual result numbers remain unchanged
-- manual preview remains unchanged
-- manual rotations, link/swap, clear, margins, and unit conversion remain
-  unchanged
-- existing Clerk-gated app behavior remains unchanged
-
-AutoNest behavior must remain stable:
-
-- AutoNest toggle behavior remains unchanged.
-- AutoNest settings behavior remains unchanged.
-- Manual rotate controls remain locked while AutoNest is active.
-- Existing engine output, result totals, trim-line data, and fallback reasons
-  remain unchanged.
-- Existing storage loading/saving semantics remain unchanged.
-
-### UI Guidance
-
-Keep the preview shop-floor simple and compact.
-
-- The operator should immediately understand which group is `0deg`, which group
-  is `90deg`, and where the straight trim split is.
-- Use restrained color coding for the two groups.
-- Use short labels and compact numeric formatting.
-- Avoid nested cards and avoid a large secondary results panel.
-- Do not add visible instructional text about how to use the app.
-- Ensure preview text and controls do not overlap at phone and desktop widths.
-- Keep the visual style aligned with the existing calculator surface.
+- calculator math or nesting behavior;
+- AutoNest engine, settings, results, or preview;
+- calculator UI layout or input behavior;
+- Clerk auth, request-access policy, routes, middleware, or `.env*` values;
+- PWA service worker, cache, manifest, or offline behavior;
+- native iOS planning or implementation.
 
 ### Verification
 
 Run and report:
 
 - `git diff --check`
+- governance fixture/unit tests
+- the aggregate advisory governance check
+- an enforce-mode negative-fixture proof
 - `npm run lint`
 - `npm run build`
 - `npm run test`
-- `npm run test:e2e`
-- `npm run test:e2e:auth`
 
-Because this is visual UI work, browser proof is required before closeout:
+Browser, Clerk-authenticated, and PWA proof are not required because this goal
+must not change browser-visible or runtime product behavior. If implementation
+touches such a surface, stop as out of scope rather than expanding verification.
 
-- desktop screenshot/proof of a computed AutoNest preview
-- mobile viewport screenshot/proof of the same preview without overlap
-- assertion that the two group labels and trim-line preview are visible
-- assertion that manual mode still shows the existing manual preview path
+Required evidence in the PR:
 
-If Playwright fails inside the managed sandbox with macOS Chromium permission
-errors, rerun the required browser proof outside the sandbox rather than
-weakening verification.
+- separate goal-memory and implementation commit SHAs;
+- exact governance commands and results;
+- valid-fixture pass and invalid-fixture failure evidence;
+- sanitized execution-handoff example containing no prompt plaintext or
+  secrets;
+- advisory-mode confirmation;
+- `git diff --name-only` evidence showing no product source changes;
+- an open, non-draft, ready-for-review PR URL;
+- known limitations and the explicit criteria for a future enforcement goal.
 
-If valid Clerk test env values are missing, report the affected public or
-authenticated Playwright proof as blocked by missing valid Clerk env, not
-passed. Do not commit secrets or `.env.local`.
+This active goal is the documented bootstrap exception to the new metadata
+contract because the validator and canonicalization rules do not exist at its
+goal-memory commit. Do not modify `GOAL.md` in the implementation commit merely
+to retrofit it. The first goal prepared after this governance PR merges must be
+the first live flow validated against the v1 goal contract.
 
-E2E expectations:
+### Stopping Condition
 
-- Extend authenticated Playwright coverage for the computed AutoNest preview.
-- Use deterministic inputs or seeded local storage to reach a computed
-  two-group result.
-- Prove the AutoNest preview renders two groups, a trim split, and compact
-  geometry text.
-- Prove toggling back to manual mode returns to the manual preview.
+Stop only when:
 
-### Git And PR Closeout
+- the advisory NestCalc governance module and contracts are implemented;
+- deterministic positive and negative tests pass;
+- existing lint, build, and unit tests pass;
+- no protected product surface changed;
+- goal memory and implementation are separate commits;
+- the feature branch is pushed outside the sandbox using available GitHub
+  authentication;
+- an open, non-draft, ready-for-review PR exists and its URL is reported;
+- `@codex review` is requested on the published PR;
+- any unavailable read-only sub-agent model or external publication blocker is
+  reported explicitly rather than represented as success.
 
-Implementation must happen off `main` on a feature branch.
+Do not merge the PR. Human approval remains required.
 
-The implementation closeout must:
+### Future Promotion Gate
 
-- commit `GOAL.md` separately before implementation
-- commit implementation files separately from `GOAL.md`
-- push the feature branch outside the sandbox when GitHub auth requires it
-- open a ready-for-review GitHub PR, not a draft
-- include the exact verification evidence in the PR body
-- trigger `@codex review`
-- stop if GitHub auth, push, or PR creation is blocked rather than silently
-  leaving only a local branch
-
-### Stopping Conditions
-
-Stop and report before broadening scope if:
-
-- computed AutoNest preview requires engine shape changes
-- manual preview behavior would need to change
-- `NestGrid` would need to become mode-aware
-- storage or migration changes appear necessary
-- browser proof cannot be produced because valid Clerk env is missing or
-  Playwright cannot run even outside the sandbox
-- the UI requires a broad layout redesign to fit
-
-### Done Means
-
-- A separate AutoNest preview path renders computed two-group AutoNest results.
-- Manual preview remains unchanged in manual mode and AutoNest fallback states.
-- Unit/build/lint checks pass.
-- Browser proof covers desktop and mobile computed preview behavior.
-- A ready-for-review PR is open on GitHub with verification evidence.
+Enforcement is a separate future goal. Consider promotion only after the
+advisory pipeline completes at least two real NestCalc product PR cycles without
+false positives, missing required evidence, secret exposure, or manual contract
+workarounds.

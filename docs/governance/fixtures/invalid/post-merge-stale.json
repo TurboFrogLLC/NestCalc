@@ -1,0 +1,12 @@
+{
+  "schema_version": "nestcalc-post-merge-v1",
+  "snapshot_id": "fedcba9876543210",
+  "captured_at": "2026-07-12T20:00:00Z",
+  "repository": "TurboFrogLLC/NestCalc",
+  "branch": "codex/governance-fixture",
+  "branch_tip": "2222222222222222222222222222222222222222",
+  "merged_pr": {"number": 99, "url": "https://github.com/TurboFrogLLC/NestCalc/pull/99", "state": "open"},
+  "main_sha": "3333333333333333333333333333333333333333",
+  "working_tree": {"clean": false, "status_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+  "pending_lessons": {"state": "pending", "lessons_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}
+}
