@@ -494,6 +494,14 @@ def validate_closeout_breakdown_text(text: str, subject: str = "closeout-breakdo
     else:
         result.errors.append("missing Reviewed commit SHA")
 
+    assessment = extract_closeout_breakdown_assessment(text)
+    if assessment is None:
+        result.errors.append(
+            "Overall Assessment must declare **Approve**, **Request Changes**, or **Comment Only**"
+        )
+    else:
+        result.details["assessment"] = assessment
+
     if "### 8. Merge Disposition" in text:
         section = text.split("### 8. Merge Disposition", 1)[1]
         for stop in ("### Overall Assessment", CLOSEOUT_BREAKDOWN_SENTINEL, "---"):
@@ -510,7 +518,6 @@ def validate_closeout_breakdown_text(text: str, subject: str = "closeout-breakdo
             result.errors.append("section 8 Human action is required")
         if signal == "rollback-required" and "**Rollback steps:**" not in section:
             result.errors.append("rollback-required closeout must include Rollback steps")
-        assessment = extract_closeout_breakdown_assessment(text)
         if signal and assessment:
             allowed = CLOSEOUT_ASSESSMENT_ALIGNMENT.get(signal, set())
             if assessment not in allowed:
@@ -591,19 +598,43 @@ def aggregate_check(root: Path, mode: str) -> Result:
                 fixture_outcomes.append({"fixture": rel, "expected": "valid", "outcome": "accepted"})
             valid_count += 1
         for rel in fixtures.get("invalid", []):
-            checked = validate_fixture(root / rel)
+            fixture_path = root / rel
+            access = fixture_access_check(fixture_path)
+            if not access.ok:
+                result.errors.append(
+                    f"invalid fixture missing or unreadable: {rel}: {'; '.join(access.errors)}"
+                )
+                fixture_outcomes.append(
+                    {"fixture": rel, "expected": "invalid", "outcome": "missing"}
+                )
+                continue
+            checked = validate_fixture(fixture_path)
             if checked.ok:
                 result.errors.append(f"invalid fixture accepted: {rel}")
                 fixture_outcomes.append({"fixture": rel, "expected": "invalid", "outcome": "accepted"})
             else:
                 fixture_outcomes.append({"fixture": rel, "expected": "invalid", "outcome": "rejected"})
-            invalid_count += 1
+                invalid_count += 1
         result.details["valid_fixtures"] = valid_count
         result.details["invalid_fixtures"] = invalid_count
         result.details["fixture_outcomes"] = fixture_outcomes
     active = validate_goal(root / "GOAL.md", allow_bootstrap=mode == "advisory")
     result.merge(active)
     result.details["advisory_mode"] = configured_mode == "advisory"
+    return result
+
+
+def fixture_access_check(path: Path) -> Result:
+    """Distinguish missing/unreadable fixtures from semantic validation failures."""
+    result = Result(f"fixture-access:{path}")
+    if not path.is_file():
+        result.errors.append("fixture path is missing or not a regular file")
+        return result
+    try:
+        with path.open("rb"):
+            pass
+    except OSError as exc:
+        result.errors.append(str(exc))
     return result
 
 
@@ -632,14 +663,56 @@ def goal_commit_check(root: Path, commit: str) -> Result:
     return result
 
 
+def require_committed_goal(root: Path, goal_path: Path) -> Result:
+    """Reject create-handoff when GOAL.md is dirty or not committed at HEAD.
+
+    goal_memory_commit may predate a later metadata-only commit; handoff still
+    must hash the committed worktree goal, not an uncommitted edit.
+    """
+    result = Result("committed-goal")
+    try:
+        rel = goal_path.resolve().relative_to(root.resolve()).as_posix()
+    except ValueError:
+        result.errors.append("goal path must be inside the repository")
+        return result
+    status = command(root, "git", "status", "--porcelain=v1", "--untracked-files=all", "--", rel)
+    if status.returncode:
+        result.errors.append(f"unable to inspect goal status: {status.stderr.strip()}")
+        return result
+    if status.stdout.strip():
+        result.errors.append(
+            f"goal has uncommitted changes ({rel}); commit the goal before create-handoff"
+        )
+        return result
+    show = command(root, "git", "show", f"HEAD:{rel}")
+    if show.returncode:
+        result.errors.append(f"goal is not committed at HEAD: {rel}")
+        return result
+    try:
+        worktree = goal_path.read_text(encoding="utf-8")
+    except OSError as exc:
+        result.errors.append(str(exc))
+        return result
+    if normalized_text(worktree) != normalized_text(show.stdout):
+        result.errors.append(
+            f"worktree goal content does not match committed HEAD content ({rel})"
+        )
+    result.details["goal_path"] = rel
+    return result
+
+
 def create_handoff(root: Path, args: argparse.Namespace) -> Result:
-    result = validate_goal(args.goal, allow_bootstrap=False)
-    result.subject = "create-handoff"
+    result = Result("create-handoff")
+    # Fail closed on dirty/uncommitted goals before hashing worktree content into artifacts.
+    result.merge(require_committed_goal(root, args.goal))
+    goal_result = validate_goal(args.goal, allow_bootstrap=False)
+    result.errors.extend(goal_result.errors)
+    result.warnings.extend(goal_result.warnings)
+    result.details.update(goal_result.details)
     if not result.ok:
         return result
     metadata = extract_goal_metadata(args.goal.read_text(encoding="utf-8")) or {}
-    commit_result = goal_commit_check(root, args.goal_memory_commit)
-    result.merge(commit_result)
+    result.merge(goal_commit_check(root, args.goal_memory_commit))
     if metadata.get("goal_memory_commit") != args.goal_memory_commit:
         result.errors.append("supplied goal-memory commit does not match goal metadata")
     current_branch = git(root, "branch", "--show-current")

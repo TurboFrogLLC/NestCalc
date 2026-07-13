@@ -73,6 +73,47 @@ class GovernanceContractsTest(unittest.TestCase):
         self.assertFalse(broken.ok)
         self.assertTrue(any("section 8" in error.lower() or "sentinel" in error.lower() for error in broken.errors))
 
+    def test_closeout_breakdown_requires_assessment_decision(self) -> None:
+        valid = (ROOT / "docs/governance/fixtures/valid/closeout-breakdown.md").read_text(encoding="utf-8")
+        missing_decision = valid.replace("**Comment Only**", "Held for review")
+        result = governance.validate_closeout_breakdown_text(missing_decision)
+        self.assertFalse(result.ok)
+        self.assertTrue(
+            any("Overall Assessment must declare" in error for error in result.errors),
+            result.errors,
+        )
+
+    def test_invalid_fixture_missing_file_is_not_expected_rejection(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            docs = root / "docs/governance"
+            docs.mkdir(parents=True)
+            (docs / "MODE").write_text("advisory\n", encoding="utf-8")
+            (root / "GOAL.md").write_text(
+                "# GOAL.md\n\n## Active Goal: NestCalc Governed Goal Pipeline v1\n",
+                encoding="utf-8",
+            )
+            manifest = {
+                "schema_version": "nestcalc-governance-manifest-v1",
+                "repository": "TurboFrogLLC/NestCalc",
+                "required_paths": [],
+                "contracts": {},
+                "fixtures": {
+                    "valid": [],
+                    "invalid": ["docs/governance/fixtures/invalid/does-not-exist.json"],
+                },
+            }
+            (docs / "manifest.json").write_text(json.dumps(manifest) + "\n", encoding="utf-8")
+            result = governance.aggregate_check(root, "advisory")
+            self.assertFalse(result.ok)
+            self.assertTrue(
+                any("invalid fixture missing or unreadable" in error for error in result.errors),
+                result.errors,
+            )
+            self.assertEqual(result.details.get("invalid_fixtures"), 0)
+            outcomes = result.details.get("fixture_outcomes", [])
+            self.assertTrue(any(item.get("outcome") == "missing" for item in outcomes), outcomes)
+
     def test_post_merge_fixture_must_be_merged_and_clean(self) -> None:
         path = ROOT / "docs/governance/fixtures/invalid/post-merge-stale.json"
         result = governance.validate_json_file(path, "snapshot")
@@ -176,6 +217,18 @@ class GovernanceContractsTest(unittest.TestCase):
             artifact = json.loads(output.read_text())
             self.assertNotIn("prompt", artifact)
             self.assertRegex(artifact["prompt_sha256"], r"^sha256:[0-9a-f]{64}$")
+
+            # Dirty uncommitted GOAL.md must fail closed and must not rewrite the artifact.
+            prior_artifact = output.read_text(encoding="utf-8")
+            goal_path.write_text(goal_path.read_text(encoding="utf-8") + "\nDirty edit.\n", encoding="utf-8")
+            dirty = governance.create_handoff(root, args)
+            self.assertFalse(dirty.ok)
+            self.assertTrue(
+                any("uncommitted changes" in error for error in dirty.errors),
+                dirty.errors,
+            )
+            self.assertEqual(output.read_text(encoding="utf-8"), prior_artifact)
+            self.assertNotIn("output", dirty.details)
 
     @staticmethod
     def _goal_text(metadata: dict[str, object]) -> str:
