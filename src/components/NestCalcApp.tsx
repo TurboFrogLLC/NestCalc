@@ -28,6 +28,7 @@ import {
 import type {
   AutoNestResult,
   AutoNestSettings,
+  AutoNestTrimEdgePolicy,
   Margins,
   NestAppState,
   NestInputs,
@@ -194,12 +195,16 @@ function AutoNestSettingsPanel({
   settings,
   unit,
   onGlobalClampMarginChange,
+  onTrimEdgePolicyChange,
+  onSharedTrimClearanceChange,
   onOverrideGlobalMarginsChange,
   onMarginOverrideChange,
 }: {
   settings: AutoNestSettings;
   unit: string;
   onGlobalClampMarginChange: (value: number | null) => void;
+  onTrimEdgePolicyChange: (value: AutoNestTrimEdgePolicy) => void;
+  onSharedTrimClearanceChange: (value: number | null) => void;
   onOverrideGlobalMarginsChange: (value: boolean) => void;
   onMarginOverrideChange: (key: keyof Margins, value: number | null) => void;
 }) {
@@ -214,6 +219,41 @@ function AutoNestSettingsPanel({
         unit={unit}
         onChange={onGlobalClampMarginChange}
       />
+      <fieldset className="flex min-w-0 flex-col gap-1">
+        <legend className="text-[11px] font-medium text-[var(--muted)]">
+          Internal trim edge margin policy
+        </legend>
+        <div className="grid grid-cols-3 overflow-hidden rounded-md border border-[var(--input-border)]">
+          {(["open", "shared", "full"] as const).map((policy) => (
+            <label
+              key={policy}
+              className={`cursor-pointer border-r border-[var(--input-border)] px-2 py-1 text-center text-[11px] font-semibold capitalize last:border-r-0 ${
+                settings.trimEdgePolicy === policy
+                  ? "bg-[var(--accent)] text-[var(--background)]"
+                  : "bg-[var(--input-bg)] text-[var(--muted)] hover:text-[var(--foreground)]"
+              }`}
+            >
+              <input
+                type="radio"
+                name="autonest-trim-edge-policy"
+                value={policy}
+                checked={settings.trimEdgePolicy === policy}
+                onChange={() => onTrimEdgePolicyChange(policy)}
+                className="sr-only"
+              />
+              {policy[0].toUpperCase() + policy.slice(1)}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+      {settings.trimEdgePolicy === "shared" ? (
+        <NumberInput
+          label="Shared trim clearance"
+          value={settings.sharedTrimClearance}
+          unit={unit}
+          onChange={onSharedTrimClearanceChange}
+        />
+      ) : null}
       <label className="flex shrink-0 cursor-pointer items-center gap-2 text-xs text-[var(--muted)]">
         <input
           type="checkbox"
@@ -518,6 +558,18 @@ export function NestCalcApp() {
                   updateAutoNestSettings((current) => ({
                     ...current,
                     globalClampMargin: value,
+                  }))
+                }
+                onTrimEdgePolicyChange={(value) =>
+                  updateAutoNestSettings((current) => ({
+                    ...current,
+                    trimEdgePolicy: value,
+                  }))
+                }
+                onSharedTrimClearanceChange={(value) =>
+                  updateAutoNestSettings((current) => ({
+                    ...current,
+                    sharedTrimClearance: value,
                   }))
                 }
                 onOverrideGlobalMarginsChange={(value) =>

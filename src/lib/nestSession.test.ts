@@ -199,6 +199,8 @@ describe("mode-aware nest session", () => {
     manualInputs: baseInputs,
     autoNestSettings: {
       globalClampMargin: 0.53,
+      trimEdgePolicy: "open",
+      sharedTrimClearance: 0.03,
       overrideGlobalMargins: true,
       marginOverrides: { left: 0.5, right: 0.25, top: null, bottom: 1 },
     },
@@ -232,6 +234,8 @@ describe("mode-aware nest session", () => {
       manualInputs: autoNestInputs,
       autoNestSettings: {
         globalClampMargin: 0,
+        trimEdgePolicy: "open",
+        sharedTrimClearance: 0,
         overrideGlobalMargins: false,
         marginOverrides: { left: null, right: null, top: null, bottom: null },
       },
@@ -262,6 +266,8 @@ describe("mode-aware nest session", () => {
       },
       autoNestSettings: {
         globalClampMargin: 13.462,
+        trimEdgePolicy: "open",
+        sharedTrimClearance: 0.762,
         marginOverrides: {
           left: 12.7,
           right: 6.35,

@@ -7,6 +7,8 @@ import type { AutoNestSettings, NestInputs } from "./types";
 
 const zeroMarginSettings: AutoNestSettings = {
   globalClampMargin: 0,
+  trimEdgePolicy: "open",
+  sharedTrimClearance: 0,
   overrideGlobalMargins: false,
   marginOverrides: { left: null, right: null, top: null, bottom: null },
 };
@@ -73,6 +75,8 @@ describe("calculateAutoNest", () => {
   it("uses AutoNest clamp margins as full clearance around both trim blanks", () => {
     const settings: AutoNestSettings = {
       globalClampMargin: 0,
+      trimEdgePolicy: "full",
+      sharedTrimClearance: 0,
       overrideGlobalMargins: true,
       marginOverrides: { left: 0.5, right: 0.5, top: 0.5, bottom: 0.5 },
     };
@@ -112,6 +116,46 @@ describe("calculateAutoNest", () => {
     ]);
   });
 
+  it("keeps Fixture 2 at uniform 2 under the full trim-edge policy", () => {
+    const result = calculateAutoNest(
+      { ...baseInputs, remnantWidth: 11.1 },
+      {
+        ...zeroMarginSettings,
+        globalClampMargin: 0.53,
+        trimEdgePolicy: "full",
+        sharedTrimClearance: 0.53,
+      },
+    );
+
+    expect(result).toMatchObject({
+      status: "fallback",
+      reason: "two-group-not-useful",
+      bestUniform: { totalParts: 2 },
+      fallback: { totalParts: 2 },
+    });
+  });
+
+  it("computes Fixture 2 as 3 under open with truthful zero internal margins", () => {
+    const result = calculateAutoNest(
+      { ...baseInputs, remnantWidth: 11.1 },
+      {
+        ...zeroMarginSettings,
+        globalClampMargin: 0.53,
+        trimEdgePolicy: "open",
+        sharedTrimClearance: 0.53,
+      },
+    );
+
+    expect(result.status).toBe("computed");
+    if (result.status !== "computed") return;
+
+    expect(result.bestUniform.totalParts).toBe(2);
+    expect(result.twoGroup.totalParts).toBe(3);
+    expect(result.twoGroup.trimLine.orientation).toBe("vertical");
+    expect(result.twoGroup.blanks[0].achievedMargins.right).toBeCloseTo(0);
+    expect(result.twoGroup.blanks[1].achievedMargins.left).toBeCloseTo(0);
+  });
+
   it("falls back when mixed two-group packing does not improve the uniform result", () => {
     const result = calculateAutoNest(
       {
@@ -126,6 +170,7 @@ describe("calculateAutoNest", () => {
       {
         ...zeroMarginSettings,
         globalClampMargin: 0.53,
+        trimEdgePolicy: "full",
       },
     );
 
@@ -138,6 +183,69 @@ describe("calculateAutoNest", () => {
       fallback: {
         totalParts: 20,
       },
+    });
+  });
+
+  it("assigns shared clearance to Fixture 2's second blank and respects its threshold", () => {
+    const fixture = { ...baseInputs, remnantWidth: 11.1 };
+    const lowClearance = calculateAutoNest(fixture, {
+      ...zeroMarginSettings,
+      globalClampMargin: 0.53,
+      trimEdgePolicy: "shared",
+      sharedTrimClearance: 0.03,
+    });
+
+    expect(lowClearance.status).toBe("computed");
+    if (lowClearance.status !== "computed") return;
+    expect(lowClearance.twoGroup.totalParts).toBe(3);
+    expect(lowClearance.twoGroup.blanks[0].achievedMargins.right).toBeCloseTo(0);
+    expect(lowClearance.twoGroup.blanks[1].achievedMargins.left).toBeCloseTo(
+      0.03,
+    );
+
+    const highClearance = calculateAutoNest(fixture, {
+      ...zeroMarginSettings,
+      globalClampMargin: 0.53,
+      trimEdgePolicy: "shared",
+      sharedTrimClearance: 0.05,
+    });
+    expect(highClearance).toMatchObject({
+      status: "fallback",
+      reason: "two-group-not-useful",
+      bestUniform: { totalParts: 2 },
+      fallback: { totalParts: 2 },
+    });
+  });
+
+  it("applies the same first-open and second-shared rule horizontally", () => {
+    const result = calculateAutoNest(
+      { ...baseInputs, remnantWidth: 10, remnantHeight: 11.1 },
+      {
+        ...zeroMarginSettings,
+        globalClampMargin: 0.53,
+        trimEdgePolicy: "shared",
+        sharedTrimClearance: 0.03,
+      },
+    );
+
+    expect(result.status).toBe("computed");
+    if (result.status !== "computed") return;
+    expect(result.twoGroup.trimLine.orientation).toBe("horizontal");
+    expect(result.twoGroup.blanks[0].achievedMargins.bottom).toBeCloseTo(0);
+    expect(result.twoGroup.blanks[1].achievedMargins.top).toBeCloseTo(0.03);
+  });
+
+  it("falls back safely for an invalid active shared clearance", () => {
+    const result = calculateAutoNest(baseInputs, {
+      ...zeroMarginSettings,
+      trimEdgePolicy: "shared",
+      sharedTrimClearance: -0.01,
+    });
+
+    expect(result).toMatchObject({
+      status: "fallback",
+      reason: "insufficient-inputs",
+      bestUniform: { totalParts: 0 },
     });
   });
 

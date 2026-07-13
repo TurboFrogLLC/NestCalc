@@ -238,6 +238,7 @@ export function convertAutoNestSettingsUnit(
   return {
     ...settings,
     globalClampMargin: cv(settings.globalClampMargin),
+    sharedTrimClearance: cv(settings.sharedTrimClearance),
     marginOverrides: {
       left: cv(settings.marginOverrides.left),
       right: cv(settings.marginOverrides.right),
