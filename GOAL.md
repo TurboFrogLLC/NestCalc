@@ -24,8 +24,8 @@
   "branch_intent": "codex/autonest-per-part-preview-margin-controls-v1",
   "execution_route": "codex-cli",
   "flow_id": "NC-20260713-a87a5bab",
-  "goal_memory_commit": "0000000000000000000000000000000000000000",
-  "goal_sha256": "sha256:f1f8acac5506d81ef7c8accfef99ed83edd4a3dfd858f598a3967b1abdea4d89",
+  "goal_memory_commit": "d2f11de199607f4e79cd2166d6d70e34f8a085ce",
+  "goal_sha256": "sha256:f72362a55031db61f5e83feeb001cffa461080bf46c4fe7c74bf7f2027acfe44",
   "protected_surfaces": [
     "manual calculator math state preview and nestcalc.ts behavior",
     "AutoNest packing ranking counts trim-edge policies fallback guards and search budget",
