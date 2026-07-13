@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/TurboFrogLLC/NestCalc/docs/governance/schemas/closeout-breakdown.schema.json",
+  "title": "NestCalcCloseoutBreakdownV1",
+  "description": "Structured representation of a pr-closeout-breakdown PR comment.",
+  "type": "object",
+  "required": [
+    "flow_id",
+    "pr_number",
+    "reviewed_commit",
+    "mode",
+    "summary",
+    "decision_path",
+    "responsibility_table",
+    "verification_evidence",
+    "prior_findings",
+    "remaining_items",
+    "lessons",
+    "merge_disposition",
+    "end_sentinel"
+  ],
+  "properties": {
+    "flow_id": {
+      "type": "string",
+      "pattern": "^NC-[0-9]{8}-[0-9a-f]{8}$"
+    },
+    "pr_number": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "pr_title": {
+      "type": "string"
+    },
+    "reviewed_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{7,40}$"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "Closeout / PR comment + canonical lessons capture",
+        "Closeout / dry-run",
+        "Merged (retrospective)"
+      ]
+    },
+    "summary": {
+      "type": "object",
+      "required": ["scope", "commits", "status", "tests"],
+      "properties": {
+        "scope": {"type": "string"},
+        "commits": {"type": "string"},
+        "status": {
+          "type": "string",
+          "enum": [
+            "Ready to merge",
+            "Needs changes",
+            "Blocked",
+            "Merged (retrospective)"
+          ]
+        },
+        "tests": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "decision_path": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string"}
+    },
+    "responsibility_table": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["area", "what_happened", "result"],
+        "properties": {
+          "area": {"type": "string"},
+          "what_happened": {"type": "string"},
+          "result": {"type": "string", "enum": ["PASS", "FAIL", "SKIP"]}
+        },
+        "additionalProperties": false
+      }
+    },
+    "verification_evidence": {
+      "type": "string",
+      "minLength": 1
+    },
+    "prior_findings": {
+      "type": "string"
+    },
+    "remaining_items": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "lessons": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["label", "lesson", "applies_when"],
+        "properties": {
+          "label": {
+            "type": "string",
+            "pattern": "^L-nestcalc-[a-z0-9-]+$"
+          },
+          "lesson": {"type": "string"},
+          "applies_when": {"type": "string"},
+          "source_pr": {"type": "integer"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "merge_disposition": {
+      "type": "object",
+      "required": ["signal", "rationale", "human_action_required"],
+      "properties": {
+        "signal": {
+          "type": "string",
+          "enum": ["merge-ready", "suspend-merge", "rollback-required"]
+        },
+        "rationale": {"type": "string", "minLength": 1},
+        "human_action_required": {"type": "string", "minLength": 1},
+        "rollback_steps": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "overall_assessment": {
+      "type": "string",
+      "enum": ["Approve", "Comment Only", "Request Changes"]
+    },
+    "end_sentinel": {
+      "type": "string",
+      "const": "END OF PR CLOSEOUT BREAKDOWN"
+    }
+  },
+  "additionalProperties": false
+}

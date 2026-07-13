@@ -24,8 +24,8 @@ class GovernanceContractsTest(unittest.TestCase):
     def test_manifest_and_all_fixtures_are_deterministic(self) -> None:
         result = governance.aggregate_check(ROOT, "advisory")
         self.assertTrue(result.ok, result.errors)
-        self.assertEqual(result.details["valid_fixtures"], 5)
-        self.assertEqual(result.details["invalid_fixtures"], 5)
+        self.assertEqual(result.details["valid_fixtures"], 6)
+        self.assertEqual(result.details["invalid_fixtures"], 6)
         self.assertTrue(result.details["advisory_mode"])
 
     def test_active_bootstrap_goal_is_advisory_only(self) -> None:
@@ -64,6 +64,14 @@ class GovernanceContractsTest(unittest.TestCase):
         path = ROOT / "docs/governance/fixtures/valid/closeout-blocked.json"
         result = governance.validate_json_file(path, "closeout")
         self.assertTrue(result.ok, result.errors)
+
+    def test_closeout_breakdown_fixture_requires_section_eight(self) -> None:
+        valid = ROOT / "docs/governance/fixtures/valid/closeout-breakdown.md"
+        invalid = ROOT / "docs/governance/fixtures/invalid/closeout-breakdown-missing-disposition.md"
+        self.assertTrue(governance.validate_closeout_breakdown_file(valid).ok)
+        broken = governance.validate_closeout_breakdown_file(invalid)
+        self.assertFalse(broken.ok)
+        self.assertTrue(any("section 8" in error.lower() or "sentinel" in error.lower() for error in broken.errors))
 
     def test_post_merge_fixture_must_be_merged_and_clean(self) -> None:
         path = ROOT / "docs/governance/fixtures/invalid/post-merge-stale.json"

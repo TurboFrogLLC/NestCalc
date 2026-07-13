@@ -422,12 +422,33 @@ def validate_json_file(path: Path, kind: str) -> Result:
     return validators[kind](data, f"{kind}:{path}")
 
 
+CLOSEOUT_BREAKDOWN_SECTIONS = (
+    "### 1. Summary",
+    "### 2. Decision Path",
+    "### 3. Responsibility Breakdown",
+    "### 4. Verification Evidence",
+    "### 5. Prior Findings Status",
+    "### 6. Remaining Items",
+    "### 7. Lessons Learned",
+    "### 8. Merge Disposition",
+    "### Overall Assessment",
+)
+CLOSEOUT_ASSESSMENT_ALIGNMENT = {
+    "merge-ready": {"Approve", "Comment Only"},
+    "suspend-merge": {"Comment Only"},
+    "rollback-required": {"Request Changes"},
+}
+CLOSEOUT_BREAKDOWN_SENTINEL = "END OF PR CLOSEOUT BREAKDOWN"
+
+
 def classify_fixture(path: Path) -> str:
     name = path.name
     if name.startswith("goal-") or name == "goal.md":
         return "goal"
     if name.startswith("execution-handoff"):
         return "handoff"
+    if name.startswith("closeout-breakdown"):
+        return "closeout-breakdown"
     if name.startswith("closeout"):
         return "closeout"
     if name.startswith("post-merge"):
@@ -435,9 +456,86 @@ def classify_fixture(path: Path) -> str:
     raise ValueError(f"unknown fixture kind: {path}")
 
 
+def extract_closeout_breakdown_field(section: str, label: str) -> str:
+    match = re.search(rf"\*\*{re.escape(label)}:\*\*\s*(.+)", section)
+    return match.group(1).strip() if match else ""
+
+
+def extract_closeout_breakdown_assessment(text: str) -> str | None:
+    if "### Overall Assessment" not in text:
+        return None
+    section = text.split("### Overall Assessment", 1)[1]
+    for stop in (CLOSEOUT_BREAKDOWN_SENTINEL, "---"):
+        if stop in section:
+            section = section.split(stop, 1)[0]
+    match = re.search(r"\*\*(Approve|Request Changes|Comment Only)\*\*", section)
+    return match.group(1) if match else None
+
+
+def validate_closeout_breakdown_text(text: str, subject: str = "closeout-breakdown") -> Result:
+    result = Result(subject)
+    if "## PR Closeout Breakdown" not in text:
+        result.errors.append("missing ## PR Closeout Breakdown header")
+    for heading in CLOSEOUT_BREAKDOWN_SECTIONS:
+        if heading not in text:
+            result.errors.append(f"missing required section: {heading}")
+    if CLOSEOUT_BREAKDOWN_SENTINEL not in text:
+        result.errors.append(f"missing sentinel: {CLOSEOUT_BREAKDOWN_SENTINEL}")
+
+    flow_match = re.search(r"\*\*Flow ID:\*\*\s*`(NC-[0-9]{8}-[0-9a-f]{8})`", text)
+    if flow_match:
+        result.details["flow_id"] = flow_match.group(1)
+    else:
+        result.warnings.append("closeout breakdown missing optional Flow ID")
+
+    commit_match = re.search(r"\*\*Reviewed commit:\*\*\s*`([0-9a-f]{7,40})`", text)
+    if commit_match:
+        result.details["reviewed_commit"] = commit_match.group(1)
+    else:
+        result.errors.append("missing Reviewed commit SHA")
+
+    if "### 8. Merge Disposition" in text:
+        section = text.split("### 8. Merge Disposition", 1)[1]
+        for stop in ("### Overall Assessment", CLOSEOUT_BREAKDOWN_SENTINEL, "---"):
+            if stop in section:
+                section = section.split(stop, 1)[0]
+        signal = extract_closeout_breakdown_field(section, "Signal")
+        rationale = extract_closeout_breakdown_field(section, "Rationale")
+        human_action = extract_closeout_breakdown_field(section, "Human action")
+        if signal not in CLOSEOUT_ASSESSMENT_ALIGNMENT:
+            result.errors.append("section 8 Signal must be merge-ready, suspend-merge, or rollback-required")
+        if not rationale:
+            result.errors.append("section 8 Rationale is required")
+        if not human_action:
+            result.errors.append("section 8 Human action is required")
+        if signal == "rollback-required" and "**Rollback steps:**" not in section:
+            result.errors.append("rollback-required closeout must include Rollback steps")
+        assessment = extract_closeout_breakdown_assessment(text)
+        if signal and assessment:
+            allowed = CLOSEOUT_ASSESSMENT_ALIGNMENT.get(signal, set())
+            if assessment not in allowed:
+                result.errors.append(
+                    f"Overall Assessment {assessment!r} is incompatible with signal {signal!r}"
+                )
+        result.details["signal"] = signal
+    return result
+
+
+def validate_closeout_breakdown_file(path: Path) -> Result:
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError as exc:
+        return Result(f"closeout-breakdown:{path}", errors=[str(exc)])
+    return validate_closeout_breakdown_text(text, subject=f"closeout-breakdown:{path}")
+
+
 def validate_fixture(path: Path) -> Result:
     kind = classify_fixture(path)
-    return validate_goal(path, allow_bootstrap=False) if kind == "goal" else validate_json_file(path, kind)
+    if kind == "goal":
+        return validate_goal(path, allow_bootstrap=False)
+    if kind == "closeout-breakdown":
+        return validate_closeout_breakdown_file(path)
+    return validate_json_file(path, kind)
 
 
 def validate_manifest(root: Path) -> tuple[Result, dict[str, Any] | None]:
@@ -691,6 +789,9 @@ def build_parser() -> argparse.ArgumentParser:
     closeout = sub.add_parser("validate-closeout")
     closeout.add_argument("--input", type=Path, required=True)
 
+    breakdown = sub.add_parser("validate-closeout-breakdown")
+    breakdown.add_argument("--input", type=Path, required=True)
+
     capture = sub.add_parser("capture-post-merge")
     capture.add_argument("--pr-number", type=int, required=True)
     capture.add_argument("--branch", required=True)
@@ -722,6 +823,9 @@ def main() -> int:
     elif args.subcommand == "validate-closeout":
         path = args.input if args.input.is_absolute() else root / args.input
         result = validate_json_file(path, "closeout")
+    elif args.subcommand == "validate-closeout-breakdown":
+        path = args.input if args.input.is_absolute() else root / args.input
+        result = validate_closeout_breakdown_file(path)
     elif args.subcommand == "capture-post-merge":
         args.output = args.output if args.output.is_absolute() else root / args.output
         result = capture_post_merge(root, args)

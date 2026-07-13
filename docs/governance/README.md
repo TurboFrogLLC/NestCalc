@@ -15,9 +15,16 @@ python3 scripts/nestcalc-governance.py check
 python3 scripts/nestcalc-governance.py validate-goal --goal GOAL.md
 python3 scripts/nestcalc-governance.py create-handoff --prompt-file <local-file> --goal-memory-commit <sha> --output .nestcalc/governance/execution-handoff.json
 python3 scripts/nestcalc-governance.py validate-closeout --input <closeout.json>
+python3 scripts/nestcalc-governance.py validate-closeout-breakdown --input <closeout.md>
 python3 scripts/nestcalc-governance.py capture-post-merge --pr-number <number> --pr-url <url> --output .nestcalc/governance/post-merge.json
 python3 scripts/nestcalc-governance.py verify-post-merge --input .nestcalc/governance/post-merge.json
 ```
+
+Grok Build closeout uses the global `pr-closeout-breakdown` skill. Every posted
+closeout comment must include sections 1–8, an Overall Assessment, and the
+`END OF PR CLOSEOUT BREAKDOWN` sentinel. Section 8 merge disposition templates
+live in `docs/governance/closeout-rollback-templates.md`. Lesson persistence
+uses the canonical checkout per `docs/governance/lesson-persistence-example.md`.
 
 `check` validates the manifest, schemas, valid fixtures, negative fixtures, and
 the active goal. The active "NestCalc Governed Goal Pipeline v1" goal is the one

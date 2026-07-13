@@ -26,10 +26,13 @@ verification, and architecture-support changes.
    unless the human explicitly asks for draft.
 10. Run Grok Build or GitHub review, triage findings in chat, and convert
     accepted findings into scoped follow-up work.
-11. Merge only after evidence and scope are clear.
-12. After merge, sync local `main`, prune stale refs, and remove obsolete local
+11. Run Grok Build closeout with the global `pr-closeout-breakdown` skill before
+    human merge: post the breakdown as a PR comment, include section 8 merge
+    disposition, and preview lesson persistence to the canonical checkout.
+12. Merge only after evidence, scope, and required review gates are clear.
+13. After merge, sync local `main`, prune stale refs, and remove obsolete local
     branches/worktrees.
-13. Persist approved reusable lessons from PR closeout into
+14. Persist approved reusable lessons from PR closeout into
     `LESSONS_LEARNED.md`.
 
 Keep planning, implementation, review evidence, and durable repo authority files
@@ -47,6 +50,35 @@ goal validation, sanitized handoff creation, closeout validation, and
 stale-state-safe post-merge capture/verification. It never merges, deletes
 branches, or applies lessons. Promotion to enforce mode is a separate goal and
 requires the criteria in `docs/governance/README.md`.
+
+## Grok Build Review And Closeout
+
+Grok Build is the review/closeout layer. It does not implement product changes
+unless the human explicitly redirects it.
+
+| Step | Actor | Action |
+|------|-------|--------|
+| B6 | Grok Build | Review PR scope, protected surfaces, and verification evidence |
+| B7 | Grok Build | Post `pr-closeout-breakdown` comment with section 8 merge disposition |
+| B8 | Human | Merge only after review gates and disposition are satisfactory |
+| B9 | Grok Build / human | Post-merge cleanup and canonical lesson persistence |
+
+Closeout contract docs:
+
+- `docs/governance/pr-closeout-breakdown-disposition.md`
+- `docs/governance/closeout-rollback-templates.md`
+- `docs/governance/lesson-persistence-example.md`
+
+Validate a closeout comment before posting:
+
+```bash
+python3 scripts/nestcalc-governance.py validate-closeout-breakdown --input path/to/closeout.md
+```
+
+Closeout must not declare **Approve** when section 8 signal is `suspend-merge`
+or `rollback-required`. Findings return to chat for triage per
+`L-nestcalc-grok-review-role-separation`; Grok Build does not silently expand
+the active implementation goal.
 
 ## Autonomous Goal-Grilling Cycle
 
@@ -150,8 +182,9 @@ Default workflow:
 8. **Security/privacy:** `security-audit`, `security-threat-model`, or Codex
    security skills when auth, secrets, PWA caching, request-access forms, or
    deployment trust surfaces are in scope.
-9. **PR closeout:** `codex-pr-closeout`, GitHub plugin skills, Grok review
-   intake, then `codex-post-merge-cleanup` after merge.
+9. **PR closeout:** `codex-pr-closeout`, GitHub plugin skills, Grok
+   `pr-closeout-breakdown`, Grok review intake, then `codex-post-merge-cleanup`
+   after merge.
 
 Web/PWA skills and plugins to prefer:
 

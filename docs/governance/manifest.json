@@ -8,6 +8,7 @@
     "goal_metadata": "docs/governance/schemas/goal-metadata.schema.json",
     "execution_handoff": "docs/governance/schemas/execution-handoff.schema.json",
     "closeout_disposition": "docs/governance/schemas/closeout-disposition.schema.json",
+    "closeout_breakdown": "docs/governance/schemas/closeout-breakdown.schema.json",
     "post_merge_snapshot": "docs/governance/schemas/post-merge-snapshot.schema.json"
   },
   "required_paths": [
@@ -16,6 +17,9 @@
     "docs/WORKFLOW.md",
     "docs/governance/MODE",
     "docs/governance/README.md",
+    "docs/governance/closeout-rollback-templates.md",
+    "docs/governance/pr-closeout-breakdown-disposition.md",
+    "docs/governance/lesson-persistence-example.md",
     "docs/governance/goal-template-v1.md",
     "scripts/nestcalc-governance.py",
     "test/governance/test_nestcalc_governance.py"
@@ -26,6 +30,7 @@
       "docs/governance/fixtures/valid/execution-handoff.json",
       "docs/governance/fixtures/valid/closeout-disposition.json",
       "docs/governance/fixtures/valid/closeout-blocked.json",
+      "docs/governance/fixtures/valid/closeout-breakdown.md",
       "docs/governance/fixtures/valid/post-merge-snapshot.json"
     ],
     "invalid": [
@@ -33,6 +38,7 @@
       "docs/governance/fixtures/invalid/goal-model-mismatch.md",
       "docs/governance/fixtures/invalid/execution-handoff-prompt-plaintext.json",
       "docs/governance/fixtures/invalid/closeout-draft-pr.json",
+      "docs/governance/fixtures/invalid/closeout-breakdown-missing-disposition.md",
       "docs/governance/fixtures/invalid/post-merge-stale.json"
     ]
   }
