@@ -62,6 +62,10 @@ function swapValues(
   return { x: y, y: x };
 }
 
+function valuesEqual(a: number | null, b: number | null): boolean {
+  return a === b;
+}
+
 export function createManualNestSession(
   inputs: NestInputs,
 ): ManualNestSession {
@@ -150,9 +154,14 @@ export function updateNestSessionMargin(
   }
 
   const settings = state.autoNestSettings;
+  const effective = effectiveAutoNestMargins(settings);
+  if (valuesEqual(effective[key], value)) {
+    return state;
+  }
+
   const seededOverrides = settings.overrideGlobalMargins
     ? settings.marginOverrides
-    : effectiveAutoNestMargins(settings);
+    : effective;
 
   return {
     ...state,

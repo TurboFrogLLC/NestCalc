@@ -330,4 +330,43 @@ describe("mode-aware nest session", () => {
     });
     expect(next.autoNestSettings).toBe(baseState.autoNestSettings);
   });
+
+  it("does not enable AutoNest overrides when the submitted value matches the effective margin", () => {
+    const initial: NestAppState = {
+      ...baseState,
+      mode: "autonest",
+      autoNestSettings: {
+        ...baseState.autoNestSettings,
+        globalClampMargin: 0.53,
+        overrideGlobalMargins: false,
+        marginOverrides: { left: 9, right: 8, top: 7, bottom: 6 },
+      },
+    };
+
+    const next = updateNestSessionMargin(initial, "left", 0.53);
+
+    expect(next).toBe(initial);
+  });
+
+  it("preserves inherited null overrides when the submitted value matches the effective margin", () => {
+    const initial: NestAppState = {
+      ...baseState,
+      mode: "autonest",
+      autoNestSettings: {
+        ...baseState.autoNestSettings,
+        globalClampMargin: 0.53,
+        overrideGlobalMargins: true,
+        marginOverrides: {
+          left: 0.5,
+          right: 0.25,
+          top: null,
+          bottom: 0.25,
+        },
+      },
+    };
+
+    const next = updateNestSessionMargin(initial, "top", 0.53);
+
+    expect(next).toBe(initial);
+  });
 });
