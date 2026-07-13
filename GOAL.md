@@ -30,8 +30,8 @@
   "branch_intent": "codex/autonest-trim-edge-margin-policy-v1",
   "execution_route": "codex-cli",
   "flow_id": "NC-20260712-4d2e7a91",
-  "goal_memory_commit": "0000000000000000000000000000000000000000",
-  "goal_sha256": "sha256:0e60ce19714002248f75af69c48c93089b076a6df8da28e4837b6902726e0499",
+  "goal_memory_commit": "d82b2c73c5afba3a7a9e4c9db04eba0fd8bc5729",
+  "goal_sha256": "sha256:112de75e95bf67591d3bd172b9f3c31da7ace0448f74588f0244ba111a8696b8",
   "protected_surfaces": [
     "manual calculator math and nestcalc.ts nesting behavior",
     "calculator UI layout beyond AutoNest settings and comparison honesty",
