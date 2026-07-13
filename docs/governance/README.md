@@ -16,7 +16,7 @@ python3 scripts/nestcalc-governance.py validate-goal --goal GOAL.md
 python3 scripts/nestcalc-governance.py create-handoff --prompt-file <local-file> --goal-memory-commit <sha> --output .nestcalc/governance/execution-handoff.json
 python3 scripts/nestcalc-governance.py validate-closeout --input <closeout.json>
 python3 scripts/nestcalc-governance.py validate-closeout-breakdown --input <closeout.md>
-python3 scripts/nestcalc-governance.py capture-post-merge --pr-number <number> --pr-url <url> --output .nestcalc/governance/post-merge.json
+python3 scripts/nestcalc-governance.py capture-post-merge --pr-number <number> --branch <codex/branch> --lesson-state <none|pending|applied> --output .nestcalc/governance/post-merge.json
 python3 scripts/nestcalc-governance.py verify-post-merge --input .nestcalc/governance/post-merge.json
 ```
 
