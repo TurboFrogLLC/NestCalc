@@ -36,8 +36,8 @@
   "branch_intent": "codex/named-presets-gcode-rotation-v1",
   "execution_route": "codex-cli",
   "flow_id": "NC-20260731-c7ced7c2",
-  "goal_memory_commit": "0000000000000000000000000000000000000000",
-  "goal_sha256": "sha256:1f5eb043ca93d8dbcfd61825a9ee138bf46aa9658495997633930b7665365054",
+  "goal_memory_commit": "606bc1a108d8a6b642cd8d08836c5bd87cbadf0f",
+  "goal_sha256": "sha256:b2bd4d92245caac558f822e70cfe14fd891629fcf727ee409323aabe43a951bb",
   "protected_surfaces": [
     "calculator math nestcalc.ts and manual input semantics",
     "AutoNest packing ranking counts trim-edge policies fallback guards search budget and preview geometry",
