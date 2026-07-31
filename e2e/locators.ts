@@ -112,3 +112,101 @@ export function autoNestGroupBounds(
 ) {
   return page.getByTestId(`autonest-group-bounds-${orientation}`);
 }
+
+export function namedPresetsRegion(page: Page) {
+  return page.getByRole("region", { name: "Named presets" });
+}
+
+export function savedPresetChips(page: Page) {
+  return namedPresetsRegion(page).getByRole("list", {
+    name: "Saved preset chips",
+  });
+}
+
+export function savePresetButton(page: Page) {
+  return namedPresetsRegion(page).getByRole("button", {
+    name: "Save Preset",
+    exact: true,
+  });
+}
+
+export function managePresetsButton(page: Page) {
+  return namedPresetsRegion(page).getByRole("button", {
+    name: "Manage",
+    exact: true,
+  });
+}
+
+export function presetChip(page: Page, name: string) {
+  return savedPresetChips(page).getByRole("button", {
+    name: `Load preset ${name}`,
+    exact: true,
+  });
+}
+
+export function presetManager(page: Page) {
+  return page.getByRole("complementary", { name: "Manage Presets" });
+}
+
+export function presetOrder(page: Page) {
+  return presetManager(page).getByRole("list", { name: "Preset order" });
+}
+
+export function presetRow(page: Page, name: string) {
+  return presetOrder(page).getByRole("listitem").filter({
+    has: page.getByRole("button", {
+      name: `Load preset ${name}`,
+      exact: true,
+    }),
+  });
+}
+
+export function calculatorTab(page: Page) {
+  return page.getByRole("tab", { name: "Calculator", exact: true });
+}
+
+export function gcodeTab(page: Page) {
+  return page.getByRole("tab", { name: "G-code", exact: true });
+}
+
+export function gcodeRegion(page: Page) {
+  return page.getByRole("region", { name: "G-code rotation" });
+}
+
+export function gcodeSourceInput(page: Page) {
+  return page.getByLabel("Source G-code", { exact: true });
+}
+
+export function gcodeAngleInput(page: Page) {
+  return page.getByLabel("Counterclockwise angle", { exact: true });
+}
+
+export function gcodeGenerateButton(page: Page) {
+  return page.getByRole("button", { name: "Generate", exact: true });
+}
+
+export function gcodeDiagnostics(page: Page) {
+  return page.getByTestId("gcode-diagnostics");
+}
+
+export function gcodePreview(page: Page) {
+  return page.getByTestId("gcode-preview");
+}
+
+export function gcodePreviewStatus(page: Page) {
+  return page.getByTestId("gcode-preview-status");
+}
+
+export function gcodeOutput(page: Page) {
+  return page.getByLabel("Generated G-code output", { exact: true });
+}
+
+export function gcodeCopyButton(page: Page) {
+  return page.getByRole("button", { name: "Copy generated G-code" });
+}
+
+export function gcodeDownloadButton(page: Page) {
+  return page.getByRole("button", {
+    name: "Download generated G-code as an NC file",
+  });
+}

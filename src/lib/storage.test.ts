@@ -5,6 +5,7 @@ import {
   DEFAULT_NEST_APP_STATE,
   loadInputs,
   loadNestAppState,
+  normalizeNestAppState,
   saveInputs,
   saveNestAppState,
 } from "./storage";
@@ -36,6 +37,73 @@ afterEach(() => {
 });
 
 describe("storage compatibility", () => {
+  it("normalizes a version-3 state into a detached snapshot", () => {
+    const source: NestAppState = {
+      ...DEFAULT_NEST_APP_STATE,
+      manualInputs: {
+        ...DEFAULT_INPUTS,
+        partWidth: 7,
+        margins: { ...DEFAULT_INPUTS.margins, left: 0.75 },
+      },
+      autoNestSettings: {
+        ...DEFAULT_AUTONEST_SETTINGS,
+        marginOverrides: {
+          ...DEFAULT_AUTONEST_SETTINGS.marginOverrides,
+          right: 0.5,
+        },
+      },
+    };
+
+    const normalized = normalizeNestAppState(source);
+
+    expect(normalized).toEqual(source);
+    expect(normalized).not.toBe(source);
+    expect(normalized.manualInputs).not.toBe(source.manualInputs);
+    expect(normalized.manualInputs.margins).not.toBe(
+      source.manualInputs.margins,
+    );
+    expect(normalized.autoNestSettings).not.toBe(source.autoNestSettings);
+    expect(normalized.autoNestSettings.marginOverrides).not.toBe(
+      source.autoNestSettings.marginOverrides,
+    );
+  });
+
+  it("rejects snapshots outside the version-3 boundary", () => {
+    expect(() =>
+      normalizeNestAppState({
+        ...DEFAULT_NEST_APP_STATE,
+        version: 2,
+      }),
+    ).toThrow("version 3");
+  });
+
+  it("keeps only validated version-3 state fields in normalized snapshots", () => {
+    const normalized = normalizeNestAppState({
+      ...DEFAULT_NEST_APP_STATE,
+      theme: "light",
+      gcodeText: "G00 X1",
+      manualInputs: {
+        ...DEFAULT_INPUTS,
+        transientPanel: "open",
+      },
+      autoNestSettings: {
+        ...DEFAULT_AUTONEST_SETTINGS,
+        generatedGcode: "G00 X2",
+      },
+    });
+
+    expect(normalized).toEqual(DEFAULT_NEST_APP_STATE);
+    expect(() =>
+      normalizeNestAppState({
+        ...DEFAULT_NEST_APP_STATE,
+        manualInputs: {
+          ...DEFAULT_INPUTS,
+          partWidth: "not-a-number",
+        },
+      }),
+    ).toThrow("valid version 3 state");
+  });
+
   it("returns default inputs when no persisted state exists", () => {
     installLocalStorage();
 

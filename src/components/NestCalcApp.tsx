@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type KeyboardEvent } from "react";
 import {
   ArrowLeftRight,
   Link2,
@@ -38,8 +38,10 @@ import { unitLabel } from "@/lib/units";
 import { QuickValuesFocusProvider } from "@/hooks/useQuickValuesFocus";
 import { AuthControls } from "./AuthControls";
 import { AutoNestPreview } from "./AutoNestPreview";
+import { GCodeRotation } from "./GCodeRotation";
 import { NestGrid } from "./NestGrid";
 import { NumberInput } from "./NumberInput";
+import { PresetControls } from "./PresetControls";
 import { QuickValuesBar } from "./QuickValuesBar";
 
 const iconBtnClass =
@@ -50,6 +52,12 @@ const unitBtnClass =
 
 const rotateBtnClass =
   "nestcalc-split-rotate-btn flex shrink-0 items-center gap-0.5 rounded-md border border-[var(--btn-border)] bg-[var(--btn-bg)] px-1.5 py-1 text-[10px] font-semibold leading-none text-[var(--btn-text)] transition-colors hover:border-[var(--accent-hover)] hover:bg-[var(--card)] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-[var(--btn-border)] disabled:hover:bg-[var(--btn-bg)] disabled:active:scale-100";
+
+type ActiveModule = "calculator" | "g-code";
+
+function moduleFromLocation(): ActiveModule {
+  return window.location.hash === "#g-code" ? "g-code" : "calculator";
+}
 
 interface IconButtonProps {
   label: string;
@@ -364,6 +372,33 @@ export function NestCalcApp() {
   const { state, setState } = useNestAppState();
   const { theme, toggleTheme } = useTheme();
   const [autoNestSettingsOpen, setAutoNestSettingsOpen] = useState(false);
+  const [activeModule, setActiveModule] =
+    useState<ActiveModule>("calculator");
+
+  useEffect(() => {
+    const syncModuleFromLocation = () => {
+      if (
+        window.location.hash !== "" &&
+        window.location.hash !== "#g-code"
+      ) {
+        window.history.replaceState(
+          null,
+          "",
+          `${window.location.pathname}${window.location.search}`,
+        );
+      }
+      setActiveModule(moduleFromLocation());
+    };
+
+    syncModuleFromLocation();
+    window.addEventListener("hashchange", syncModuleFromLocation);
+    window.addEventListener("popstate", syncModuleFromLocation);
+
+    return () => {
+      window.removeEventListener("hashchange", syncModuleFromLocation);
+      window.removeEventListener("popstate", syncModuleFromLocation);
+    };
+  }, []);
 
   const session = useMemo(() => createNestSession(state), [state]);
   const inputs = session.manual.inputs;
@@ -451,6 +486,39 @@ export function NestCalcApp() {
     setInputs(rotateManualRemnant);
   };
 
+  const activateModule = (nextModule: ActiveModule) => {
+    const alreadyCanonical =
+      nextModule === "g-code"
+        ? window.location.hash === "#g-code"
+        : window.location.hash === "";
+    if (nextModule === activeModule && alreadyCanonical) return;
+
+    const nextUrl = `${window.location.pathname}${window.location.search}${
+      nextModule === "g-code" ? "#g-code" : ""
+    }`;
+    window.history.pushState(null, "", nextUrl);
+    setActiveModule(nextModule);
+  };
+
+  const handleModuleKeyDown = (
+    event: KeyboardEvent<HTMLButtonElement>,
+    module: ActiveModule,
+  ) => {
+    let nextModule: ActiveModule | null = null;
+    if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+      nextModule = module === "calculator" ? "g-code" : "calculator";
+    } else if (event.key === "Home") {
+      nextModule = "calculator";
+    } else if (event.key === "End") {
+      nextModule = "g-code";
+    }
+
+    if (nextModule === null) return;
+    event.preventDefault();
+    activateModule(nextModule);
+    document.getElementById(`${nextModule}-tab`)?.focus();
+  };
+
   const previewPartsTotal = computedAutoNest?.totalParts ?? result.totalParts;
   const previewHeaderGridLabel = computedAutoNest
     ? computedAutoNest.blanks
@@ -467,8 +535,12 @@ export function NestCalcApp() {
 
   return (
     <QuickValuesFocusProvider>
-      <QuickValuesBar />
-      <div className="nestcalc-split-shell mx-auto flex w-full max-w-lg flex-col gap-3 px-3 py-3 pb-6">
+      {activeModule === "calculator" ? <QuickValuesBar /> : null}
+      <div
+        className={`nestcalc-split-shell mx-auto flex w-full flex-col gap-3 px-3 py-3 pb-6 ${
+          activeModule === "g-code" ? "max-w-6xl" : "max-w-lg"
+        }`}
+      >
         <header className="flex h-10 shrink-0 items-center gap-2">
           <h1 className="shrink-0 text-lg font-semibold tracking-tight">
             <span className="text-[var(--foreground)]">Nest</span>
@@ -489,28 +561,72 @@ export function NestCalcApp() {
                 <Moon className="h-4 w-4" strokeWidth={2} />
               )}
             </button>
-            <button
-              type="button"
-              onClick={toggleUnit}
-              aria-label={`Switch to ${inputs.unit === "in" ? "millimeters" : "inches"}`}
-              title={`Units: ${inputs.unit}`}
-              className={unitBtnClass}
-            >
-              {inputs.unit}
-            </button>
-            <button
-              type="button"
-              onClick={clearAll}
-              aria-label="Clear all fields"
-              title="Clear all"
-              className={iconBtnClass}
-            >
-              <RotateCcw className="h-4 w-4" strokeWidth={2} />
-            </button>
+            {activeModule === "calculator" ? (
+              <>
+                <button
+                  type="button"
+                  onClick={toggleUnit}
+                  aria-label={`Switch to ${inputs.unit === "in" ? "millimeters" : "inches"}`}
+                  title={`Units: ${inputs.unit}`}
+                  className={unitBtnClass}
+                >
+                  {inputs.unit}
+                </button>
+                <button
+                  type="button"
+                  onClick={clearAll}
+                  aria-label="Clear all fields"
+                  title="Clear all"
+                  className={iconBtnClass}
+                >
+                  <RotateCcw className="h-4 w-4" strokeWidth={2} />
+                </button>
+              </>
+            ) : null}
           </div>
         </header>
 
-        <div className="nestcalc-split-row flex min-h-0 flex-col gap-3">
+        <div
+          aria-label="NestCalc modules"
+          className="grid shrink-0 grid-cols-2 rounded-lg border border-[var(--card-border)] bg-[var(--card)] p-1"
+          role="tablist"
+        >
+          {(["calculator", "g-code"] as const).map((module) => {
+            const selected = activeModule === module;
+            const label = module === "calculator" ? "Calculator" : "G-code";
+
+            return (
+              <button
+                aria-controls={`${module}-panel`}
+                aria-selected={selected}
+                className={`rounded-md px-3 py-1.5 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] ${
+                  selected
+                    ? "bg-[var(--accent)] text-[var(--background)]"
+                    : "text-[var(--muted)] hover:text-[var(--foreground)]"
+                }`}
+                id={`${module}-tab`}
+                key={module}
+                onClick={() => activateModule(module)}
+                onKeyDown={(event) => handleModuleKeyDown(event, module)}
+                role="tab"
+                tabIndex={selected ? 0 : -1}
+                type="button"
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
+
+        <div
+          aria-labelledby="calculator-tab"
+          className={`nestcalc-split-row min-h-0 flex-col gap-3 ${
+            activeModule === "calculator" ? "flex" : "hidden"
+          }`}
+          hidden={activeModule !== "calculator"}
+          id="calculator-panel"
+          role="tabpanel"
+        >
           <div className="nestcalc-split-inputs nestcalc-inputs flex min-h-0 flex-col gap-2">
             <section className="nestcalc-split-hide flex h-9 shrink-0 items-center justify-between rounded-lg border border-[var(--card-border)] bg-[var(--card)] px-3">
               <span className="font-mono text-sm font-bold tabular-nums text-[var(--foreground)]">
@@ -555,6 +671,8 @@ export function NestCalcApp() {
                 </button>
               ) : null}
             </section>
+
+            <PresetControls currentState={state} onReplaceState={setState} />
 
             {isAutoNest && autoNestSettingsOpen ? (
               <AutoNestSettingsPanel
@@ -734,6 +852,18 @@ export function NestCalcApp() {
               />
             )}
           </section>
+        </div>
+
+        <div
+          aria-labelledby="g-code-tab"
+          className={`min-h-0 flex-1 overflow-y-auto pb-[max(0.5rem,env(safe-area-inset-bottom,0px))] ${
+            activeModule === "g-code" ? "block" : "hidden"
+          }`}
+          hidden={activeModule !== "g-code"}
+          id="g-code-panel"
+          role="tabpanel"
+        >
+          <GCodeRotation />
         </div>
       </div>
     </QuickValuesFocusProvider>
