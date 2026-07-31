@@ -17,12 +17,15 @@
     "docs/WORKFLOW.md",
     "docs/governance/MODE",
     "docs/governance/README.md",
+    "docs/governance/GAP-AND-HARDENING.md",
+    "docs/governance/goal-lifecycle-contract.md",
     "docs/governance/closeout-rollback-templates.md",
     "docs/governance/pr-closeout-breakdown-disposition.md",
     "docs/governance/lesson-persistence-example.md",
     "docs/governance/goal-template-v1.md",
     "scripts/nestcalc-governance.py",
-    "test/governance/test_nestcalc_governance.py"
+    "test/governance/test_nestcalc_governance.py",
+    ".agents/skills/nestcalc-goal-grilling/SKILL.md"
   ],
   "fixtures": {
     "valid": [

@@ -1,14 +1,17 @@
 # Closeout Rollback & Suspension Templates
 
 **Purpose:** Copy-paste templates for merge disposition signals in Grok Build PR
-closeout breakdowns. Pairs with the global `pr-closeout-breakdown` skill and
+closeout breakdowns (NestCalc stage **B7**). Enforce-grade contract; pairs with
+the global `pr-closeout-breakdown` skill and
 `docs/governance/schemas/closeout-disposition.schema.json`.
 
 **Skill:** `pr-closeout-breakdown` at `~/.grok/skills/pr-closeout-breakdown/SKILL.md`
 
 ## Required closeout section
 
-Add **section 8** before **Overall Assessment** in every closeout breakdown:
+Every closeout breakdown MUST include Flow ID, Reviewed commit, sections 1–8,
+Overall Assessment, and the sentinel. Add **section 8** before
+**Overall Assessment**:
 
 ```markdown
 ### 8. Merge Disposition
