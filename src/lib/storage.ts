@@ -142,7 +142,7 @@ function normalizeMode(mode: NestMode | undefined): NestMode {
   return mode === "autonest" ? "autonest" : "manual";
 }
 
-function normalizeAppState(state: StoredNestAppState = {}): NestAppState {
+function normalizeStoredAppState(state: StoredNestAppState = {}): NestAppState {
   const manualInputs = normalizeManualInputs(state.manualInputs);
 
   return {
@@ -156,6 +156,102 @@ function normalizeAppState(state: StoredNestAppState = {}): NestAppState {
   };
 }
 
+function isNullableFiniteNumber(value: unknown): value is number | null {
+  return value === null || (typeof value === "number" && Number.isFinite(value));
+}
+
+function cloneValidatedNestAppState(state: NestAppState): NestAppState {
+  const { manualInputs, autoNestSettings } = state;
+  const numericValues = [
+    manualInputs.partWidth,
+    manualInputs.partHeight,
+    manualInputs.remnantWidth,
+    manualInputs.remnantHeight,
+    manualInputs.gapX,
+    manualInputs.gapY,
+    manualInputs.margins.left,
+    manualInputs.margins.right,
+    manualInputs.margins.top,
+    manualInputs.margins.bottom,
+    autoNestSettings.globalClampMargin,
+    autoNestSettings.sharedTrimClearance,
+    autoNestSettings.marginOverrides.left,
+    autoNestSettings.marginOverrides.right,
+    autoNestSettings.marginOverrides.top,
+    autoNestSettings.marginOverrides.bottom,
+  ];
+  const booleanValues = [
+    manualInputs.partLinked,
+    manualInputs.gapLinked,
+    manualInputs.moveMarginsWithRotation,
+    autoNestSettings.overrideGlobalMargins,
+  ];
+
+  if (
+    numericValues.some((value) => !isNullableFiniteNumber(value)) ||
+    booleanValues.some((value) => typeof value !== "boolean") ||
+    (manualInputs.unit !== "in" && manualInputs.unit !== "mm")
+  ) {
+    throw new TypeError("NestCalc snapshot must be a valid version 3 state");
+  }
+
+  return {
+    version: 3,
+    mode: state.mode,
+    manualInputs: {
+      partWidth: manualInputs.partWidth,
+      partHeight: manualInputs.partHeight,
+      remnantWidth: manualInputs.remnantWidth,
+      remnantHeight: manualInputs.remnantHeight,
+      margins: {
+        left: manualInputs.margins.left,
+        right: manualInputs.margins.right,
+        top: manualInputs.margins.top,
+        bottom: manualInputs.margins.bottom,
+      },
+      gapX: manualInputs.gapX,
+      gapY: manualInputs.gapY,
+      partLinked: manualInputs.partLinked,
+      gapLinked: manualInputs.gapLinked,
+      moveMarginsWithRotation: manualInputs.moveMarginsWithRotation,
+      unit: manualInputs.unit,
+    },
+    autoNestSettings: {
+      globalClampMargin: autoNestSettings.globalClampMargin,
+      trimEdgePolicy: autoNestSettings.trimEdgePolicy,
+      sharedTrimClearance: autoNestSettings.sharedTrimClearance,
+      overrideGlobalMargins: autoNestSettings.overrideGlobalMargins,
+      marginOverrides: {
+        left: autoNestSettings.marginOverrides.left,
+        right: autoNestSettings.marginOverrides.right,
+        top: autoNestSettings.marginOverrides.top,
+        bottom: autoNestSettings.marginOverrides.bottom,
+      },
+    },
+  };
+}
+
+/**
+ * Validate the persisted-state version boundary and return a detached,
+ * normalized version-3 snapshot. Presets use this entry point both before
+ * writing and after reading so malformed or stale record versions never enter
+ * live calculator state.
+ */
+export function normalizeNestAppState(value: unknown): NestAppState {
+  if (
+    value === null ||
+    typeof value !== "object" ||
+    Array.isArray(value) ||
+    (value as { version?: unknown }).version !== 3
+  ) {
+    throw new TypeError("NestCalc snapshot must use version 3");
+  }
+
+  return cloneValidatedNestAppState(
+    normalizeStoredAppState(value as StoredNestAppState),
+  );
+}
+
 function loadLegacyManualState(): NestAppState {
   const raw =
     localStorage.getItem(LEGACY_INPUTS_KEY) ??
@@ -163,7 +259,7 @@ function loadLegacyManualState(): NestAppState {
 
   if (!raw) return DEFAULT_NEST_APP_STATE;
 
-  return normalizeAppState({
+  return normalizeStoredAppState({
     mode: "manual",
     manualInputs: JSON.parse(raw) as LegacyNestInputs,
   });
@@ -175,7 +271,7 @@ export function loadNestAppState(): NestAppState {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return loadLegacyManualState();
 
-    return normalizeAppState(JSON.parse(raw) as StoredNestAppState);
+    return normalizeStoredAppState(JSON.parse(raw) as StoredNestAppState);
   } catch {
     return DEFAULT_NEST_APP_STATE;
   }

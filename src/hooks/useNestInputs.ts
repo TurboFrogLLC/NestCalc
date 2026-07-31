@@ -8,6 +8,7 @@ import {
 import {
   DEFAULT_NEST_APP_STATE,
   loadNestAppState,
+  normalizeNestAppState,
   saveNestAppState,
 } from "@/lib/storage";
 import type { NestAppState, NestInputs } from "@/lib/types";
@@ -50,8 +51,9 @@ export function useNestAppState() {
 
   const setState = useCallback(
     (updater: NestAppState | ((current: NestAppState) => NestAppState)) => {
-      snapshot =
+      const next =
         typeof updater === "function" ? updater(snapshot) : updater;
+      snapshot = normalizeNestAppState(next);
       saveNestAppState(snapshot);
       emit();
       if (typeof window !== "undefined") {
