@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Advisory governance seam for NestCalc goal, handoff, closeout, and cleanup evidence."""
+"""NestCalc enforce-grade governance contracts for goal, handoff, closeout, and cleanup.
+
+Contracts always fail closed. docs/governance/MODE (advisory|enforce) only controls
+the historical bootstrap exception for missing v1 metadata on the pre-v1 goal title.
+MODE does not make schemas, fixtures, handoff, or closeout validation optional.
+Promotion criteria: docs/governance/GAP-AND-HARDENING.md. Do not flip MODE here.
+"""
 
 from __future__ import annotations
 
@@ -486,7 +492,7 @@ def validate_closeout_breakdown_text(text: str, subject: str = "closeout-breakdo
     if flow_match:
         result.details["flow_id"] = flow_match.group(1)
     else:
-        result.warnings.append("closeout breakdown missing optional Flow ID")
+        result.errors.append("closeout breakdown missing required Flow ID")
 
     commit_match = re.search(r"\*\*Reviewed commit:\*\*\s*`([0-9a-f]{7,40})`", text)
     if commit_match:

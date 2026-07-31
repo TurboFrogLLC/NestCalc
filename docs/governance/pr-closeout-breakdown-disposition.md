@@ -1,13 +1,20 @@
 # pr-closeout-breakdown Merge Disposition Contract
 
-**Purpose:** NestCalc contract for section 8 in `pr-closeout-breakdown` output.
+**Purpose:** NestCalc enforce-grade contract for section 8 in
+`pr-closeout-breakdown` output. Soft inference is forbidden.
 Global skill path: `~/.grok/skills/pr-closeout-breakdown/SKILL.md`
 
 ## Required section
 
-Every NestCalc Grok Build closeout must include **section 8 — Merge Disposition**
-before **Overall Assessment**. Copy-paste from
-`docs/governance/closeout-rollback-templates.md`.
+Every NestCalc Grok Build closeout (stage **B7**) MUST include:
+
+- **Flow ID** (`NC-YYYYMMDD-<8-hex>`)
+- **Reviewed commit** SHA
+- **section 8 — Merge Disposition** before **Overall Assessment**
+- Overall Assessment alignment with section 8 signal
+- `END OF PR CLOSEOUT BREAKDOWN` sentinel
+
+Copy-paste section 8 from `docs/governance/closeout-rollback-templates.md`.
 
 ## Signal enum
 

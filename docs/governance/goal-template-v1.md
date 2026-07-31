@@ -1,4 +1,4 @@
-<!-- This template is copied to GOAL.md for the first post-bootstrap goal. -->
+<!-- This template is copied to GOAL.md for post-bootstrap goals. -->
 # GOAL.md - NestCalc
 
 <!-- nestcalc-governance:start -->
@@ -31,7 +31,8 @@
   "repository": "TurboFrogLLC/NestCalc",
   "schema_version": "nestcalc-goal-v1",
   "skills": [
-    "codex-repo-hygiene-gate"
+    "codex-repo-hygiene-gate",
+    "nestcalc-goal-grilling"
   ]
 }
 ```
@@ -43,18 +44,38 @@
 
 State one measurable objective.
 
-### Scope
+### Scope / Allowed Files
 
-Name allowed files and required outcomes.
+Name allowed files (edit authority) and required outcomes.
 
 ### Protected Surfaces
 
 Name every surface that must not change.
 
-### Verification
+### Required Proof
 
-List exact required commands and proof.
+List exact required commands and proof. Every required proof title MUST be
+fixable inside Allowed Files edit authority, or apply Path A (narrow proof /
+residual debt) or Path B (expand Allowed Files in this freeze). No third path.
+
+### Grilling Decision Record
+
+Use `nestcalc-goal-grilling`:
+
+```text
+evidence → confidence → decision → residual risk / flagged decisions
+```
+
+Record flagged decisions with reason, decision, and CLI consequence.
+
+### B3-Style Handoff / B4-Style Preflight
+
+- After goal-memory commit: create execution handoff via
+  `python3 scripts/nestcalc-governance.py create-handoff` (prompt hash only).
+- CLI MUST re-validate goal + handoff + branch before first implementation edit.
+- Host-first for Playwright, git/gh network, and `npm ci`.
 
 ### Stopping Condition
 
-State the complete and blocked terminal conditions.
+State the complete and blocked terminal conditions. Stop before goal commit and
+CLI prompt generation unless the human asks.

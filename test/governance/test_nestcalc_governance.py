@@ -28,12 +28,43 @@ class GovernanceContractsTest(unittest.TestCase):
         self.assertEqual(result.details["invalid_fixtures"], 6)
         self.assertTrue(result.details["advisory_mode"])
 
-    def test_active_bootstrap_goal_is_advisory_only(self) -> None:
+    def test_bootstrap_exception_is_advisory_only(self) -> None:
+        """Historical bootstrap title without metadata: warn in advisory, fail in enforce."""
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "GOAL.md"
+            path.write_text(
+                "# GOAL.md - NestCalc\n\n"
+                f"## Active Goal: {governance.BOOTSTRAP_TITLE}\n",
+                encoding="utf-8",
+            )
+            advisory = governance.validate_goal(path, allow_bootstrap=True)
+            enforce = governance.validate_goal(path, allow_bootstrap=False)
+            self.assertTrue(advisory.ok, advisory.errors)
+            self.assertTrue(advisory.warnings)
+            self.assertTrue(advisory.details.get("bootstrap_exception"))
+            self.assertFalse(enforce.ok)
+
+    def test_active_goal_with_v1_metadata_validates_in_both_modes(self) -> None:
+        """Live product GOAL with full v1 metadata must pass regardless of MODE."""
         advisory = governance.validate_goal(ROOT / "GOAL.md", allow_bootstrap=True)
         enforce = governance.validate_goal(ROOT / "GOAL.md", allow_bootstrap=False)
-        self.assertTrue(advisory.ok)
-        self.assertTrue(advisory.warnings)
-        self.assertFalse(enforce.ok)
+        self.assertTrue(advisory.ok, advisory.errors)
+        self.assertTrue(enforce.ok, enforce.errors)
+
+    def test_closeout_breakdown_requires_flow_id(self) -> None:
+        valid = (ROOT / "docs/governance/fixtures/valid/closeout-breakdown.md").read_text(
+            encoding="utf-8"
+        )
+        missing_flow = valid.replace(
+            "**Flow ID:** `NC-20260713-7a10e239`",
+            "**Flow ID:** missing",
+        )
+        result = governance.validate_closeout_breakdown_text(missing_flow)
+        self.assertFalse(result.ok)
+        self.assertTrue(
+            any("Flow ID" in error for error in result.errors),
+            result.errors,
+        )
 
     def test_valid_goal_hash_matches_canonical_contract(self) -> None:
         path = ROOT / "docs/governance/fixtures/valid/goal.md"
