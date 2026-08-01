@@ -10,7 +10,7 @@ export interface GCodeDiagnostic {
   reason: string;
 }
 
-type GCodeUnit = "in" | "mm";
+export type GCodeUnit = "in" | "mm" | "unknown";
 
 export type GCodeAnalysis =
   | { ok: true; bounds: Bounds; unit: GCodeUnit }
@@ -29,28 +29,40 @@ interface WordToken {
   letter: string;
   upper: string;
   value: number;
+  rawNumber: string;
   numberStart: number;
   numberEnd: number;
 }
 
 type MotionMode = 0 | 1 | 2 | 3;
 
+interface TargetCandidate {
+  letter: string;
+  nonFinite: boolean;
+}
+
+interface LexedLine {
+  words: WordToken[];
+  bareLetters: string[];
+  targetCandidates: TargetCandidate[];
+}
+
 interface ParsedMotion {
   mode: MotionMode;
   unit: GCodeUnit;
-  start?: Point;
+  start: Point | null;
   endpoint: Point;
   centerOffset?: Point;
-  xWord?: WordToken;
-  yWord?: WordToken;
-  iWord?: WordToken;
-  jWord?: WordToken;
+  xWords: WordToken[];
+  yWords: WordToken[];
+  iWords: WordToken[];
+  jWords: WordToken[];
+  transformedArc: boolean;
 }
 
 interface ParsedLine {
   text: string;
   ending: string;
-  semicolonIndex: number | null;
   motion?: ParsedMotion;
 }
 
@@ -64,98 +76,126 @@ type ParseResult =
   | { ok: true; program: ParsedProgram }
   | { ok: false; diagnostics: GCodeDiagnostic[] };
 
-interface LexedLine {
-  words: WordToken[];
-  semicolonIndex: number | null;
+interface LinePart {
+  text: string;
+  ending: string;
+}
+
+interface Replacement {
+  start: number;
+  end: number;
+  text: string;
 }
 
 const NUMBER_PATTERN = /^[+-]?(?:(?:\d+(?:\.\d*)?)|(?:\.\d+))(?:[eE][+-]?\d+)?/;
-const NON_XY_AXIS_LETTERS = ["Z", "A", "B", "C", "U", "V", "W"] as const;
+const NON_FINITE_NUMBER_PATTERN = /^[+-]?(?:Infinity|NaN)\b/i;
+const TARGET_LETTERS = new Set(["X", "Y", "I", "J"]);
+const MODAL_BLOCK_LETTERS = new Set([
+  "N",
+  "G",
+  "X",
+  "Y",
+  "I",
+  "J",
+  "F",
+  "S",
+  "T",
+]);
+const MODAL_BLOCK_G_CODES = new Set([0, 1, 2, 3, 17, 20, 21, 90]);
 
 function diagnostic(line: number, reason: string): ParseResult {
   return { ok: false, diagnostics: [{ line, reason }] };
 }
 
-function lexLine(text: string, lineNumber: number): LexedLine | GCodeDiagnostic {
+function isLetter(character: string | undefined): boolean {
+  return character !== undefined && /[A-Za-z]/.test(character);
+}
+
+function isTargetBoundary(text: string, index: number): boolean {
+  if (index === 0) return true;
+  const previous = text[index - 1];
+  return /\s/.test(previous) || /[0-9.+-]/.test(previous);
+}
+
+function scanLine(text: string): LexedLine {
   const words: WordToken[] = [];
-  let semicolonIndex: number | null = null;
+  const bareLetters: string[] = [];
+  const targetCandidates: TargetCandidate[] = [];
   let index = 0;
 
   while (index < text.length) {
     const character = text[index];
 
-    if (character === ";") {
-      semicolonIndex = index;
-      break;
-    }
-
+    // ACS and shop-floor programs use both semicolon and exclamation comments.
+    // A parenthesized comment is also opaque. Everything in these regions is
+    // copied without being interpreted as a coordinate word.
+    if (character === ";" || character === "!") break;
     if (character === "(") {
       const closingIndex = text.indexOf(")", index + 1);
-      if (closingIndex === -1) {
-        return {
-          line: lineNumber,
-          reason: "Unterminated parenthesized comment.",
-        };
-      }
+      if (closingIndex === -1) break;
       index = closingIndex + 1;
       continue;
     }
 
-    if (/\s/.test(character) || character === "%" || character === "/") {
+    if (!isLetter(character)) {
       index += 1;
       continue;
     }
 
-    if (/[A-Za-z]/.test(character)) {
-      const letter = character;
-      index += 1;
-      while (index < text.length && /[ \t]/.test(text[index])) index += 1;
-      const numberStart = index;
-      const nonFiniteMatch = text
-        .slice(index)
-        .match(/^[+-]?(?:Infinity|NaN)\b/i);
-      if (nonFiniteMatch) {
-        return {
-          line: lineNumber,
-          reason: `Numeric word ${letter.toUpperCase()} must be finite.`,
-        };
+    const letterIndex = index;
+    const letter = character;
+    const upper = letter.toUpperCase();
+    index += 1;
+    while (index < text.length && /[ \t]/.test(text[index])) index += 1;
+
+    const numberStart = index;
+    const nonFiniteMatch = text.slice(index).match(NON_FINITE_NUMBER_PATTERN);
+    const numberMatch = text.slice(index).match(NUMBER_PATTERN);
+
+    if (nonFiniteMatch) {
+      if (TARGET_LETTERS.has(upper) && isTargetBoundary(text, letterIndex)) {
+        targetCandidates.push({ letter: upper, nonFinite: true });
       }
-      const match = text.slice(index).match(NUMBER_PATTERN);
-      if (!match) {
-        return {
-          line: lineNumber,
-          reason: `Malformed numeric word ${letter.toUpperCase()}.`,
-        };
-      }
-      const value = Number(match[0]);
+      index += nonFiniteMatch[0].length;
+      continue;
+    }
+
+    if (numberMatch) {
+      const rawNumber = numberMatch[0];
+      const numberEnd = numberStart + rawNumber.length;
+      const value = Number(rawNumber);
       if (!Number.isFinite(value)) {
-        return {
-          line: lineNumber,
-          reason: `Numeric word ${letter.toUpperCase()} must be finite.`,
-        };
+        if (TARGET_LETTERS.has(upper) && isTargetBoundary(text, letterIndex)) {
+          targetCandidates.push({ letter: upper, nonFinite: true });
+        }
+        index = numberEnd;
+        continue;
       }
-      index += match[0].length;
       words.push({
         letter,
-        upper: letter.toUpperCase(),
+        upper,
         value,
+        rawNumber,
         numberStart,
-        numberEnd: index,
+        numberEnd,
       });
+      index = numberEnd;
       continue;
     }
 
-    return {
-      line: lineNumber,
-      reason: `Unsupported executable token ${JSON.stringify(character)}.`,
-    };
+    if (TARGET_LETTERS.has(upper) && isTargetBoundary(text, letterIndex)) {
+      targetCandidates.push({ letter: upper, nonFinite: false });
+    } else {
+      bareLetters.push(upper);
+    }
+    index = letterIndex + 1;
   }
 
-  return { words, semicolonIndex };
+  return { words, bareLetters, targetCandidates };
 }
 
-function splitLines(source: string): Array<{ text: string; ending: string }> {
-  const lines: Array<{ text: string; ending: string }> = [];
+function splitLines(source: string): LinePart[] {
+  const lines: LinePart[] = [];
   const pattern = /([^\r\n]*)(\r\n|\r|\n|$)/g;
   let match: RegExpExecArray | null;
 
@@ -168,21 +208,56 @@ function splitLines(source: string): Array<{ text: string; ending: string }> {
   return lines.length > 0 ? lines : [{ text: "", ending: "" }];
 }
 
+function valuesFor(words: WordToken[], letter: string): WordToken[] {
+  return words.filter((word) => word.upper === letter);
+}
+
+function lastWord(words: WordToken[]): WordToken | undefined {
+  return words.at(-1);
+}
+
+function isSafeModalBlock(lexed: LexedLine): boolean {
+  if (lexed.bareLetters.length > 0) return false;
+  if (lexed.words.some((word) => !MODAL_BLOCK_LETTERS.has(word.upper))) {
+    return false;
+  }
+
+  return lexed.words
+    .filter((word) => word.upper === "G")
+    .every((word) => MODAL_BLOCK_G_CODES.has(word.value));
+}
+
+function normalizeRadians(value: number): number {
+  const fullTurn = Math.PI * 2;
+  return ((value % fullTurn) + fullTurn) % fullTurn;
+}
+
+function angleIsOnSweep(
+  candidate: number,
+  start: number,
+  end: number,
+  clockwise: boolean,
+): boolean {
+  const sweep = clockwise
+    ? normalizeRadians(start - end)
+    : normalizeRadians(end - start);
+  const candidateSweep = clockwise
+    ? normalizeRadians(start - candidate)
+    : normalizeRadians(candidate - start);
+  return candidateSweep <= sweep;
+}
+
 function parseProgram(source: string): ParseResult {
   const lines: ParsedLine[] = [];
-  let absolute = false;
-  let unit: GCodeUnit | null = null;
-  let lastMotionUnit: GCodeUnit | null = null;
-  let motionMode: MotionMode | null = null;
-  let xyPlane = false;
-  let currentX: number | null = null;
-  let currentY: number | null = null;
+  let activeMotion: MotionMode | null = null;
+  let unit: GCodeUnit = "unknown";
+  let current: Point | null = null;
   let minX = Number.POSITIVE_INFINITY;
   let minY = Number.POSITIVE_INFINITY;
   let maxX = Number.NEGATIVE_INFINITY;
   let maxY = Number.NEGATIVE_INFINITY;
   let hasMotion = false;
-  let hasCoordinateMotion = false;
+  let lastMotionUnit: GCodeUnit | null = null;
 
   const includePoint = (point: Point) => {
     minX = Math.min(minX, point.x);
@@ -196,28 +271,34 @@ function parseProgram(source: string): ParseResult {
     endpoint: Point,
     centerOffset: Point,
     clockwise: boolean,
-  ): boolean => {
+  ) => {
+    includePoint(start);
+    includePoint(endpoint);
+
     const center = {
       x: start.x + centerOffset.x,
       y: start.y + centerOffset.y,
     };
     const radius = Math.hypot(centerOffset.x, centerOffset.y);
-    const startAngle = Math.atan2(start.y - center.y, start.x - center.x);
-    const endAngle = Math.atan2(endpoint.y - center.y, endpoint.x - center.x);
     if (
       ![
         center.x,
         center.y,
         radius,
-        startAngle,
-        endAngle,
+        start.x,
+        start.y,
+        endpoint.x,
+        endpoint.y,
       ].every(Number.isFinite)
     ) {
-      return false;
+      return;
     }
-    const fullCircle = endpoint.x === start.x && endpoint.y === start.y;
 
-    const extentPoints: Point[] = [start, endpoint];
+    if (radius === 0) return;
+
+    const startAngle = Math.atan2(start.y - center.y, start.x - center.x);
+    const endAngle = Math.atan2(endpoint.y - center.y, endpoint.x - center.x);
+    const fullCircle = endpoint.x === start.x && endpoint.y === start.y;
     const cardinalExtrema = [
       { angle: 0, point: { x: center.x + radius, y: center.y } },
       {
@@ -230,303 +311,109 @@ function parseProgram(source: string): ParseResult {
         point: { x: center.x, y: center.y - radius },
       },
     ];
+
     for (const { angle, point } of cardinalExtrema) {
       if (fullCircle || angleIsOnSweep(angle, startAngle, endAngle, clockwise)) {
-        extentPoints.push(point);
+        includePoint(point);
       }
     }
-    if (
-      !extentPoints.every(({ x, y }) =>
-        [x, y].every(Number.isFinite),
-      )
-    ) {
-      return false;
-    }
-    for (const point of extentPoints) includePoint(point);
-    return true;
   };
 
   for (const [lineIndex, sourceLine] of splitLines(source).entries()) {
     const lineNumber = lineIndex + 1;
-    const { text } = sourceLine;
-    const lexed = lexLine(text, lineNumber);
-    if ("reason" in lexed) return { ok: false, diagnostics: [lexed] };
-
-    const wordsByLetter = new Map<string, WordToken[]>();
-    for (const word of lexed.words) {
-      const existing = wordsByLetter.get(word.upper) ?? [];
-      existing.push(word);
-      wordsByLetter.set(word.upper, existing);
-    }
-
-    for (const letter of ["X", "Y", "I", "J", "R"]) {
-      if ((wordsByLetter.get(letter)?.length ?? 0) > 1) {
-        return diagnostic(lineNumber, `Multiple ${letter} words in one block.`);
-      }
-    }
-
-    if ((wordsByLetter.get("O")?.length ?? 0) > 0) {
-      return diagnostic(
-        lineNumber,
-        "O-word subprogram labels are unsupported.",
-      );
-    }
-    const subprogramMCode = (wordsByLetter.get("M") ?? []).find(({ value }) =>
-      [97, 98, 99, 198].includes(value),
+    const lexed = scanLine(sourceLine.text);
+    const gWords = valuesFor(lexed.words, "G");
+    const motionWords = gWords.filter((word) =>
+      [0, 1, 2, 3].includes(word.value),
     );
-    if (subprogramMCode) {
+    const explicitMotion = lastWord(motionWords);
+    if (explicitMotion) activeMotion = explicitMotion.value as MotionMode;
+
+    for (const gWord of gWords) {
+      if (gWord.value === 20) unit = "in";
+      if (gWord.value === 21) unit = "mm";
+    }
+
+    const xWords = valuesFor(lexed.words, "X");
+    const yWords = valuesFor(lexed.words, "Y");
+    const iWords = valuesFor(lexed.words, "I");
+    const jWords = valuesFor(lexed.words, "J");
+    const hasCoordinateWords =
+      xWords.length > 0 ||
+      yWords.length > 0 ||
+      iWords.length > 0 ||
+      jWords.length > 0;
+
+    if (explicitMotion && lexed.targetCandidates.length > 0) {
+      const firstCandidate = lexed.targetCandidates[0];
       return diagnostic(
         lineNumber,
-        `M${formatGCode(subprogramMCode.value)} subprogram execution is unsupported.`,
-      );
-    }
-
-    const gValues = (wordsByLetter.get("G") ?? []).map(({ value }) => value);
-    const motionCodes = gValues.filter((value) =>
-      [0, 1, 2, 3].includes(value),
-    );
-    if (new Set(motionCodes).size > 1) {
-      return diagnostic(lineNumber, "Conflicting modal motion G words.");
-    }
-
-    const distanceCodes = gValues.filter((value) => value === 90 || value === 91);
-    if (new Set(distanceCodes).size > 1) {
-      return diagnostic(lineNumber, "Conflicting distance-mode G words.");
-    }
-    if (gValues.includes(91)) {
-      return diagnostic(lineNumber, "G91 incremental distance mode is unsupported.");
-    }
-    if (gValues.includes(90)) absolute = true;
-
-    const planeCodes = gValues.filter((value) =>
-      [17, 18, 19].includes(value),
-    );
-    if (new Set(planeCodes).size > 1) {
-      return diagnostic(lineNumber, "Conflicting plane-selection G words.");
-    }
-    if (planeCodes[0] === 18 || planeCodes[0] === 19) {
-      return diagnostic(
-        lineNumber,
-        `G${planeCodes[0]} plane selection is unsupported; use G17.`,
-      );
-    }
-    if (planeCodes[0] === 17) xyPlane = true;
-
-    const unitCodes = gValues.filter((value) => value === 20 || value === 21);
-    if (new Set(unitCodes).size > 1) {
-      return diagnostic(lineNumber, "Conflicting unit-mode G words.");
-    }
-    const requestedUnit: GCodeUnit | null =
-      unitCodes[0] === 20 ? "in" : unitCodes[0] === 21 ? "mm" : null;
-    if (requestedUnit && unit && requestedUnit !== unit && hasCoordinateMotion) {
-      return diagnostic(
-        lineNumber,
-        "Unit changes after motion are unsupported because modal XY cannot be mixed safely.",
-      );
-    }
-    if (requestedUnit) unit = requestedUnit;
-
-    const supportedGCodes = new Set([0, 1, 2, 3, 17, 20, 21, 90]);
-    const unsupportedGCode = gValues.find(
-      (value) => !supportedGCodes.has(value),
-    );
-    if (unsupportedGCode !== undefined) {
-      return diagnostic(
-        lineNumber,
-        `Unsupported executable G-code G${formatGCode(unsupportedGCode)}.`,
+        firstCandidate.nonFinite
+          ? `Numeric word ${firstCandidate.letter} must be finite.`
+          : `Malformed numeric word ${firstCandidate.letter}.`,
       );
     }
 
-    if (motionCodes.length > 0) motionMode = motionCodes[0] as MotionMode;
+    // An explicit G00-G03 always marks a transformable motion block. A
+    // coordinate-only block is accepted only when it looks like a normal
+    // modal block; this keeps ACS calls and ptp/ev expressions pass-through.
+    const mode = explicitMotion
+      ? (explicitMotion.value as MotionMode)
+      : activeMotion !== null && isSafeModalBlock(lexed)
+        ? activeMotion
+        : null;
 
-    const xWord = wordsByLetter.get("X")?.[0];
-    const yWord = wordsByLetter.get("Y")?.[0];
-    const iWord = wordsByLetter.get("I")?.[0];
-    const jWord = wordsByLetter.get("J")?.[0];
-    const rWord = wordsByLetter.get("R")?.[0];
-    const hasEndpointWord = Boolean(xWord || yWord);
-    const hasArcWord = Boolean(iWord || jWord || rWord);
-    const hasNonXyAxisWord = NON_XY_AXIS_LETTERS.some(
-      (letter) => (wordsByLetter.get(letter)?.length ?? 0) > 0,
-    );
-    const isArc = motionMode === 2 || motionMode === 3;
-    const hasTransformedMotion = hasEndpointWord || (isArc && hasArcWord);
-    const hasCoordinateWords = hasTransformedMotion || hasNonXyAxisWord;
+    const isArc = mode === 2 || mode === 3;
+    const hasTransformableWords =
+      xWords.length > 0 ||
+      yWords.length > 0 ||
+      (isArc && (iWords.length > 0 || jWords.length > 0));
     const parsedLine: ParsedLine = {
-      text,
+      text: sourceLine.text,
       ending: sourceLine.ending,
-      semicolonIndex: lexed.semicolonIndex,
     };
 
-    if (hasArcWord && !isArc) {
-      return diagnostic(
-        lineNumber,
-        "I, J, and R words are supported only for G02/G03 arcs.",
-      );
-    }
-
-    if (hasCoordinateWords) {
-      if (motionMode === null) {
-        return diagnostic(
-          lineNumber,
-          "Motion mode must be established before coordinate motion.",
-        );
-      }
-      if (!absolute) {
-        return diagnostic(
-          lineNumber,
-          "G90 absolute distance mode must be explicit before motion.",
-        );
-      }
-      if (unit === null) {
-        return diagnostic(
-          lineNumber,
-          "G20 or G21 unit mode must be explicit before motion.",
-        );
-      }
-      if (isArc && hasNonXyAxisWord) {
-        return diagnostic(
-          lineNumber,
-          "G02/G03 with a non-XY axis is unsupported.",
-        );
-      }
-      if (isArc && !xyPlane) {
-        return diagnostic(
-          lineNumber,
-          "G17 XY plane must be explicit before an arc.",
-        );
-      }
-      if (isArc && rWord) {
-        return diagnostic(lineNumber, "R-word arcs are unsupported; use I/J.");
-      }
-      hasCoordinateMotion = true;
-
-      if (hasTransformedMotion) {
-        if ((xWord ? xWord.value : currentX) === null) {
-          return diagnostic(lineNumber, "X position is unknown for this motion.");
-        }
-        if ((yWord ? yWord.value : currentY) === null) {
-          return diagnostic(lineNumber, "Y position is unknown for this motion.");
-        }
-
-        const start =
-          currentX === null || currentY === null
-            ? undefined
-            : { x: currentX, y: currentY };
-        const endpoint: Point = {
-          x: xWord ? xWord.value : (currentX as number),
-          y: yWord ? yWord.value : (currentY as number),
-        };
-        const centerOffset = isArc
-          ? { x: iWord?.value ?? 0, y: jWord?.value ?? 0 }
+    if (mode !== null && hasCoordinateWords && hasTransformableWords) {
+      const start = current ? { ...current } : null;
+      const endpoint: Point = {
+        x: lastWord(xWords)?.value ?? current?.x ?? 0,
+        y: lastWord(yWords)?.value ?? current?.y ?? 0,
+      };
+      const centerOffset =
+        isArc && (iWords.length > 0 || jWords.length > 0)
+          ? {
+              x: lastWord(iWords)?.value ?? 0,
+              y: lastWord(jWords)?.value ?? 0,
+            }
           : undefined;
 
-        if (isArc) {
-          if (!start) {
-            return diagnostic(lineNumber, "Arc start X/Y position is unknown.");
-          }
-          const startRadius = Math.hypot(
-            centerOffset?.x ?? 0,
-            centerOffset?.y ?? 0,
-          );
-          const center = {
-            x: start.x + (centerOffset?.x ?? 0),
-            y: start.y + (centerOffset?.y ?? 0),
-          };
-          const endRadius = Math.hypot(
-            endpoint.x - center.x,
-            endpoint.y - center.y,
-          );
-          if (
-            ![
-              center.x,
-              center.y,
-              startRadius,
-              endpoint.x - center.x,
-              endpoint.y - center.y,
-              endRadius,
-            ].every(Number.isFinite)
-          ) {
-            return diagnostic(
-              lineNumber,
-              "Derived arc geometry must remain finite.",
-            );
-          }
-          const tolerance = unit === "in" ? 0.0002 : 0.002;
-          if (
-            startRadius === 0 ||
-            Math.abs(startRadius - endRadius) > tolerance
-          ) {
-            return diagnostic(
-              lineNumber,
-              `Arc center-format radii differ by more than ${tolerance.toFixed(
-                unit === "in" ? 4 : 3,
-              )} ${unit}.`,
-            );
-          }
-          if (
-            !includeArc(
-              start,
-              endpoint,
-              centerOffset as Point,
-              motionMode === 2,
-            )
-          ) {
-            return diagnostic(
-              lineNumber,
-              "Derived arc bounds must remain finite.",
-            );
-          }
-        } else {
-          if (start) includePoint(start);
-          includePoint(endpoint);
-        }
-        if (![maxX - minX, maxY - minY].every(Number.isFinite)) {
-          return diagnostic(
-            lineNumber,
-            "Derived toolpath bounds span must remain finite.",
-          );
-        }
-        const previewCorners = [
-          { x: minX, y: minY },
-          { x: minX, y: maxY },
-          { x: maxX, y: minY },
-          { x: maxX, y: maxY },
-        ];
-        if (
-          !previewCorners.every(({ x, y }) =>
-            Number.isFinite(Math.hypot(x, y)),
-          )
-        ) {
-          return diagnostic(
-            lineNumber,
-            "Derived preview bounds must remain finite under rotation.",
-          );
-        }
-        currentX = endpoint.x;
-        currentY = endpoint.y;
-        hasMotion = true;
-        lastMotionUnit = unit;
-        parsedLine.motion = {
-          mode: motionMode,
-          unit,
-          start,
-          endpoint,
-          centerOffset,
-          xWord,
-          yWord,
-          iWord,
-          jWord,
-        };
+      if (start) includePoint(start);
+      includePoint(endpoint);
+      if (isArc && centerOffset && start) {
+        includeArc(start, endpoint, centerOffset, mode === 2);
       }
+
+      if (xWords.length > 0 || yWords.length > 0) current = endpoint;
+      hasMotion = true;
+      lastMotionUnit = unit;
+      parsedLine.motion = {
+        mode,
+        unit,
+        start,
+        endpoint,
+        centerOffset,
+        xWords,
+        yWords,
+        iWords,
+        jWords,
+        transformedArc: isArc && centerOffset !== undefined,
+      };
     }
 
     lines.push(parsedLine);
   }
 
-  if (!hasMotion || lastMotionUnit === null) {
-    return diagnostic(1, "No supported XY motion found.");
-  }
+  if (!hasMotion) return diagnostic(1, "No supported XY motion found.");
   if (![minX, minY, maxX, maxY].every(Number.isFinite)) {
     return diagnostic(1, "Derived toolpath bounds must remain finite.");
   }
@@ -536,18 +423,22 @@ function parseProgram(source: string): ParseResult {
     program: {
       lines,
       bounds: { minX, minY, maxX, maxY },
-      unit: lastMotionUnit,
+      unit: lastMotionUnit ?? unit,
     },
   };
 }
 
-function rotatePoint(point: Point, angleDegrees: number): Point {
+function normalizedDegrees(angleDegrees: number): number {
   let reducedDegrees = angleDegrees % 360;
   if (reducedDegrees < 0) reducedDegrees += 360;
-  if (Object.is(reducedDegrees, -0)) reducedDegrees = 0;
+  return Object.is(reducedDegrees, -0) ? 0 : reducedDegrees;
+}
 
+function rotatePoint(point: Point, angleDegrees: number): Point {
+  const reducedDegrees = normalizedDegrees(angleDegrees);
   let cosine: number;
   let sine: number;
+
   if (reducedDegrees === 0) {
     cosine = 1;
     sine = 0;
@@ -572,24 +463,101 @@ function rotatePoint(point: Point, angleDegrees: number): Point {
   };
 }
 
-function normalizeRadians(value: number): number {
-  const fullTurn = Math.PI * 2;
-  return ((value % fullTurn) + fullTurn) % fullTurn;
+function formatFixed(value: number, precision: number): string {
+  const zeroThreshold = 0.5 * 10 ** -precision;
+  const normalized = Math.abs(value) < zeroThreshold || Object.is(value, -0)
+    ? 0
+    : value;
+  const fixed = normalized.toFixed(precision);
+  if (!/[eE]/.test(fixed)) return fixed;
+
+  const sign = normalized < 0 ? "-" : "";
+  const [coefficient, exponentText] = Math.abs(normalized)
+    .toString()
+    .toLowerCase()
+    .split("e");
+  const exponent = Number(exponentText);
+  const [whole, fraction = ""] = coefficient.split(".");
+  const digits = whole + fraction;
+  const decimalIndex = whole.length + exponent;
+  let integer: string;
+  let fractional: string;
+
+  if (decimalIndex <= 0) {
+    integer = "0";
+    fractional = `${"0".repeat(-decimalIndex)}${digits}`;
+  } else if (decimalIndex >= digits.length) {
+    integer = `${digits}${"0".repeat(decimalIndex - digits.length)}`;
+    fractional = "";
+  } else {
+    integer = digits.slice(0, decimalIndex);
+    fractional = digits.slice(decimalIndex);
+  }
+
+  if (precision === 0) return `${sign}${integer}`;
+  return `${sign}${integer}.${fractional.padEnd(precision, "0").slice(0, precision)}`;
 }
 
-function angleIsOnSweep(
-  candidate: number,
-  start: number,
-  end: number,
-  clockwise: boolean,
-): boolean {
-  const sweep = clockwise
-    ? normalizeRadians(start - end)
-    : normalizeRadians(end - start);
-  const candidateSweep = clockwise
-    ? normalizeRadians(start - candidate)
-    : normalizeRadians(candidate - start);
-  return candidateSweep <= sweep;
+function sourceFractionDigits(rawNumber: string): number {
+  const mantissa = rawNumber.toLowerCase().split("e")[0];
+  const decimalIndex = mantissa.indexOf(".");
+  return decimalIndex === -1 ? 0 : mantissa.length - decimalIndex - 1;
+}
+
+function maximumSourcePrecision(words: WordToken[]): number {
+  return words.reduce(
+    (maximum, word) => Math.max(maximum, sourceFractionDigits(word.rawNumber)),
+    0,
+  );
+}
+
+function formatCoordinate(
+  value: number,
+  rawNumber: string,
+  unit: GCodeUnit,
+  angleDegrees: number,
+  minimumPrecision = 0,
+): string {
+  if (!Number.isFinite(value)) return String(value);
+  if (normalizedDegrees(angleDegrees) === 0) return rawNumber;
+
+  const precision =
+    unit === "in"
+      ? 5
+      : unit === "mm"
+        ? 4
+        : [90, 180, 270].includes(normalizedDegrees(angleDegrees))
+          ? Math.max(minimumPrecision, sourceFractionDigits(rawNumber))
+          : Math.max(6, minimumPrecision, sourceFractionDigits(rawNumber));
+  return formatFixed(value, precision);
+}
+
+function arcRadii(
+  motion: ParsedMotion,
+): { start: number; end: number } | null {
+  if (!motion.start || !motion.centerOffset) return null;
+
+  const center = {
+    x: motion.start.x + motion.centerOffset.x,
+    y: motion.start.y + motion.centerOffset.y,
+  };
+  const startRadius = Math.hypot(
+    motion.centerOffset.x,
+    motion.centerOffset.y,
+  );
+  const endRadius = Math.hypot(
+    motion.endpoint.x - center.x,
+    motion.endpoint.y - center.y,
+  );
+
+  if (![center.x, center.y, startRadius, endRadius].every(Number.isFinite)) {
+    return null;
+  }
+  return { start: startRadius, end: endRadius };
+}
+
+function radiusTolerance(unit: GCodeUnit): number {
+  return unit === "mm" ? 0.002 : 0.0002;
 }
 
 export function rotateBounds(bounds: Bounds, angleDegrees: number): Bounds {
@@ -612,8 +580,8 @@ export function rotateBounds(bounds: Bounds, angleDegrees: number): Bounds {
   };
 }
 
-export function analyzeGCode(_source: string): GCodeAnalysis {
-  const parsed = parseProgram(_source);
+export function analyzeGCode(source: string): GCodeAnalysis {
+  const parsed = parseProgram(source);
   if (!parsed.ok) return parsed;
 
   return {
@@ -640,58 +608,82 @@ export function generateRotatedGCode(
   const output = parsed.program.lines
     .map((line) => {
       if (!line.motion) return line.text + line.ending;
-      const rotated = rotatePoint(line.motion.endpoint, angleDegrees);
-      const precision = line.motion.unit === "in" ? 5 : 4;
-      const replacements = [
-        line.motion.xWord
-          ? {
-              start: line.motion.xWord.numberStart,
-              end: line.motion.xWord.numberEnd,
-              text: formatCoordinate(rotated.x, precision),
-            }
-          : null,
-        line.motion.yWord
-          ? {
-              start: line.motion.yWord.numberStart,
-              end: line.motion.yWord.numberEnd,
-              text: formatCoordinate(rotated.y, precision),
-            }
-          : null,
-      ].filter((replacement) => replacement !== null);
 
-      const missingWords: string[] = [];
-      if (!line.motion.xWord) {
-        missingWords.push(`X${formatCoordinate(rotated.x, precision)}`);
+      const motion = line.motion;
+      const rotatedEndpoint = rotatePoint(motion.endpoint, angleDegrees);
+      const replacements: Replacement[] = [];
+      const unknownArcPrecision =
+        motion.transformedArc && motion.unit === "unknown" ? 6 : 0;
+      const unknownEndpointPrecision =
+        motion.unit === "unknown"
+          ? Math.max(
+              unknownArcPrecision,
+              maximumSourcePrecision([...motion.xWords, ...motion.yWords]),
+            )
+          : 0;
+      const unknownVectorPrecision =
+        motion.unit === "unknown"
+          ? Math.max(
+              unknownArcPrecision,
+              maximumSourcePrecision([...motion.iWords, ...motion.jWords]),
+            )
+          : 0;
+
+      for (const word of motion.xWords) {
+        replacements.push({
+          start: word.numberStart,
+          end: word.numberEnd,
+          text: formatCoordinate(
+            rotatedEndpoint.x,
+            word.rawNumber,
+            motion.unit,
+            angleDegrees,
+            unknownEndpointPrecision,
+          ),
+        });
       }
-      if (!line.motion.yWord) {
-        missingWords.push(`Y${formatCoordinate(rotated.y, precision)}`);
+      for (const word of motion.yWords) {
+        replacements.push({
+          start: word.numberStart,
+          end: word.numberEnd,
+          text: formatCoordinate(
+            rotatedEndpoint.y,
+            word.rawNumber,
+            motion.unit,
+            angleDegrees,
+            unknownEndpointPrecision,
+          ),
+        });
       }
-      if (line.motion.centerOffset) {
-        const rotatedOffset = rotatePoint(
-          line.motion.centerOffset,
-          angleDegrees,
-        );
-        if (line.motion.iWord) {
+
+      if (motion.centerOffset) {
+        const rotatedOffset = rotatePoint(motion.centerOffset, angleDegrees);
+        for (const word of motion.iWords) {
           replacements.push({
-            start: line.motion.iWord.numberStart,
-            end: line.motion.iWord.numberEnd,
-            text: formatCoordinate(rotatedOffset.x, precision),
+            start: word.numberStart,
+            end: word.numberEnd,
+            text: formatCoordinate(
+              rotatedOffset.x,
+              word.rawNumber,
+              motion.unit,
+              angleDegrees,
+              unknownVectorPrecision,
+            ),
           });
-        } else {
-          missingWords.push(`I${formatCoordinate(rotatedOffset.x, precision)}`);
         }
-        if (line.motion.jWord) {
+        for (const word of motion.jWords) {
           replacements.push({
-            start: line.motion.jWord.numberStart,
-            end: line.motion.jWord.numberEnd,
-            text: formatCoordinate(rotatedOffset.y, precision),
+            start: word.numberStart,
+            end: word.numberEnd,
+            text: formatCoordinate(
+              rotatedOffset.y,
+              word.rawNumber,
+              motion.unit,
+              angleDegrees,
+              unknownVectorPrecision,
+            ),
           });
-        } else {
-          missingWords.push(`J${formatCoordinate(rotatedOffset.y, precision)}`);
         }
-      }
-      if (missingWords.length > 0) {
-        replacements.push(createInsertion(line, missingWords));
       }
 
       let transformed = line.text;
@@ -701,91 +693,39 @@ export function generateRotatedGCode(
           replacement.text +
           transformed.slice(replacement.end);
       }
-
       return transformed + line.ending;
     })
     .join("");
 
-  const validated = parseProgram(output);
-  if (!validated.ok) return validated;
+  const formatted = parseProgram(output);
+  if (!formatted.ok) return formatted;
 
   for (const [lineIndex, sourceLine] of parsed.program.lines.entries()) {
     const sourceMotion = sourceLine.motion;
-    const formattedMotion = validated.program.lines[lineIndex]?.motion;
-    if (
-      sourceMotion?.start &&
-      sourceMotion.centerOffset &&
-      formattedMotion?.start &&
-      formattedMotion.centerOffset
-    ) {
-      const sourceEndpointsCoincide =
-        sourceMotion.start.x === sourceMotion.endpoint.x &&
-        sourceMotion.start.y === sourceMotion.endpoint.y;
-      const formattedEndpointsCoincide =
-        formattedMotion.start.x === formattedMotion.endpoint.x &&
-        formattedMotion.start.y === formattedMotion.endpoint.y;
-      if (sourceEndpointsCoincide !== formattedEndpointsCoincide) {
-        return {
-          ok: false,
-          diagnostics: [
-            {
-              line: lineIndex + 1,
-              reason:
-                "Formatted arc topology changed because endpoint coincidence changed.",
-            },
-          ],
-        };
-      }
+    if (!sourceMotion?.transformedArc) continue;
+
+    const formattedMotion = formatted.program.lines[lineIndex]?.motion;
+    const radii = formattedMotion ? arcRadii(formattedMotion) : null;
+    if (!radii) continue;
+
+    if (Math.abs(radii.start - radii.end) > radiusTolerance(formattedMotion!.unit)) {
+      return {
+        ok: false,
+        diagnostics: [
+          {
+            line: lineIndex + 1,
+            reason:
+              "Transformed center-format arc radii differ beyond the active tolerance.",
+          },
+        ],
+      };
     }
   }
 
   return {
     ok: true,
     output,
-    bounds: validated.program.bounds,
-    unit: validated.program.unit,
-  };
-}
-
-function formatCoordinate(value: number, precision: number): string {
-  const zeroThreshold = 0.5 * 10 ** -precision;
-  const normalized = Math.abs(value) < zeroThreshold ? 0 : value;
-  const fixed = normalized.toFixed(precision);
-  if (!/[eE]/.test(fixed)) return fixed;
-
-  const sign = normalized < 0 ? "-" : "";
-  const [coefficient, exponentText] = Math.abs(normalized)
-    .toString()
-    .toLowerCase()
-    .split("e");
-  const exponent = Number(exponentText);
-  const [whole, fraction = ""] = coefficient.split(".");
-  const digits = whole + fraction;
-  const decimalIndex = whole.length + exponent;
-  const integer =
-    decimalIndex >= digits.length
-      ? digits + "0".repeat(decimalIndex - digits.length)
-      : `${digits.slice(0, decimalIndex)}.${digits.slice(decimalIndex)}`;
-
-  return `${sign}${integer}.${"0".repeat(precision)}`;
-}
-
-function formatGCode(value: number): string {
-  return Number.isInteger(value) ? String(value) : String(value);
-}
-
-function createInsertion(
-  line: ParsedLine,
-  words: string[],
-): { start: number; end: number; text: string } {
-  let insertionIndex = line.semicolonIndex ?? line.text.length;
-  while (insertionIndex > 0 && /[ \t]/.test(line.text[insertionIndex - 1])) {
-    insertionIndex -= 1;
-  }
-  const prefix = insertionIndex > 0 ? " " : "";
-  return {
-    start: insertionIndex,
-    end: insertionIndex,
-    text: prefix + words.join(" "),
+    bounds: formatted.program.bounds,
+    unit: formatted.program.unit,
   };
 }
