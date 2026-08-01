@@ -45,6 +45,7 @@ interface LexedLine {
   words: WordToken[];
   bareLetters: string[];
   targetCandidates: TargetCandidate[];
+  executableEnd: number;
 }
 
 interface ParsedMotion {
@@ -58,6 +59,9 @@ interface ParsedMotion {
   iWords: WordToken[];
   jWords: WordToken[];
   transformedArc: boolean;
+  insertMissingX: boolean;
+  insertMissingY: boolean;
+  executableEnd: number;
 }
 
 interface ParsedLine {
@@ -102,6 +106,7 @@ const MODAL_BLOCK_LETTERS = new Set([
   "T",
 ]);
 const MODAL_BLOCK_G_CODES = new Set([0, 1, 2, 3, 17, 20, 21, 90]);
+const ORTHOGONAL_DEGREES = new Set([0, 90, 180, 270]);
 
 function diagnostic(line: number, reason: string): ParseResult {
   return { ok: false, diagnostics: [{ line, reason }] };
@@ -121,20 +126,18 @@ function scanLine(text: string): LexedLine {
   const words: WordToken[] = [];
   const bareLetters: string[] = [];
   const targetCandidates: TargetCandidate[] = [];
+  let executableEnd = text.length;
   let index = 0;
 
   while (index < text.length) {
     const character = text[index];
 
     // ACS and shop-floor programs use both semicolon and exclamation comments.
-    // A parenthesized comment is also opaque. Everything in these regions is
-    // copied without being interpreted as a coordinate word.
-    if (character === ";" || character === "!") break;
-    if (character === "(") {
-      const closingIndex = text.indexOf(")", index + 1);
-      if (closingIndex === -1) break;
-      index = closingIndex + 1;
-      continue;
+    // Parenthesized comments are opaque as well. The first opaque region marks
+    // the only safe insertion boundary for a reconstructed endpoint pair.
+    if (character === ";" || character === "!" || character === "(") {
+      executableEnd = index;
+      break;
     }
 
     if (!isLetter(character)) {
@@ -191,7 +194,7 @@ function scanLine(text: string): LexedLine {
     index = letterIndex + 1;
   }
 
-  return { words, bareLetters, targetCandidates };
+  return { words, bareLetters, targetCandidates, executableEnd };
 }
 
 function splitLines(source: string): LinePart[] {
@@ -323,6 +326,14 @@ function parseProgram(source: string): ParseResult {
     const lineNumber = lineIndex + 1;
     const lexed = scanLine(sourceLine.text);
     const gWords = valuesFor(lexed.words, "G");
+
+    if (gWords.some((word) => word.value === 53)) {
+      return diagnostic(
+        lineNumber,
+        "G53 machine-coordinate motion is unsupported.",
+      );
+    }
+
     const motionWords = gWords.filter((word) =>
       [0, 1, 2, 3].includes(word.value),
     );
@@ -375,10 +386,23 @@ function parseProgram(source: string): ParseResult {
 
     if (mode !== null && hasCoordinateWords && hasTransformableWords) {
       const start = current ? { ...current } : null;
-      const endpoint: Point = {
-        x: lastWord(xWords)?.value ?? current?.x ?? 0,
-        y: lastWord(yWords)?.value ?? current?.y ?? 0,
-      };
+      if (isArc && start === null) {
+        return diagnostic(
+          lineNumber,
+          "Arc start X/Y must be known before transforming.",
+        );
+      }
+
+      const xValue = lastWord(xWords)?.value ?? current?.x;
+      const yValue = lastWord(yWords)?.value ?? current?.y;
+      if (xValue === undefined || yValue === undefined) {
+        return diagnostic(
+          lineNumber,
+          "Modal X/Y endpoint is incomplete before transformed motion.",
+        );
+      }
+
+      const endpoint: Point = { x: xValue, y: yValue };
       const centerOffset =
         isArc && (iWords.length > 0 || jWords.length > 0)
           ? {
@@ -407,6 +431,9 @@ function parseProgram(source: string): ParseResult {
         iWords,
         jWords,
         transformedArc: isArc && centerOffset !== undefined,
+        insertMissingX: xWords.length === 0,
+        insertMissingY: yWords.length === 0,
+        executableEnd: lexed.executableEnd,
       };
     }
 
@@ -464,11 +491,11 @@ function rotatePoint(point: Point, angleDegrees: number): Point {
 }
 
 function formatFixed(value: number, precision: number): string {
-  const zeroThreshold = 0.5 * 10 ** -precision;
-  const normalized = Math.abs(value) < zeroThreshold || Object.is(value, -0)
-    ? 0
-    : value;
-  const fixed = normalized.toFixed(precision);
+  const safePrecision = Math.min(100, Math.max(0, Math.trunc(precision)));
+  const zeroThreshold = 0.5 * 10 ** -safePrecision;
+  const normalized =
+    Math.abs(value) < zeroThreshold || Object.is(value, -0) ? 0 : value;
+  const fixed = normalized.toFixed(safePrecision);
   if (!/[eE]/.test(fixed)) return fixed;
 
   const sign = normalized < 0 ? "-" : "";
@@ -494,14 +521,19 @@ function formatFixed(value: number, precision: number): string {
     fractional = digits.slice(decimalIndex);
   }
 
-  if (precision === 0) return `${sign}${integer}`;
-  return `${sign}${integer}.${fractional.padEnd(precision, "0").slice(0, precision)}`;
+  if (safePrecision === 0) return `${sign}${integer}`;
+  return `${sign}${integer}.${fractional.padEnd(safePrecision, "0").slice(0, safePrecision)}`;
 }
 
 function sourceFractionDigits(rawNumber: string): number {
-  const mantissa = rawNumber.toLowerCase().split("e")[0];
+  const [mantissa, exponentText = "0"] = rawNumber.toLowerCase().split("e");
   const decimalIndex = mantissa.indexOf(".");
-  return decimalIndex === -1 ? 0 : mantissa.length - decimalIndex - 1;
+  const mantissaDigits =
+    decimalIndex === -1 ? 0 : mantissa.length - decimalIndex - 1;
+  const exponent = Number(exponentText);
+  return Number.isFinite(exponent)
+    ? Math.max(0, mantissaDigits - exponent)
+    : mantissaDigits;
 }
 
 function maximumSourcePrecision(words: WordToken[]): number {
@@ -509,6 +541,14 @@ function maximumSourcePrecision(words: WordToken[]): number {
     (maximum, word) => Math.max(maximum, sourceFractionDigits(word.rawNumber)),
     0,
   );
+}
+
+function requiredMagnitudePrecision(value: number): number {
+  const magnitude = Math.abs(value);
+  if (!Number.isFinite(magnitude) || magnitude === 0 || magnitude >= 1) {
+    return 0;
+  }
+  return Math.max(0, Math.ceil(-Math.log10(magnitude)));
 }
 
 function formatCoordinate(
@@ -521,14 +561,40 @@ function formatCoordinate(
   if (!Number.isFinite(value)) return String(value);
   if (normalizedDegrees(angleDegrees) === 0) return rawNumber;
 
+  const reducedDegrees = normalizedDegrees(angleDegrees);
+  const sourcePrecision = sourceFractionDigits(rawNumber);
+  const magnitudePrecision = requiredMagnitudePrecision(value);
   const precision =
     unit === "in"
       ? 5
       : unit === "mm"
         ? 4
-        : [90, 180, 270].includes(normalizedDegrees(angleDegrees))
-          ? Math.max(minimumPrecision, sourceFractionDigits(rawNumber))
-          : Math.max(6, minimumPrecision, sourceFractionDigits(rawNumber));
+        : ORTHOGONAL_DEGREES.has(reducedDegrees)
+          ? Math.max(minimumPrecision, sourcePrecision, magnitudePrecision)
+          : Math.max(
+              6,
+              minimumPrecision,
+              sourcePrecision,
+              magnitudePrecision,
+            );
+  return formatFixed(value, precision);
+}
+
+function formatInsertedCoordinate(
+  value: number,
+  unit: GCodeUnit,
+  angleDegrees: number,
+  minimumPrecision: number,
+): string {
+  const reducedDegrees = normalizedDegrees(angleDegrees);
+  const precision =
+    unit === "in"
+      ? 5
+      : unit === "mm"
+        ? 4
+        : ORTHOGONAL_DEGREES.has(reducedDegrees)
+          ? Math.max(minimumPrecision, requiredMagnitudePrecision(value))
+          : Math.max(6, minimumPrecision, requiredMagnitudePrecision(value));
   return formatFixed(value, precision);
 }
 
@@ -558,6 +624,12 @@ function arcRadii(
 
 function radiusTolerance(unit: GCodeUnit): number {
   return unit === "mm" ? 0.002 : 0.0002;
+}
+
+function insertionStart(text: string, executableEnd: number): number {
+  let index = executableEnd;
+  while (index > 0 && /\s/.test(text[index - 1])) index -= 1;
+  return index;
 }
 
 export function rotateBounds(bounds: Bounds, angleDegrees: number): Bounds {
@@ -686,6 +758,40 @@ export function generateRotatedGCode(
         }
       }
 
+      if (motion.insertMissingX || motion.insertMissingY) {
+        const start = insertionStart(line.text, motion.executableEnd);
+        const prefix = line.text.slice(0, start);
+        const missingWords: string[] = [];
+        if (motion.insertMissingX) {
+          missingWords.push(
+            `X${formatInsertedCoordinate(
+              rotatedEndpoint.x,
+              motion.unit,
+              angleDegrees,
+              unknownEndpointPrecision,
+            )}`,
+          );
+        }
+        if (motion.insertMissingY) {
+          missingWords.push(
+            `Y${formatInsertedCoordinate(
+              rotatedEndpoint.y,
+              motion.unit,
+              angleDegrees,
+              unknownEndpointPrecision,
+            )}`,
+          );
+        }
+        const separator = prefix.length > 0 && !/\s/.test(prefix.at(-1) ?? "")
+          ? " "
+          : "";
+        replacements.push({
+          start,
+          end: start,
+          text: separator + missingWords.join(" "),
+        });
+      }
+
       let transformed = line.text;
       for (const replacement of replacements.sort((a, b) => b.start - a.start)) {
         transformed =
@@ -706,9 +812,20 @@ export function generateRotatedGCode(
 
     const formattedMotion = formatted.program.lines[lineIndex]?.motion;
     const radii = formattedMotion ? arcRadii(formattedMotion) : null;
-    if (!radii) continue;
+    if (!radii || !formattedMotion) {
+      return {
+        ok: false,
+        diagnostics: [
+          {
+            line: lineIndex + 1,
+            reason:
+              "Transformed center-format arc radii could not be verified.",
+          },
+        ],
+      };
+    }
 
-    if (Math.abs(radii.start - radii.end) > radiusTolerance(formattedMotion!.unit)) {
+    if (Math.abs(radii.start - radii.end) > radiusTolerance(formattedMotion.unit)) {
       return {
         ok: false,
         diagnostics: [
