@@ -30,8 +30,8 @@
   "branch_intent": "codex/gcode-rotation-plotter-residual",
   "execution_route": "codex-cli",
   "flow_id": "NC-20260801-385a107b",
-  "goal_memory_commit": "9956e57ddc15f1bed7a14b876f4e6e32e1be9276",
-  "goal_sha256": "sha256:02d7566c432c6be7a62534a12d6d445e5f4453bb2f1388185d4672801c9ee179",
+  "goal_memory_commit": "bd103755d49b7833ebb1e404f97c8b6af4281b87",
+  "goal_sha256": "sha256:0c02fa8d3d308db493eb4f06634993597ea96839f0abb9c02b0c3bca5153ca98",
   "protected_surfaces": [
     "calculator formulas and nesting behavior",
     "calculator UI layout and input behavior",
