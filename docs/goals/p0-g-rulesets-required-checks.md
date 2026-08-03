@@ -68,9 +68,9 @@ Actions, PR, and audit-log links are authoritative for the corresponding event.
 
 | Evidence | Result | Durable record |
 | --- | --- | --- |
-| Five P0-F jobs still run on `pull_request` | Pending implementation validation | `.github/workflows/p0-f-minimum-ci.yml` |
-| `p0f-required-gate` always resolves after all five jobs | Pending PR run | This file + Actions run URL |
-| Deliberate passing PR into `p0g-ruleset-eval` | Pending | PR URL, head SHA, run URL, artifact URL |
+| Five P0-F jobs still run on `pull_request` | PASS | `.github/workflows/p0-f-minimum-ci.yml`; [run 30862396766](https://github.com/TurboFrogLLC/NestCalc/actions/runs/30862396766) |
+| `p0f-required-gate` always resolves after all five jobs | PASS; all five dependencies passed and the aggregate completed after `p0f-evidence` | [gate job](https://github.com/TurboFrogLLC/NestCalc/actions/runs/30862396766/job/91847135322) |
+| Deliberate passing PR into `p0g-ruleset-eval` | PASS; head `4e7d810996288d6d58109e3f7506711a82c8a801` | [PR #35](https://github.com/TurboFrogLLC/NestCalc/pull/35), [run](https://github.com/TurboFrogLLC/NestCalc/actions/runs/30862396766), [manifest artifact](https://api.github.com/repos/TurboFrogLLC/NestCalc/actions/artifacts/8874829621/zip) |
 | Deliberate failing PR into `p0g-ruleset-eval` | Pending | PR URL, head SHA, failed gate URL |
 | Owner-only positive path | Pending enforcement-capability check | PR URL and review record |
 | Owner-only negative path | Pending enforcement-capability check | PR URL and failed gate record |
