@@ -1,0 +1,217 @@
+name: P0-F Minimum CI Baseline
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  p0f-lint:
+    name: p0f-lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: setup-node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: npm ci
+        run: npm ci
+      - name: p0f-lint
+        run: npm run lint
+
+  p0f-unit:
+    name: p0f-unit
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: setup-node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: npm ci
+        run: npm ci
+      - name: p0f-unit
+        run: npm test
+
+  p0f-build:
+    name: p0f-build
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: setup-node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: npm ci
+        run: npm ci
+      - name: p0f-build (typecheck/compile)
+        run: npm run build
+
+  p0f-governance:
+    name: p0f-governance
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: setup-node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: npm ci
+        run: npm ci
+      - name: p0f-governance-check
+        run: npm run governance:check
+      - name: p0f-governance-tests
+        run: npm run test:governance
+      - name: p0f-registry-mode-assert
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          mode = Path("docs/governance/MODE").read_text(encoding="utf-8").strip()
+          if mode not in {"advisory", "enforce"}:
+              raise SystemExit(f"invalid NestCalc governance MODE: {mode!r}")
+
+          workflow_lines = Path(".github/workflows/p0-f-minimum-ci.yml").read_text(
+              encoding="utf-8"
+          ).splitlines()
+          workflow_jobs = {}
+          in_jobs = False
+          current_job = None
+          for raw_line in workflow_lines:
+              stripped = raw_line.strip()
+              if not stripped or stripped.startswith("#"):
+                  continue
+              indent = len(raw_line) - len(raw_line.lstrip(" "))
+              if indent == 0:
+                  if stripped == "jobs:":
+                      in_jobs = True
+                      continue
+                  if in_jobs:
+                      break
+                  continue
+              if not in_jobs:
+                  continue
+              if indent == 2 and stripped.endswith(":") and not stripped.startswith("-"):
+                  current_job = stripped[:-1]
+                  workflow_jobs[current_job] = {"steps": [], "runs": []}
+                  continue
+              if current_job is None:
+                  continue
+              if indent == 6 and stripped.startswith("- name: "):
+                  workflow_jobs[current_job]["steps"].append(stripped[len("- name: "):])
+                  continue
+              if indent == 8 and stripped.startswith("run:"):
+                  workflow_jobs[current_job]["runs"].append(stripped[len("run:"):].strip())
+
+          expected = {
+              "p0f-lint": {"runs": ["npm run lint"], "steps": ["p0f-lint"]},
+              "p0f-unit": {"runs": ["npm test"], "steps": ["p0f-unit"]},
+              "p0f-build": {"runs": ["npm run build"], "steps": ["p0f-build (typecheck/compile)"]},
+              "p0f-governance": {
+                  "runs": ["npm run governance:check", "npm run test:governance"],
+                  "steps": ["p0f-governance-check", "p0f-governance-tests", "p0f-registry-mode-assert"],
+              },
+              "p0f-evidence": {"steps": ["create manifest", "upload head-SHA manifest"]},
+          }
+          missing = []
+          for job, contract in expected.items():
+              actual = workflow_jobs.get(job)
+              if actual is None:
+                  missing.append(f"missing job {job}")
+                  continue
+              for command in contract.get("runs", []):
+                  if command and command not in actual["runs"]:
+                      missing.append(f"{job} missing run {command}")
+              for step in contract["steps"]:
+                  if step not in actual["steps"]:
+                      missing.append(f"{job} missing step {step}")
+          if missing:
+              raise SystemExit("invalid local P0-F workflow registry: " + ", ".join(missing))
+
+          workflow = "\n".join(workflow_lines)
+          forbidden = {
+              "workflow" + "_call:": "central reusable workflow",
+              "path" + "s:": "path-based bypass",
+              "branches" + "-ignore:": "branch-based bypass",
+              "[" + "skip ci]": "commit-message bypass",
+              "[" + "ci skip]": "commit-message bypass",
+              "super" + "brain": "copied external registry",
+          }
+          violations = [label for token, label in forbidden.items() if token in workflow.lower()]
+          if violations:
+              raise SystemExit("forbidden P0-F workflow surface: " + ", ".join(violations))
+          PY
+
+  p0f-evidence:
+    name: p0f-evidence
+    if: ${{ always() }}
+    needs:
+      - p0f-lint
+      - p0f-unit
+      - p0f-build
+      - p0f-governance
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: create manifest
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          LINT_RESULT: ${{ needs.p0f-lint.result }}
+          UNIT_RESULT: ${{ needs.p0f-unit.result }}
+          BUILD_RESULT: ${{ needs.p0f-build.result }}
+          GOVERNANCE_RESULT: ${{ needs.p0f-governance.result }}
+          EVIDENCE_RESULT: ${{ job.status }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          mkdir -p p0f-evidence
+          node - <<'NODE'
+          const fs = require("node:fs");
+
+          const manifest = {
+            schema_version: "p0f-evidence-v1",
+            repository: "TurboFrogLLC/NestCalc",
+            event: "pull_request",
+            base_ref: process.env.BASE_REF,
+            pull_request_number: Number(process.env.PR_NUMBER),
+            head_sha: process.env.HEAD_SHA,
+            workflow: "P0-F Minimum CI Baseline",
+            jobs: [
+              { name: "p0f-lint", command: "npm run lint", mapping: "format/lint", result: process.env.LINT_RESULT },
+              { name: "p0f-unit", command: "npm test", mapping: "unit", result: process.env.UNIT_RESULT },
+              { name: "p0f-build", command: "npm run build", mapping: "typecheck/compile", result: process.env.BUILD_RESULT },
+              { name: "p0f-governance", command: "npm run governance:check && npm run test:governance + thin local registry/mode assert", mapping: "governance", result: process.env.GOVERNANCE_RESULT },
+              { name: "p0f-evidence", command: "manifest and head-SHA artifact upload", mapping: "evidence", result: process.env.EVIDENCE_RESULT },
+            ],
+            governance: {
+              registry: "thin deterministic NestCalc-local assertion",
+              mode_file: "docs/governance/MODE",
+              external_registry_copied: false,
+            },
+            run_url: process.env.RUN_URL,
+          };
+
+          fs.writeFileSync("p0f-evidence/manifest.json", JSON.stringify(manifest, null, 2) + "\n");
+          NODE
+          cat p0f-evidence/manifest.json
+      - name: upload head-SHA manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: p0f-evidence-${{ github.event.pull_request.head.sha }}
+          path: p0f-evidence/manifest.json
+          if-no-files-found: error
+          retention-days: 14
