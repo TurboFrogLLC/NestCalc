@@ -31,7 +31,7 @@
   "execution_route": "codex-cli",
   "flow_id": "NC-20260801-385a107b",
   "goal_memory_commit": "bd103755d49b7833ebb1e404f97c8b6af4281b87",
-  "goal_sha256": "sha256:0c02fa8d3d308db493eb4f06634993597ea96839f0abb9c02b0c3bca5153ca98",
+  "goal_sha256": "sha256:1a1bdee9cf80167c00d1418b748f2542ab9e48c5fffa8baebe34da324e91ebb2",
   "protected_surfaces": [
     "calculator formulas and nesting behavior",
     "calculator UI layout and input behavior",
@@ -70,6 +70,22 @@ current residual head. Do not merge product `main`.
 This is a contract correction for the existing G-code module. It does not
 reopen the named-preset, calculator, AutoNest, authentication, or PWA work
 from the superseded product wave.
+
+### Authorized P0-F CI-only child wave
+
+Alongside this active G-code objective, this goal authorizes the separate,
+CI-only P0-F child wave recorded in
+`docs/goals/p0-f-minimum-ci-baseline.md` and implemented by
+`.github/workflows/p0-f-minimum-ci.yml`. That child wave is limited to pull
+request validation, governance evidence, and the package/lockfile changes
+required to make that validation reproducible. It does not replace, narrow,
+or expand this G-code goal and must not modify G-code product behavior,
+required checks, branch protection, P0-G, or SuperBrain.
+
+For this named child wave only, this paragraph is the explicit exception to
+the G-code-only file and no-config restrictions below: it authorizes only the
+child goal file, the named P0-F workflow, and package/lockfile support for
+reproducible CI. The G-code restrictions remain unchanged for all G-code work.
 
 ### Phase 0 — Goal-memory freeze
 
