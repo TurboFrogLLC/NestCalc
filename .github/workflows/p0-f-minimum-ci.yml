@@ -122,6 +122,7 @@ jobs:
                   "steps": ["p0f-governance-check", "p0f-governance-tests", "p0f-registry-mode-assert"],
               },
               "p0f-evidence": {"steps": ["create manifest", "upload head-SHA manifest"]},
+              "p0f-required-gate": {"steps": ["p0f-required-gate"]},
           }
           missing = []
           for job, contract in expected.items():
@@ -215,3 +216,42 @@ jobs:
           path: p0f-evidence/manifest.json
           if-no-files-found: error
           retention-days: 14
+
+  p0f-required-gate:
+    name: p0f-required-gate
+    if: ${{ always() }}
+    needs:
+      - p0f-lint
+      - p0f-unit
+      - p0f-build
+      - p0f-governance
+      - p0f-evidence
+    runs-on: ubuntu-latest
+    steps:
+      - name: p0f-required-gate
+        env:
+          LINT_RESULT: ${{ needs.p0f-lint.result }}
+          UNIT_RESULT: ${{ needs.p0f-unit.result }}
+          BUILD_RESULT: ${{ needs.p0f-build.result }}
+          GOVERNANCE_RESULT: ${{ needs.p0f-governance.result }}
+          EVIDENCE_RESULT: ${{ needs.p0f-evidence.result }}
+        run: |
+          echo "p0f-lint=${LINT_RESULT}"
+          echo "p0f-unit=${UNIT_RESULT}"
+          echo "p0f-build=${BUILD_RESULT}"
+          echo "p0f-governance=${GOVERNANCE_RESULT}"
+          echo "p0f-evidence=${EVIDENCE_RESULT}"
+
+          for result in \
+            "${LINT_RESULT}" \
+            "${UNIT_RESULT}" \
+            "${BUILD_RESULT}" \
+            "${GOVERNANCE_RESULT}" \
+            "${EVIDENCE_RESULT}"; do
+            if [ "${result}" != "success" ]; then
+              echo "p0f-required-gate failed: every P0-F job must succeed." >&2
+              exit 1
+            fi
+          done
+
+          echo "p0f-required-gate passed: all five P0-F jobs succeeded."
