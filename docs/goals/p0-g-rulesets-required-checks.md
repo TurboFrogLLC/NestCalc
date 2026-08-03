@@ -71,9 +71,10 @@ Actions, PR, and audit-log links are authoritative for the corresponding event.
 | Five P0-F jobs still run on `pull_request` | PASS | `.github/workflows/p0-f-minimum-ci.yml`; [run 30862396766](https://github.com/TurboFrogLLC/NestCalc/actions/runs/30862396766) |
 | `p0f-required-gate` always resolves after all five jobs | PASS; all five dependencies passed and the aggregate completed after `p0f-evidence` | [gate job](https://github.com/TurboFrogLLC/NestCalc/actions/runs/30862396766/job/91847135322) |
 | Deliberate passing PR into `p0g-ruleset-eval` | PASS; head `4e7d810996288d6d58109e3f7506711a82c8a801` | [PR #35](https://github.com/TurboFrogLLC/NestCalc/pull/35), [run](https://github.com/TurboFrogLLC/NestCalc/actions/runs/30862396766), [manifest artifact](https://api.github.com/repos/TurboFrogLLC/NestCalc/actions/artifacts/8874829621/zip) |
-| Deliberate failing PR into `p0g-ruleset-eval` | Pending | PR URL, head SHA, failed gate URL |
-| Owner-only positive path | Pending enforcement-capability check | PR URL and review record |
-| Owner-only negative path | Pending enforcement-capability check | PR URL and failed gate record |
+| Deliberate failing PR into `p0g-ruleset-eval` | PASS; `p0f-unit` failed, `p0f-evidence` still passed, and `p0f-required-gate` failed terminally; head `079d79eb45ae990adf3806a8b57100f2c4576a81` | [PR #36](https://github.com/TurboFrogLLC/NestCalc/pull/36), [run](https://github.com/TurboFrogLLC/NestCalc/actions/runs/30862700882), [failed unit job](https://github.com/TurboFrogLLC/NestCalc/actions/runs/30862700882/job/91847912314), [failed gate job](https://github.com/TurboFrogLLC/NestCalc/actions/runs/30862700882/job/91848087788), [manifest artifact](https://api.github.com/repos/TurboFrogLLC/NestCalc/actions/artifacts/8874942997/zip) |
+| Ruleset `NestCalc P0-G required checks` on `p0g-ruleset-eval` | BLOCKED by GitHub plan capability | [rulesets API response](https://docs.github.com/rest/repos/rules#get-all-repository-rulesets); repository is private and GitHub returned HTTP 403 requiring Pro/public visibility |
+| Owner-only positive path | BLOCKED; no enforceable ruleset/branch-protection surface is available | PR #35 is a green-gate demonstration only; no merge-authority inference |
+| Owner-only negative path | BLOCKED; no enforceable ruleset/branch-protection surface is available | PR #36 proves the gate fails; it does not prove GitHub merge blocking |
 | Emergency bypass with enforcement | Blocked until ruleset enforcement is available | Actor, time, reason, audit record, review note |
 
 ## Phase boundary
