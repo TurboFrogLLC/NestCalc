@@ -13,8 +13,6 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
       - name: setup-node
         uses: actions/setup-node@v4
         with:
@@ -31,8 +29,6 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
       - name: setup-node
         uses: actions/setup-node@v4
         with:
@@ -49,8 +45,6 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
       - name: setup-node
         uses: actions/setup-node@v4
         with:
@@ -67,8 +61,6 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
       - name: setup-node
         uses: actions/setup-node@v4
         with:
@@ -89,24 +81,64 @@ jobs:
           if mode not in {"advisory", "enforce"}:
               raise SystemExit(f"invalid NestCalc governance MODE: {mode!r}")
 
-          workflow = Path(".github/workflows/p0-f-minimum-ci.yml").read_text(
+          workflow_lines = Path(".github/workflows/p0-f-minimum-ci.yml").read_text(
               encoding="utf-8"
-          )
-          expected = {
-              "p0f-lint:": "npm run lint",
-              "p0f-unit:": "npm test",
-              "p0f-build:": "npm run build",
-              "p0f-governance:": "npm run governance:check",
-              "p0f-evidence:": "p0f-evidence",
-          }
-          missing = [
-              f"{job} -> {command}"
-              for job, command in expected.items()
-              if job not in workflow or command not in workflow
-          ]
-          if missing:
-              raise SystemExit("missing local P0-F registry entries: " + ", ".join(missing))
+          ).splitlines()
+          workflow_jobs = {}
+          in_jobs = False
+          current_job = None
+          for raw_line in workflow_lines:
+              stripped = raw_line.strip()
+              if not stripped or stripped.startswith("#"):
+                  continue
+              indent = len(raw_line) - len(raw_line.lstrip(" "))
+              if indent == 0:
+                  if stripped == "jobs:":
+                      in_jobs = True
+                      continue
+                  if in_jobs:
+                      break
+                  continue
+              if not in_jobs:
+                  continue
+              if indent == 2 and stripped.endswith(":") and not stripped.startswith("-"):
+                  current_job = stripped[:-1]
+                  workflow_jobs[current_job] = {"steps": [], "runs": []}
+                  continue
+              if current_job is None:
+                  continue
+              if indent == 6 and stripped.startswith("- name: "):
+                  workflow_jobs[current_job]["steps"].append(stripped[len("- name: "):])
+                  continue
+              if indent == 8 and stripped.startswith("run:"):
+                  workflow_jobs[current_job]["runs"].append(stripped[len("run:"):].strip())
 
+          expected = {
+              "p0f-lint": {"runs": ["npm run lint"], "steps": ["p0f-lint"]},
+              "p0f-unit": {"runs": ["npm test"], "steps": ["p0f-unit"]},
+              "p0f-build": {"runs": ["npm run build"], "steps": ["p0f-build (typecheck/compile)"]},
+              "p0f-governance": {
+                  "runs": ["npm run governance:check", "npm run test:governance"],
+                  "steps": ["p0f-governance-check", "p0f-governance-tests", "p0f-registry-mode-assert"],
+              },
+              "p0f-evidence": {"steps": ["create manifest", "upload head-SHA manifest"]},
+          }
+          missing = []
+          for job, contract in expected.items():
+              actual = workflow_jobs.get(job)
+              if actual is None:
+                  missing.append(f"missing job {job}")
+                  continue
+              for command in contract.get("runs", []):
+                  if command and command not in actual["runs"]:
+                      missing.append(f"{job} missing run {command}")
+              for step in contract["steps"]:
+                  if step not in actual["steps"]:
+                      missing.append(f"{job} missing step {step}")
+          if missing:
+              raise SystemExit("invalid local P0-F workflow registry: " + ", ".join(missing))
+
+          workflow = "\n".join(workflow_lines)
           forbidden = {
               "workflow" + "_call:": "central reusable workflow",
               "path" + "s:": "path-based bypass",
