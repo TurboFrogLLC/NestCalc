@@ -31,7 +31,7 @@
   "execution_route": "codex-cli",
   "flow_id": "NC-20260801-385a107b",
   "goal_memory_commit": "bd103755d49b7833ebb1e404f97c8b6af4281b87",
-  "goal_sha256": "sha256:1a1bdee9cf80167c00d1418b748f2542ab9e48c5fffa8baebe34da324e91ebb2",
+  "goal_sha256": "sha256:9f7581fc5b42b24259da94189c373c69b0cd0d90d4ed9bcf913cdf95ab5ff4ca",
   "protected_surfaces": [
     "calculator formulas and nesting behavior",
     "calculator UI layout and input behavior",
@@ -86,6 +86,25 @@ For this named child wave only, this paragraph is the explicit exception to
 the G-code-only file and no-config restrictions below: it authorizes only the
 child goal file, the named P0-F workflow, and package/lockfile support for
 reproducible CI. The G-code restrictions remain unchanged for all G-code work.
+
+### Authorized P0-G Phase A exception
+
+Alongside this active G-code objective and the P0-F child wave, this goal
+authorizes the separate NestCalc-local P0-G Phase A child wave recorded in
+`docs/goals/p0-g-rulesets-required-checks.md`. This is an explicit exception
+to the G-code-only file and no-config restrictions, limited to:
+
+- the NestCalc sequencing and acceptance record at
+  `docs/goals/p0-g-rulesets-required-checks.md`;
+- the `p0f-required-gate` job in
+  `.github/workflows/p0-f-minimum-ci.yml`, without changing the five existing
+  P0-F jobs; and
+- validation work against the temporary branch `p0g-ruleset-eval` only.
+
+This exception still forbids Phase B live `main` ruleset activation, product
+feature scope expansion, and any SuperBrain edit. The local acceptance artifact
+remains the NestCalc sequencing record. The G-code restrictions remain
+unchanged for all other work.
 
 ### Phase 0 — Goal-memory freeze
 

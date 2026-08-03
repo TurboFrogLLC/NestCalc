@@ -21,19 +21,22 @@ boundary. It does not authorize SuperBrain changes.
 - Independent approver rule: the owner-only path is permitted only when no
   non-author approver is available for the PR. If an independent approver is
   available, the owner-only path is not a substitute for that review.
-- Owner-only approval is a green-gate path only. It cannot override a failed,
-  cancelled, or missing required gate.
+- The designated owner is not an independent approver and cannot submit an
+  approving review on an owner-authored PR. Prefer a second approver account
+  for the long-term path.
 
 ## Distinct mechanisms
 
-### Interim owner-only approval path (green gate only)
+### Interim owner-only admin merge path (green gate only)
 
 This is the temporary operational path for a PR authored by the designated
-owner when no independent approver is available. It is valid only when
-`p0f-lint`, `p0f-unit`, `p0f-build`, `p0f-governance`, `p0f-evidence`, and
-`p0f-required-gate` all report success. Approval authority and bypass authority
-are deliberately separate concepts; an owner approval does not make a failed
-gate mergeable.
+owner when no independent non-author approver is available and the required
+gate is green. When ruleset enforcement exists, the designated owner may use
+an audited admin merge / approval-bypass path. Positive-path evidence must
+include the green gate and an attributable record containing the actor, PR,
+head SHA, and timestamp. This is distinct from the emergency failing-gate
+bypass and cannot merge a PR with a failed, cancelled, or missing required
+gate.
 
 ### Emergency failing-gate bypass
 
@@ -73,8 +76,8 @@ Actions, PR, and audit-log links are authoritative for the corresponding event.
 | Deliberate passing PR into `p0g-ruleset-eval` | PASS; head `4e7d810996288d6d58109e3f7506711a82c8a801` | [PR #35](https://github.com/TurboFrogLLC/NestCalc/pull/35), [run](https://github.com/TurboFrogLLC/NestCalc/actions/runs/30862396766), [manifest artifact](https://api.github.com/repos/TurboFrogLLC/NestCalc/actions/artifacts/8874829621/zip) |
 | Deliberate failing PR into `p0g-ruleset-eval` | PASS; `p0f-unit` failed, `p0f-evidence` still passed, and `p0f-required-gate` failed terminally; head `079d79eb45ae990adf3806a8b57100f2c4576a81` | [PR #36](https://github.com/TurboFrogLLC/NestCalc/pull/36), [run](https://github.com/TurboFrogLLC/NestCalc/actions/runs/30862700882), [failed unit job](https://github.com/TurboFrogLLC/NestCalc/actions/runs/30862700882/job/91847912314), [failed gate job](https://github.com/TurboFrogLLC/NestCalc/actions/runs/30862700882/job/91848087788), [manifest artifact](https://api.github.com/repos/TurboFrogLLC/NestCalc/actions/artifacts/8874942997/zip) |
 | Ruleset `NestCalc P0-G required checks` on `p0g-ruleset-eval` | BLOCKED by GitHub plan capability | [rulesets API response](https://docs.github.com/rest/repos/rules#get-all-repository-rulesets); repository is private and GitHub returned HTTP 403 requiring Pro/public visibility |
-| Owner-only positive path | BLOCKED; no enforceable ruleset/branch-protection surface is available | PR #35 is a green-gate demonstration only; no merge-authority inference |
-| Owner-only negative path | BLOCKED; no enforceable ruleset/branch-protection surface is available | PR #36 proves the gate fails; it does not prove GitHub merge blocking |
+| Owner-only positive path | BLOCKED; no enforceable ruleset/branch-protection surface is available | When enforcement exists, evidence must be green gate plus an attributable admin merge/approval-bypass record (actor, PR, head SHA, timestamp); PR #35 is currently a green-gate demonstration only |
+| Owner-only negative path | BLOCKED; no enforceable ruleset/branch-protection surface is available | A failing gate must not be mergeable through the green-gate admin path; PR #36 proves the gate fails but not GitHub merge blocking |
 | Emergency bypass with enforcement | Blocked until ruleset enforcement is available | Actor, time, reason, audit record, review note |
 
 ## Phase boundary
