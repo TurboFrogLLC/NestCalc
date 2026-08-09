@@ -11,8 +11,8 @@
   "branch_intent": "codex/quiet-goal-post-shop-helpers-hygiene",
   "execution_route": "codex-cli",
   "flow_id": "NC-20260809-f18a6c4d",
-  "goal_memory_commit": "7667e6386c9074b2ce4c46214de88f6364866f94",
-  "goal_sha256": "sha256:a43fcdf3a5ba61415ed363325839d62fc610ca30a34d60f717995ff12a192886",
+  "goal_memory_commit": "fb3cd95868f1c349fc8f346911346eba71bf43d4",
+  "goal_sha256": "sha256:2dcc4ba9f2752b98ba294d3bf6b04b4d462ee17a0d0303c955332bf8fc83239a",
   "protected_surfaces": [
     "all product implementation, calculator math, AutoNest behavior, Clerk, PWA, and docs/governance/MODE"
   ],
