@@ -30,8 +30,8 @@
   "branch_intent": "codex/gcode-fill-part-size",
   "execution_route": "codex-cli",
   "flow_id": "NC-20260809-156b2bb1",
-  "goal_memory_commit": "0000000000000000000000000000000000000000",
-  "goal_sha256": "sha256:155f1d3e50ad68c3c802d1b5fb55f38abe2a240a4645a6ccd88af3921e0a8a7d",
+  "goal_memory_commit": "197bf73eb8b2e36f61af6bb5db6cc3f7f7e37aa1",
+  "goal_sha256": "sha256:91986132acc8c81179171c6e19a1b96e6c660479375e6d38b05f6304aafde028",
   "protected_surfaces": [
     "calculator math and NestResult formulas",
     "AutoNest packing ranking counts trim policies fallback guards and search budget",
