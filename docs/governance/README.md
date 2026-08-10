@@ -75,9 +75,10 @@ value itself. The active title in metadata must exactly match the single
 - Handoffs store only the prompt hash. Prompt plaintext is never copied.
 - Artifact validation rejects secret-like keys and values, Clerk/env material,
   private keys, bearer tokens, credentials, and prompt plaintext fields.
-- Requested and observed read-only agent models are both recorded. A missing or
-  mismatched required `gpt-5.4-mini` route is `unavailable` or `mismatch`; it is
-  never passing evidence.
+- Requested and observed read-only agent models are both recorded. The required
+  route is `gpt-5.6-terra` at medium reasoning effort. A missing route is
+  `unavailable`; a differing observed model is `mismatch`; neither is passing
+  evidence.
 
 ## B3-style handoff and B4-style preflight
 

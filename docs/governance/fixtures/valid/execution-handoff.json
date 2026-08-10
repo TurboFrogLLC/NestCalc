@@ -13,7 +13,7 @@
     "read_only_agents": [
       {
         "lane": "contract-review",
-        "requested_model": "gpt-5.4-mini",
+        "requested_model": "gpt-5.6-terra",
         "observed_model": null,
         "status": "unavailable"
       }

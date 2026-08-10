@@ -15,7 +15,7 @@
 | `docs/governance/MODE` | `advisory` | Correct retention; Superbrain installs enforce by design — NestCalc must not flip without promotion criteria |
 | `scripts/nestcalc-governance.py` | Fail-closed validators; advisory bootstrap exception | Module prose said “advisory seam” (soft); closeout Flow ID was optional warning |
 | Schemas + fixtures | Present and deterministic | Keep; no rewrite |
-| `nestcalc-goal-grilling` | Stop before commit/CLI; gpt-5.4-mini lanes | Missing explicit evidence → confidence → decision → residual-risk loop; soft “when available” routing |
+| `nestcalc-goal-grilling` | Stop before commit/CLI; `gpt-5.6-terra` medium lanes after Wave A routing alignment | Explicit evidence → confidence → decision → residual-risk loop; unavailable or mismatched routes never count as passing evidence |
 | `AGENTS.md` / `docs/WORKFLOW.md` | Role and skill map | Soft “should” language; handoff/preflight not fail-closed against Superbrain B3/B4 pattern |
 | Closeout B6–B9 | NestCalc-native Grok Build ladder | Keep; do not invent conflicting B codes |
 | Enterprise long-tail (SBOM, env-proxy, golden pipeline) | Not present | Explicit non-goal — do not import |
@@ -36,7 +36,7 @@
 2. `docs/WORKFLOW.md` — goal cycle, B3-style handoff, B4-style preflight, B6–B9 closeout, fail-closed stops.
 3. `docs/governance/README.md` — contract authority and MODE semantics.
 4. `docs/governance/goal-lifecycle-contract.md` — product-agnostic lifecycle contract.
-5. `.agents/skills/nestcalc-goal-grilling/SKILL.md` — evidence → confidence → decision → residual risk / flagged decisions; gpt-5.4-mini read-only lanes; orchestrator write authority only.
+5. `.agents/skills/nestcalc-goal-grilling/SKILL.md` — evidence → confidence → decision → residual risk / flagged decisions; `gpt-5.6-terra` read-only lanes at medium reasoning effort; orchestrator write authority only.
 6. `scripts/nestcalc-governance.py` — module contract language; required closeout Flow ID.
 7. Tests updated for bootstrap exception (fixture, not live AutoNest GOAL) and Flow ID requirement.
 8. This file — gap record + promotion path.

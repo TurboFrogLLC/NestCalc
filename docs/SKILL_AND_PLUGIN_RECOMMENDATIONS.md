@@ -8,8 +8,9 @@ Next.js 16 Clerk-authenticated calculator PWA.
 Workflow and governance:
 
 - `nestcalc-goal-grilling` - repo-local autonomous goal-prep loop for NestCalc:
-  self-grilling in chat, read-only sub-agents launched with `gpt-5.4-mini`,
-  flagged decisions, and stop before commit or CLI prompt unless requested.
+  self-grilling in chat, read-only sub-agents launched with `gpt-5.6-terra` at
+  medium reasoning effort, flagged decisions, and stop before commit or CLI
+  prompt unless requested.
 - `ask-matt` - route ambiguous work into goal prep, grilling, implementation,
   review, or cleanup.
 - `codex-goal-prep` - update one active `GOAL.md` and produce thin `/goal`
@@ -151,7 +152,8 @@ For PR closeout:
   native app goal explicitly requests them.
 - Do not use parsing-lab, ShopQuote, Borg/wiki, CadQuery, Obsidian, RESOLV, or
   governance-specialized skills unless the active goal names those surfaces.
-- When documenting read-only sub-agent lanes, state `gpt-5.4-mini` anywhere the
-  lane is described: skill file, `AGENTS.md`, workflow docs, and this document.
+- When documenting read-only sub-agent lanes, state `gpt-5.6-terra` at medium
+  reasoning effort anywhere the lane is described: skill file, `AGENTS.md`,
+  workflow docs, and this document.
 - Quote `SKILL.md` frontmatter descriptions that contain `: ` so YAML loaders
   can discover repo-local skills reliably.

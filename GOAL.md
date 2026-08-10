@@ -3,44 +3,44 @@
 <!-- nestcalc-governance:start -->
 ```json
 {
-  "active_goal_title": "G-code reverse bounding box fills calculator part size",
+  "active_goal_title": "Wave A Governance - Terra Medium Read-Only Grilling Pin",
   "agent_roster": {
     "orchestrator": "codex-cli",
     "read_only_agents": [
       {
-        "lane": "source ownership and bridge",
-        "observed_model": null,
-        "requested_model": "gpt-5.4-mini",
-        "status": "unavailable"
+        "lane": "routing inventory",
+        "observed_model": "gpt-5.6-terra",
+        "requested_model": "gpt-5.6-terra",
+        "status": "matched"
       },
       {
-        "lane": "unit and golden span proof",
-        "observed_model": null,
-        "requested_model": "gpt-5.4-mini",
-        "status": "unavailable"
+        "lane": "goal archive and lifecycle contract",
+        "observed_model": "gpt-5.6-terra",
+        "requested_model": "gpt-5.6-terra",
+        "status": "matched"
       },
       {
-        "lane": "workflow and residual risk",
-        "observed_model": null,
-        "requested_model": "gpt-5.4-mini",
-        "status": "unavailable"
+        "lane": "proof scope and governance fixtures",
+        "observed_model": "gpt-5.6-terra",
+        "requested_model": "gpt-5.6-terra",
+        "status": "matched"
       }
     ]
   },
-  "branch_intent": "codex/gcode-fill-part-size",
+  "branch_intent": "codex/governance-terra-grilling-pin",
   "execution_route": "codex-cli",
-  "flow_id": "NC-20260809-156b2bb1",
-  "goal_memory_commit": "197bf73eb8b2e36f61af6bb5db6cc3f7f7e37aa1",
-  "goal_sha256": "sha256:91986132acc8c81179171c6e19a1b96e6c660479375e6d38b05f6304aafde028",
+  "flow_id": "NC-20260809-7d18f1a2",
+  "goal_memory_commit": "cca69faddceb2a5e141a66bea6ac667fda71e6fe",
+  "goal_sha256": "sha256:9569d36d1fd2b09b440dde4e2fc926e72c207d2df5920049fd4005ae7cc3daa8",
   "protected_surfaces": [
-    "calculator math and NestResult formulas",
-    "AutoNest packing ranking counts trim policies fallback guards and search budget",
-    "Path B plotter-only ACS rewrite rules including G53 omitted-axis scientific-notation arc-start and opaque pass-through behavior",
-    "Clerk auth request-access routes sign-up behavior secrets and deployment settings",
+    "calculator math and calculator UI layout or input behavior",
+    "AutoNest packing ranking counts trim-edge policies fallback guards and search budget",
+    "G-code Path B parsing rewriting safety and serialization behavior",
+    "Clerk auth request-access policy routes sign-up behavior secrets and deployment settings",
     "PWA and Serwist service-worker runtime cache behavior",
-    "preset storage schema",
-    "authenticated e2e suite",
-    "repository governance files and docs/governance/MODE"
+    "package.json dependencies scripts and product configuration",
+    "LESSONS_LEARNED.md historical provenance",
+    "docs/governance/MODE and NestCalc B6-B9 closeout ladder"
   ],
   "publication_route": "feature-pr",
   "repository": "TurboFrogLLC/NestCalc",
@@ -48,76 +48,82 @@
   "skills": [
     "codex-repo-hygiene-gate",
     "nestcalc-goal-grilling",
-    "codex-goal-prep",
-    "lessons-aware-plan-scanner",
-    "vercel-plugin:nextjs",
-    "vercel-plugin:react-best-practices",
-    "vercel-plugin:verification"
+    "codex-goal-prep"
   ]
 }
 ```
 <!-- nestcalc-governance:end -->
 
-## Active Goal: G-code reverse bounding box fills calculator part size
+## Active Goal: Wave A Governance - Terra Medium Read-Only Grilling Pin
 
 ### Objective
 
-After source G-code analysis succeeds, let the operator declare the program unit
-with an `IN | MM` segmented switch and use one `Fill part size` control to copy
-the source toolpath AABB spans into calculator `partWidth` and `partHeight`,
-aligning the calculator unit to the declared unit so nesting can continue with
-only the remnant or blank size left to enter.
+Align NestCalc autonomous goal-grilling read-only evidence lanes with the
+NanoTate-style research and routine route: replace every current hard pin of
+`gpt-5.4-mini` for NestCalc read-only grilling or research sub-agents with
+`gpt-5.6-terra` at medium reasoning effort. The orchestrator and implementer
+remain the session parent model; this wave does not pin a separate Sol/high
+research lane.
 
-Part size is source-bounds span only: `width = maxX - minX` and
-`height = maxY - minY`. It never uses the rotated preview AABB.
+When Terra cannot bind, record the lane as `unavailable` with
+`observed_model: null`. When another model binds, record `mismatch` honestly.
+Never claim substitute-lane evidence as matched.
 
 ### Scope / Allowed Files
 
-- `GOAL.md` — this goal freeze and its metadata binding commits only.
-- `docs/goals/*` — only if the existing NestCalc goal-memory pattern requires a
-  snapshot or index row; no additional snapshot is currently required.
-- `src/lib/gcodeRotation.ts` — export a pure `partSizeFromBounds` span helper;
-  do not change parsing, rotation, or Path B rewrite behavior.
-- `src/lib/gcodeRotation.test.ts` — cover finite non-negative spans, rejected
-  invalid bounds, zero spans, and known spans from existing golden programs.
-- `src/components/GCodeRotation.tsx` — add the `IN | MM` segmented switch, the
-  `Fill part size` control, and an optional `onApplyPartSize` callback.
-- `src/components/NestCalcApp.tsx` — thin callback bridge that updates existing
-  manual `partWidth`, `partHeight`, and `unit` state only.
-- `docs/ShopHelpers_Spec.md` — one short additive section documenting Path A
-  fill behavior without rewriting the Path B rotation contract.
+- `GOAL.md` — this goal freeze and metadata binding only.
+- `docs/goals/**` — the completed PR #40 archive already recorded before this
+  freeze; no further history edits are expected.
+- `AGENTS.md` — update only the read-only goal-grilling model and effort pin.
+- `.agents/skills/nestcalc-goal-grilling/SKILL.md` — update only the same model
+  and effort route plus its evidence-report wording.
+- `docs/WORKFLOW.md` — update all autonomous goal-grilling 5.4-mini pins.
+- `docs/SKILL_AND_PLUGIN_RECOMMENDATIONS.md` — synchronize the current routing
+  recommendation and consistency reminder.
+- `docs/governance/goal-template-v1.md` — make Terra the default requested model
+  for read-only agents and state medium effort in prose.
+- `docs/governance/goal-lifecycle-contract.md` — update the enforce-grade lane
+  model/effort contract.
+- `docs/governance/README.md` — update the model receipt explanation.
+- `docs/governance/GAP-AND-HARDENING.md` — factual current-inventory and residual
+  updates only; keep enterprise long-tail as non-goals.
+- `docs/governance/schemas/goal-metadata.schema.json` — replace the transitional
+  model enum with the final Terra-only const.
+- `scripts/nestcalc-governance.py` — replace the transitional accepted-model set
+  with the final Terra-only assertion; command behavior otherwise unchanged.
+- `test/governance/**` and `docs/governance/fixtures/**` — update only expected
+  model strings and receipts required by the contract change.
 
-Implementation must preserve Generate, Copy, Download, source analysis,
-rotation preview, and output-staleness behavior.
+No other file is authorized.
 
 ### Protected Surfaces
 
-- Calculator math, `NestResult` formulas, and calculator input/layout behavior
-  outside the thin G-code-to-part-size bridge.
-- AutoNest engine packing, ranking, counts, trim-edge policies, fallback guards,
-  and search budget.
-- Path B plotter-only ACS rewrite rules: G53 rejection, omitted-axis emission,
-  scientific notation, arc-start fail-closed behavior, opaque ACS pass-through,
-  rotation precision, and output serialization.
-- Clerk auth, request access, routes, sign-up behavior, secrets, deployment,
-  Vercel project settings, and the authenticated e2e suite.
-- PWA and Serwist service-worker/runtime-cache behavior.
-- Preset storage schema, all unrelated repository governance files, and
-  `docs/governance/MODE`.
+- Calculator math, `NestResult` formulas, calculator layout, and input behavior.
+- AutoNest engine, session, packing, ranking, counts, trim-edge policies,
+  fallback guards, search budget, and preview geometry.
+- G-code Path B parsing, rewriting, G53 safety, modal-axis behavior, scientific
+  notation, arc handling, and serialization.
+- Clerk auth, request access, routes, sign-up behavior, secrets, `.env*`,
+  deployment credentials, and Vercel settings.
+- PWA/Serwist service-worker, offline-shell, and runtime-cache behavior.
+- `package.json`, product configuration, product source, and all iOS work.
+- `LESSONS_LEARNED.md`; its historical 5.4-mini row remains provenance.
+- `docs/governance/MODE`, which remains `advisory`.
+- NestCalc B6-B9 closeout stages and the non-goal status of golden pipeline,
+  SBOM, env-proxy, signed-approval gates, and UI-tier enterprise process.
 
 ### Required Proof
 
-- `python3 scripts/nestcalc-governance.py validate-goal --goal GOAL.md` after
-  goal metadata is bound to its goal-memory commit.
-- `npm run governance:check` after the goal freeze.
-- `npm run lint`.
-- `npm run test` (or `npm run test:unit`), including the new span helper and
-  existing `gcodeRotation` suite.
-- `npm run build`.
-- `git diff --check` and strict Allowed Files inspection before publication.
+- `python3 scripts/nestcalc-governance.py validate-goal --goal GOAL.md`
+- `npm run governance:check`
+- `npm run test:governance`
+- `git diff --check`
+- `rg` proof that no hard requirement of `gpt-5.4-mini` remains in Allowed
+  Files; historical `LESSONS_LEARNED.md` provenance is reported, not edited.
+- `git diff --name-only origin/main...HEAD` contains Allowed Files only.
 
-Authenticated Playwright and auth e2e are not required proof for this Path A
-goal. The human will manually smoke the authenticated G-code flow.
+Required proof is a subset of the human-approved Path B edit authority. Any
+failure is a blocker; do not expand into product or MODE changes to fix it.
 
 ### Grilling Decision Record
 
@@ -125,43 +131,41 @@ goal. The human will manually smoke the authenticated G-code flow.
 evidence -> confidence -> decision -> residual risk / flagged decisions
 ```
 
-- Evidence: `analyzeGCode()` already returns source `Bounds`, the G-code UI
-  already shows min/max values, `NestInputs` already owns
-  `partWidth`/`partHeight`/`unit`, and sanitized golden ACS bodies already prove
-  line/arc analysis behavior.
-- Confidence: high and freeze-ready. No blocking product question remains;
-  required proof is reachable within Allowed Files under Path A.
-- Decision: add only a pure span helper, segmented `IN | MM` declaration,
-  fill control, thin parent-state bridge, focused tests, and additive spec text.
-- Flagged decision — zero span: the helper may return a finite zero dimension,
-  but `Fill part size` remains disabled unless both spans are strictly positive;
-  consequence: line-only programs cannot overwrite calculator dimensions.
-- Flagged decision — comment/header fallback: skip it because toolpath bounds
-  are primary and comment parsing would expand scope; consequence: programs
-  without analyzable motion remain unable to fill.
-- Flagged decision — read-only evidence model: `gpt-5.4-mini` is unavailable in
-  this runtime, so the orchestrator gathered the human-locked evidence directly
-  and records all prescribed lanes as unavailable; consequence: no lane is
-  claimed as matched evidence, but implementation remains bounded by the human
-  freeze.
-- Residual risk: G41/CRC-compensated motion may make the filled size slightly
-  larger than nominal CAD; this is explicitly accepted. Authenticated browser
-  proof remains human manual-smoke debt and is not represented as a pass.
+- Evidence: NanoTate routes research/routine lanes to `gpt-5.6-terra` medium;
+  NestCalc authority, schema, validator, template, and fixtures still encode
+  5.4-mini; PR #40 recorded those former lanes unavailable. Three bounded
+  read-only evidence lanes successfully bound to `gpt-5.6-terra` at medium
+  effort for routing inventory, lifecycle/archive, and proof-scope review.
+- Confidence: high and freeze-ready after human-approved Path B. No blocking
+  question remains, every required proof is fixable within Allowed Files, and
+  all product and MODE surfaces are explicitly protected.
+- Decision: perform only the model-pin swap and exact supporting fixture/schema
+  updates. Preserve the parent orchestrator model and all non-routing behavior.
+- Flagged decision — migration bootstrap: the old schema and validator could not
+  validate a Terra-rostered goal. A narrow pre-freeze compatibility commit
+  temporarily accepts both old and new model strings; consequence: the final
+  implementation must remove legacy acceptance and prove Terra-only enforcement.
+- Flagged decision — effort representation: `nestcalc-goal-v1` has no reasoning
+  effort field. Keep medium effort enforce-grade in authority prose and launch
+  configuration without expanding metadata shape; consequence: model identity
+  is machine-validated while effort is review-validated in this wave.
+- Residual risk: a future runtime may report Terra unavailable. Record
+  `unavailable` honestly with no substitute evidence. Full NanoTate golden
+  pipeline parity remains deferred and `MODE` remains advisory.
 
 ### B3-Style Handoff / B4-Style Preflight
 
-- Commit the goal freeze separately, bind `goal_memory_commit` in a second
-  goal-memory-only commit, validate, then create the prompt-hash-only handoff
-  with `python3 scripts/nestcalc-governance.py create-handoff`.
-- Before the first product edit, revalidate the active goal, durable handoff,
-  exact `codex/gcode-fill-part-size` branch, relevant lessons, and proof scope.
-- Use host-first execution for git/GitHub network and any browser proof.
+- Commit this goal freeze alone, bind `goal_memory_commit` in a second
+  goal-memory-only commit, validate, then create the prompt-hash-only handoff.
+- Before authority implementation edits, revalidate the active goal, durable
+  handoff, exact branch, relevant lessons, and proof-scope containment.
+- Use host-first execution for git/GitHub network operations.
 
 ### Stopping Condition
 
 Complete only after separate goal-memory and implementation commits, every
-required proof passes, the branch is pushed, and a ready-for-review PR contains
-Flow ID `NC-20260809-156b2bb1`, Allowed Files, proof, and explicit non-goals.
-Stop blocked on any preflight, scope, validation, test, build, or publication
-failure. Do not merge, deploy, flip MODE, force-push, or expand into Path B,
-AutoNest, auth e2e, comment parsing, or production.
+required proof passes, the branch is pushed, and a ready-for-review PR records
+Flow `NC-20260809-7d18f1a2`, Allowed Files, proof, and explicit non-goals.
+Stop blocked on validation, scope drift, MODE touch, product file edits, or any
+required proof failure. Do not merge, deploy, force-push, flip MODE, import
+enterprise gates, or post B6/B7 closeout unless separately requested.

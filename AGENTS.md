@@ -124,8 +124,9 @@ Default workflow skill order:
 - `ask-matt` only when the goal shape or skill path is genuinely unclear.
 - `nestcalc-goal-grilling` for autonomous NestCalc goal prep: evidence →
   confidence → decision → residual risk / flagged decisions; read-only
-  sub-agents with `gpt-5.4-mini` only; orchestrator retains write authority;
-  stop before commit or CLI prompt unless the human asks.
+  sub-agents with `gpt-5.6-terra` at medium reasoning effort only;
+  orchestrator retains write authority; stop before commit or CLI prompt unless
+  the human asks.
 - `codex-goal-prep` for `GOAL.md` updates, separate goal-memory commits, and
   thin `/goal` prompts when the human requests handoff.
 - `codex-pr-closeout`, `codex-grok-review-intake`, and
