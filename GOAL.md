@@ -30,8 +30,8 @@
   "branch_intent": "codex/governance-terra-grilling-pin",
   "execution_route": "codex-cli",
   "flow_id": "NC-20260809-7d18f1a2",
-  "goal_memory_commit": "232111a022b026d0cebc047b4a71e4b3aa910e5e",
-  "goal_sha256": "sha256:37bcb365d340f384f8354ee5e058e1d9cce06c75978f7e5421928166d9617769",
+  "goal_memory_commit": "cca69faddceb2a5e141a66bea6ac667fda71e6fe",
+  "goal_sha256": "sha256:9569d36d1fd2b09b440dde4e2fc926e72c207d2df5920049fd4005ae7cc3daa8",
   "protected_surfaces": [
     "calculator math and calculator UI layout or input behavior",
     "AutoNest packing ranking counts trim-edge policies fallback guards and search budget",
