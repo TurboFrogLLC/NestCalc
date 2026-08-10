@@ -165,12 +165,44 @@ export function calculatorTab(page: Page) {
   return page.getByRole("tab", { name: "Calculator", exact: true });
 }
 
+export function calculatorSheet(page: Page) {
+  return page.getByTestId("calculator-sheet");
+}
+
 export function gcodeTab(page: Page) {
   return page.getByRole("tab", { name: "G-code", exact: true });
 }
 
 export function gcodeRegion(page: Page) {
   return page.getByRole("region", { name: "G-code rotation" });
+}
+
+export function gcodeSheet(page: Page) {
+  return page.getByTestId("gcode-sheet");
+}
+
+export function gcodeStage(page: Page) {
+  return page.getByTestId("gcode-stage");
+}
+
+export function gcodeExpandButton(page: Page) {
+  return page.getByRole("button", { name: "Expand G-code panel" });
+}
+
+export function gcodeCollapseButton(page: Page) {
+  return page.getByRole("button", { name: "Collapse G-code panel" });
+}
+
+export function gcodeRotationCard(page: Page) {
+  return page.getByTestId("gcode-rotation-card");
+}
+
+export function gcodePartSizeCard(page: Page) {
+  return page.getByTestId("gcode-part-size-card");
+}
+
+export function gcodeFillPartSizeButton(page: Page) {
+  return page.getByRole("button", { name: "Fill part size", exact: true });
 }
 
 export function gcodeSourceInput(page: Page) {

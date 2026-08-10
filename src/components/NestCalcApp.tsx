@@ -320,7 +320,7 @@ function AutoNestComparison({ result }: { result: AutoNestResult }) {
           {result.bestUniform.totalParts}
         </strong>{" "}
         | AutoNest two-group:{" "}
-        <strong className="text-[var(--accent)]">
+        <strong className="text-[var(--data-accent)]">
           {result.twoGroup.totalParts}
         </strong>{" "}
         ({delta >= 0 ? "+" : ""}
@@ -337,7 +337,7 @@ function AutoNestComparison({ result }: { result: AutoNestResult }) {
           {result.bestUniform.totalParts}
         </strong>{" "}
         | Using uniform:{" "}
-        <strong className="text-[var(--accent)]">
+        <strong className="text-[var(--data-accent)]">
           {result.fallback.totalParts}
         </strong>{" "}
         ({formatFallbackReason(result.reason)})
@@ -530,7 +530,7 @@ export function NestCalcApp() {
   const partsSummary = (
     <span className="font-mono text-xs tabular-nums text-[var(--foreground)]">
       Parts ={" "}
-      <span className="font-bold text-[var(--accent)]">{previewPartsTotal}</span>
+      <span className="font-bold text-[var(--data-accent)]">{previewPartsTotal}</span>
     </span>
   );
 
@@ -538,11 +538,12 @@ export function NestCalcApp() {
     <QuickValuesFocusProvider>
       {activeModule === "calculator" ? <QuickValuesBar /> : null}
       <div
-        className={`nestcalc-split-shell mx-auto flex w-full flex-col gap-3 px-3 py-3 pb-6 ${
+        className={`nestcalc-app-shell nestcalc-module-${activeModule} nestcalc-split-shell mx-auto flex w-full flex-col gap-3 px-3 py-3 pb-6 ${
           activeModule === "g-code" ? "max-w-6xl" : "max-w-lg"
         }`}
+        data-module={activeModule}
       >
-        <header className="flex h-10 shrink-0 items-center gap-2">
+        <header className="nestcalc-topbar flex h-10 shrink-0 items-center gap-2">
           <h1 className="shrink-0 text-lg font-semibold tracking-tight">
             <span className="text-[var(--foreground)]">Nest</span>
             <span className="text-[var(--quick-value)]">Calc</span>
@@ -589,7 +590,7 @@ export function NestCalcApp() {
 
         <div
           aria-label="NestCalc modules"
-          className="grid shrink-0 grid-cols-2 rounded-lg border border-[var(--card-border)] bg-[var(--card)] p-1"
+          className="nestcalc-module-tabs grid shrink-0 grid-cols-2 rounded-lg border border-[var(--card-border)] bg-[var(--card)] p-1"
           role="tablist"
         >
           {(["calculator", "g-code"] as const).map((module) => {
@@ -628,7 +629,10 @@ export function NestCalcApp() {
           id="calculator-panel"
           role="tabpanel"
         >
-          <div className="nestcalc-split-inputs nestcalc-inputs flex min-h-0 flex-col gap-2">
+          <div
+            className="nestcalc-calculator-sheet nestcalc-split-inputs nestcalc-inputs flex min-h-0 flex-col gap-2"
+            data-testid="calculator-sheet"
+          >
             <section className="nestcalc-split-hide flex h-9 shrink-0 items-center justify-between rounded-lg border border-[var(--card-border)] bg-[var(--card)] px-3">
               <span className="font-mono text-sm font-bold tabular-nums text-[var(--foreground)]">
                 {previewHeaderGridLabel}
@@ -804,7 +808,7 @@ export function NestCalcApp() {
             </label>
           </div>
 
-          <section className="nestcalc-split-preview flex min-h-0 flex-col rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-2">
+          <section className="nestcalc-calculator-stage nestcalc-split-preview flex min-h-0 flex-col rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-2">
             <div className="nestcalc-split-preview-header mb-2 flex h-8 shrink-0 items-center gap-1.5 overflow-hidden">
               <span className="nestcalc-split-preview-header-text shrink-0 font-mono text-xs font-bold tabular-nums text-[var(--foreground)]">
                 {previewHeaderGridLabel}
@@ -857,7 +861,7 @@ export function NestCalcApp() {
 
         <div
           aria-labelledby="g-code-tab"
-          className={`min-h-0 flex-1 overflow-y-auto pb-[max(0.5rem,env(safe-area-inset-bottom,0px))] ${
+          className={`nestcalc-gcode-panel min-h-0 flex-1 pb-[max(0.5rem,env(safe-area-inset-bottom,0px))] ${
             activeModule === "g-code" ? "block" : "hidden"
           }`}
           hidden={activeModule !== "g-code"}
@@ -869,6 +873,7 @@ export function NestCalcApp() {
               setState((current) =>
                 applyPartSizeToNestSession(current, partSize, declaredUnit),
               );
+              activateModule("calculator");
             }}
           />
         </div>

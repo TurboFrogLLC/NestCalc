@@ -142,7 +142,7 @@ export function NestGrid({
             cx={0}
             cy={remH}
             r={maxDim * 0.008}
-            fill="var(--accent)"
+            fill="var(--part-stroke)"
           />
           <text
             x={originLabelX}
@@ -185,7 +185,7 @@ export function NestGrid({
             y={remH - marginBottom - result.usableHeight - pad * 0.55}
             textAnchor="middle"
             dominantBaseline="auto"
-            fill="var(--accent)"
+            fill="var(--part-stroke)"
             fontSize={labelSize}
             fontFamily="var(--font-geist-mono), ui-monospace, monospace"
           >
@@ -199,7 +199,7 @@ export function NestGrid({
             y={remH - marginBottom - result.usableHeight / 2}
             textAnchor="start"
             dominantBaseline="middle"
-            fill="var(--accent)"
+            fill="var(--part-stroke)"
             fontSize={labelSize}
             fontFamily="var(--font-geist-mono), ui-monospace, monospace"
           >

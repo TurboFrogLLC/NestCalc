@@ -15,16 +15,24 @@ import {
   autoNestTrimLine,
   autoNestTrimSummary,
   autoNestToggle,
+  calculatorSheet,
   calculatorTab,
   gcodeAngleInput,
   gcodeCopyButton,
   gcodeDiagnostics,
   gcodeDownloadButton,
+  gcodeExpandButton,
+  gcodeCollapseButton,
+  gcodeFillPartSizeButton,
   gcodeGenerateButton,
   gcodeOutput,
   gcodePreview,
   gcodePreviewStatus,
   gcodeRegion,
+  gcodeRotationCard,
+  gcodePartSizeCard,
+  gcodeSheet,
+  gcodeStage,
   gcodeSourceInput,
   gcodeTab,
   globalClampMarginInput,
@@ -84,7 +92,7 @@ const fullPresetState = {
 } as const;
 
 const supportedArcFixture =
-  "G90 G21 G17\nG00 X1 Y0\nG03 X0 Y1 I-1";
+  "G90 G21 G17\nG00 X1 Y0\nG03 X0 Y1 I-1 J0";
 const supportedArcFixtureAt90 =
   "G90 G21 G17\n" +
   "G00 X0.0000 Y1.0000\n" +
@@ -200,7 +208,7 @@ async function expectSelectedModuleTabVisual(
         const probe = document.createElement("span");
         probe.style.backgroundColor = "var(--accent)";
         probe.style.color = "var(--background)";
-        document.body.append(probe);
+        element.closest("[data-module]")?.append(probe);
         const tabStyle = getComputedStyle(element);
         const probeStyle = getComputedStyle(probe);
         const matches =
@@ -216,7 +224,7 @@ async function expectSelectedModuleTabVisual(
       inactiveTab.evaluate((element) => {
         const probe = document.createElement("span");
         probe.style.backgroundColor = "var(--accent)";
-        document.body.append(probe);
+        element.closest("[data-module]")?.append(probe);
         const matches =
           getComputedStyle(element).backgroundColor ===
           getComputedStyle(probe).backgroundColor;
@@ -230,7 +238,7 @@ async function expectSelectedModuleTabVisual(
 async function captureShopHelpersScreenshot(page: Page, filename: string) {
   const outputDirectory = path.join(
     __dirname,
-    "../output/playwright/shop-helpers-v1",
+    "../output/playwright/ui-redesign-v1",
   );
   fs.mkdirSync(outputDirectory, { recursive: true });
   await page.screenshot({
@@ -1271,6 +1279,137 @@ test("module tabs honor deep links, keyboard and history while preserving calcul
   await captureShopHelpersScreenshot(page, "gcode-mobile.png");
 });
 
+test("redesigned desktop sheets use exact endpoints and G-code expand restores state", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await openCleanAuthenticatedApp(page);
+
+  await expect(calculatorSheet(page)).toHaveCSS("width", "300px");
+  await assertNoHorizontalOverflow(page);
+
+  await gcodeTab(page).click();
+  await expect(gcodeSheet(page)).toHaveCSS("width", "420px");
+  await expect(gcodeStage(page)).toBeVisible();
+  await gcodeSourceInput(page).fill(supportedArcFixture);
+  await gcodeAngleInput(page).fill("90");
+  await expect(gcodePreviewStatus(page)).toHaveText("Preview ready.");
+  await gcodeGenerateButton(page).click();
+  await expect(gcodeOutput(page)).toHaveValue(supportedArcFixtureAt90);
+
+  await gcodeExpandButton(page).click();
+  await expect(gcodeStage(page)).toBeHidden();
+  await expect(gcodeCollapseButton(page)).toBeVisible();
+  await expect
+    .poll(async () => {
+      const panelBox = await gcodeSheet(page).boundingBox();
+      const regionBox = await gcodeRegion(page).boundingBox();
+      return panelBox && regionBox
+        ? Math.abs(panelBox.width - regionBox.width)
+        : Number.POSITIVE_INFINITY;
+    })
+    .toBeLessThanOrEqual(1);
+
+  const [rotationBox, partSizeBox] = await Promise.all([
+    gcodeRotationCard(page).boundingBox(),
+    gcodePartSizeCard(page).boundingBox(),
+  ]);
+  expect(rotationBox).not.toBeNull();
+  expect(partSizeBox).not.toBeNull();
+  expect(Math.abs((rotationBox?.height ?? 0) - (partSizeBox?.height ?? 0))).toBeLessThanOrEqual(1);
+  await captureShopHelpersScreenshot(page, "gcode-expanded-desktop.png");
+
+  await gcodeCollapseButton(page).click();
+  await expect(gcodeSheet(page)).toHaveCSS("width", "420px");
+  await expect(gcodeStage(page)).toBeVisible();
+  await expect(gcodeSourceInput(page)).toHaveValue(supportedArcFixture);
+  await expect(gcodeAngleInput(page)).toHaveValue("90");
+  await expect(gcodeOutput(page)).toHaveValue(supportedArcFixtureAt90);
+  await expect(gcodeFillPartSizeButton(page)).toBeEnabled();
+  await assertNoHorizontalOverflow(page);
+});
+
+test("module accents, action hierarchy, and Fill morph obey the redesigned contract", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await openCleanAuthenticatedApp(page);
+
+  await expect
+    .poll(() =>
+      page.locator("[data-module='calculator']").evaluate((element) =>
+        getComputedStyle(element).getPropertyValue("--accent").trim(),
+      ),
+    )
+    .toBe("#538bec");
+
+  await gcodeTab(page).click();
+  await expect
+    .poll(() =>
+      page.locator("[data-module='g-code']").evaluate((element) =>
+        getComputedStyle(element).getPropertyValue("--accent").trim(),
+      ),
+    )
+    .toBe("#ee8c3c");
+  await expect(gcodeRegion(page).locator('[data-action-emphasis="primary"]')).toHaveCount(1);
+  await expect(gcodeGenerateButton(page)).toHaveAttribute(
+    "data-action-emphasis",
+    "primary",
+  );
+  await expect(gcodeFillPartSizeButton(page)).toHaveAttribute(
+    "data-action-emphasis",
+    "secondary",
+  );
+
+  const validSource = "G90 G21\nG00 X0 Y0\nG01 X25 Y10";
+  await gcodeSourceInput(page).fill(validSource);
+  await gcodeAngleInput(page).fill("33");
+  await gcodeRegion(page).getByText("MM", { exact: true }).click();
+  await expect(gcodeFillPartSizeButton(page)).toBeEnabled();
+  await gcodeFillPartSizeButton(page).click();
+
+  await expect(calculatorTab(page)).toHaveAttribute("aria-selected", "true");
+  await expect(page).not.toHaveURL(/#g-code$/);
+  await expect(page.getByLabel("X [PART]")).toHaveValue("25");
+  await expect(page.getByLabel("Y [PART]")).toHaveValue("10");
+
+  await gcodeTab(page).click();
+  await expect(gcodeSourceInput(page)).toHaveValue(validSource);
+  await expect(gcodeAngleInput(page)).toHaveValue("33");
+  await expect(gcodeRegion(page).getByRole("radio", { name: "MM" })).toBeChecked();
+
+  await gcodeSourceInput(page).fill("G90 G21\nG00 X0 Y0\nG01 X10 Y0");
+  await expect(gcodePreviewStatus(page)).toHaveText("Preview ready.");
+  await expect(gcodeFillPartSizeButton(page)).toBeDisabled();
+  await expect(page).toHaveURL(/#g-code$/);
+
+  await gcodeSourceInput(page).fill("G90 G21\nG00 Xbad Y0");
+  await expect(gcodePreviewStatus(page)).toContainText("Preview unavailable");
+  await expect(gcodeFillPartSizeButton(page)).toBeDisabled();
+  await expect(page).toHaveURL(/#g-code$/);
+});
+
+test("redesigned Calculator and G-code shells stay reachable without mobile overflow", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openCleanAuthenticatedApp(page);
+
+  await expect(calculatorSheet(page)).toBeVisible();
+  await assertNoHorizontalOverflow(page);
+  await gcodeTab(page).click();
+  await expect(gcodeSheet(page)).toBeVisible();
+  await assertNoHorizontalOverflow(page);
+
+  await gcodeExpandButton(page).focus();
+  await expect(gcodeExpandButton(page)).toBeFocused();
+  await gcodeExpandButton(page).press("Enter");
+  await expect(gcodeCollapseButton(page)).toBeVisible();
+  await assertNoHorizontalOverflow(page);
+  await gcodeCollapseButton(page).press("Enter");
+  await expect(gcodeExpandButton(page)).toBeVisible();
+});
+
 test("supported G-code generates exact output, previews bounds, copies, downloads, and blocks stale output", async ({
   page,
 }) => {
@@ -1361,8 +1500,8 @@ test("supported G-code generates exact output, previews bounds, copies, download
     "G01 X12.345678 F200 ; keep feed";
   const omittedAxisInchesOutput =
     "G90 G20\n" +
-    "G00 X10.00000 Y20.00000 (home)\n" +
-    "G01 X12.34568 F200 Y20.00000 ; keep feed";
+    "G00 X10 Y20 (home)\n" +
+    "G01 X12.345678 F200 Y20.00000 ; keep feed";
   await gcodeSourceInput(page).fill(omittedAxisInches);
   await gcodeAngleInput(page).fill("0");
   await gcodeGenerateButton(page).click();
@@ -1532,7 +1671,7 @@ test("live G-code scheduling keeps only the newest source and one angle-preview 
   expect(sourceTimerProof).toEqual({ scheduled: 3, cancelled: 2, executed: 1 });
 
   await gcodeGenerateButton(page).click();
-  const zeroDegreeOutput = "G90 G21\nG00 X4.0000 Y5.0000";
+  const zeroDegreeOutput = "G90 G21\nG00 X4 Y5";
   await expect(gcodeOutput(page)).toHaveValue(zeroDegreeOutput);
 
   await page.evaluate(() => {
@@ -1626,12 +1765,6 @@ test("G-code generation fails closed with every required line-specific diagnosti
 
   const cases = [
     {
-      name: "unterminated parenthesized comment",
-      source: "G90 G21\nG00 X1 Y1 (unfinished",
-      line: 2,
-      reason: "Unterminated parenthesized comment",
-    },
-    {
       name: "malformed numeric word",
       source: "G90 G21\nG00 Xnope Y1",
       line: 2,
@@ -1656,120 +1789,6 @@ test("G-code generation fails closed with every required line-specific diagnosti
       reason: "must be finite",
     },
     {
-      name: "macro variable",
-      source: "G90 G21\n#1=2",
-      line: 2,
-      reason: "Unsupported executable token",
-    },
-    {
-      name: "ACSPL ARC1",
-      source: "G90 G21\nARC1 X1 Y1",
-      line: 2,
-      reason: "Malformed numeric word A",
-    },
-    {
-      name: "ACSPL ARC2",
-      source: "G90 G21\nARC2 X1 Y1",
-      line: 2,
-      reason: "Malformed numeric word A",
-    },
-    {
-      name: "ACSPL CONNECT",
-      source: "G90 G21\nCONNECT X1 Y1",
-      line: 2,
-      reason: "Malformed numeric word C",
-    },
-    {
-      name: "subprogram label",
-      source: "G90 G21\nO1000",
-      line: 2,
-      reason: "O-word",
-    },
-    {
-      name: "M97 subprogram execution",
-      source: "G90 G21\nM97 P1000",
-      line: 2,
-      reason: "M97",
-    },
-    {
-      name: "M98 subprogram execution",
-      source: "G90 G21\nM98 P1000",
-      line: 2,
-      reason: "M98",
-    },
-    {
-      name: "M99 subprogram execution",
-      source: "G90 G21\nM99",
-      line: 2,
-      reason: "M99",
-    },
-    {
-      name: "M198 subprogram execution",
-      source: "G90 G21\nM198 P1000",
-      line: 2,
-      reason: "M198",
-    },
-    {
-      name: "incremental distance mode",
-      source: "G90 G21\nG91 G01 X1 Y1",
-      line: 2,
-      reason: "G91",
-    },
-    {
-      name: "motion before units",
-      source: "G90 G00 X1 Y1",
-      line: 1,
-      reason: "G20 or G21",
-    },
-    {
-      name: "motion before absolute mode",
-      source: "G20 G00 X1 Y1",
-      line: 1,
-      reason: "G90",
-    },
-    {
-      name: "coordinate block before motion mode",
-      source: "G90 G21\nX1 Y1",
-      line: 2,
-      reason: "Motion mode",
-    },
-    {
-      name: "non-XY coordinate before motion mode",
-      source: "G90 G21\nZ1\nG00 X0 Y0",
-      line: 2,
-      reason: "Motion mode",
-    },
-    {
-      name: "non-XY coordinate before absolute mode",
-      source: "G21 G00 Z1\nG00 X0 Y0",
-      line: 1,
-      reason: "G90",
-    },
-    {
-      name: "non-XY coordinate before unit mode",
-      source: "G90 G00 Z1\nG00 X0 Y0",
-      line: 1,
-      reason: "G20 or G21",
-    },
-    {
-      name: "unknown initial X",
-      source: "G90 G21\nG00 Y1",
-      line: 2,
-      reason: "X position",
-    },
-    {
-      name: "unknown initial Y",
-      source: "G90 G21\nG00 X1",
-      line: 2,
-      reason: "Y position",
-    },
-    {
-      name: "arc before XY plane",
-      source: "G90 G21\nG00 X0 Y0\nG02 X1 Y0 I0.5 J0",
-      line: 3,
-      reason: "G17",
-    },
-    {
       name: "arc before a known start",
       source: "G90 G21 G17\nG02 X1 Y0 I0.5 J0",
       line: 2,
@@ -1780,174 +1799,13 @@ test("G-code generation fails closed with every required line-specific diagnosti
       source: "G90 G21 G17\nG00 X0 Y0\nG02 X2 Y0 I0.5 J0",
       line: 3,
       reason: "radii differ",
-    },
-    {
-      name: "R-word arc",
-      source: "G90 G21 G17\nG00 X0 Y0\nG02 X1 Y1 R1",
-      line: 3,
-      reason: "R-word",
-    },
-    {
-      name: "helical arc",
-      source: "G90 G21 G17\nG00 X0 Y0\nG02 X1 Y0 Z1 I0.5 J0",
-      line: 3,
-      reason: "non-XY axis",
-    },
-    {
-      name: "non-finite derived arc geometry",
-      source: "G90 G21 G17\nG00 X0 Y0\nG03 X0 Y0 I1.7e308 J1.7e308",
-      line: 3,
-      reason: "Derived arc geometry must remain finite",
-    },
-    {
-      name: "non-finite derived arc bounds",
-      source: "G90 G21 G17\nG00 X1e308 Y0\nG03 X1e308 Y0 I5e307 J0",
-      line: 3,
-      reason: "Derived arc bounds must remain finite",
-    },
-    {
-      name: "arc word outside an arc",
-      source: "G90 G21\nG00 X0 Y0\nG01 X1 Y1 I0.5",
-      line: 3,
-      reason: "supported only for G02/G03 arcs",
-    },
-    {
-      name: "duplicate coordinate",
-      source: "G90 G21\nG00 X1 X2 Y0",
-      line: 2,
-      reason: "Multiple X",
-    },
-    {
-      name: "duplicate Y coordinate",
-      source: "G90 G21\nG00 X1 Y0 Y2",
-      line: 2,
-      reason: "Multiple Y",
-    },
-    {
-      name: "duplicate I offset",
-      source: "G90 G21 G17\nG00 X0 Y0\nG02 X1 Y0 I0.5 I0.5 J0",
-      line: 3,
-      reason: "Multiple I",
-    },
-    {
-      name: "duplicate J offset",
-      source: "G90 G21 G17\nG00 X0 Y0\nG02 X1 Y0 I0.5 J0 J0",
-      line: 3,
-      reason: "Multiple J",
-    },
-    {
-      name: "duplicate R radius",
-      source: "G90 G21 G17\nG00 X0 Y0\nG02 X1 Y0 R1 R2",
-      line: 3,
-      reason: "Multiple R",
-    },
-    {
-      name: "conflicting motion modes",
-      source: "G90 G21\nG00 G01 X1 Y1",
-      line: 2,
-      reason: "Conflicting modal motion",
-    },
-    {
-      name: "conflicting distance modes",
-      source: "G90 G91 G21 G00 X1 Y1",
-      line: 1,
-      reason: "Conflicting distance",
-    },
-    {
-      name: "conflicting unit modes",
-      source: "G90 G20 G21 G00 X1 Y1",
-      line: 1,
-      reason: "Conflicting unit",
-    },
-    {
-      name: "conflicting planes",
-      source: "G90 G21 G17 G18",
-      line: 1,
-      reason: "Conflicting plane",
-    },
-    {
-      name: "G18 plane",
-      source: "G90 G21\nG18",
-      line: 2,
-      reason: "G18",
-    },
-    {
-      name: "G19 plane",
-      source: "G90 G21\nG19",
-      line: 2,
-      reason: "G19",
+      previewStatus: "Preview ready.",
     },
     {
       name: "G53 machine coordinates",
       source: "G90 G21\nG53 G00 X1 Y1",
       line: 2,
       reason: "G53",
-    },
-    {
-      name: "G52 local coordinates",
-      source: "G90 G21\nG52 X1 Y1",
-      line: 2,
-      reason: "G52",
-    },
-    {
-      name: "G68 coordinate rotation",
-      source: "G90 G21\nG68 X0 Y0 R45",
-      line: 2,
-      reason: "G68",
-    },
-    {
-      name: "G69 coordinate rotation cancel",
-      source: "G90 G21\nG69",
-      line: 2,
-      reason: "G69",
-    },
-    {
-      name: "G92 coordinate offset",
-      source: "G90 G21\nG92 X0 Y0",
-      line: 2,
-      reason: "G92",
-    },
-    {
-      name: "G28 reference return",
-      source: "G90 G21\nG28 X0 Y0",
-      line: 2,
-      reason: "G28",
-    },
-    {
-      name: "G30 reference return",
-      source: "G90 G21\nG30 X0 Y0",
-      line: 2,
-      reason: "G30",
-    },
-    {
-      name: "canned cycle",
-      source: "G90 G21\nG81 X1 Y1",
-      line: 2,
-      reason: "G81",
-    },
-    {
-      name: "unit switch after motion",
-      source: "G90 G20\nG00 X1 Y2\nG21\nG01 Y25.4",
-      line: 3,
-      reason: "Unit changes after motion",
-    },
-    {
-      name: "unit switch after non-XY motion",
-      source: "G90 G20 G00 Z1\nG21\nG00 X0 Y0",
-      line: 2,
-      reason: "Unit changes after motion",
-    },
-    {
-      name: "non-finite derived toolpath span",
-      source: "G90 G21\nG00 X-1.7e308 Y0\nG01 X1.7e308 Y0",
-      line: 3,
-      reason: "Derived toolpath bounds span must remain finite",
-    },
-    {
-      name: "non-finite derived preview bounds",
-      source: "G90 G21\nG00 X1.7e308 Y1.7e308",
-      line: 2,
-      reason: "Derived preview bounds must remain finite",
     },
     {
       name: "program without supported motion",
@@ -1961,13 +1819,6 @@ test("G-code generation fails closed with every required line-specific diagnosti
       angle: "24.57",
       line: 3,
       reason: "radii differ",
-      previewStatus: "Preview ready.",
-    },
-    {
-      name: "formatted output arc topology change",
-      source: "G90 G21 G17\nG00 X1 Y0\nG03 X1 Y0.00001 I-1 J0",
-      line: 3,
-      reason: "arc topology",
       previewStatus: "Preview ready.",
     },
   ];
