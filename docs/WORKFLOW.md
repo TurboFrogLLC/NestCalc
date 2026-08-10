@@ -163,7 +163,8 @@ evidence → confidence → decision → residual risk / flagged decisions
    source ownership, test harness state, lesson/workflow constraints, Clerk/PWA
    proof requirements, and browser/testability risks.
 6. Launch every read-only sub-agent in this cycle with model override
-   `gpt-5.4-mini`. No other model is permitted for read-only evidence gathering.
+   `gpt-5.6-terra` and reasoning effort `medium`. No other model or effort is
+   permitted for read-only evidence gathering.
 7. The orchestrator keeps all reasoning and write authority. Sub-agents report
    evidence; they do not decide scope, edit files, or create commits.
 8. Do not ask the human grilling questions during this autonomous pass. If

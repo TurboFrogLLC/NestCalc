@@ -9,8 +9,8 @@
     "read_only_agents": [
       {
         "lane": "contract-review",
-        "observed_model": "gpt-5.4-mini",
-        "requested_model": "gpt-5.4-mini",
+        "observed_model": "gpt-5.6-terra",
+        "requested_model": "gpt-5.6-terra",
         "status": "matched"
       }
     ]
@@ -19,7 +19,7 @@
   "execution_route": "codex-cli",
   "flow_id": "NC-20260712-a1b2c3d4",
   "goal_memory_commit": "1111111111111111111111111111111111111111",
-  "goal_sha256": "sha256:285739628f919fef229382127cfb6a36c81ff4fe923ded5d92755265097f90ce",
+  "goal_sha256": "sha256:16a76588578166e665b743dc40e6e93b5653ab41bb17d10e7d3c180a0cb57fa7",
   "protected_surfaces": [
     "calculator math",
     "Clerk auth",

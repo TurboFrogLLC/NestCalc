@@ -3,8 +3,8 @@ name: nestcalc-goal-grilling
 description: >-
   Prepare a NestCalc GOAL.md for CLI handoff with enforce-grade autonomous grilling:
   evidence → confidence → decision → residual risk / flagged decisions; read-only
-  gpt-5.4-mini sub-agents; orchestrator write authority only; stop before commit or
-  CLI prompt unless the human asks.
+  gpt-5.6-terra sub-agents at medium reasoning effort; orchestrator write authority
+  only; stop before commit or CLI prompt unless the human asks.
 ---
 
 # NestCalc Goal Grilling (Harden-Grade)
@@ -38,8 +38,9 @@ Do not freeze with silent uncertainty.
    Do **not** ask the human grilling questions during the autonomous pass.
 4. Spawn bounded **read-only** sub-agents only for distinct evidence lanes
    (source ownership, tests, lessons/workflow, Clerk/PWA proof, browser risk).
-   Launch every read-only sub-agent with model override **`gpt-5.4-mini`**.
-   No other model is permitted for read-only evidence gathering in this cycle.
+   Launch every read-only sub-agent with model override **`gpt-5.6-terra`** and
+   reasoning effort **`medium`**. No other model or effort is permitted for
+   read-only evidence gathering in this cycle.
 5. The main orchestrator owns reasoning, confidence, final decisions, and all
    writes. Sub-agents gather evidence only. Sub-agents do not edit files,
    create commits, mint Flow-IDs, or expand scope.
@@ -86,7 +87,7 @@ Confidence is freeze-ready only when:
 Report all of:
 
 - Changed files.
-- Evidence lanes run (lane name + model `gpt-5.4-mini` + status).
+- Evidence lanes run (lane name + model `gpt-5.6-terra` + effort `medium` + status).
 - Validation run (`validate-goal` when applicable, `git diff --check`, status).
 - Confidence against the concrete gate above.
 - Flagged decisions and residual risks (reason, decision, consequence).

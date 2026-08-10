@@ -12,7 +12,7 @@
 1. Exactly one active goal in `GOAL.md` (`## Active Goal:` once).
 2. Post-bootstrap goals MUST carry the `nestcalc-governance` v1 metadata block. Missing metadata is a hard error under `MODE=enforce`. Under `MODE=advisory`, only the historical bootstrap title exception may warn; all other goals hard-fail.
 3. Canonical `goal_sha256` MUST match the computed hash (see README). Mismatch hard-fails.
-4. Read-only evidence lanes MUST request `gpt-5.4-mini`. Status is `matched` | `mismatch` | `unavailable`. Matched without matching observed model hard-fails. Model mismatch is never pass evidence.
+4. Read-only evidence lanes MUST request `gpt-5.6-terra` at medium reasoning effort. Status is `matched` | `mismatch` | `unavailable`. Matched without matching observed model hard-fails. Model mismatch is never pass evidence.
 5. Goal-memory commits MUST contain `GOAL.md`, MUST NOT contain implementation paths under `src/`, `e2e/`, `public/`, `playwright/`, or root package/config implementation files listed in the governance script.
 6. Execution handoff stores **prompt hash only**. Prompt plaintext fields and secret-like keys/values hard-fail.
 7. `create-handoff` hard-fails on dirty/uncommitted `GOAL.md`, branch mismatch, goal-memory commit mismatch, or invalid roster.
@@ -50,7 +50,7 @@ Do not invent NestCalc stage codes B1–B5 that would collide with documentation
 evidence → confidence → decision → residual risk / flagged decisions
 ```
 
-1. **Evidence** — repo-backed facts from authority files and bounded read-only lanes (`gpt-5.4-mini` only).
+1. **Evidence** — repo-backed facts from authority files and bounded read-only lanes (`gpt-5.6-terra` at medium reasoning effort only).
 2. **Confidence** — stated against a concrete gate: no blocking questions remain; residual uncertainty is explicit.
 3. **Decision** — orchestrator chooses scope, Allowed Files, required proof, and stop conditions.
 4. **Residual risk / flagged decisions** — every uncertain choice records reason, decision, consequence for CLI.

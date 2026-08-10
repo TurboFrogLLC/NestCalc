@@ -11,7 +11,7 @@
       {
         "lane": "replace-with-bounded-lane",
         "observed_model": null,
-        "requested_model": "gpt-5.4-mini",
+        "requested_model": "gpt-5.6-terra",
         "status": "unavailable"
       }
     ]
@@ -67,6 +67,8 @@ evidence → confidence → decision → residual risk / flagged decisions
 ```
 
 Record flagged decisions with reason, decision, and CLI consequence.
+Read-only evidence lanes request `gpt-5.6-terra` at medium reasoning effort;
+record unavailable or mismatched routing honestly.
 
 ### B3-Style Handoff / B4-Style Preflight
 

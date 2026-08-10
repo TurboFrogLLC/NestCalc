@@ -51,7 +51,7 @@ Vercel preview — Ready
 | Finding | Status | Evidence |
 |---------|--------|----------|
 | Codex review decision | Open | `@codex review` posted; no submitted review at closeout HEAD |
-| gpt-5.4-mini routing receipt | Deferred | Delegation interface could not pin model; reported as limitation |
+| gpt-5.6-terra medium routing receipt | Deferred | Delegation interface could not pin model and effort; reported as limitation |
 
 ### 6. Remaining Items
 

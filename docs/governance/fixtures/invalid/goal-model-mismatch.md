@@ -10,7 +10,7 @@
       {
         "lane": "contract-review",
         "observed_model": "some-other-model",
-        "requested_model": "gpt-5.4-mini",
+        "requested_model": "gpt-5.6-terra",
         "status": "matched"
       }
     ]

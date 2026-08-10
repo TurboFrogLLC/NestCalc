@@ -28,7 +28,7 @@
             "required": ["lane", "requested_model", "observed_model", "status"],
             "properties": {
               "lane": {"type": "string", "minLength": 1},
-              "requested_model": {"enum": ["gpt-5.4-mini", "gpt-5.6-terra"]},
+              "requested_model": {"const": "gpt-5.6-terra"},
               "observed_model": {"type": ["string", "null"]},
               "status": {"enum": ["matched", "mismatch", "unavailable"]}
             },

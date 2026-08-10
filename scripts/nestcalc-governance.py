@@ -26,7 +26,7 @@ GOAL_SCHEMA = "nestcalc-goal-v1"
 HANDOFF_SCHEMA = "nestcalc-execution-handoff-v1"
 CLOSEOUT_SCHEMA = "nestcalc-closeout-v1"
 SNAPSHOT_SCHEMA = "nestcalc-post-merge-v1"
-ALLOWED_AGENT_MODELS = {"gpt-5.4-mini", "gpt-5.6-terra"}
+REQUIRED_AGENT_MODEL = "gpt-5.6-terra"
 BOOTSTRAP_TITLE = "NestCalc Governed Goal Pipeline v1"
 FLOW_RE = re.compile(r"^NC-[0-9]{8}-[0-9a-f]{8}$")
 SHA_RE = re.compile(r"^[0-9a-f]{40}$")
@@ -206,9 +206,8 @@ def validate_agent_roster(roster: Any, result: Result) -> None:
         requested = lane.get("requested_model")
         observed = lane.get("observed_model")
         status = lane.get("status")
-        if requested not in ALLOWED_AGENT_MODELS:
-            allowed = ", ".join(sorted(ALLOWED_AGENT_MODELS))
-            result.errors.append(f"{label}.requested_model must be one of: {allowed}")
+        if requested != REQUIRED_AGENT_MODEL:
+            result.errors.append(f"{label}.requested_model must be {REQUIRED_AGENT_MODEL}")
         if status not in {"matched", "mismatch", "unavailable"}:
             result.errors.append(f"{label}.status is invalid")
         elif status == "matched" and observed != requested:

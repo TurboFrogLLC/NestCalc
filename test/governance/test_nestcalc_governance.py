@@ -210,7 +210,7 @@ class GovernanceContractsTest(unittest.TestCase):
                         {
                             "lane": "local-evidence",
                             "observed_model": None,
-                            "requested_model": "gpt-5.4-mini",
+                            "requested_model": "gpt-5.6-terra",
                             "status": "unavailable",
                         }
                     ],
