@@ -50,7 +50,7 @@ export function QuickValuesBar() {
             onMouseDown={(event) => event.preventDefault()}
             onTouchStart={(event) => event.preventDefault()}
             onClick={() => activeInput.applyValue(value)}
-            className="min-h-9 flex-1 rounded-md border border-[var(--quick-value-border)] bg-[var(--btn-bg)] px-1 py-1.5 font-mono text-xs font-semibold tabular-nums text-[var(--accent)] transition-colors active:scale-[0.97] hover:bg-[var(--preview-bg)]"
+            className="min-h-9 flex-1 rounded-md border border-[var(--quick-value-border)] bg-[var(--btn-bg)] px-1 py-1.5 font-mono text-xs font-semibold tabular-nums text-[var(--quick-value)] transition-colors active:scale-[0.97] hover:bg-[var(--preview-bg)]"
           >
             {formatPreset(value)}
           </button>

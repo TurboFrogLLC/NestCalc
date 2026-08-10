@@ -7,6 +7,7 @@ import {
   useState,
   type ChangeEvent,
 } from "react";
+import { Maximize2, Minimize2 } from "lucide-react";
 import {
   analyzeGCode,
   generateRotatedGCode,
@@ -144,7 +145,7 @@ function BoundsPreview({ bounds }: { bounds: Bounds }) {
         <circle
           cx={0}
           cy={0}
-          fill="var(--accent)"
+          fill="var(--gcode-origin-dot)"
           r={Math.max(viewport.width, viewport.height) * 0.012}
         />
       </svg>
@@ -187,6 +188,7 @@ export function GCodeRotation({ onApplyPartSize }: GCodeRotationProps) {
   const [angleError, setAngleError] = useState<string | null>(null);
   const [fillStatus, setFillStatus] = useState<string | null>(null);
   const [outputStatus, setOutputStatus] = useState<string | null>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const sourceRef = useRef(source);
   const sourceRevisionRef = useRef(0);
@@ -419,54 +421,165 @@ export function GCodeRotation({ onApplyPartSize }: GCodeRotationProps) {
   return (
     <section
       aria-labelledby="gcode-rotation-heading"
-      className="flex min-w-0 flex-col gap-3"
+      className={`gcode-workspace min-w-0 ${isExpanded ? "is-expanded" : ""}`}
+      data-expanded={isExpanded}
       data-testid="gcode-rotation"
     >
-      <div>
-        <h2
-          className="text-base font-semibold text-[var(--foreground)]"
-          id="gcode-rotation-heading"
-        >
-          G-code rotation
-        </h2>
-        <p className="mt-1 text-xs leading-relaxed text-[var(--muted)]">
-          Rotate the supported RS274 XY subset counterclockwise around the code
-          origin. Review diagnostics before using generated output.
-        </p>
-      </div>
-
-      <div className="grid min-w-0 gap-3 md:grid-cols-[minmax(0,1.15fr)_minmax(16rem,0.85fr)]">
-        <div className="flex min-w-0 flex-col gap-3">
-          <div>
-            <label
-              className="mb-1 block text-xs font-medium uppercase tracking-wider text-[var(--muted)]"
-              htmlFor="gcode-source"
-            >
-              Source G-code
-            </label>
-            <textarea
-              aria-describedby="gcode-source-help"
-              aria-invalid={!parsePending && !analysis.ok}
-              autoCapitalize="off"
-              autoComplete="off"
-              autoCorrect="off"
-              className={`${inputClass} min-h-64 resize-y whitespace-pre leading-relaxed`}
-              data-testid="gcode-source"
-              id="gcode-source"
-              onChange={handleSourceChange}
-              placeholder={"G90 G21 G17\nG00 X0 Y0\nG01 X25 Y10"}
-              rows={12}
-              spellCheck={false}
-              value={source}
-              wrap="off"
+      <section
+        aria-busy={parsePending}
+        aria-hidden={isExpanded}
+        aria-labelledby="gcode-preview-heading"
+        className="gcode-stage min-w-0"
+        data-preview-state={previewState}
+        data-testid="gcode-stage"
+      >
+        <div className="gcode-stage-card min-w-0 rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-4">
+          <p className="gcode-eyebrow">Live geometry</p>
+          <h3
+            className="mt-1 text-base font-semibold text-[var(--foreground)]"
+            id="gcode-preview-heading"
+          >
+            Conservative bounds preview
+          </h3>
+          <p className="mt-1 text-xs leading-relaxed text-[var(--muted)]">
+            Rotated input bounds; may be larger than the actual toolpath.
+          </p>
+          <p
+            aria-live="polite"
+            className="my-3 min-h-5 text-xs text-[var(--muted)]"
+            data-testid="gcode-preview-status"
+          >
+            {previewState === "pending"
+              ? "Updating preview…"
+              : previewState === "invalid-source"
+                ? "Preview unavailable — fix G-code errors."
+                : previewState === "invalid-angle"
+                  ? "Preview unavailable — enter a finite angle."
+                  : "Preview ready."}
+          </p>
+          {previewState === "ready" && previewBounds !== null ? (
+            <BoundsPreview bounds={previewBounds} />
+          ) : (
+            <div
+              aria-hidden="true"
+              className="aspect-[4/3] w-full rounded-xl border border-dashed border-[var(--card-border)] bg-[var(--preview-bg)]"
             />
-            <p className="mt-1 text-[11px] text-[var(--muted)]" id="gcode-source-help">
-              Requires explicit G90 and G20 or G21 before transformed motion.
+          )}
+        </div>
+      </section>
+
+      <section className="gcode-sheet" data-testid="gcode-sheet">
+        <div className="gcode-sheet-header">
+          <div className="min-w-0">
+            <p className="gcode-eyebrow">Program workshop</p>
+            <h2
+              className="mt-1 text-base font-semibold text-[var(--foreground)]"
+              id="gcode-rotation-heading"
+            >
+              G-code rotation
+            </h2>
+            <p className="mt-1 text-xs leading-relaxed text-[var(--muted)]">
+              Rotate the supported RS274 XY subset counterclockwise around the
+              code origin. Review diagnostics before using generated output.
             </p>
           </div>
+          <button
+            aria-label={isExpanded ? "Collapse G-code panel" : "Expand G-code panel"}
+            aria-pressed={isExpanded}
+            className={`${secondaryButtonClass} gcode-expand-button`}
+            data-action-emphasis="tertiary"
+            onClick={() => setIsExpanded((current) => !current)}
+            title={isExpanded ? "Restore 420px panel" : "Expand G-code panel"}
+            type="button"
+          >
+            {isExpanded ? (
+              <Minimize2 aria-hidden="true" className="h-4 w-4" />
+            ) : (
+              <Maximize2 aria-hidden="true" className="h-4 w-4" />
+            )}
+          </button>
+        </div>
 
-          <div className="flex flex-wrap items-end gap-2 rounded-lg border border-[var(--card-border)] bg-[var(--card)] p-2">
-            <fieldset className="min-w-36">
+        <div className="gcode-source-block">
+          <label
+            className="mb-1 block text-xs font-medium uppercase tracking-wider text-[var(--muted)]"
+            htmlFor="gcode-source"
+          >
+            Source G-code
+          </label>
+          <textarea
+            aria-describedby="gcode-source-help"
+            aria-invalid={!parsePending && !analysis.ok}
+            autoCapitalize="off"
+            autoComplete="off"
+            autoCorrect="off"
+            className={`${inputClass} gcode-source-editor resize-y whitespace-pre leading-relaxed`}
+            data-testid="gcode-source"
+            id="gcode-source"
+            onChange={handleSourceChange}
+            placeholder={"G90 G21 G17\nG00 X0 Y0\nG01 X25 Y10"}
+            rows={10}
+            spellCheck={false}
+            value={source}
+            wrap="off"
+          />
+          <p className="mt-1 text-[11px] text-[var(--muted)]" id="gcode-source-help">
+            Requires explicit G90 and G20 or G21 before transformed motion.
+          </p>
+        </div>
+
+        <div className="gcode-control-row">
+          <section
+            aria-labelledby="gcode-rotation-controls-heading"
+            className="gcode-control-card"
+            data-testid="gcode-rotation-card"
+          >
+            <h3 className="gcode-card-title" id="gcode-rotation-controls-heading">
+              Rotation
+            </h3>
+            <label
+              className="mb-1 mt-3 block text-xs font-medium uppercase tracking-wider text-[var(--muted)]"
+              htmlFor="gcode-angle"
+            >
+              Counterclockwise angle
+            </label>
+            <div className="relative">
+              <input
+                aria-describedby={angleError ? "gcode-angle-error" : undefined}
+                aria-invalid={angle === null}
+                className={`${inputClass} pr-12 text-base tabular-nums`}
+                data-testid="gcode-angle"
+                id="gcode-angle"
+                inputMode="decimal"
+                onChange={handleAngleChange}
+                step="any"
+                type="number"
+                value={angleText}
+              />
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--muted)]">
+                deg
+              </span>
+            </div>
+            <button
+              className={`${primaryButtonClass} mt-3 w-full`}
+              data-action-emphasis="primary"
+              data-testid="gcode-generate"
+              onClick={handleGenerate}
+              type="button"
+            >
+              Generate
+            </button>
+          </section>
+
+          <section
+            aria-labelledby="gcode-part-size-heading"
+            className="gcode-control-card"
+            data-testid="gcode-part-size-card"
+          >
+            <h3 className="gcode-card-title" id="gcode-part-size-heading">
+              Part size
+            </h3>
+            <fieldset className="mt-3 min-w-0">
               <legend className="mb-1 text-xs font-medium uppercase tracking-wider text-[var(--muted)]">
                 Program unit
               </legend>
@@ -480,7 +593,7 @@ export function GCodeRotation({ onApplyPartSize }: GCodeRotationProps) {
                         index === 0 ? "border-r border-[var(--btn-border)]" : ""
                       } ${
                         selected
-                          ? "bg-[var(--accent)] text-[var(--background)]"
+                          ? "gcode-unit-selected text-[var(--foreground)]"
                           : "bg-[var(--btn-bg)] text-[var(--btn-text)] hover:text-[var(--accent)]"
                       }`}
                       key={unitOption}
@@ -504,7 +617,8 @@ export function GCodeRotation({ onApplyPartSize }: GCodeRotationProps) {
             </fieldset>
             <button
               aria-describedby="gcode-fill-part-size-help"
-              className={primaryButtonClass}
+              className={`${secondaryButtonClass} mt-3 w-full`}
+              data-action-emphasis="secondary"
               data-testid="gcode-fill-part-size"
               disabled={!fillPartSizeEnabled}
               onClick={handleFillPartSize}
@@ -514,7 +628,7 @@ export function GCodeRotation({ onApplyPartSize }: GCodeRotationProps) {
             </button>
             <p
               aria-live="polite"
-              className="min-w-48 flex-1 text-xs leading-relaxed text-[var(--muted)]"
+              className="mt-2 min-h-10 text-xs leading-relaxed text-[var(--muted)]"
               data-testid="gcode-fill-part-size-status"
               id="gcode-fill-part-size-help"
             >
@@ -525,161 +639,91 @@ export function GCodeRotation({ onApplyPartSize }: GCodeRotationProps) {
                     ? "Source must span both X and Y before Fill."
                     : `${previewNumber(sourcePartSize.width)} x ${previewNumber(sourcePartSize.height)} ${declaredUnit.toUpperCase()} from source bounds.`)}
             </p>
-          </div>
-
-          <div className="flex flex-wrap items-end gap-2">
-            <div className="min-w-36 flex-1">
-              <label
-                className="mb-1 block text-xs font-medium uppercase tracking-wider text-[var(--muted)]"
-                htmlFor="gcode-angle"
-              >
-                Counterclockwise angle
-              </label>
-              <div className="relative">
-                <input
-                  aria-describedby={angleError ? "gcode-angle-error" : undefined}
-                  aria-invalid={angle === null}
-                  className={`${inputClass} pr-12 text-base tabular-nums`}
-                  data-testid="gcode-angle"
-                  id="gcode-angle"
-                  inputMode="decimal"
-                  onChange={handleAngleChange}
-                  step="any"
-                  type="number"
-                  value={angleText}
-                />
-                <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--muted)]">
-                  deg
-                </span>
-              </div>
-            </div>
-            <button
-              className={primaryButtonClass}
-              data-testid="gcode-generate"
-              onClick={handleGenerate}
-              type="button"
-            >
-              Generate
-            </button>
-          </div>
-
-          {angleError ? (
-            <p className="text-sm text-red-400" id="gcode-angle-error" role="alert">
-              {angleError}
-            </p>
-          ) : null}
-          <Diagnostics diagnostics={diagnostics} />
+          </section>
         </div>
 
-        <section
-          aria-labelledby="gcode-preview-heading"
-          aria-busy={parsePending}
-          className="min-w-0 rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-3"
-          data-preview-state={previewState}
-        >
-          <h3
-            className="text-sm font-semibold text-[var(--foreground)]"
-            id="gcode-preview-heading"
-          >
-            Conservative bounds preview
-          </h3>
-          <p className="mt-1 text-xs leading-relaxed text-[var(--muted)]">
-            Rotated input bounds; may be larger than the actual toolpath.
-          </p>
-          <p
-            aria-live="polite"
-            className="my-2 min-h-5 text-xs text-[var(--muted)]"
-            data-testid="gcode-preview-status"
-          >
-            {previewState === "pending"
-              ? "Updating preview…"
-              : previewState === "invalid-source"
-                ? "Preview unavailable — fix G-code errors."
-                : previewState === "invalid-angle"
-                  ? "Preview unavailable — enter a finite angle."
-                  : "Preview ready."}
-          </p>
-          {previewState === "ready" && previewBounds !== null ? (
-            <BoundsPreview bounds={previewBounds} />
-          ) : (
-            <div
-              aria-hidden="true"
-              className="aspect-[4/3] w-full rounded-lg border border-dashed border-[var(--card-border)] bg-[var(--preview-bg)]"
-            />
-          )}
-        </section>
-      </div>
-
-      <section
-        aria-labelledby="gcode-output-heading"
-        className="min-w-0 rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-3"
-      >
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <h3
-            className="text-sm font-semibold text-[var(--foreground)]"
-            id="gcode-output-heading"
-          >
-            Generated G-code
-          </h3>
-          <div className="flex gap-2">
-            <button
-              aria-label="Copy generated G-code"
-              className={secondaryButtonClass}
-              data-testid="gcode-copy"
-              disabled={!outputActionsEnabled}
-              onClick={handleCopy}
-              type="button"
-            >
-              Copy
-            </button>
-            <button
-              aria-label="Download generated G-code as an NC file"
-              className={secondaryButtonClass}
-              data-testid="gcode-download"
-              disabled={!outputActionsEnabled}
-              onClick={handleDownload}
-              type="button"
-            >
-              Download .nc
-            </button>
-          </div>
-        </div>
-
-        {generated !== null && outputStale ? (
-          <p
-            className="mt-2 text-sm font-medium text-amber-400"
-            data-testid="gcode-output-stale"
-            id="gcode-output-stale"
-            role="status"
-          >
-            Output out of date — Generate again.
+        {angleError ? (
+          <p className="text-sm text-red-400" id="gcode-angle-error" role="alert">
+            {angleError}
           </p>
         ) : null}
+        <Diagnostics diagnostics={diagnostics} />
 
-        <label className="sr-only" htmlFor="gcode-output">
-          Generated G-code output
-        </label>
-        <textarea
-          aria-describedby={
-            generated !== null && outputStale ? "gcode-output-stale" : undefined
-          }
-          className={`${inputClass} mt-3 min-h-48 resize-y whitespace-pre leading-relaxed disabled:opacity-70`}
-          data-testid="gcode-output"
-          id="gcode-output"
-          placeholder="Generated output appears here after validation."
-          readOnly
-          rows={9}
-          spellCheck={false}
-          value={generated?.output ?? ""}
-          wrap="off"
-        />
-        <p
-          aria-live="polite"
-          className="mt-2 min-h-5 text-xs text-[var(--muted)]"
-          data-testid="gcode-output-status"
+        <section
+          aria-labelledby="gcode-output-heading"
+          className="gcode-output-card min-w-0 rounded-xl border border-[var(--card-border)] bg-[var(--card)] p-3"
         >
-          {outputStatus}
-        </p>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h3
+              className="text-sm font-semibold text-[var(--foreground)]"
+              id="gcode-output-heading"
+            >
+              Generated G-code
+            </h3>
+            <div className="flex gap-2">
+              <button
+                aria-label="Copy generated G-code"
+                className={secondaryButtonClass}
+                data-action-emphasis="tertiary"
+                data-testid="gcode-copy"
+                disabled={!outputActionsEnabled}
+                onClick={handleCopy}
+                type="button"
+              >
+                Copy
+              </button>
+              <button
+                aria-label="Download generated G-code as an NC file"
+                className={secondaryButtonClass}
+                data-action-emphasis="tertiary"
+                data-testid="gcode-download"
+                disabled={!outputActionsEnabled}
+                onClick={handleDownload}
+                type="button"
+              >
+                Download .nc
+              </button>
+            </div>
+          </div>
+
+          {generated !== null && outputStale ? (
+            <p
+              className="mt-2 text-sm font-medium text-amber-400"
+              data-testid="gcode-output-stale"
+              id="gcode-output-stale"
+              role="status"
+            >
+              Output out of date — Generate again.
+            </p>
+          ) : null}
+
+          <label className="sr-only" htmlFor="gcode-output">
+            Generated G-code output
+          </label>
+          <textarea
+            aria-describedby={
+              generated !== null && outputStale
+                ? "gcode-output-stale"
+                : undefined
+            }
+            className={`${inputClass} mt-3 min-h-48 resize-y whitespace-pre leading-relaxed disabled:opacity-70`}
+            data-testid="gcode-output"
+            id="gcode-output"
+            placeholder="Generated output appears here after validation."
+            readOnly
+            rows={9}
+            spellCheck={false}
+            value={generated?.output ?? ""}
+            wrap="off"
+          />
+          <p
+            aria-live="polite"
+            className="mt-2 min-h-5 text-xs text-[var(--muted)]"
+            data-testid="gcode-output-status"
+          >
+            {outputStatus}
+          </p>
+        </section>
       </section>
     </section>
   );
