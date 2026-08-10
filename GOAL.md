@@ -27,11 +27,11 @@
       }
     ]
   },
-  "branch_intent": "codex/ui-dark-prototype-parity-freeze",
+  "branch_intent": "codex/ui-dark-prototype-parity-impl",
   "execution_route": "codex-cli",
   "flow_id": "NC-20260810-472606a4",
-  "goal_memory_commit": "638b899d51f3f31eaedb46ed1c10bda794c955ef",
-  "goal_sha256": "sha256:3f5b4e2537716db1397ef16362397e621d0e4c34bb426f23f26467c342edc5ad",
+  "goal_memory_commit": "9d0033c379fe223328fad4e4dc6d6fa2fa8be7b8",
+  "goal_sha256": "sha256:846e86822142c848752aa54c0d34ea1aaecea34a056b522e1501dd67bc53e15b",
   "protected_surfaces": [
     "calculator math, nest-session transforms, persistence, and numeric input semantics",
     "AutoNest engine, ranking, counts, trim policies, placement geometry, and factual output",
