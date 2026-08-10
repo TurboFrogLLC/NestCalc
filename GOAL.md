@@ -11,8 +11,8 @@
   "branch_intent": "codex/governance-terra-grilling-pin",
   "execution_route": "codex-cli",
   "flow_id": "NC-20260809-d1ccb76b",
-  "goal_memory_commit": "1cc6fa67a4a273a6d8dc8d85264ef557e5aeea99",
-  "goal_sha256": "sha256:65c5e7bc12b83f164968ec1df7df58182bdbc39cdb561e3d52a8f61711fe5f0e",
+  "goal_memory_commit": "667aeca1e32b534942fd78b86218a42aec118a64",
+  "goal_sha256": "sha256:12bad341d77d4c874e531a464121e6b99bceb97d46c26b52a7cd76c4aa935b0f",
   "protected_surfaces": [
     "all product implementation, calculator math, AutoNest behavior, G-code behavior, Clerk, PWA, and docs/governance/MODE"
   ],
