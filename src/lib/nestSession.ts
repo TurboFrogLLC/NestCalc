@@ -304,3 +304,27 @@ export function toggleNestSessionUnit(state: NestAppState): NestAppState {
     ),
   };
 }
+
+export function applyPartSizeToNestSession(
+  state: NestAppState,
+  partSize: { width: number; height: number },
+  declaredUnit: Unit,
+): NestAppState {
+  const unitAlignedState =
+    state.manualInputs.unit === declaredUnit
+      ? state
+      : toggleNestSessionUnit(state);
+
+  return {
+    ...unitAlignedState,
+    manualInputs: {
+      ...unitAlignedState.manualInputs,
+      partWidth: partSize.width,
+      partHeight: partSize.height,
+      partLinked:
+        partSize.width !== partSize.height
+          ? false
+          : unitAlignedState.manualInputs.partLinked,
+    },
+  };
+}

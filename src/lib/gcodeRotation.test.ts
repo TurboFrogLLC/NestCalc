@@ -5,6 +5,36 @@ import {
   partSizeFromBounds,
   rotateBounds,
 } from "./gcodeRotation";
+import {
+  applyPartSizeToNestSession,
+  updateManualField,
+} from "./nestSession";
+import type { NestAppState } from "./types";
+
+const FILL_SESSION: NestAppState = {
+  version: 3,
+  mode: "manual",
+  manualInputs: {
+    partWidth: 2,
+    partHeight: 1,
+    remnantWidth: 10,
+    remnantHeight: 5,
+    margins: { left: 0.5, right: 0.25, top: 0.125, bottom: 0 },
+    gapX: 1,
+    gapY: 0.5,
+    partLinked: true,
+    gapLinked: false,
+    moveMarginsWithRotation: false,
+    unit: "in",
+  },
+  autoNestSettings: {
+    globalClampMargin: 0.5,
+    trimEdgePolicy: "open",
+    sharedTrimClearance: 0.1,
+    overrideGlobalMargins: true,
+    marginOverrides: { left: 0.5, right: null, top: 0.25, bottom: 0 },
+  },
+};
 
 // These are sanitized NC motion/control bodies copied from the local ACS
 // fixture. Headers and identifying metadata are intentionally excluded.
@@ -387,6 +417,69 @@ describe("partSizeFromBounds", () => {
     expect(
       partSizeFromBounds({ minX: 2, minY: -1, maxX: 2, maxY: 3 }),
     ).toEqual({ width: 0, height: 4 });
+  });
+});
+
+describe("G-code part-size application", () => {
+  it("converts the existing session before applying a differently declared unit", () => {
+    const next = applyPartSizeToNestSession(
+      FILL_SESSION,
+      { width: 50, height: 25 },
+      "mm",
+    );
+
+    expect(next.manualInputs).toMatchObject({
+      unit: "mm",
+      partWidth: 50,
+      partHeight: 25,
+      remnantWidth: 254,
+      remnantHeight: 127,
+      gapX: 25.4,
+      gapY: 12.7,
+      margins: {
+        left: 12.7,
+        right: 6.35,
+        top: 3.175,
+        bottom: 0,
+      },
+    });
+    expect(next.autoNestSettings).toMatchObject({
+      globalClampMargin: 12.7,
+      sharedTrimClearance: 2.54,
+      marginOverrides: { left: 12.7, right: null, top: 6.35, bottom: 0 },
+    });
+  });
+
+  it("applies same-unit part dimensions without converting the session", () => {
+    const next = applyPartSizeToNestSession(
+      FILL_SESSION,
+      { width: 3, height: 2 },
+      "in",
+    );
+
+    expect(next.manualInputs).toMatchObject({
+      unit: "in",
+      partWidth: 3,
+      partHeight: 2,
+      remnantWidth: 10,
+      remnantHeight: 5,
+      gapX: 1,
+      gapY: 0.5,
+      margins: FILL_SESSION.manualInputs.margins,
+    });
+    expect(next.autoNestSettings).toBe(FILL_SESSION.autoNestSettings);
+  });
+
+  it("unlinks unequal filled dimensions before a later single-axis edit", () => {
+    const filled = applyPartSizeToNestSession(
+      FILL_SESSION,
+      { width: 3, height: 2 },
+      "in",
+    );
+    const edited = updateManualField(filled.manualInputs, "partWidth", 4);
+
+    expect(filled.manualInputs.partLinked).toBe(false);
+    expect(edited).toMatchObject({ partWidth: 4, partHeight: 2 });
   });
 });
 

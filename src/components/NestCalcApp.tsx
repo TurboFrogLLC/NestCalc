@@ -14,6 +14,7 @@ import { useNestAppState } from "@/hooks/useNestInputs";
 import { useTheme } from "@/hooks/useTheme";
 import { effectiveAutoNestMargins } from "@/lib/autoNestEngine";
 import {
+  applyPartSizeToNestSession,
   clearManualInputs,
   createNestSession,
   rotateManualPart,
@@ -865,12 +866,9 @@ export function NestCalcApp() {
         >
           <GCodeRotation
             onApplyPartSize={(partSize, declaredUnit) => {
-              setInputs((current) => ({
-                ...current,
-                partWidth: partSize.width,
-                partHeight: partSize.height,
-                unit: declaredUnit,
-              }));
+              setState((current) =>
+                applyPartSizeToNestSession(current, partSize, declaredUnit),
+              );
             }}
           />
         </div>
