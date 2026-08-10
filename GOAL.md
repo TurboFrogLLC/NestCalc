@@ -11,8 +11,8 @@
   "branch_intent": "codex/quiet-goal-post-pr43",
   "execution_route": "codex-cli",
   "flow_id": "NC-20260810-7114cb07",
-  "goal_memory_commit": "fb27fcefb8ceb196453889ce063efe2b6b8ef742",
-  "goal_sha256": "sha256:05acf1e3ab0fb1c92a71f3ba77de5024c3df5870c7b33338916471f752efd81a",
+  "goal_memory_commit": "b21b385a822516bbfd65dbe084147b463c779881",
+  "goal_sha256": "sha256:3b81837869faa5af7c967f32fa625f0e6ceb8e4d6748eadf3c968ce01ad64316",
   "protected_surfaces": [
     "all product implementation, calculator math, nest-session transforms, AutoNest behavior, G-code behavior, Clerk, PWA, secrets, deployment, and docs/governance/MODE"
   ],
