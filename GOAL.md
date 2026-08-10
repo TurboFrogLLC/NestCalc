@@ -30,8 +30,8 @@
   "branch_intent": "codex/ui-dark-prototype-parity-freeze",
   "execution_route": "codex-cli",
   "flow_id": "NC-20260810-472606a4",
-  "goal_memory_commit": "da71252febe082d8bd044b6030785764aef35c27",
-  "goal_sha256": "sha256:8592906de2db1f2175a062155cb6571089ac75e442e5887a7e3d7d0ee72d4ef5",
+  "goal_memory_commit": "96303649e850073f0008dc544d4e2883d229a7d4",
+  "goal_sha256": "sha256:eb0d899b4d23c4344037a34f6d894b588637d18fabd1e7919d7fc2a0f60270a0",
   "protected_surfaces": [
     "calculator math, nest-session transforms, persistence, and numeric input semantics",
     "AutoNest engine, ranking, counts, trim policies, placement geometry, and factual output",
