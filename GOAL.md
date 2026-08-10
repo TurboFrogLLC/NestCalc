@@ -8,19 +8,19 @@
     "orchestrator": "codex-cli",
     "read_only_agents": [
       {
-        "lane": "visual authority and prototype-token evidence",
+        "lane": "package visual authority and conflict resolution",
         "observed_model": "gpt-5.6-terra",
         "requested_model": "gpt-5.6-terra",
         "status": "matched"
       },
       {
-        "lane": "UI ownership and authenticated browser-proof scope",
+        "lane": "package integrity and canonical seven-file scope",
         "observed_model": "gpt-5.6-terra",
         "requested_model": "gpt-5.6-terra",
         "status": "matched"
       },
       {
-        "lane": "goal lifecycle, lessons, and traceability",
+        "lane": "goal lifecycle and authority rebind governance",
         "observed_model": "gpt-5.6-terra",
         "requested_model": "gpt-5.6-terra",
         "status": "matched"
@@ -31,7 +31,7 @@
   "execution_route": "codex-cli",
   "flow_id": "NC-20260810-472606a4",
   "goal_memory_commit": "96303649e850073f0008dc544d4e2883d229a7d4",
-  "goal_sha256": "sha256:eb0d899b4d23c4344037a34f6d894b588637d18fabd1e7919d7fc2a0f60270a0",
+  "goal_sha256": "sha256:99f8312303eb6b789743865e841a851d15a9bac5473983e91e885890b91e01e9",
   "protected_surfaces": [
     "calculator math, nest-session transforms, persistence, and numeric input semantics",
     "AutoNest engine, ranking, counts, trim policies, placement geometry, and factual output",
@@ -75,19 +75,31 @@ freeze PR is documentation-only and contains no product implementation.
 
 For this goal, the hard visual authority is:
 
-- `REFERENCE-PROTOTYPE-v2.html`, or the human-attached
-  `nestcalc-ui-prototype-v2.html` copy;
-- `DESIGN-TOKENS.md` from the redesign package; and
+- non-negotiable visual source of truth:
+  `docs/nestcalc-ui-redesign-package/REFERENCE-PROTOTYPE-v2.html`;
+- non-negotiable token source of truth:
+  `docs/nestcalc-ui-redesign-package/DESIGN-TOKENS.md`;
+- supporting component, state-bridge, and protection authority:
+  `COMPONENT-MAP.md`, `WIRING.md`, and `DO-NOT-TOUCH.md` in that same package
+  directory; and
 - the human-frozen acceptance text in this goal.
 
-Those package files were not present in the accessible clone or project tree at
-freeze time. Therefore the enumerated tokens and acceptance criteria below are
-the complete executable parity contract unless the human supplies the named
-copy to the implementation session. A later supplied copy may clarify visual
-details inside this contract, but cannot broaden Allowed Files, add a
-dependency, alter behavior, or override protected surfaces. An unenumerated
-prototype detail that would require broader authority stops implementation for
-a new goal freeze; the CLI must not infer or claim pixel parity.
+`README.md` in that directory establishes package provenance and intent.
+`CODEX-READY-PROMPT.md` is a non-executable historical draft and does not
+override this goal, authorize files, or serve as the later CLI handoff. The
+human's explicit adoption of the package in this freeze supersedes the
+package's original exploratory-only / not-a-NestCalc-commit disposition for
+these seven tracked authority files only. It does not adopt sandbox code,
+dependencies, routes, policies, or product behavior.
+
+Implementation must match the prototype's visual intent and the exact token
+source. Translating its sandbox markup into the existing Next.js components
+does not authorize redesigning from memory, substituting another visual
+language, or weakening its requirements. Only the two package collisions
+explicitly resolved in the Grilling Decision Record are settled. Any other
+internal conflict, protected-contract conflict, broader-file need, behavior
+change, or protected-surface relaxation stops implementation for a new goal
+freeze; the CLI must not silently infer or expand scope.
 
 Locked tokens and module accents:
 
@@ -97,12 +109,29 @@ Locked tokens and module accents:
 - raised surface `#1E1A2A`;
 - Calculator primary/accent `#538BEC`;
 - G-code primary/accent `#EE8C3C`;
-- desktop headline/wordmark size `36px`; and
+- G-code section header fill `#D97830`;
+- section-header, input, primary-action, and angle-chip height `36px`; and
 - the existing shared `0.72s` spring-style motion contract.
 
 ### Scope / Allowed Files
 
-Only these implementation and proof files may change:
+This documentation-only authority-intake freeze may change only:
+
+- `GOAL.md`;
+- `docs/goals/GOAL-TRACE-INDEX.md`; and
+- the canonical seven-file package subtree
+  `docs/nestcalc-ui-redesign-package/**`.
+
+The transport archive
+`docs/architecture/nestcalc-ui-redesign-package.zip`, the byte-identical outer
+`docs/architecture/nestcalc-ui-redesign-package/nestcalc-ui-prototype-v2.html`,
+the extracted source copy under
+`docs/architecture/nestcalc-ui-redesign-package/docs/**`, and generated
+`output/**` evidence are explicitly excluded from the freeze commit. The seven
+authority files become read-only inputs after this intake; the later
+implementation pass may not edit them.
+
+Only these later implementation and proof files may change:
 
 - `src/app/globals.css` — locked dark tokens, module-scoped colors, typography,
   card/input/preview chrome, responsive accordion presentation, and existing
@@ -142,23 +171,24 @@ needs another file, stop and request a new Path B goal freeze before editing it.
 
 1. The primary/default Calculator and G-code shell is unmistakably dark, using
    `#08060D` for the page, `#0E0C14` for panels, `#16121F` for surfaces, and
-   `#1E1A2A` for raised surfaces. Light gray is not the primary product
-   appearance or the acceptance-evidence state.
+   `#1E1A2A` for raised surfaces. A light gray shop theme as the primary product
+   appearance or acceptance-evidence state is a failure.
 2. In Calculator mode, the selected Calculator tab and primary Calculator
    chrome use `#538BEC`. No orange accent appears on Calculator tab, controls,
    disclosure chrome, wordmark, or focus treatment. Factual result/status colors
-   remain isolated from module accents.
+   remain isolated from module accents. An orange Calculator selected tab or
+   primary chrome is a failure.
 3. In G-code mode, the selected G-code tab and primary G-code chrome use
    `#EE8C3C`. Calculator blue does not recolor G-code primary actions, and G-code
    orange does not leak back into Calculator chrome.
 4. The wordmark renders `Nest` in white/light foreground and `Calc` in italic
-   Calculator blue, consistent with prototype intent. Its desktop computed size
-   is `36px`; narrow and short-landscape viewports may scale it down only as
-   needed to prevent clipping or unreachable controls.
+   Calculator blue, matching the source-of-truth prototype treatment. It
+   remains responsive enough to prevent clipping or unreachable controls.
 5. Cards, inputs, dividers, button hierarchy, radii, spacing, and shadows form a
    coherent dark matte hierarchy using the locked panel/surface/raised family.
    The dark acceptance screenshots must not resemble the rejected light gray
-   shop theme.
+   shop theme. Calculator and G-code section headers, inputs, primary actions,
+   and angle chips use the package's locked `36px` geometry.
 
 #### Collapsible Calculator chrome
 
@@ -166,15 +196,17 @@ needs another file, stop and request a new Path B goal freeze before editing it.
    keyboard-operable sections named Presets, Part, Rem, Gap, and Margins. Each
    disclosure exposes correct `aria-expanded` and `aria-controls` state, retains
    visible focus, and keeps its values/state intact through collapse and reopen.
-7. All five sections start expanded on a fresh Calculator view to preserve the
-   previously immediate input access. Collapse state is local presentation
-   state only: it is not persisted, does not alter tab/history state, and does
-   not change input values, links, focus registration, calculations, or
-   AutoNest settings.
+   Leaving the flat pre-prototype field stack as the final Calculator form is a
+   failure.
+7. On a fresh Calculator view, Part starts open while Presets, Rem, Gap, and
+   Margins start collapsed, matching the reference prototype. Sections remain
+   independently controllable; collapse state is local presentation state only,
+   is not persisted, does not alter tab/history state, and does not change input
+   values, links, focus registration, calculations, or AutoNest settings.
 8. Collapsed Part, Rem, Gap, and Margins headers show compact current-value and
-   unit badges. Presets may show an availability/count/status badge rather than
-   invent a single numeric value. Badges are presentation only and never become
-   alternate editable state.
+   unit badges. Presets exposes Save/Manage in its header while open; do not
+   invent a second editable value or product state for its closed treatment.
+   Badges are presentation only and never become alternate editable state.
 9. Disclosure motion may use the existing `0.72s` spring timing/easing tokens,
    must use deterministic numeric/animatable endpoints, and honors
    `prefers-reduced-motion` without changing final open/closed state.
@@ -191,6 +223,8 @@ needs another file, stop and request a new Path B goal freeze before editing it.
     equal-height expanded Rotation/Part size row, Generate as the only filled
     G-code primary action, secondary Fill, successful Fill-to-Calculator morph,
     retained G-code local state, and shared `0.72s` reduced-motion-aware spring.
+    Sheet width/edges and stage padding use the same duration and curve, with
+    explicit animatable widths; never use `width: auto` for full expansion.
 12. Preserve module tab roles, arrow/Home/End navigation, deep links/history,
     safe areas, touch targets, compact landscape usability, and no-horizontal-
     overflow behavior. Collapsing a section must not strand focus or make an
@@ -212,7 +246,10 @@ needs another file, stop and request a new Path B goal freeze before editing it.
 16. Visual evidence includes dark Calculator desktop/mobile, dark G-code
     desktop/mobile, expanded G-code, and representative collapsed Calculator
     sections. Generated screenshots remain uncommitted.
-17. The later implementation wave ends on a separate implementation branch or
+17. Human visual review confirms the implementation matches the tracked
+    source-of-truth prototype's intent; redesigning from memory or substituting
+    a different chrome language is a failure.
+18. The later implementation wave ends on a separate implementation branch or
     continuation explicitly authorized by the accepted freeze, with goal-memory
     and implementation commits separate and a ready-for-review feature PR. No
     merge, deploy, Production action, or branch deletion is authorized.
@@ -233,9 +270,10 @@ needs another file, stop and request a new Path B goal freeze before editing it.
 - No light theme as the primary product or acceptance target. Existing theme
   persistence and secondary compatibility behavior are outside scope; do not
   edit `src/hooks/useTheme.ts` or storage to remove or redefine them.
-- No dependency, package/config, route, asset import, design-package commit,
-  native/iOS work, secret, `.env*`, deployment setting, Production action,
-  merge, force-push, branch deletion, or `docs/governance/MODE` edit.
+- No dependency, package/config, route, asset import, later design-package
+  modification, native/iOS work, secret, `.env*`, deployment setting,
+  Production action, merge, force-push, branch deletion, or
+  `docs/governance/MODE` edit.
 
 ### Required Proof
 
@@ -245,8 +283,8 @@ assertion is fixable within this freeze.
 
 Before the first implementation edit, B4-style preflight must:
 
-1. Read the authority order, this goal, the supplied visual-authority copy if
-   available, relevant Next.js 16 guides under `node_modules/next/dist/docs/`,
+1. Read the authority order, this goal, all seven tracked package authority
+   files, relevant Next.js 16 guides under `node_modules/next/dist/docs/`,
    and lessons `L-nestcalc-module-accent-isolation`,
    `L-nestcalc-expand-collapse-all-breakpoints`,
    `L-nestcalc-landscape-overflow-qa`, `L-nestcalc-split-layout-css`,
@@ -272,10 +310,10 @@ npm run test:e2e:auth
 git diff --check
 ```
 
-Also audit the final diff against the exact Allowed Files and confirm no
-generated screenshot, visual-authority package, secret, governance, auth/PWA
-policy, algorithm, dependency, route, or other out-of-scope file entered an
-implementation commit.
+Also audit the final diff against the exact later-implementation Allowed Files
+and confirm no generated screenshot, visual-authority package modification,
+secret, governance, auth/PWA policy, algorithm, dependency, route, or other
+out-of-scope file entered an implementation commit.
 
 ### Grilling Decision Record
 
@@ -283,47 +321,61 @@ The required `evidence -> confidence -> decision -> residual risk / flagged
 decisions` loop ran with three bounded read-only lanes. Every lane requested and
 observed `gpt-5.6-terra` at medium reasoning effort; all routes matched.
 
-- **Evidence:** PR #44 quieted the structurally accepted PR #43 wave and
-  explicitly deferred dark language, collapsible Calculator chrome, and
-  prototype parity. Current ownership places tokens/layout in `globals.css`,
-  wordmark/disclosures in `NestCalcApp`, protected domain calls behind existing
-  callbacks, and deterministic proof in the authenticated Playwright suite.
+- **Evidence:** The seven-file package is now present and content-addressed in
+  the canonical package subtree. Its prototype and written tokens establish
+  the dark palette, strict blue/orange mode split, five disclosure surfaces,
+  `300px`/`420px` sheets, explicit full width, and shared spring. PR #44
+  deferred this visual wave; current ownership places implementation in the
+  bounded chrome files and proof in authenticated Playwright.
 - **Confidence:** freeze-ready. No blocking scope question remains, every known
   ambiguity has a decision below, protected surfaces are explicit, and Path B
   makes required proof repairable inside Allowed Files.
-- **Decision:** adopt the full prior UI chrome set as bounded edit authority,
-  freeze the exact human-supplied token/acceptance text, preserve PR #43
-  structure, and require authenticated desktop/mobile proof before completion.
+- **Decision:** commit and adopt exactly the seven canonical package files,
+  with the prototype and token file as hard visual sources and map/wiring/
+  do-not-touch as supporting authority; preserve only the named PR #43
+  structural contracts and require authenticated desktop/mobile proof before
+  completion.
 
 Flagged decisions and residual risks:
 
-1. **Authority files unavailable in clone.** Reason: no named prototype or
-   token file was found. Decision: the enumerated human-supplied contract above
-   is complete; a later attached copy is clarifying only. CLI consequence:
-   never infer unlisted pixel details or broaden scope; stop on conflict.
+1. **Package provenance said exploratory / not a product commit.** Reason: the
+   package predates its human adoption into this goal. Decision: the human's
+   explicit intake instruction makes exactly these seven tracked files hard
+   visual/supporting authority under the higher active GOAL. CLI consequence:
+   do not treat the package as self-executing or allow it to broaden scope.
 2. **Light compatibility remains present.** Reason: theme persistence lives in
    excluded hook/storage files. Decision: dark is the primary/default visual
    target and sole acceptance-evidence state; secondary light compatibility is
    not redesigned. CLI consequence: do not touch theme persistence or claim
    light parity.
-3. **Disclosure defaults were not specified.** Reason: the unavailable
-   prototype cannot establish initial accordion state. Decision: all five start
-   expanded and collapse independently, preserving immediate access. CLI
-   consequence: do not introduce exclusive-accordion behavior or persistence.
+3. **Disclosure defaults are now specified.** Reason: the prototype initializes
+   only Part open. Decision: Part starts open; Presets, Rem, Gap, and Margins
+   start collapsed and remain independently controllable. CLI consequence: do
+   not introduce all-open, exclusive-accordion, or persisted disclosure state.
 4. **Preview treatment is chrome-only.** Reason: SVG geometry and colors can
    carry factual meaning. Decision: prefer light 1px bounds through tokens and
    classes while preserving all geometry/truth. CLI consequence: any required
    coordinate, count, grouping, or algorithm edit stops the wave.
-5. **Desktop 36px header can conflict with compact viewports.** Reason: PR #43
-   protects no-overflow and short-landscape reachability. Decision: require
-   36px at the desktop proof viewport and allow responsive downscaling only on
-   narrow/short layouts. CLI consequence: prove both exact desktop typography
-   and mobile/landscape reachability.
+5. **Package sandbox overflow conflicts with product responsiveness.** Reason:
+   `DESIGN-TOKENS.md` names a `900px` shell minimum/page scroll, while PR #43
+   and this goal require compact landscape/mobile no-overflow. Decision: retain
+   the product responsive/no-overflow contract; the sandbox minimum-width rule
+   is not adopted. CLI consequence: do not add page-level horizontal scrolling.
+6. **Prototype contains a full-width self-conflict.** Reason: it first uses
+   `calc(100% - 1.5rem)` and later overrides with `width: auto !important`, while
+   tokens/wiring expressly forbid `width: auto`. Decision: written tokens,
+   wiring, PR #43, and this goal win. CLI consequence: preserve explicit
+   animatable full width and the shared `0.72s` curve.
+7. **Redundant transport artifacts exist.** Reason: the outer prototype is
+   byte-identical to the canonical reference and the ZIP contains the same
+   payload. Decision: commit only the seven canonical files; exclude the ZIP,
+   duplicate HTML, and generated screenshots. CLI consequence: only the tracked
+   canonical paths are authority.
 
 Residual risk remains that subjective visual fidelity cannot be fully reduced
-to computed-style assertions without the named prototype. Completion therefore
-requires both deterministic browser assertions and human review of generated
-visual evidence; neither can override the protected behavior boundaries.
+to computed-style assertions even with the prototype. Completion therefore
+requires deterministic browser assertions plus human review of generated visual
+evidence; neither can override protected behavior boundaries.
 
 ### B3-Style Handoff / B4-Style Preflight
 
@@ -337,9 +389,9 @@ visual evidence; neither can override the protected behavior boundaries.
 ### Stopping Condition
 
 Complete only when every acceptance criterion and required proof passes, human
-review accepts the dark screenshots against the available authority, the diff
-is confined to Allowed Files, goal-memory and implementation commits remain
-separate, and a ready-for-review implementation PR is open.
+review accepts the dark screenshots against the tracked sources of truth, the
+diff is confined to Allowed Files, goal-memory and implementation commits
+remain separate, and a ready-for-review implementation PR is open.
 
 Stop blocked before or during implementation when the visual authority
 conflicts with this frozen scope, required authenticated proof is unavailable,

@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NestCalc — Preview-first Prototype</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            ink: {
+              950: '#0B0814',
+              900: '#120E1C',
+              850: '#1A1428',
+              800: '#221A32',
+              700: '#2A2238',
+              600: '#3D3554',
+            },
+            violet: {
+              500: '#8B5CF6',
+              400: '#A78BFA',
+              300: '#C4B5FD',
+              200: '#DDD6FE',
+            },
+            magenta: {
+              500: '#C13CD1',
+              400: '#E879F9',
+              300: '#F0ABFC',
+            },
+            hot: {
+              500: '#EC4899',
+              400: '#F472B6',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --smooth: cubic-bezier(0.22, 1, 0.36, 1);
+      --bg: #08060D;
+      --panel: #0E0C14;
+      --surface: #16121F;
+      --raised: #1E1A2A;
+      --muted: #2A2438;
+      --violet: #8B5CF6;
+      --violet-bright: #A78BFA;
+      --violet-soft: #C8CDD8;
+      --magenta: #C13CD1;
+      --magenta-bright: #E879F9;
+      --hot: #EC4899;
+      --text: #F5F3FF;
+      --text-muted: #C8CDD8;
+    }
+    html, body {
+      overflow-x: auto;
+    }
+    body {
+      font-family: "SF Pro Text", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    input[type="number"] { -moz-appearance: textfield; }
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    input:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(83, 139, 236, 0.55);
+      border-color: rgba(83, 139, 236, 0.65) !important;
+    }
+
+    /* High-contrast panel: pink→purple gradient edge + soft light outer */
+    .glow {
+      position: relative;
+      background: var(--panel);
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.12),
+        0 0 0 1px rgba(83, 139, 236, 0.25),
+        0 8px 28px -12px rgba(0, 0, 0, 0.8);
+    }
+    .glow::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      padding: 1px;
+      /* soft white → blue only — no pink */
+      background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.5) 0%,
+        rgba(180, 200, 230, 0.45) 35%,
+        rgba(83, 139, 236, 0.75) 100%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      opacity: 1;
+    }
+    .glow-soft {
+      background: #16121F;
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.12),
+        0 0 0 1px rgba(83, 139, 236, 0.18),
+        0 6px 18px -8px rgba(0, 0, 0, 0.6);
+      overflow: hidden;
+    }
+
+    /* Horizontal button group */
+    .btn-group-h {
+      display: flex;
+      flex-direction: row;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(83, 139, 236, 0.4);
+      background: var(--raised);
+      flex-shrink: 0;
+      height: 36px;
+    }
+    .btn-group-h button {
+      width: 32px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #C8CDD8;
+      background: transparent;
+      border: none;
+      transition: background 0.15s, color 0.15s;
+    }
+    .btn-group-h button + button {
+      border-left: 1px solid rgba(83, 139, 236, 0.25);
+    }
+    .btn-group-h button:hover {
+      background: rgba(83, 139, 236, 0.32);
+      color: #fff;
+    }
+    .btn-group-h button.active {
+      background: #538BEC;
+      color: #fff;
+    }
+
+    .sheet {
+      transition:
+        transform 0.72s cubic-bezier(0.34, 1.45, 0.64, 1),
+        opacity 0.35s var(--smooth),
+        left 0.72s cubic-bezier(0.34, 1.45, 0.64, 1),
+        right 0.72s cubic-bezier(0.34, 1.45, 0.64, 1),
+        width 0.72s cubic-bezier(0.34, 1.45, 0.64, 1);
+      will-change: transform, left, right, width;
+      left: 0.75rem;
+      right: auto;
+      width: 300px;
+    }
+    .sheet.closed {
+      transform: translateX(calc(-100% - 16px));
+      opacity: 0;
+      pointer-events: none;
+    }
+    .sheet.side-right {
+      left: auto;
+      right: 0.75rem;
+      width: 420px;
+    }
+    /* Full expand: animate width from 420px → calc(100% - 1.5rem); avoid width:auto snap */
+    .sheet.side-right.panel-full {
+      left: 0.75rem;
+      right: auto;
+      width: calc(100% - 1.5rem);
+    }
+    .gcode-mid-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.625rem;
+      align-items: stretch;
+      transition: gap 0.4s var(--smooth), flex-direction 0.01s;
+    }
+    .sheet.panel-full .gcode-mid-row {
+      flex-direction: row;
+      align-items: stretch;
+      gap: 0.75rem;
+    }
+    .gcode-card-body {
+      min-height: 5.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.625rem;
+      box-sizing: border-box;
+    }
+    .gcode-card-body > div:first-child {
+      flex: 1 1 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 2.25rem;
+    }
+    .gcode-card-body > button {
+      flex-shrink: 0;
+      margin-top: auto;
+    }
+    .sheet.panel-full .gcode-mid-row > section {
+      flex: 1 1 0;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      transition: flex 0.72s cubic-bezier(0.34, 1.45, 0.64, 1), transform 0.72s cubic-bezier(0.34, 1.45, 0.64, 1);
+    }
+    .sheet.panel-full .gcode-mid-row > section .gcode-card-body {
+      flex: 1 1 auto;
+    }
+
+    .sheet.panel-full .gcode-mid-row > section {
+      flex: 1 1 0;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      transition: flex 0.32s var(--spring), transform 0.32s var(--spring);
+    }
+    .sheet.panel-full .gcode-mid-row > section > .section-header,
+    .sheet.panel-full .gcode-mid-row > section > .section-header-gcode {
+      flex-shrink: 0;
+    }
+    .sheet.panel-full .gcode-mid-row > section > div:last-child {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .sheet.panel-full {
+
+      left: 0.75rem !important;
+      right: 0.75rem !important;
+      width: auto !important;
+      max-width: none;
+    }
+    /* viewer fades via opacity — see unified rule */
+    .sheet.side-right.closed {
+      transform: translateX(calc(100% + 16px));
+    }
+    #calc-view, #gcode-view {
+      transition: opacity 0.72s cubic-bezier(0.34, 1.45, 0.64, 1), transform 0.72s cubic-bezier(0.34, 1.45, 0.64, 1);
+    }
+    .stage.viewer-collapsed #calc-view,
+    .stage.viewer-collapsed #gcode-view {
+      opacity: 0;
+      transform: scale(0.96);
+      pointer-events: none;
+    }
+    #viewer-expand {
+      display: none;
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 20;
+    }
+    .stage.viewer-collapsed #viewer-expand {
+      display: flex;
+    }
+    .stage {
+      min-width: 320px;
+    }
+    .sheet.side-right:not(.panel-full) {
+      /* keep fixed width; stage padding reserves gap — no bleed */
+    }
+    .stage {
+      transition: padding-left 0.72s cubic-bezier(0.34, 1.45, 0.64, 1), padding-right 0.72s cubic-bezier(0.34, 1.45, 0.64, 1);
+    }
+
+    .section-html, body {
+      overflow-x: auto;
+    }
+    body {
+      transition: max-height 0.42s var(--spring), opacity 0.22s ease;
+      overflow: hidden;
+    }
+    .section-body.closed {
+      max-height: 0 !important;
+      opacity: 0;
+    }
+    .chevron {
+      transition: transform 0.35s var(--spring);
+    }
+    .chevron.rotated { transform: rotate(180deg); }
+
+    .section-card {
+      transition: transform 0.4s var(--spring);
+      border-radius: 8px;
+    }
+    @keyframes hydrateFlash {
+      0% { box-shadow: 0 0 0 0 rgba(83,139,236,0.0); }
+      40% { box-shadow: 0 0 0 3px rgba(83,139,236,0.55); }
+      100% { box-shadow: 0 0 0 0 rgba(83,139,236,0.0); }
+    }
+    .hydrate-flash {
+      animation: hydrateFlash 0.55s ease;
+    }
+    .mode-morph {
+      transition: opacity 0.28s var(--smooth), transform 0.36s var(--spring);
+    }
+    .mode-morph.out {
+      opacity: 0;
+      transform: translateY(6px) scale(0.985);
+      pointer-events: none;
+    }
+    .section-card.settle {
+      animation: settleBounce 0.5s var(--spring);
+    }
+    @keyframes settleBounce {
+      0%   { transform: translateY(0); }
+      30%  { transform: translateY(4px); }
+      55%  { transform: translateY(-2px); }
+      100% { transform: translateY(0); }
+    }
+
+    .press {
+      transition: transform 0.15s var(--spring);
+    }
+    .press:active { transform: scale(0.96); }
+
+    .numpad {
+      transition: transform 0.4s var(--spring), opacity 0.22s ease;
+    }
+    .numpad.hidden-pad {
+      transform: translateY(18px) scale(0.96);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .value-badge {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 10px;
+      line-height: 1.2;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(83, 139, 236, 0.2);
+      border: 1px solid rgba(83, 139, 236, 0.35);
+      color: #C8CDD8;
+      white-space: nowrap;
+    }
+
+    .num-input {
+      width: 4.1rem;
+      min-width: 0;
+      text-align: center;
+      background: var(--raised);
+      border: 1px solid rgba(200, 205, 216, 0.2);
+      color: var(--text);
+    }
+
+    .axis-count {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-weight: 700;
+      color: #C8CDD8;
+      text-shadow: none;
+      user-select: none;
+    }
+
+    .xy-row {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      gap: 8px;
+      justify-content: flex-start;
+    }
+    .xy-row .xy-field {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .xy-row .btn-group-h {
+      margin-left: 0;
+    }
+    .xy-sep {
+      width: 1px;
+      height: 28px;
+      background: rgba(255, 255, 255, 0.12);
+      margin: 0 4px 0 2px;
+      flex-shrink: 0;
+    }
+    .margins-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      width: 100%;
+    }
+    .m-field {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+      min-width: 0;
+    }
+    .m-field .num-input {
+      width: 100%;
+      max-width: 4.1rem;
+    }
+    .m-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: #C8CDD8;
+      letter-spacing: 0.02em;
+    }
+
+    /* Calculator keys matching reference */
+    .key-num {
+      background: #222230;
+      color: #E8E4F0;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .key-num:hover { background: #2E2E40; }
+    .key-op {
+      background: #538BEC;
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .key-op:hover { filter: brightness(1.1); }
+    .key-eq {
+      background: #538BEC;
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .key-eq:hover { filter: brightness(1.1); }
+    .key-util {
+      background: #2A2238;
+      color: #C8CDD8;
+      border: 1px solid rgba(83, 139, 236, 0.25);
+    }
+    .key-util:hover { background: #3D3554; color: #fff; }
+    .section-label {
+      color: #ffffff;
+    }
+    /* Section header bar */
+    .section-header-gcode {
+      background: #D97830 !important;
+    }
+    body.mode-gcode {
+      --mode-accent: #EE8C3C;
+    }
+    .section-header,
+    .section-header-gcode {
+      min-height: 36px;
+      height: 36px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+    }
+    .section-header {
+      background: rgba(83, 139, 236, 0.75);
+      color: #ffffff;
+    }
+    .section-header .chevron,
+    .section-header button,
+    .section-header span {
+      color: #ffffff !important;
+    }
+    .section-header .save-btn,
+    .section-header #presets-header-actions button {
+      background: rgba(0, 0, 0, 0.18) !important;
+      border-color: rgba(255, 255, 255, 0.25) !important;
+      color: #fff !important;
+    }
+    .section-header .save-btn:hover {
+      background: rgba(0, 0, 0, 0.32) !important;
+      border-color: rgba(255, 255, 255, 0.4) !important;
+    }
+    .section-header input {
+      background: rgba(0, 0, 0, 0.2) !important;
+      border-color: rgba(255, 255, 255, 0.25) !important;
+      color: #fff !important;
+    }
+    .section-header input::placeholder {
+      color: rgba(255, 255, 255, 0.55);
+    }
+    .section-header .value-badge {
+      background: rgba(0, 0, 0, 0.22);
+      border-color: rgba(255, 255, 255, 0.28);
+      color: #fff;
+    }
+    .save-btn:hover {
+      background: rgba(83, 139, 236, 0.55) !important;
+      border-color: rgba(83, 139, 236, 0.7) !important;
+      color: #fff !important;
+    }
+  </style>
+</head>
+<body class="min-h-screen antialiased overflow-hidden" style="background: var(--bg);">
+
+  <header class="h-12 border-b border-white/5 flex items-center justify-between px-4 relative z-50" style="background: rgba(18,14,28,0.85); backdrop-filter: blur(12px);">
+    <div class="flex items-center gap-2.5">
+      <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background: linear-gradient(135deg, #8B5CF6, #C13CD1); box-shadow: 0 0 14px -2px rgba(193,60,209,0.55);">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.4">
+          <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>
+          <rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
+        </svg>
+      </div>
+      <span class="font-semibold tracking-tight text-[15px]">
+        <span style="color: #FFFFFF;">Nest</span><span style="color: #538BEC; font-style: italic; font-weight: 600;">Calc</span>
+      </span>
+    </div>
+
+    <nav class="flex items-center gap-0.5 p-0.5 rounded-xl border border-white/10" style="background: rgba(11,8,20,0.7);">
+      <button id="tab-calc" class="px-3.5 py-1.5 rounded-lg text-[13px] font-semibold text-white" style="background: #538BEC;">Calculator</button>
+      <button id="tab-gcode" class="px-3.5 py-1.5 rounded-lg text-[13px] font-semibold transition hover:text-white" style="color: #C8CDD8;">G-code</button>
+    </nav>
+
+    <div class="flex items-center gap-1.5">
+      <div class="flex items-center gap-0.5 p-0.5 rounded-lg" style="background: var(--raised); border: 1px solid rgba(200,205,216,0.15);" id="unit-switch">
+          <button type="button" id="unit-in" class="h-7 px-2.5 rounded-md text-[11px] font-bold transition" style="background: #538BEC; color: #fff;">IN</button>
+          <button type="button" id="unit-mm" class="h-7 px-2.5 rounded-md text-[11px] font-bold transition" style="background: transparent; color: #C8CDD8;">MM</button>
+        </div>
+      <button class="h-8 w-8 rounded-lg flex items-center justify-center press transition" style="background: var(--raised); border: 1px solid rgba(83,139,236,0.3); color: #C8CDD8;" title="Clear">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+      </button>
+      <button class="h-8 w-8 rounded-lg flex items-center justify-center press transition" style="background: var(--raised); border: 1px solid rgba(83,139,236,0.3); color: #C8CDD8;" title="Theme">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <button class="h-8 w-8 rounded-lg flex items-center justify-center press transition" style="background: var(--raised); border: 1px solid rgba(83,139,236,0.3); color: #C8CDD8;" title="Settings">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      </button>
+      <button class="h-8 w-8 rounded-full flex items-center justify-center text-[10px] font-bold text-white press" style="background: #538BEC; box-shadow: 0 0 12px -2px rgba(83,139,236,0.4);" title="Clerk (stub)">RT</button>
+    </div>
+  </header>
+
+  <div class="relative h-[calc(100vh-3rem)] flex overflow-hidden">
+
+    <aside id="sheet" class="sheet absolute left-3 top-3 bottom-3 w-[300px] z-30 flex flex-col glow rounded-2xl overflow-hidden" style="background: #0E0C14;">
+      <div class="px-3 py-2.5 flex items-center justify-between shrink-0" style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+        <button id="sheet-close" class="h-7 w-7 rounded-lg flex items-center justify-center press transition shrink-0" style="border: 1px solid rgba(83,139,236,0.3); color: #C8CDD8;" title="Collapse panel">
+          <svg id="sheet-close-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <div class="flex items-center gap-2 ml-auto">
+          <button id="autonest-btn" data-calc-only class="h-7 px-2.5 rounded-lg text-[11px] font-semibold transition press" style="background: var(--raised); border: 1px solid rgba(83,139,236,0.35); color: #C8CDD8;" aria-pressed="false">AutoNest</button>
+          <span id="mode-label" data-calc-only class="text-[11px]" style="color: var(--text-muted);">Manual</span>
+        </div>
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-3 space-y-2.5" id="sections-stack" style="background: #0A0810;" data-mode="calc">
+
+        <!-- PRESETS -->
+        <div id="calc-panel" class="space-y-2.5">
+        <section class="section-card glow-soft overflow-hidden" data-section="presets">
+          <div class="section-header px-3 py-2 flex items-center justify-between gap-2">
+            <button class="section-trigger flex items-center gap-2 min-w-0 flex-1 text-left hover:opacity-90 transition" data-target="presets-body">
+              <span class="text-[11px] font-semibold uppercase tracking-wide section-label">Presets</span>
+            </button>
+            <div id="presets-header-actions" class="flex items-center gap-1.5" style="display:none">
+              <button class="h-6 px-2 rounded-md text-[10px] font-semibold transition press save-btn" style="background: var(--raised); border: 1px solid rgba(83,139,236,0.35); color: #C8CDD8;">Save</button>
+              <button class="h-6 px-2 rounded-md text-[10px] font-medium transition press" style="background: var(--raised); border: 1px solid rgba(83,139,236,0.3); color: #C8CDD8;">Manage</button>
+            </div>
+            <button class="section-trigger h-6 w-6 flex items-center justify-center shrink-0" data-target="presets-body" aria-label="Toggle presets">
+              <svg class="chevron rotated w-3 h-3" style="color: #C8CDD8;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+          </div>
+          <div id="presets-body" class="section-body closed">
+            <div class="px-3 py-3">
+              <div class="flex flex-wrap gap-1.5">
+                <button class="h-8 px-3 rounded-lg text-[12px] font-medium transition press" style="background: #538BEC; border: 1px solid #538BEC; color: #fff;">Default</button>
+                <button class="h-8 px-3 rounded-lg text-[12px] font-medium transition press" style="background: #538BEC; border: 1px solid #538BEC; color: #fff;">4×8</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PART -->
+        <section class="section-card glow-soft overflow-hidden" data-section="part">
+          <button class="section-trigger section-header w-full px-3 py-2 flex items-center justify-between transition gap-2" data-target="part-body" data-badge="part-badge">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="text-[11px] font-semibold uppercase tracking-wide shrink-0 section-label">Part</span>
+              <input type="text" placeholder="Part #" class="h-6 w-[4.75rem] px-1.5 rounded-md text-[10px] transition" style="background: var(--raised); border: 1px solid rgba(83,139,236,0.3); color: var(--text);" title="Part number" onclick="event.stopPropagation()" />
+              <span id="part-badge" class="value-badge hidden">120 × 80</span>
+            </div>
+            <svg class="chevron rotated w-3 h-3 shrink-0" style="color: #C8CDD8;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div id="part-body" class="section-body">
+            <div class="px-3 py-3">
+              <div class="xy-row">
+                <div class="xy-field">
+                  <span class="text-[10px] font-medium" style="color: var(--text-muted);">X</span>
+                  <input data-field id="part-x" type="number" value="120" step="0.01" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" />
+                </div>
+                <div class="xy-field">
+                  <span class="text-[10px] font-medium" style="color: var(--text-muted);">Y</span>
+                  <input data-field id="part-y" type="number" value="80" step="0.01" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" />
+                </div>
+                <div class="xy-sep" aria-hidden="true"></div>
+                <div class="btn-group-h">
+                  <button title="Swap X & Y">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
+                  </button>
+                  <button class="active" title="Link X & Y" data-link="part">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Rem -->
+        <section class="section-card glow-soft overflow-hidden" data-section="rem">
+          <button class="section-trigger section-header w-full px-3 py-2 flex items-center justify-between transition gap-2" data-target="rem-body" data-badge="rem-badge">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="text-[11px] font-semibold uppercase tracking-wide shrink-0 section-label">Rem</span>
+              <span id="rem-badge" class="value-badge hidden">600 × 400</span>
+            </div>
+            <svg class="chevron rotated w-3 h-3 shrink-0" style="color: #C8CDD8;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div id="rem-body" class="section-body closed">
+            <div class="px-3 py-3">
+              <div class="xy-row">
+                <div class="xy-field">
+                  <span class="text-[10px] font-medium" style="color: var(--text-muted);">X</span>
+                  <input data-field id="rem-x" type="number" value="600" step="0.01" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" />
+                </div>
+                <div class="xy-field">
+                  <span class="text-[10px] font-medium" style="color: var(--text-muted);">Y</span>
+                  <input data-field id="rem-y" type="number" value="400" step="0.01" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" />
+                </div>
+                <div class="xy-sep" aria-hidden="true"></div>
+                <div class="btn-group-h">
+                  <button title="Swap X & Y">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
+                  </button>
+                  <button class="active" title="Link X & Y" data-link="rem">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Gap -->
+        <section class="section-card glow-soft overflow-hidden" data-section="gap">
+          <button class="section-trigger section-header w-full px-3 py-2 flex items-center justify-between transition gap-2" data-target="gap-body" data-badge="gap-badge">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="text-[11px] font-semibold uppercase tracking-wide shrink-0 section-label">Gap</span>
+              <span id="gap-badge" class="value-badge hidden">5 × 5</span>
+            </div>
+            <svg class="chevron rotated w-3 h-3 shrink-0" style="color: #C8CDD8;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div id="gap-body" class="section-body closed">
+            <div class="px-3 py-3">
+              <div class="xy-row">
+                <div class="xy-field">
+                  <span class="text-[10px] font-medium" style="color: var(--text-muted);">X</span>
+                  <input data-field id="gap-x" type="number" value="5" step="0.1" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" />
+                </div>
+                <div class="xy-field">
+                  <span class="text-[10px] font-medium" style="color: var(--text-muted);">Y</span>
+                  <input data-field id="gap-y" type="number" value="5" step="0.1" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" />
+                </div>
+                <div class="xy-sep" aria-hidden="true"></div>
+                <div class="btn-group-h">
+                  <button title="Swap X & Y">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
+                  </button>
+                  <button class="active" title="Link X & Y" data-link="gap">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Margins -->
+        <section class="section-card glow-soft overflow-hidden" data-section="margins">
+          <button class="section-trigger section-header w-full px-3 py-2 flex items-center justify-between transition gap-2" data-target="margins-body" data-badge="margins-badge">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="text-[11px] font-semibold uppercase tracking-wide shrink-0 section-label">Margins</span>
+              <span id="margins-badge" class="value-badge hidden">L10 R10 B10 T10</span>
+            </div>
+            <svg class="chevron rotated w-3 h-3 shrink-0" style="color: #C8CDD8;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div id="margins-body" class="section-body closed">
+            <div class="px-3 py-3">
+              <div class="margins-row">
+                <div class="m-field">
+                  <span class="m-label">L</span>
+                  <input data-field id="m-left" type="number" value="10" step="0.1" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" />
+                </div>
+                <div class="m-field">
+                  <span class="m-label">R</span>
+                  <input data-field id="m-right" type="number" value="10" step="0.1" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" />
+                </div>
+                <div class="m-field">
+                  <span class="m-label">B</span>
+                  <input data-field id="m-bottom" type="number" value="10" step="0.1" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" />
+                </div>
+                <div class="m-field">
+                  <span class="m-label">T</span>
+                  <input data-field id="m-top" type="number" value="10" step="0.1" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" />
+                </div>
+              </div>
+              <label class="mt-2.5 flex items-center justify-center gap-2 text-[11px] cursor-pointer" style="color: var(--text-muted);">
+                <input type="checkbox" checked class="h-3.5 w-3.5 rounded" style="accent-color: #538BEC;" />
+                Move with rotation
+              </label>
+            </div>
+          </div>
+        </section>
+        </div><!-- /calc-panel -->
+
+        <!-- ========== G-CODE MODE PANEL ========== -->
+        <div id="gcode-panel" class="hidden space-y-2.5">
+          <!-- 1. Source -->
+          <section class="section-card glow-soft overflow-hidden" data-gsection="source">
+            <div class="section-header section-header-gcode px-3 py-2 flex items-center justify-between gap-2">
+              <span class="text-[11px] font-semibold uppercase tracking-wide section-label">Source</span>
+              <div class="flex items-center gap-0.5 p-0.5 rounded-lg" style="background: rgba(0,0,0,0.2);">
+                <button id="prog-unit-in" class="h-6 px-2 rounded-md text-[10px] font-bold transition" style="background: #EE8C3C; color: #fff;">IN</button>
+                <button id="prog-unit-mm" class="h-6 px-2 rounded-md text-[10px] font-bold transition" style="background: transparent; color: #fff;">MM</button>
+              </div>
+            </div>
+            <div class="px-3 py-3">
+              <textarea id="gcode-input" rows="11" placeholder="Paste G-code here" class="w-full rounded-lg px-2.5 py-2 text-[11px] font-mono leading-relaxed resize-y transition" style="background: var(--raised); border: 1px solid rgba(200,205,216,0.2); color: #FFFFFF; min-height: 180px; white-space: pre; overflow-x: auto;"></textarea>
+            </div>
+          </section>
+
+          <!-- 2. Rotation + Generate (product flow: angle then Generate) -->
+          <div id="gcode-mid-row" class="gcode-mid-row">
+          <section class="section-card glow-soft overflow-hidden" data-gsection="rotation" id="gcode-rotation-sec">
+            <div class="section-header section-header-gcode px-3 flex items-center justify-between gap-2">
+              <span class="text-[11px] font-semibold uppercase tracking-wide section-label">Rotation</span>
+            </div>
+            <div class="gcode-card-body px-3 py-3 flex flex-col gap-2.5">
+              <div class="flex items-center justify-center gap-1.5 flex-wrap flex-1">
+                <button data-angle="0" class="gcode-angle h-9 px-3 rounded-lg text-[11px] font-semibold transition press" style="background: #EE8C3C; color: #fff;">0°</button>
+                <button data-angle="90" class="gcode-angle h-9 px-3 rounded-lg text-[11px] font-semibold transition press" style="background: var(--raised); border: 1px solid rgba(200,205,216,0.2); color: #C8CDD8;">90°</button>
+                <button data-angle="-90" class="gcode-angle h-9 px-3 rounded-lg text-[11px] font-semibold transition press" style="background: var(--raised); border: 1px solid rgba(200,205,216,0.2); color: #C8CDD8;">−90°</button>
+                <button data-angle="180" class="gcode-angle h-9 px-3 rounded-lg text-[11px] font-semibold transition press" style="background: var(--raised); border: 1px solid rgba(200,205,216,0.2); color: #C8CDD8;">180°</button>
+              </div>
+              <button id="gcode-generate" class="w-full h-9 rounded-lg text-[12px] font-semibold transition press shrink-0" style="background: rgba(238, 140, 60, 0.25); border: 1px solid rgba(238, 140, 60, 0.45); color: #fff;">Generate</button>
+            </div>
+          </section>
+          <section class="section-card glow-soft overflow-hidden" data-gsection="partsize" id="gcode-partsize-sec">
+            <div class="section-header section-header-gcode px-3 flex items-center justify-between gap-2">
+              <span class="text-[11px] font-semibold uppercase tracking-wide section-label">Part size</span>
+              <div class="flex items-center gap-0.5 p-0.5 rounded-lg" style="background: rgba(0,0,0,0.2);">
+                <button id="part-unit-in" class="h-6 px-2 rounded-md text-[10px] font-bold transition" style="background: #EE8C3C; color: #fff;">IN</button>
+                <button id="part-unit-mm" class="h-6 px-2 rounded-md text-[10px] font-bold transition" style="background: transparent; color: #fff;">MM</button>
+              </div>
+            </div>
+            <div class="gcode-card-body px-3 py-3 flex flex-col gap-2.5">
+              <div class="flex items-center justify-center gap-3 flex-1">
+                <div class="xy-field">
+                  <span class="text-[10px] font-medium" style="color: #C8CDD8;">X</span>
+                  <input id="gcode-part-x" type="text" readonly value="—" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" style="background: var(--raised); border: 1px solid rgba(200,205,216,0.25); color: #fff;" />
+                </div>
+                <div class="xy-field">
+                  <span class="text-[10px] font-medium" style="color: #C8CDD8;">Y</span>
+                  <input id="gcode-part-y" type="text" readonly value="—" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" style="background: var(--raised); border: 1px solid rgba(200,205,216,0.25); color: #fff;" />
+                </div>
+              </div>
+              <button id="fill-part-size" class="w-full h-9 rounded-lg text-[12px] font-semibold transition press shrink-0" style="background: rgba(238, 140, 60, 0.25); border: 1px solid rgba(238, 140, 60, 0.45); color: #fff;" disabled>Fill part size → Calculator</button>
+            </div>
+          </section>
+        </div>
+
+          <!-- 4. Output (collapsible; auto-open on Generate; icons in header) -->
+          <section class="section-card glow-soft overflow-hidden" data-gsection="output">
+            <div class="section-header section-header-gcode px-3 py-2 flex items-center justify-between gap-2">
+              <button type="button" id="output-toggle" class="flex items-center gap-2 min-w-0 text-left">
+                <span class="text-[11px] font-semibold uppercase tracking-wide section-label">Output</span>
+                <svg id="output-chevron" class="w-3 h-3" style="color: #fff;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+              </button>
+              <div class="flex items-center gap-1">
+                <button id="gcode-copy" title="Copy" aria-label="Copy" class="h-7 w-7 rounded-md flex items-center justify-center transition press" style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.22); color: #fff;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+                <button id="gcode-download" title="Download" aria-label="Download" class="h-7 w-7 rounded-md flex items-center justify-center transition press" style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.22); color: #fff;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                </button>
+              </div>
+            </div>
+            <div id="output-body" class="px-3 pb-3" style="display:none;">
+              <pre id="gcode-output" class="w-full rounded-lg px-2.5 py-2 text-[10px] font-mono leading-relaxed overflow-auto" style="background: var(--raised); border: 1px solid rgba(200,205,216,0.15); color: #C8CDD8; max-height: 160px; min-height: 72px; white-space: pre; overflow-x: auto;">—</pre>
+            </div>
+          </section>
+        </div>
+
+
+      </div>
+    </aside>
+
+    <div class="stage flex-1 relative flex flex-col p-3" id="stage" class="stage" data-min="1" style="padding-left: 324px;">
+      <button type="button" id="viewer-expand" class="h-8 w-8 rounded-lg items-center justify-center transition press" style="display:none; position:absolute; left:12px; top:50%; transform:translateY(-50%); z-index:20; background: var(--panel); border: 1px solid rgba(238,140,60,0.45); color: #EE8C3C;" title="Expand viewer">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+      <div class="flex-1 glow rounded-2xl overflow-hidden flex flex-col">
+        <div class="px-3 py-2 flex items-center gap-2 flex-wrap shrink-0" style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+          <button id="sheet-open" class="h-7 w-7 rounded-lg flex items-center justify-center press transition hidden" style="background: var(--raised); border: 1px solid rgba(83,139,236,0.35); color: #C8CDD8;" title="Open inputs">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+          <button class="h-7 px-2 rounded-lg text-[11px] font-semibold transition flex items-center gap-1 press" style="background: var(--raised); border: 1px solid rgba(83,139,236,0.35); color: #C8CDD8;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+            Part 90°
+          </button>
+          <button id="btn-rem-90" class="h-7 px-2 rounded-lg text-[11px] font-semibold transition flex items-center gap-1 press" style="background: var(--raised); border: 1px solid rgba(83,139,236,0.35); color: #C8CDD8;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+            Rem 90°
+          </button>
+          <div class="ml-auto flex items-center gap-3" data-calc-only>
+            <span class="font-mono text-[13px] tabular-nums" style="color: #C8CDD8;">Parts <span class="font-bold text-[16px]" style="color: #fff;">15</span></span>
+          </div>
+        </div>
+
+        <div class="flex-1 relative flex items-center justify-center p-8" style="background: linear-gradient(160deg, rgba(11,8,20,0.9), rgba(34,26,50,0.4));">
+          <!-- Calculator nest view -->
+          <div id="calc-view" class="relative">
+            <div class="axis-count absolute left-1/2 -translate-x-1/2 -top-10 text-[22px] tracking-tight">5</div>
+            <div class="axis-count absolute top-1/2 -translate-y-1/2 -right-10 text-[22px] tracking-tight">3</div>
+            <div class="relative w-[min(52vw,480px)] aspect-[3/2] rounded-xl" style="border: 1px dashed rgba(83,139,236,0.35); background: rgba(11,8,20,0.5);">
+              <div class="absolute left-[5%] top-[7%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
+              <div class="absolute left-[23%] top-[7%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
+              <div class="absolute left-[41%] top-[7%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
+              <div class="absolute left-[59%] top-[7%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
+              <div class="absolute left-[77%] top-[7%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
+              <div class="absolute left-[5%] top-[38%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
+              <div class="absolute left-[23%] top-[38%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
+              <div class="absolute left-[41%] top-[38%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
+              <div class="absolute left-[59%] top-[38%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
+              <div class="absolute left-[77%] top-[38%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
+              <div class="absolute left-[5%] top-[69%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
+              <div class="absolute left-[23%] top-[69%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
+              <div class="absolute left-[41%] top-[69%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
+              <div class="absolute left-[59%] top-[69%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
+              <div class="absolute left-[77%] top-[69%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
+            </div>
+          </div><!-- /calc-view -->
+
+          <!-- G-code single-part view -->
+          <div id="gcode-view" class="hidden relative flex flex-col items-center justify-center gap-3">
+            <div class="text-[11px] uppercase tracking-wider font-medium" style="color: #C8CDD8;">Source bounds</div>
+            <div id="gcode-part-preview" class="relative flex items-center justify-center" style="width: min(40vw, 280px); aspect-ratio: 1.5; border: 1px solid #FFFFFF; border-radius: 4px; background: transparent;">
+              <span id="gcode-preview-label" class="font-mono text-[13px] tabular-nums" style="color: #C8CDD8;">— × —</span>
+            </div>
+            <div class="text-[11px]" style="color: #C8CDD8;">Angle <span id="gcode-angle-label" class="font-semibold" style="color: #fff;">0°</span></div>
+          </div>
+        </div>
+
+        <div id="calc-footer" class="px-4 py-2.5 flex items-center gap-6 shrink-0" style="border-top: 1px solid rgba(255,255,255,0.06); background: rgba(11,8,20,0.4);">
+          <div>
+            <div class="text-[9px] uppercase tracking-wider font-medium" style="color: var(--text-muted);">Total</div>
+            <div class="text-xl font-semibold tabular-nums">15</div>
+          </div>
+          <div class="w-px h-7" style="background: rgba(255,255,255,0.1);"></div>
+          <div>
+            <div class="text-[9px] uppercase tracking-wider font-medium" style="color: var(--text-muted);">Manual</div>
+            <div class="text-lg font-medium tabular-nums" style="color: #C8CDD8;">12</div>
+          </div>
+          <div>
+            <div class="text-[9px] uppercase tracking-wider font-medium" style="color: var(--text-muted);">Auto</div>
+            <div class="text-lg font-medium tabular-nums" style="color: #538BEC;">15</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Calculator — matching reference contrast -->
+  <div id="numpad" class="numpad hidden-pad fixed bottom-5 right-5 z-40 glow rounded-2xl p-3 w-[230px]">
+    <div class="flex flex-wrap gap-1 mb-2.5">
+      <button data-quick="0.060" class="h-6 px-1.5 rounded-md text-[10px] font-mono font-medium transition press key-util">.060</button>
+      <button data-quick="0.125" class="h-6 px-1.5 rounded-md text-[10px] font-mono font-medium transition press key-util">.125</button>
+      <button data-quick="0.250" class="h-6 px-1.5 rounded-md text-[10px] font-mono font-medium transition press key-util">.250</button>
+      <button data-quick="0.375" class="h-6 px-1.5 rounded-md text-[10px] font-mono font-medium transition press key-util">.375</button>
+      <button data-quick="0.500" class="h-6 px-1.5 rounded-md text-[10px] font-mono font-medium transition press key-util">.500</button>
+    </div>
+    <div class="grid grid-cols-3 gap-1.5">
+      <button data-key="7" class="h-11 rounded-xl text-sm font-medium transition press key-num">7</button>
+      <button data-key="8" class="h-11 rounded-xl text-sm font-medium transition press key-num">8</button>
+      <button data-key="9" class="h-11 rounded-xl text-sm font-medium transition press key-num">9</button>
+      <button data-key="4" class="h-11 rounded-xl text-sm font-medium transition press key-num">4</button>
+      <button data-key="5" class="h-11 rounded-xl text-sm font-medium transition press key-num">5</button>
+      <button data-key="6" class="h-11 rounded-xl text-sm font-medium transition press key-num">6</button>
+      <button data-key="1" class="h-11 rounded-xl text-sm font-medium transition press key-num">1</button>
+      <button data-key="2" class="h-11 rounded-xl text-sm font-medium transition press key-num">2</button>
+      <button data-key="3" class="h-11 rounded-xl text-sm font-medium transition press key-num">3</button>
+      <button data-key="." class="h-11 rounded-xl text-sm font-medium transition press key-num">.</button>
+      <button data-key="0" class="h-11 rounded-xl text-sm font-medium transition press key-num">0</button>
+      <button data-key="back" class="h-11 rounded-xl text-sm font-medium transition press key-util" title="Backspace">⌫</button>
+      <button data-key="enter" class="h-11 rounded-xl text-sm font-semibold transition press key-eq col-span-3">↵ Enter</button>
+    </div>
+  </div>
+
+  <script>
+    const sheet = document.getElementById('sheet');
+    const sheetOpen = document.getElementById('sheet-open');
+    const sheetClose = document.getElementById('sheet-close');
+    const stage = document.getElementById('stage');
+
+    function setSheet(open) {
+      const vex = document.getElementById('viewer-expand');
+      if (vex) vex.style.display = 'none';
+
+      if (typeof currentMode !== 'undefined' && currentMode === 'gcode') {
+        // G-code: "close" = hide VIEWER, expand PANEL to full width
+        // "open" = restore split (viewer left + panel right)
+        if (!open) {
+          // Panel full-bleed: arrow points RIGHT
+          stage.classList.add('viewer-collapsed');
+          sheet.classList.remove('closed');
+          sheet.classList.add('panel-full');
+          stage.style.paddingLeft = '16px';
+          stage.style.paddingRight = '16px';
+          sheetOpen.classList.add('hidden');
+          sheetOpen.style.cssText = '';
+          const closeBtn = document.getElementById('sheet-close');
+          if (closeBtn) closeBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 18l6-6-6-6"/></svg>';
+        } else {
+          // Split restored: arrow points LEFT
+          stage.classList.remove('viewer-collapsed');
+          sheet.classList.remove('closed');
+          sheet.classList.remove('panel-full');
+          stage.style.paddingLeft = '16px';
+          stage.style.paddingRight = '448px';
+          sheetOpen.classList.add('hidden');
+          sheetOpen.style.cssText = '';
+          const closeBtn = document.getElementById('sheet-close');
+          if (closeBtn) closeBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>';
+        }
+        return;
+      }
+
+      // Calculator: close hides panel, nest view full
+      sheet.classList.toggle('closed', !open);
+      sheet.classList.remove('panel-full');
+      stage.classList.remove('viewer-collapsed');
+      stage.style.paddingLeft = open ? '324px' : '16px';
+      stage.style.paddingRight = '16px';
+      sheetOpen.style.cssText = '';
+      sheetOpen.classList.toggle('hidden', open);
+      if (!open) {
+        sheetOpen.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 18l6-6-6-6"/></svg>';
+      }
+    }
+    // Toggle semantics for G-code: click close when split → expand panel; click again → restore
+    sheetClose.addEventListener('click', () => {
+      if (typeof currentMode !== 'undefined' && currentMode === 'gcode') {
+        const expanded = sheet.classList.contains('panel-full');
+        setSheet(expanded); // if expanded, restore (open=true); if split, expand (open=false)
+      } else {
+        setSheet(false);
+      }
+    });
+    sheetOpen.addEventListener('click', () => setSheet(true));
+
+    function updateBadges() {
+      const set = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+      set('part-badge', (document.getElementById('part-x')?.value || '—') + ' × ' + (document.getElementById('part-y')?.value || '—'));
+      set('rem-badge', (document.getElementById('rem-x')?.value || '—') + ' × ' + (document.getElementById('rem-y')?.value || '—'));
+      set('gap-badge', (document.getElementById('gap-x')?.value || '—') + ' × ' + (document.getElementById('gap-y')?.value || '—'));
+      set('margins-badge', 'L' + (document.getElementById('m-left')?.value || '—') + ' R' + (document.getElementById('m-right')?.value || '—') + ' B' + (document.getElementById('m-bottom')?.value || '—') + ' T' + (document.getElementById('m-top')?.value || '—'));
+    }
+    document.querySelectorAll('[data-field]').forEach(inp => inp.addEventListener('input', updateBadges));
+    updateBadges();
+
+    const cards = Array.from(document.querySelectorAll('.section-card'));
+    function cascadeSettle(fromIndex) {
+      for (let i = fromIndex + 1; i < cards.length; i++) {
+        const card = cards[i];
+        card.classList.remove('settle');
+        void card.offsetWidth;
+        card.classList.add('settle');
+        setTimeout(() => card.classList.remove('settle'), 520);
+      }
+    }
+
+    function syncPresetsActions(open) {
+      const actions = document.getElementById('presets-header-actions');
+      if (actions) actions.style.display = open ? 'flex' : 'none';
+    }
+    function openSection(body, chev, badge) {
+      body.classList.remove('closed');
+      body.style.maxHeight = 'none';
+      const h = body.scrollHeight;
+      body.style.maxHeight = '0px';
+      body.offsetHeight;
+      body.style.maxHeight = h + 'px';
+      if (chev) chev.classList.add('rotated');
+      if (badge) badge.classList.add('hidden');
+      if (body.id === 'presets-body') syncPresetsActions(true);
+    }
+    function closeSection(body, chev, badge) {
+      body.style.maxHeight = body.scrollHeight + 'px';
+      body.offsetHeight;
+      body.classList.add('closed');
+      body.style.maxHeight = '0px';
+      if (chev) chev.classList.remove('rotated');
+      if (badge) badge.classList.remove('hidden');
+      if (body.id === 'presets-body') syncPresetsActions(false);
+    }
+
+    document.querySelectorAll('.section-trigger').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const body = document.getElementById(btn.dataset.target);
+        if (!body) return;
+        const card = btn.closest('.section-card');
+        const chev = card ? card.querySelector('.chevron') : btn.querySelector('.chevron');
+        const badgeId = btn.dataset.badge;
+        const badge = badgeId ? document.getElementById(badgeId) : null;
+        const idx = cards.indexOf(card);
+        if (body.classList.contains('closed')) openSection(body, chev, badge);
+        else closeSection(body, chev, badge);
+        cascadeSettle(idx);
+      });
+    });
+
+    // Only Part starts open
+    ['presets-body', 'rem-body', 'gap-body', 'margins-body'].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.add('closed');
+      el.style.maxHeight = '0px';
+      const card = el.closest('.section-card');
+      if (card) {
+        const chev = card.querySelector('.chevron');
+        if (chev) chev.classList.remove('rotated');
+        // show badges on closed value sections
+        const badge = card.querySelector('.value-badge');
+        if (badge) badge.classList.remove('hidden');
+      }
+    });
+    const partBody = document.getElementById('part-body');
+    if (partBody) {
+      partBody.classList.remove('closed');
+      partBody.style.maxHeight = 'none';
+      partBody.style.maxHeight = partBody.scrollHeight + 'px';
+      const card = partBody.closest('.section-card');
+      if (card) {
+        const chev = card.querySelector('.chevron');
+        if (chev) chev.classList.add('rotated');
+        const badge = card.querySelector('.value-badge');
+        if (badge) badge.classList.add('hidden');
+      }
+    }
+    syncPresetsActions(false);
+
+    document.querySelectorAll('[data-link]').forEach(btn => {
+      btn.addEventListener('click', () => btn.classList.toggle('active'));
+    });
+
+    const autoBtn = document.getElementById('autonest-btn');
+    const modeLabel = document.getElementById('mode-label');
+    let isAuto = false;
+    autoBtn.addEventListener('click', () => {
+      isAuto = !isAuto;
+      autoBtn.setAttribute('aria-pressed', isAuto);
+      if (isAuto) {
+        autoBtn.style.background = '#538BEC';
+        autoBtn.style.borderColor = 'transparent';
+        autoBtn.style.color = '#fff';
+        modeLabel.textContent = 'AutoNest';
+      } else {
+        autoBtn.style.background = 'var(--raised)';
+        autoBtn.style.borderColor = 'rgba(83,139,236,0.35)';
+        autoBtn.style.color = '#C8CDD8';
+        modeLabel.textContent = 'Manual';
+      }
+    });
+
+
+    // ---- Mode switch: Calculator ↔ G-code ----
+    let currentMode = 'calc';
+    let progUnit = 'in';
+    let currentAngle = 0;
+    let derivedXY = null;
+
+    window.calcUnitMode = 'in';
+    function headerAccent() {
+      return (typeof currentMode !== 'undefined' && currentMode === 'gcode') ? '#EE8C3C' : '#538BEC';
+    }
+    function setCalcUnit(u) {
+      window.calcUnitMode = u;
+      const inn = document.getElementById('unit-in');
+      const mm = document.getElementById('unit-mm');
+      if (!inn || !mm) return;
+      const acc = headerAccent();
+      if (u === 'in') {
+        inn.style.background = acc;
+        inn.style.color = '#fff';
+        mm.style.background = 'transparent';
+        mm.style.color = '#C8CDD8';
+      } else {
+        mm.style.background = acc;
+        mm.style.color = '#fff';
+        inn.style.background = 'transparent';
+        inn.style.color = '#C8CDD8';
+      }
+    }
+    (function () {
+      const a = document.getElementById('unit-in');
+      const b = document.getElementById('unit-mm');
+      if (a) a.addEventListener('click', function () { setCalcUnit('in'); });
+      if (b) b.addEventListener('click', function () { setCalcUnit('mm'); });
+    })();
+
+    function setTabStyles(mode) {
+      const tc = document.getElementById('tab-calc');
+      const tg = document.getElementById('tab-gcode');
+      if (!tc || !tg) return;
+      document.body.classList.toggle('mode-gcode', mode === 'gcode');
+      if (mode === 'calc') {
+        tc.style.background = '#538BEC';
+        tc.style.color = '#fff';
+        tg.style.background = 'transparent';
+        tg.style.color = '#C8CDD8';
+      } else {
+        tg.style.background = '#EE8C3C';
+        tg.style.color = '#fff';
+        tc.style.background = 'transparent';
+        tc.style.color = '#C8CDD8';
+      }
+      // Header IN|MM follows mode accent
+      if (typeof setCalcUnit === 'function') setCalcUnit(window.calcUnitMode || 'in');
+    }
+
+    function setCalcOnlyVisible(show) {
+      document.querySelectorAll('[data-calc-only]').forEach(el => {
+        el.style.display = show ? '' : 'none';
+      });
+      // Rotate buttons in preview chrome (no data attr) - hide by scanning
+      document.querySelectorAll('#stage button').forEach(btn => {
+        const t = (btn.textContent || '').trim();
+        if (t.indexOf('Part 90') >= 0 || t.indexOf('Rem 90') >= 0) {
+          btn.style.display = show ? '' : 'none';
+        }
+      });
+    }
+
+    function layoutForMode(mode) {
+      const sheetEl = document.getElementById('sheet');
+      const stageEl = document.getElementById('stage');
+      const openBtn = document.getElementById('sheet-open');
+      const closeBtn = document.getElementById('sheet-close');
+      sheetEl.classList.remove('closed', 'panel-full');
+      stageEl.classList.remove('viewer-collapsed');
+      openBtn.classList.add('hidden');
+      openBtn.style.cssText = '';
+      if (mode === 'gcode') {
+        sheetEl.classList.add('side-right');
+        stageEl.style.paddingLeft = '16px';
+        stageEl.style.paddingRight = '448px';
+        // Split: arrow points LEFT
+        if (closeBtn) closeBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>';
+      } else {
+        sheetEl.classList.remove('side-right');
+        stageEl.style.paddingLeft = '324px';
+        stageEl.style.paddingRight = '16px';
+        if (closeBtn) closeBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>';
+      }
+    }
+
+    
+    function switchMode(mode) {
+      if (mode === currentMode) return;
+      currentMode = mode;
+      setTabStyles(mode);
+      setCalcOnlyVisible(mode === 'calc');
+
+      const calcPanel = document.getElementById('calc-panel');
+      const gcodePanel = document.getElementById('gcode-panel');
+      const calcView = document.getElementById('calc-view');
+      const gcodeView = document.getElementById('gcode-view');
+      const calcFooter = document.getElementById('calc-footer');
+
+      [calcPanel, gcodePanel, calcView, gcodeView].forEach(el => {
+        if (el) el.classList.add('mode-morph');
+      });
+
+      // Side swap + content morph together
+      layoutForMode(mode);
+
+      if (mode === 'gcode') {
+        if (calcPanel) calcPanel.classList.add('out');
+        if (calcView) calcView.classList.add('out');
+        setTimeout(() => {
+          if (calcPanel) { calcPanel.classList.add('hidden'); calcPanel.classList.remove('out'); }
+          if (calcView) { calcView.classList.add('hidden'); calcView.classList.remove('out'); }
+          if (calcFooter) calcFooter.classList.add('hidden');
+          if (gcodePanel) { gcodePanel.classList.remove('hidden'); gcodePanel.classList.add('out'); }
+          if (gcodeView) { gcodeView.classList.remove('hidden'); gcodeView.classList.add('out'); }
+          requestAnimationFrame(() => {
+            if (gcodePanel) gcodePanel.classList.remove('out');
+            if (gcodeView) gcodeView.classList.remove('out');
+          });
+        }, 180);
+      } else {
+        if (gcodePanel) gcodePanel.classList.add('out');
+        if (gcodeView) gcodeView.classList.add('out');
+        setTimeout(() => {
+          if (gcodePanel) { gcodePanel.classList.add('hidden'); gcodePanel.classList.remove('out'); }
+          if (gcodeView) { gcodeView.classList.add('hidden'); gcodeView.classList.remove('out'); }
+          if (calcPanel) { calcPanel.classList.remove('hidden'); calcPanel.classList.add('out'); }
+          if (calcView) { calcView.classList.remove('hidden'); calcView.classList.add('out'); }
+          if (calcFooter) calcFooter.classList.remove('hidden');
+          requestAnimationFrame(() => {
+            if (calcPanel) calcPanel.classList.remove('out');
+            if (calcView) calcView.classList.remove('out');
+          });
+        }, 180);
+      }
+    }
+
+    document.getElementById('tab-calc').addEventListener('click', () => switchMode('calc'));
+    document.getElementById('tab-gcode').addEventListener('click', () => switchMode('gcode'));
+
+    function setProgUnit(u) {
+      progUnit = u;
+      const inn = document.getElementById('prog-unit-in');
+      const mm = document.getElementById('prog-unit-mm');
+      if (!inn) return;
+      if (u === 'in') {
+        inn.style.background = '#EE8C3C'; inn.style.color = '#fff';
+        mm.style.background = 'transparent'; mm.style.color = '#fff';
+      } else {
+        mm.style.background = '#EE8C3C'; mm.style.color = '#fff';
+        inn.style.background = 'transparent'; inn.style.color = '#fff';
+      }
+      refreshPartDisplay();
+    }
+    document.getElementById('prog-unit-in').addEventListener('click', () => setProgUnit('in'));
+    document.getElementById('prog-unit-mm').addEventListener('click', () => setProgUnit('mm'));
+
+    let partUnit = 'in';
+    let baseXY = null; // always stored in program units
+    function setPartUnit(u) {
+      partUnit = u;
+      const inn = document.getElementById('part-unit-in');
+      const mm = document.getElementById('part-unit-mm');
+      if (!inn) return;
+      if (u === 'in') {
+        inn.style.background = '#EE8C3C'; inn.style.color = '#fff';
+        mm.style.background = 'transparent'; mm.style.color = '#fff';
+      } else {
+        mm.style.background = '#EE8C3C'; mm.style.color = '#fff';
+        inn.style.background = 'transparent'; inn.style.color = '#fff';
+      }
+      refreshPartDisplay();
+    }
+    document.getElementById('part-unit-in').addEventListener('click', () => setPartUnit('in'));
+    document.getElementById('part-unit-mm').addEventListener('click', () => setPartUnit('mm'));
+
+    function refreshPartDisplay() {
+      if (!baseXY) return;
+      let x = baseXY.x, y = baseXY.y;
+      if (progUnit === 'in' && partUnit === 'mm') { x *= 25.4; y *= 25.4; }
+      if (progUnit === 'mm' && partUnit === 'in') { x /= 25.4; y /= 25.4; }
+      const xEl = document.getElementById('gcode-part-x');
+      const yEl = document.getElementById('gcode-part-y');
+      xEl.value = x.toFixed(3);
+      yEl.value = y.toFixed(3);
+      derivedXY = { x: x, y: y };
+      document.getElementById('gcode-preview-label').textContent = x.toFixed(3) + ' × ' + y.toFixed(3);
+      const prev = document.getElementById('gcode-part-preview');
+      if (prev && x > 0 && y > 0) prev.style.aspectRatio = (x / y).toFixed(4);
+    }
+
+    function openOutput() {
+      const body = document.getElementById('output-body');
+      const chev = document.getElementById('output-chevron');
+      if (body) body.style.display = 'block';
+      if (chev) chev.style.transform = 'rotate(180deg)';
+    }
+    function toggleOutput() {
+      const body = document.getElementById('output-body');
+      const chev = document.getElementById('output-chevron');
+      if (!body) return;
+      const open = body.style.display !== 'none';
+      body.style.display = open ? 'none' : 'block';
+      if (chev) chev.style.transform = open ? 'rotate(0deg)' : 'rotate(180deg)';
+    }
+    document.getElementById('output-toggle').addEventListener('click', toggleOutput);
+
+    // Single primary action: Generate = analyze + rotate + output (matches product)
+    document.getElementById('gcode-generate').addEventListener('click', () => {
+      const src = document.getElementById('gcode-input').value || '';
+      if (!src.trim()) {
+        document.getElementById('gcode-output').textContent = '—';
+        baseXY = null; derivedXY = null;
+        document.getElementById('gcode-part-x').value = '—';
+        document.getElementById('gcode-part-y').value = '—';
+        document.getElementById('fill-part-size').disabled = true;
+        document.getElementById('gcode-preview-label').textContent = '— × —';
+        return;
+      }
+      // Stub bounds (product uses AABB from analyzeGCode)
+      const x0 = progUnit === 'in' ? 4.250 : 107.95;
+      const y0 = progUnit === 'in' ? 2.875 : 73.025;
+      // Rotation of rectangle extents (stub)
+      let x = x0, y = y0;
+      const a = Math.abs(currentAngle) % 180;
+      if (a === 90) { x = y0; y = x0; }
+      baseXY = { x: x, y: y };
+      refreshPartDisplay();
+      const xEl = document.getElementById('gcode-part-x');
+      const yEl = document.getElementById('gcode-part-y');
+      xEl.classList.remove('hydrate-flash'); yEl.classList.remove('hydrate-flash');
+      void xEl.offsetWidth; void yEl.offsetWidth;
+      xEl.classList.add('hydrate-flash'); yEl.classList.add('hydrate-flash');
+      document.getElementById('fill-part-size').disabled = false;
+
+      document.getElementById('gcode-output').textContent =
+        '; rotated ' + currentAngle + '°\n' + src.split('\n').slice(0, 8).join('\n') + '\n; …';
+      openOutput();
+    });
+
+    document.getElementById('fill-part-size').addEventListener('click', () => {
+      if (!derivedXY) return;
+      let x = derivedXY.x, y = derivedXY.y;
+      const fillUnit = (typeof window.calcUnitMode === 'string' ? window.calcUnitMode : 'in');
+      if (partUnit === 'in' && fillUnit === 'mm') { x *= 25.4; y *= 25.4; }
+      if (partUnit === 'mm' && fillUnit === 'in') { x /= 25.4; y /= 25.4; }
+      document.getElementById('part-x').value = Number(x.toFixed(3));
+      document.getElementById('part-y').value = Number(y.toFixed(3));
+      document.getElementById('part-x').dispatchEvent(new Event('input'));
+      document.getElementById('part-y').dispatchEvent(new Event('input'));
+      const btn = document.getElementById('fill-part-size');
+      btn.textContent = 'Filled ✓';
+      // Morph back to Calculator so the bridge is visible
+      setTimeout(() => {
+        btn.textContent = 'Fill part size → Calculator';
+        switchMode('calc');
+      }, 450);
+    });
+
+    document.querySelectorAll('.gcode-angle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentAngle = parseInt(btn.dataset.angle, 10);
+        document.getElementById('gcode-angle-label').textContent = currentAngle + '°';
+        document.querySelectorAll('.gcode-angle').forEach(b => {
+          b.style.background = 'var(--raised)';
+          b.style.border = '1px solid rgba(200,205,216,0.2)';
+          b.style.color = '#C8CDD8';
+        });
+        btn.style.background = '#EE8C3C';
+        btn.style.border = 'none';
+        btn.style.color = '#fff';
+      });
+    });
+
+    document.getElementById('gcode-copy').addEventListener('click', () => {
+      const t = document.getElementById('gcode-output').textContent;
+      if (t && t !== '—') navigator.clipboard && navigator.clipboard.writeText(t);
+    });
+    document.getElementById('gcode-download').addEventListener('click', () => {
+      const t = document.getElementById('gcode-output').textContent;
+      if (!t || t === '—') return;
+      const blob = new Blob([t], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'rotated.nc';
+      a.click();
+    });
+
+
+    let activeField = null;
+    let entryMode = false;
+    document.querySelectorAll('[data-field]').forEach(input => {
+      input.addEventListener('focus', () => {
+        activeField = input;
+        entryMode = false;
+        document.getElementById('numpad').classList.remove('hidden-pad');
+      });
+      input.addEventListener('blur', () => {
+        setTimeout(() => {
+          if (document.activeElement && document.activeElement.closest && document.activeElement.closest('#numpad')) return;
+          document.getElementById('numpad').classList.add('hidden-pad');
+        }, 180);
+      });
+    });
+    document.querySelectorAll('[data-quick]').forEach(btn => {
+      btn.addEventListener('mousedown', e => e.preventDefault());
+      btn.addEventListener('click', () => {
+        if (!activeField) return;
+        activeField.value = btn.dataset.quick;
+        activeField.dispatchEvent(new Event('input'));
+        entryMode = false;
+      });
+    });
+    document.querySelectorAll('#numpad [data-key]').forEach(btn => {
+      btn.addEventListener('mousedown', e => e.preventDefault());
+      btn.addEventListener('click', () => {
+        if (!activeField) return;
+        const key = btn.dataset.key;
+        let val = activeField.value || '';
+        if (key === 'back') {
+          activeField.value = val.slice(0, -1);
+          entryMode = true;
+        } else if (key === 'enter') {
+          activeField.blur();
+          document.getElementById('numpad').classList.add('hidden-pad');
+          return;
+        } else if (key === '.') {
+          if (!entryMode) { activeField.value = '0.'; entryMode = true; }
+          else if (val.indexOf('.') === -1) activeField.value = val + '.';
+        } else {
+          if (!entryMode) { activeField.value = key; entryMode = true; }
+          else activeField.value = val + key;
+        }
+        activeField.dispatchEvent(new Event('input'));
+      });
+    });
+  </script>
+</body>
+</html>
