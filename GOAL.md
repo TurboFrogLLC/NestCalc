@@ -30,8 +30,8 @@
   "branch_intent": "codex/ui-redesign-calc-gcode-shell",
   "execution_route": "codex-cli",
   "flow_id": "NC-20260810-5e79a800",
-  "goal_memory_commit": "0000000000000000000000000000000000000000",
-  "goal_sha256": "sha256:eaa5c21251b80da1ae319b5ca3f1ae183ab179206253f2deec61c7eb22e8ff35",
+  "goal_memory_commit": "8712c98e43ddb25d6f12c6b3b9eada0ff0d8b133",
+  "goal_sha256": "sha256:155c8eda9f6bfb47afb179d0beb342934c90796a2052530eff85db8ee5a5302a",
   "protected_surfaces": [
     "calculator math, nest-session transforms, and persisted value semantics",
     "AutoNest engine packing, ranking, counts, trim-edge policies, fallback guards, and search budget",
