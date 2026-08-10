@@ -1,8 +1,15 @@
 "use client";
 
-import { useEffect, useMemo, useState, type KeyboardEvent } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type KeyboardEvent,
+  type ReactNode,
+} from "react";
 import {
   ArrowLeftRight,
+  ChevronDown,
   Link2,
   Moon,
   RotateCcw,
@@ -55,6 +62,65 @@ const rotateBtnClass =
   "nestcalc-split-rotate-btn flex shrink-0 items-center gap-0.5 rounded-md border border-[var(--btn-border)] bg-[var(--btn-bg)] px-1.5 py-1 text-[10px] font-semibold leading-none text-[var(--btn-text)] transition-colors hover:border-[var(--accent-hover)] hover:bg-[var(--card)] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-[var(--btn-border)] disabled:hover:bg-[var(--btn-bg)] disabled:active:scale-100";
 
 type ActiveModule = "calculator" | "g-code";
+type CalculatorDisclosure = "presets" | "part" | "rem" | "gap" | "margins";
+
+interface CalculatorDisclosureSectionProps {
+  badge: string;
+  children: ReactNode;
+  disclosure: Exclude<CalculatorDisclosure, "presets">;
+  label: string;
+  open: boolean;
+  onToggle: () => void;
+}
+
+function CalculatorDisclosureSection({
+  badge,
+  children,
+  disclosure,
+  label,
+  open,
+  onToggle,
+}: CalculatorDisclosureSectionProps) {
+  const bodyId = `calculator-${disclosure}-disclosure-body`;
+
+  return (
+    <section
+      className="calculator-disclosure"
+      data-disclosure={disclosure}
+      data-open={open}
+      data-testid={`calculator-disclosure-${disclosure}`}
+    >
+      <button
+        aria-controls={bodyId}
+        aria-expanded={open}
+        className="calculator-disclosure-header"
+        onClick={onToggle}
+        type="button"
+      >
+        <span>{label}</span>
+        {!open ? (
+          <span className="calculator-disclosure-badge">{badge}</span>
+        ) : null}
+        <ChevronDown
+          aria-hidden="true"
+          className="calculator-disclosure-chevron"
+          strokeWidth={2}
+        />
+      </button>
+      <div
+        className="calculator-disclosure-body"
+        hidden={!open}
+        id={bodyId}
+      >
+        {children}
+      </div>
+    </section>
+  );
+}
+
+function disclosureValue(value: number | null): string {
+  return value === null || !Number.isFinite(value) ? "—" : String(value);
+}
 
 function moduleFromLocation(): ActiveModule {
   return window.location.hash === "#g-code" ? "g-code" : "calculator";
@@ -375,6 +441,15 @@ export function NestCalcApp() {
   const [autoNestSettingsOpen, setAutoNestSettingsOpen] = useState(false);
   const [activeModule, setActiveModule] =
     useState<ActiveModule>("calculator");
+  const [calculatorDisclosures, setCalculatorDisclosures] = useState<
+    Record<CalculatorDisclosure, boolean>
+  >({
+    presets: false,
+    part: true,
+    rem: false,
+    gap: false,
+    margins: false,
+  });
 
   useEffect(() => {
     const syncModuleFromLocation = () => {
@@ -501,6 +576,13 @@ export function NestCalcApp() {
     setActiveModule(nextModule);
   };
 
+  const toggleCalculatorDisclosure = (disclosure: CalculatorDisclosure) => {
+    setCalculatorDisclosures((current) => ({
+      ...current,
+      [disclosure]: !current[disclosure],
+    }));
+  };
+
   const handleModuleKeyDown = (
     event: KeyboardEvent<HTMLButtonElement>,
     module: ActiveModule,
@@ -544,9 +626,12 @@ export function NestCalcApp() {
         data-module={activeModule}
       >
         <header className="nestcalc-topbar flex h-10 shrink-0 items-center gap-2">
-          <h1 className="shrink-0 text-lg font-semibold tracking-tight">
-            <span className="text-[var(--foreground)]">Nest</span>
-            <span className="text-[var(--quick-value)]">Calc</span>
+          <h1
+            className="nestcalc-wordmark shrink-0 text-lg font-semibold tracking-tight"
+            data-testid="nestcalc-wordmark"
+          >
+            <span className="nestcalc-wordmark-nest">Nest</span>
+            <span className="nestcalc-wordmark-calc">Calc</span>
           </h1>
           <div className="ml-auto flex items-center gap-1">
             <AuthControls />
@@ -677,7 +762,14 @@ export function NestCalcApp() {
               ) : null}
             </section>
 
-            <PresetControls currentState={state} onReplaceState={setState} />
+            <PresetControls
+              currentState={state}
+              disclosureOpen={calculatorDisclosures.presets}
+              onDisclosureToggle={() =>
+                toggleCalculatorDisclosure("presets")
+              }
+              onReplaceState={setState}
+            />
 
             {isAutoNest && autoNestSettingsOpen ? (
               <AutoNestSettingsPanel
@@ -725,87 +817,116 @@ export function NestCalcApp() {
               </section>
             ) : null}
 
-            <XYInputRow
-              xLabel="X [PART]"
-              yLabel="Y [PART]"
-              xValue={inputs.partWidth}
-              yValue={inputs.partHeight}
-              unit={unit}
-              linked={inputs.partLinked}
-              onXChange={(value) =>
-                setInputs((current) =>
-                  updateManualField(current, "partWidth", value),
-                )
-              }
-              onYChange={(value) =>
-                setInputs((current) =>
-                  updateManualField(current, "partHeight", value),
-                )
-              }
-              onLinkToggle={() => setInputs(toggleManualPartLink)}
-              onSwap={() => setInputs(swapManualPart)}
-            />
-            <DualInputRow
-              leftLabel="X [REM]"
-              rightLabel="Y [REM]"
-              leftValue={inputs.remnantWidth}
-              rightValue={inputs.remnantHeight}
-              unit={unit}
-              onLeftChange={(value) => update({ remnantWidth: value })}
-              onRightChange={(value) => update({ remnantHeight: value })}
-            />
-            <XYInputRow
-              xLabel="X [GAP]"
-              yLabel="Y [GAP]"
-              xValue={inputs.gapX}
-              yValue={inputs.gapY}
-              unit={unit}
-              linked={inputs.gapLinked}
-              onXChange={(value) =>
-                setInputs((current) =>
-                  updateManualField(current, "gapX", value),
-                )
-              }
-              onYChange={(value) =>
-                setInputs((current) =>
-                  updateManualField(current, "gapY", value),
-                )
-              }
-              onLinkToggle={() => setInputs(toggleManualGapLink)}
-              onSwap={() => setInputs(swapManualGap)}
-            />
-            <p className="nestcalc-split-compact-label text-[11px] font-medium uppercase tracking-wider text-[var(--muted)]">
-              {isAutoNest ? "AutoNest Margins" : "Margins"}
-            </p>
-            <DualInputRow
-              leftLabel="Left"
-              rightLabel="Right"
-              leftValue={activeMargins.left}
-              rightValue={activeMargins.right}
-              unit={unit}
-              onLeftChange={(value) => updateMargin("left", value)}
-              onRightChange={(value) => updateMargin("right", value)}
-            />
-            <DualInputRow
-              leftLabel="Bottom"
-              rightLabel="Top"
-              leftValue={activeMargins.bottom}
-              rightValue={activeMargins.top}
-              unit={unit}
-              onLeftChange={(value) => updateMargin("bottom", value)}
-              onRightChange={(value) => updateMargin("top", value)}
-            />
-            <label className="nestcalc-split-compact-checkbox flex shrink-0 cursor-pointer items-center gap-2 text-xs text-[var(--muted)]">
-              <input
-                type="checkbox"
-                checked={inputs.moveMarginsWithRotation}
-                onChange={(event) =>
-                  update({ moveMarginsWithRotation: event.target.checked })
+            <CalculatorDisclosureSection
+              badge={`${disclosureValue(inputs.partWidth)} x ${disclosureValue(inputs.partHeight)} ${unit}`}
+              disclosure="part"
+              label="Part"
+              onToggle={() => toggleCalculatorDisclosure("part")}
+              open={calculatorDisclosures.part}
+            >
+              <XYInputRow
+                xLabel="X [PART]"
+                yLabel="Y [PART]"
+                xValue={inputs.partWidth}
+                yValue={inputs.partHeight}
+                unit={unit}
+                linked={inputs.partLinked}
+                onXChange={(value) =>
+                  setInputs((current) =>
+                    updateManualField(current, "partWidth", value),
+                  )
                 }
-                className="h-3.5 w-3.5 rounded border-[var(--input-border)] accent-[var(--accent)]"
+                onYChange={(value) =>
+                  setInputs((current) =>
+                    updateManualField(current, "partHeight", value),
+                  )
+                }
+                onLinkToggle={() => setInputs(toggleManualPartLink)}
+                onSwap={() => setInputs(swapManualPart)}
               />
-              Move margins with rotation
-            </label>
+            </CalculatorDisclosureSection>
+            <CalculatorDisclosureSection
+              badge={`${disclosureValue(inputs.remnantWidth)} x ${disclosureValue(inputs.remnantHeight)} ${unit}`}
+              disclosure="rem"
+              label="Rem"
+              onToggle={() => toggleCalculatorDisclosure("rem")}
+              open={calculatorDisclosures.rem}
+            >
+              <DualInputRow
+                leftLabel="X [REM]"
+                rightLabel="Y [REM]"
+                leftValue={inputs.remnantWidth}
+                rightValue={inputs.remnantHeight}
+                unit={unit}
+                onLeftChange={(value) => update({ remnantWidth: value })}
+                onRightChange={(value) => update({ remnantHeight: value })}
+              />
+            </CalculatorDisclosureSection>
+            <CalculatorDisclosureSection
+              badge={`${disclosureValue(inputs.gapX)} x ${disclosureValue(inputs.gapY)} ${unit}`}
+              disclosure="gap"
+              label="Gap"
+              onToggle={() => toggleCalculatorDisclosure("gap")}
+              open={calculatorDisclosures.gap}
+            >
+              <XYInputRow
+                xLabel="X [GAP]"
+                yLabel="Y [GAP]"
+                xValue={inputs.gapX}
+                yValue={inputs.gapY}
+                unit={unit}
+                linked={inputs.gapLinked}
+                onXChange={(value) =>
+                  setInputs((current) =>
+                    updateManualField(current, "gapX", value),
+                  )
+                }
+                onYChange={(value) =>
+                  setInputs((current) =>
+                    updateManualField(current, "gapY", value),
+                  )
+                }
+                onLinkToggle={() => setInputs(toggleManualGapLink)}
+                onSwap={() => setInputs(swapManualGap)}
+              />
+            </CalculatorDisclosureSection>
+            <CalculatorDisclosureSection
+              badge={`L${disclosureValue(activeMargins.left)} R${disclosureValue(activeMargins.right)} B${disclosureValue(activeMargins.bottom)} T${disclosureValue(activeMargins.top)} ${unit}`}
+              disclosure="margins"
+              label={isAutoNest ? "AutoNest Margins" : "Margins"}
+              onToggle={() => toggleCalculatorDisclosure("margins")}
+              open={calculatorDisclosures.margins}
+            >
+              <DualInputRow
+                leftLabel="Left"
+                rightLabel="Right"
+                leftValue={activeMargins.left}
+                rightValue={activeMargins.right}
+                unit={unit}
+                onLeftChange={(value) => updateMargin("left", value)}
+                onRightChange={(value) => updateMargin("right", value)}
+              />
+              <DualInputRow
+                leftLabel="Bottom"
+                rightLabel="Top"
+                leftValue={activeMargins.bottom}
+                rightValue={activeMargins.top}
+                unit={unit}
+                onLeftChange={(value) => updateMargin("bottom", value)}
+                onRightChange={(value) => updateMargin("top", value)}
+              />
+              <label className="nestcalc-split-compact-checkbox flex shrink-0 cursor-pointer items-center gap-2 text-xs text-[var(--muted)]">
+                <input
+                  type="checkbox"
+                  checked={inputs.moveMarginsWithRotation}
+                  onChange={(event) =>
+                    update({ moveMarginsWithRotation: event.target.checked })
+                  }
+                  className="h-3.5 w-3.5 rounded border-[var(--input-border)] accent-[var(--accent)]"
+                />
+                Move margins with rotation
+              </label>
+            </CalculatorDisclosureSection>
           </div>
 
           <section className="nestcalc-calculator-stage nestcalc-split-preview flex min-h-0 flex-col rounded-2xl border border-[var(--card-border)] bg-[var(--card)] p-2">

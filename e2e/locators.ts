@@ -169,6 +169,33 @@ export function calculatorSheet(page: Page) {
   return page.getByTestId("calculator-sheet");
 }
 
+export function calculatorDisclosure(
+  page: Page,
+  disclosure: "presets" | "part" | "rem" | "gap" | "margins",
+) {
+  return page.getByTestId(`calculator-disclosure-${disclosure}`);
+}
+
+export function calculatorDisclosureButton(
+  page: Page,
+  disclosure: "presets" | "part" | "rem" | "gap" | "margins",
+) {
+  const label =
+    disclosure === "presets"
+      ? /^Presets$/
+      : disclosure === "part"
+        ? /^Part\b/
+        : disclosure === "rem"
+          ? /^Rem\b/
+          : disclosure === "gap"
+            ? /^Gap\b/
+            : /^(?:AutoNest )?Margins\b/;
+
+  return calculatorDisclosure(page, disclosure).getByRole("button", {
+    name: label,
+  });
+}
+
 export function gcodeTab(page: Page) {
   return page.getByRole("tab", { name: "G-code", exact: true });
 }

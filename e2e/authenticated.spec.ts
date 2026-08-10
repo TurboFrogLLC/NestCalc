@@ -15,6 +15,8 @@ import {
   autoNestTrimLine,
   autoNestTrimSummary,
   autoNestToggle,
+  calculatorDisclosure,
+  calculatorDisclosureButton,
   calculatorSheet,
   calculatorTab,
   gcodeAngleInput,
@@ -105,6 +107,29 @@ async function waitForPresetStorage(page: Page) {
   await expect(savePresetButton(page)).toBeEnabled();
 }
 
+async function openCalculatorDisclosure(
+  page: Page,
+  disclosure: "presets" | "part" | "rem" | "gap" | "margins",
+) {
+  const button = calculatorDisclosureButton(page, disclosure);
+  if ((await button.getAttribute("aria-expanded")) !== "true") {
+    await button.click();
+  }
+  await expect(button).toHaveAttribute("aria-expanded", "true");
+}
+
+async function openAllCalculatorDisclosures(page: Page) {
+  for (const disclosure of [
+    "presets",
+    "part",
+    "rem",
+    "gap",
+    "margins",
+  ] as const) {
+    await openCalculatorDisclosure(page, disclosure);
+  }
+}
+
 async function deletePresetDatabase(page: Page) {
   await page.evaluate(async () => {
     await new Promise<void>((resolve, reject) => {
@@ -154,6 +179,7 @@ async function openCleanAuthenticatedApp(
     await expect(gcodeRegion(page)).toBeVisible();
   } else {
     await waitForPresetStorage(page);
+    await openAllCalculatorDisclosures(page);
   }
 }
 
@@ -182,11 +208,25 @@ async function saveNamedPreset(
 }
 
 async function assertNoHorizontalOverflow(page: Page) {
+  const metrics = await page.evaluate(() => ({
+    innerWidth: window.innerWidth,
+    offenders: Array.from(document.querySelectorAll<HTMLElement>("body *"))
+      .map((element) => {
+        const bounds = element.getBoundingClientRect();
+        return {
+          className: element.className?.toString().slice(0, 120) ?? "",
+          right: Math.round(bounds.right * 100) / 100,
+          testId: element.dataset.testid ?? "",
+        };
+      })
+      .filter((element) => element.right > window.innerWidth + 0.5)
+      .slice(0, 5),
+    scrollWidth: document.documentElement.scrollWidth,
+  }));
   expect(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth <= window.innerWidth,
-    ),
-  ).toBe(true);
+    metrics.scrollWidth,
+    `Horizontal overflow: ${JSON.stringify(metrics)}`,
+  ).toBeLessThanOrEqual(metrics.innerWidth);
 }
 
 async function expectSelectedModuleTabVisual(
@@ -238,7 +278,7 @@ async function expectSelectedModuleTabVisual(
 async function captureShopHelpersScreenshot(page: Page, filename: string) {
   const outputDirectory = path.join(
     __dirname,
-    "../output/playwright/ui-redesign-v1",
+    "../output/playwright/ui-dark-prototype-parity",
   );
   fs.mkdirSync(outputDirectory, { recursive: true });
   await page.screenshot({
@@ -437,6 +477,7 @@ test("authenticated user reaches the NestCalc calculator shell", async ({
 
   await expect(page.getByRole("heading", { name: "NestCalc" })).toBeVisible();
   await expect(page.getByLabel("X [PART]")).toBeVisible();
+  await openCalculatorDisclosure(page, "rem");
   await expect(page.getByLabel("Y [REM]")).toBeVisible();
   await expect(visiblePartsSummary(page)).toBeVisible();
 
@@ -498,6 +539,206 @@ test("authenticated user reaches the NestCalc calculator shell", async ({
   ).toBeHidden();
   await expect(rotatePartButton(page)).toBeEnabled();
   await expect(rotateRemButton(page)).toBeEnabled();
+});
+
+test("dark prototype chrome, disclosures, and module accents preserve calculator state", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.addInitScript(clearNestStorage);
+  await page.goto("/");
+  await waitForPresetStorage(page);
+
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const root = getComputedStyle(document.documentElement);
+        return {
+          background: root.getPropertyValue("--background").trim(),
+          card: root.getPropertyValue("--card").trim(),
+          input: root.getPropertyValue("--input-bg").trim(),
+          raised: root.getPropertyValue("--surface-raised").trim(),
+        };
+      }),
+    )
+    .toEqual({
+      background: "#08060d",
+      card: "#0e0c14",
+      input: "#16121f",
+      raised: "#1e1a2a",
+    });
+  await expect(page.locator("body")).toHaveCSS(
+    "background-color",
+    "rgb(8, 6, 13)",
+  );
+  await expect(page.getByRole("tablist", { name: "NestCalc modules" })).toHaveCSS(
+    "background-color",
+    "rgb(14, 12, 20)",
+  );
+  await expect(page.getByLabel("X [PART]")).toHaveCSS(
+    "background-color",
+    "rgb(22, 18, 31)",
+  );
+  await expect(calculatorDisclosureButton(page, "part")).toHaveCSS(
+    "background-color",
+    "rgb(30, 26, 42)",
+  );
+
+  const wordmark = page.getByTestId("nestcalc-wordmark");
+  await expect(wordmark.locator("span").first()).toHaveCSS(
+    "color",
+    "rgb(247, 244, 255)",
+  );
+  await expect(wordmark.locator("span").last()).toHaveCSS(
+    "color",
+    "rgb(83, 139, 236)",
+  );
+  await expect(wordmark.locator("span").last()).toHaveCSS(
+    "font-style",
+    "italic",
+  );
+  await expect(calculatorTab(page)).toHaveCSS(
+    "background-color",
+    "rgb(83, 139, 236)",
+  );
+  await expect(savePresetButton(page)).toHaveCSS(
+    "background-color",
+    "rgb(83, 139, 236)",
+  );
+  await expect(
+    calculatorDisclosure(page, "rem").locator(".calculator-disclosure-chevron"),
+  ).toHaveCSS("color", "rgb(83, 139, 236)");
+  await expect(manualNestPreview(page)).toHaveCSS(
+    "border-color",
+    "rgba(247, 244, 255, 0.72)",
+  );
+  await expect(manualNestPreview(page).locator("svg rect").first()).toHaveCSS(
+    "stroke-width",
+    "1px",
+  );
+  await expect(manualNestPreview(page).locator("svg rect").first()).toHaveCSS(
+    "vector-effect",
+    "non-scaling-stroke",
+  );
+
+  const defaults = {
+    presets: "false",
+    part: "true",
+    rem: "false",
+    gap: "false",
+    margins: "false",
+  } as const;
+  for (const [disclosure, expanded] of Object.entries(defaults) as Array<
+    [keyof typeof defaults, string]
+  >) {
+    const button = calculatorDisclosureButton(page, disclosure);
+    await expect(button).toHaveAttribute("aria-expanded", expanded);
+    await expect(button).toHaveAttribute("aria-controls", /.+/);
+    await button.focus();
+    await expect(button).toBeFocused();
+  }
+  for (const disclosure of ["rem", "gap", "margins"] as const) {
+    await expect(
+      calculatorDisclosure(page, disclosure).locator(
+        ".calculator-disclosure-badge",
+      ),
+    ).not.toBeEmpty();
+  }
+
+  await page.getByLabel("X [PART]").fill("7.25");
+  const retainedParts = await visiblePartsSummary(page).textContent();
+  await calculatorDisclosureButton(page, "part").press("Enter");
+  await expect(calculatorDisclosureButton(page, "part")).toHaveAttribute(
+    "aria-expanded",
+    "false",
+  );
+  await expect(
+    calculatorDisclosure(page, "part").locator(".calculator-disclosure-badge"),
+  ).toContainText("7.25 x");
+  await captureShopHelpersScreenshot(page, "calculator-collapsed-sections.png");
+  await calculatorDisclosureButton(page, "part").press(" ");
+  await expect(page.getByLabel("X [PART]")).toHaveValue("7.25");
+  await expect(visiblePartsSummary(page)).toHaveText(retainedParts ?? "");
+
+  await calculatorDisclosureButton(page, "presets").press("Enter");
+  await expect(savedPresetChips(page)).toBeVisible();
+  await calculatorDisclosureButton(page, "rem").click();
+  await expect(page.getByLabel("X [REM]")).toBeVisible();
+  await calculatorDisclosureButton(page, "gap").press("Enter");
+  await expect(page.getByLabel("X [GAP]")).toBeVisible();
+  await calculatorDisclosureButton(page, "margins").click();
+  await expect(mainMarginInput(page, "Left")).toBeVisible();
+
+  await calculatorDisclosureButton(page, "gap").focus();
+  await expect(calculatorDisclosureButton(page, "gap")).toHaveCSS(
+    "outline-color",
+    "rgb(83, 139, 236)",
+  );
+  await captureShopHelpersScreenshot(page, "calculator-dark-desktop.png");
+
+  await gcodeTab(page).click();
+  await expect(gcodeTab(page)).toHaveCSS(
+    "background-color",
+    "rgb(238, 140, 60)",
+  );
+  await expect(gcodeRotationCard(page).locator("h3")).toHaveCSS(
+    "background-color",
+    "rgb(217, 120, 48)",
+  );
+  await expect(gcodeGenerateButton(page)).toHaveCSS(
+    "background-color",
+    "rgb(238, 140, 60)",
+  );
+  await expect(gcodeRegion(page).locator(".gcode-eyebrow").first()).toHaveCSS(
+    "color",
+    "rgb(238, 140, 60)",
+  );
+  await expect
+    .poll(() =>
+      gcodeRegion(page).evaluate((element) => {
+        const styles = getComputedStyle(element.closest(".nestcalc-app-shell")!);
+        return {
+          duration: styles.getPropertyValue("--shell-motion-duration").trim(),
+          easing: styles.getPropertyValue("--shell-motion-easing").trim(),
+        };
+      }),
+    )
+    .toEqual({
+      duration: ".72s",
+      easing: "cubic-bezier(.34, 1.45, .64, 1)",
+    });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect
+    .poll(() =>
+      gcodeSheet(page).evaluate((element) =>
+        getComputedStyle(element).transitionDuration,
+      ),
+    )
+    .toMatch(/^(?:0\.01ms|0\.00001s|1e-05s)$/);
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await captureShopHelpersScreenshot(page, "gcode-dark-desktop.png");
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(gcodeTab(page)).toHaveCSS(
+    "background-color",
+    "rgb(238, 140, 60)",
+  );
+  await captureShopHelpersScreenshot(page, "gcode-dark-mobile.png");
+  await calculatorTab(page).click();
+  for (const disclosure of ["presets", "rem", "gap", "margins"] as const) {
+    await calculatorDisclosureButton(page, disclosure).click();
+    await expect(calculatorDisclosureButton(page, disclosure)).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    );
+  }
+  await expect(calculatorTab(page)).toHaveCSS(
+    "background-color",
+    "rgb(83, 139, 236)",
+  );
+  await captureShopHelpersScreenshot(page, "calculator-dark-mobile.png");
+  await assertNoHorizontalOverflow(page);
 });
 
 test("authenticated user sees computed AutoNest preview and returns to manual preview", async ({
@@ -686,6 +927,7 @@ test("main margins control active AutoNest settings and preserve Manual margins"
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.addInitScript(seedGlobalMarginState);
   await page.goto("/");
+  await openCalculatorDisclosure(page, "margins");
 
   await expect(page.getByText("AutoNest Margins", { exact: true })).toBeVisible();
   for (const side of ["Left", "Right", "Top", "Bottom"] as const) {
@@ -752,6 +994,7 @@ test("main margins control active AutoNest settings and preserve Manual margins"
   await expect(mainMarginInput(page, "Left")).toHaveValue("0.5");
   const persistedPage = await page.context().newPage();
   await persistedPage.goto("/");
+  await openCalculatorDisclosure(persistedPage, "margins");
   await expect(mainMarginInput(persistedPage, "Top")).toHaveValue("0.75");
   await persistedPage.close();
 });
@@ -987,6 +1230,7 @@ test("preset manager renames, confirms deletion, reorders, reloads, and excludes
 
   await page.reload();
   await waitForPresetStorage(page);
+  await openCalculatorDisclosure(page, "presets");
   await expect(presetChip(page, "Foreign Owner Only")).toHaveCount(0);
   await expect
     .poll(() =>
@@ -1162,6 +1406,7 @@ test("an in-flight preset load cannot commit stale state across a sign-out gener
   await expect(page.getByLabel("X [PART]")).toHaveValue("99");
   await expect(namedPresetsRegion(page)).toHaveAttribute("aria-busy", "false");
   await expect(savePresetButton(page)).toBeEnabled();
+  await openCalculatorDisclosure(page, "presets");
   await expect(namedPresetsRegion(page).getByRole("status")).toHaveText(
     "1 saved preset loaded.",
   );
@@ -1195,6 +1440,7 @@ test("preset storage open failures are surfaced without claiming persistence", a
     });
   });
   await page.goto("/");
+  await openCalculatorDisclosure(page, "presets");
 
   await expect(namedPresetsRegion(page).getByRole("alert")).toContainText(
     "Preset storage could not be opened.",
@@ -1405,9 +1651,16 @@ test("redesigned Calculator and G-code shells stay reachable without mobile over
   await expect(gcodeExpandButton(page)).toBeFocused();
   await gcodeExpandButton(page).press("Enter");
   await expect(gcodeCollapseButton(page)).toBeVisible();
+  await expect(gcodeStage(page)).toBeHidden();
   await assertNoHorizontalOverflow(page);
   await gcodeCollapseButton(page).press("Enter");
   await expect(gcodeExpandButton(page)).toBeVisible();
+
+  await page.setViewportSize({ width: 844, height: 390 });
+  await assertNoHorizontalOverflow(page);
+  await gcodeExpandButton(page).click();
+  await expect(gcodeStage(page)).toBeHidden();
+  await assertNoHorizontalOverflow(page);
 });
 
 test("supported G-code generates exact output, previews bounds, copies, downloads, and blocks stale output", async ({

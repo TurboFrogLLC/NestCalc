@@ -33,6 +33,8 @@ const compactButtonClass =
 
 interface PresetControlsProps {
   currentState: NestAppState;
+  disclosureOpen: boolean;
+  onDisclosureToggle: () => void;
   onReplaceState: (state: NestAppState) => void;
 }
 
@@ -108,6 +110,8 @@ function movePresetIds(
 
 export function PresetControls({
   currentState,
+  disclosureOpen,
+  onDisclosureToggle,
   onReplaceState,
 }: PresetControlsProps) {
   const {
@@ -133,6 +137,7 @@ export function PresetControls({
   const [showNameValidation, setShowNameValidation] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<PresetRecord | null>(null);
   const helperId = useId();
+  const disclosureBodyId = useId();
   const storageDescriptionId = useId();
   const statusId = useId();
   const sheetId = useId();
@@ -244,13 +249,62 @@ export function PresetControls({
       aria-label="Named presets"
       aria-describedby={`${helperId} ${storageDescriptionId}`}
       aria-busy={isLoading || isBusy}
-      className="relative flex shrink-0 flex-col gap-1 rounded-lg border border-[var(--card-border)] bg-[var(--card)] px-2 py-1.5"
+      className="calculator-disclosure relative shrink-0"
+      data-disclosure="presets"
+      data-open={disclosureOpen}
+      data-testid="calculator-disclosure-presets"
     >
+      <div className="calculator-disclosure-header calculator-presets-header">
+        <button
+          aria-controls={disclosureBodyId}
+          aria-expanded={disclosureOpen}
+          className="calculator-presets-toggle"
+          onClick={onDisclosureToggle}
+          type="button"
+        >
+          <span>Presets</span>
+          <ChevronDown
+            aria-hidden="true"
+            className="calculator-disclosure-chevron"
+            strokeWidth={2}
+          />
+        </button>
+        <div className="calculator-presets-actions">
+          <button
+            ref={saveButtonRef}
+            type="button"
+            disabled={controlsDisabled}
+            onClick={() => openSaveDialog("rail")}
+            className={primaryButtonClass}
+          >
+            <Save aria-hidden="true" className="h-3 w-3" strokeWidth={2} />
+            Save Preset
+          </button>
+          <button
+            ref={manageButtonRef}
+            type="button"
+            aria-expanded={isSheetOpen}
+            aria-controls={sheetId}
+            disabled={controlsDisabled}
+            onClick={() => setIsSheetOpen((open) => !open)}
+            className={secondaryButtonClass}
+          >
+            <Settings2 aria-hidden="true" className="h-3 w-3" strokeWidth={2} />
+            Manage
+          </button>
+        </div>
+      </div>
+
+      <div
+        className="calculator-disclosure-body"
+        hidden={!disclosureOpen}
+        id={disclosureBodyId}
+      >
       <div className="flex min-w-0 items-center gap-1.5">
         <div
           role="list"
           aria-label="Saved preset chips"
-          className="flex min-w-0 flex-1 snap-x items-center gap-1 overflow-x-auto overscroll-x-contain whitespace-nowrap py-0.5"
+          className="calculator-preset-chips flex min-w-0 flex-1 snap-x items-center gap-1 overflow-x-auto overscroll-x-contain whitespace-nowrap py-0.5"
         >
           {isLoading ? (
             <span className="px-1 text-[11px] text-[var(--muted)]">
@@ -289,28 +343,6 @@ export function PresetControls({
           )}
         </div>
 
-        <button
-          ref={saveButtonRef}
-          type="button"
-          disabled={controlsDisabled}
-          onClick={() => openSaveDialog("rail")}
-          className={primaryButtonClass}
-        >
-          <Save aria-hidden="true" className="h-3 w-3" strokeWidth={2} />
-          Save Preset
-        </button>
-        <button
-          ref={manageButtonRef}
-          type="button"
-          aria-expanded={isSheetOpen}
-          aria-controls={sheetId}
-          disabled={controlsDisabled}
-          onClick={() => setIsSheetOpen((open) => !open)}
-          className={secondaryButtonClass}
-        >
-          <Settings2 aria-hidden="true" className="h-3 w-3" strokeWidth={2} />
-          Manage
-        </button>
       </div>
 
       <p
@@ -336,6 +368,7 @@ export function PresetControls({
           {error}
         </p>
       ) : null}
+      </div>
 
       {isSheetOpen && isAvailable ? (
         <aside
