@@ -632,6 +632,22 @@ function insertionStart(text: string, executableEnd: number): number {
   return index;
 }
 
+export interface PartSize {
+  width: number;
+  height: number;
+}
+
+export function partSizeFromBounds(bounds: Bounds): PartSize | null {
+  const width = bounds.maxX - bounds.minX;
+  const height = bounds.maxY - bounds.minY;
+
+  if (![width, height].every((span) => Number.isFinite(span) && span >= 0)) {
+    return null;
+  }
+
+  return { width, height };
+}
+
 export function rotateBounds(bounds: Bounds, angleDegrees: number): Bounds {
   if (!Number.isFinite(angleDegrees)) {
     throw new RangeError("Rotation angle must be finite.");

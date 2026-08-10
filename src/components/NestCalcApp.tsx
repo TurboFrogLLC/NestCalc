@@ -14,6 +14,7 @@ import { useNestAppState } from "@/hooks/useNestInputs";
 import { useTheme } from "@/hooks/useTheme";
 import { effectiveAutoNestMargins } from "@/lib/autoNestEngine";
 import {
+  applyPartSizeToNestSession,
   clearManualInputs,
   createNestSession,
   rotateManualPart,
@@ -863,7 +864,13 @@ export function NestCalcApp() {
           id="g-code-panel"
           role="tabpanel"
         >
-          <GCodeRotation />
+          <GCodeRotation
+            onApplyPartSize={(partSize, declaredUnit) => {
+              setState((current) =>
+                applyPartSizeToNestSession(current, partSize, declaredUnit),
+              );
+            }}
+          />
         </div>
       </div>
     </QuickValuesFocusProvider>

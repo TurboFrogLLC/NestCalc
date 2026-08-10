@@ -2,8 +2,39 @@ import { describe, expect, it } from "vitest";
 import {
   analyzeGCode,
   generateRotatedGCode,
+  partSizeFromBounds,
   rotateBounds,
 } from "./gcodeRotation";
+import {
+  applyPartSizeToNestSession,
+  updateManualField,
+} from "./nestSession";
+import type { NestAppState } from "./types";
+
+const FILL_SESSION: NestAppState = {
+  version: 3,
+  mode: "manual",
+  manualInputs: {
+    partWidth: 2,
+    partHeight: 1,
+    remnantWidth: 10,
+    remnantHeight: 5,
+    margins: { left: 0.5, right: 0.25, top: 0.125, bottom: 0 },
+    gapX: 1,
+    gapY: 0.5,
+    partLinked: true,
+    gapLinked: false,
+    moveMarginsWithRotation: false,
+    unit: "in",
+  },
+  autoNestSettings: {
+    globalClampMargin: 0.5,
+    trimEdgePolicy: "open",
+    sharedTrimClearance: 0.1,
+    overrideGlobalMargins: true,
+    marginOverrides: { left: 0.5, right: null, top: 0.25, bottom: 0 },
+  },
+};
 
 // These are sanitized NC motion/control bodies copied from the local ACS
 // fixture. Headers and identifying metadata are intentionally excluded.
@@ -366,6 +397,92 @@ function maskMotionNumbers(source: string): string {
   );
 }
 
+describe("partSizeFromBounds", () => {
+  it("uses source-bounds spans regardless of negative or offset origins", () => {
+    expect(
+      partSizeFromBounds({ minX: -3, minY: 10, maxX: 7, maxY: 14 }),
+    ).toEqual({ width: 10, height: 4 });
+  });
+
+  it("rejects non-finite or reversed bounds", () => {
+    expect(
+      partSizeFromBounds({ minX: 0, minY: 0, maxX: Number.NaN, maxY: 1 }),
+    ).toBeNull();
+    expect(
+      partSizeFromBounds({ minX: 2, minY: 0, maxX: 1, maxY: 1 }),
+    ).toBeNull();
+  });
+
+  it("keeps zero spans explicit so the UI can disable Fill", () => {
+    expect(
+      partSizeFromBounds({ minX: 2, minY: -1, maxX: 2, maxY: 3 }),
+    ).toEqual({ width: 0, height: 4 });
+  });
+});
+
+describe("G-code part-size application", () => {
+  it("converts the existing session before applying a differently declared unit", () => {
+    const next = applyPartSizeToNestSession(
+      FILL_SESSION,
+      { width: 50, height: 25 },
+      "mm",
+    );
+
+    expect(next.manualInputs).toMatchObject({
+      unit: "mm",
+      partWidth: 50,
+      partHeight: 25,
+      remnantWidth: 254,
+      remnantHeight: 127,
+      gapX: 25.4,
+      gapY: 12.7,
+      margins: {
+        left: 12.7,
+        right: 6.35,
+        top: 3.175,
+        bottom: 0,
+      },
+    });
+    expect(next.autoNestSettings).toMatchObject({
+      globalClampMargin: 12.7,
+      sharedTrimClearance: 2.54,
+      marginOverrides: { left: 12.7, right: null, top: 6.35, bottom: 0 },
+    });
+  });
+
+  it("applies same-unit part dimensions without converting the session", () => {
+    const next = applyPartSizeToNestSession(
+      FILL_SESSION,
+      { width: 3, height: 2 },
+      "in",
+    );
+
+    expect(next.manualInputs).toMatchObject({
+      unit: "in",
+      partWidth: 3,
+      partHeight: 2,
+      remnantWidth: 10,
+      remnantHeight: 5,
+      gapX: 1,
+      gapY: 0.5,
+      margins: FILL_SESSION.manualInputs.margins,
+    });
+    expect(next.autoNestSettings).toBe(FILL_SESSION.autoNestSettings);
+  });
+
+  it("unlinks unequal filled dimensions before a later single-axis edit", () => {
+    const filled = applyPartSizeToNestSession(
+      FILL_SESSION,
+      { width: 3, height: 2 },
+      "in",
+    );
+    const edited = updateManualField(filled.manualInputs, "partWidth", 4);
+
+    expect(filled.manualInputs.partLinked).toBe(false);
+    expect(edited).toMatchObject({ partWidth: 4, partHeight: 2 });
+  });
+});
+
 describe("rotateBounds", () => {
   it("rotates all four source-bound corners around code origin", () => {
     expect(
@@ -532,6 +649,21 @@ describe("plotter-only G-code rotation", () => {
 });
 
 describe("golden ACS program bodies", () => {
+  it("keeps source spans stable for the sanitized golden bodies", () => {
+    const sizes = GOLDEN_PROGRAMS.map((program) => {
+      const analysis = analyzeGCode(program);
+      return analysis.ok ? partSizeFromBounds(analysis.bounds) : analysis;
+    });
+
+    expect(sizes).toEqual([
+      { width: 1.965, height: 0.99 },
+      { width: 1.492502118522956, height: 1.492502118522956 },
+      { width: 1.25, height: 1.62 },
+      { width: 2.2699944475703013, height: 2.2699944475703018 },
+      { width: 2.5448294292018443, height: 0.7682594292018445 },
+    ]);
+  });
+
   it("generates all five local program bodies at 0, 90, and -90 with zero alarms", () => {
     expect(GOLDEN_PROGRAMS).toHaveLength(5);
 
