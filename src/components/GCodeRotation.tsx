@@ -10,12 +10,15 @@ import {
 import {
   analyzeGCode,
   generateRotatedGCode,
+  partSizeFromBounds,
   rotateBounds,
   type Bounds,
   type GCodeAnalysis,
   type GCodeDiagnostic,
   type GCodeGeneration,
+  type PartSize,
 } from "@/lib/gcodeRotation";
+import type { Unit } from "@/lib/types";
 
 const SOURCE_DEBOUNCE_MS = 50;
 const OUTPUT_FILENAME = "nestcalc-rotated.nc";
@@ -30,6 +33,10 @@ const secondaryButtonClass =
   "rounded-lg border border-[var(--btn-border)] bg-[var(--btn-bg)] px-3 py-2 text-sm font-semibold text-[var(--btn-text)] transition-colors hover:border-[var(--accent-hover)] hover:text-[var(--accent)] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100";
 
 type SuccessfulGeneration = Extract<GCodeGeneration, { ok: true }>;
+
+interface GCodeRotationProps {
+  onApplyPartSize?: (partSize: PartSize, unit: Unit) => void;
+}
 
 interface SvgViewport {
   minX: number;
@@ -163,9 +170,10 @@ function BoundsPreview({ bounds }: { bounds: Bounds }) {
   );
 }
 
-export function GCodeRotation() {
+export function GCodeRotation({ onApplyPartSize }: GCodeRotationProps) {
   const [source, setSource] = useState("");
   const [angleText, setAngleText] = useState("0");
+  const [declaredUnit, setDeclaredUnit] = useState<Unit>("in");
   const [analysis, setAnalysis] = useState<GCodeAnalysis>(() =>
     analyzeGCode(""),
   );
@@ -177,6 +185,7 @@ export function GCodeRotation() {
     GCodeDiagnostic[]
   >([]);
   const [angleError, setAngleError] = useState<string | null>(null);
+  const [fillStatus, setFillStatus] = useState<string | null>(null);
   const [outputStatus, setOutputStatus] = useState<string | null>(null);
 
   const sourceRef = useRef(source);
@@ -267,6 +276,7 @@ export function GCodeRotation() {
     setOutputStale(true);
     outputFreshRef.current = false;
     setGenerationDiagnostics([]);
+    setFillStatus(null);
     setOutputStatus(null);
 
     if (parseTimerRef.current !== null) {
@@ -328,6 +338,26 @@ export function GCodeRotation() {
   };
 
   const outputActionsEnabled = generated !== null && !outputStale;
+  const sourcePartSize =
+    !parsePending && analysis.ok
+      ? partSizeFromBounds(analysis.bounds)
+      : null;
+  const fillPartSizeEnabled =
+    onApplyPartSize !== undefined &&
+    sourcePartSize !== null &&
+    sourcePartSize.width > 0 &&
+    sourcePartSize.height > 0;
+
+  const handleFillPartSize = () => {
+    if (!fillPartSizeEnabled || sourcePartSize === null || !onApplyPartSize) {
+      return;
+    }
+
+    onApplyPartSize(sourcePartSize, declaredUnit);
+    setFillStatus(
+      `Filled ${previewNumber(sourcePartSize.width)} x ${previewNumber(sourcePartSize.height)} ${declaredUnit.toUpperCase()}.`,
+    );
+  };
 
   const handleCopy = async () => {
     if (
@@ -432,6 +462,68 @@ export function GCodeRotation() {
             />
             <p className="mt-1 text-[11px] text-[var(--muted)]" id="gcode-source-help">
               Requires explicit G90 and G20 or G21 before transformed motion.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-end gap-2 rounded-lg border border-[var(--card-border)] bg-[var(--card)] p-2">
+            <fieldset className="min-w-36">
+              <legend className="mb-1 text-xs font-medium uppercase tracking-wider text-[var(--muted)]">
+                Program unit
+              </legend>
+              <div className="grid grid-cols-2 overflow-hidden rounded-lg border border-[var(--btn-border)]">
+                {(["in", "mm"] as const).map((unitOption, index) => {
+                  const selected = declaredUnit === unitOption;
+
+                  return (
+                    <label
+                      className={`cursor-pointer px-3 py-2 text-center font-mono text-xs font-bold uppercase transition-colors focus-within:outline-2 focus-within:outline-offset-[-2px] focus-within:outline-[var(--accent)] ${
+                        index === 0 ? "border-r border-[var(--btn-border)]" : ""
+                      } ${
+                        selected
+                          ? "bg-[var(--accent)] text-[var(--background)]"
+                          : "bg-[var(--btn-bg)] text-[var(--btn-text)] hover:text-[var(--accent)]"
+                      }`}
+                      key={unitOption}
+                    >
+                      <input
+                        checked={selected}
+                        className="sr-only"
+                        name="gcode-program-unit"
+                        onChange={() => {
+                          setDeclaredUnit(unitOption);
+                          setFillStatus(null);
+                        }}
+                        type="radio"
+                        value={unitOption}
+                      />
+                      {unitOption.toUpperCase()}
+                    </label>
+                  );
+                })}
+              </div>
+            </fieldset>
+            <button
+              aria-describedby="gcode-fill-part-size-help"
+              className={primaryButtonClass}
+              data-testid="gcode-fill-part-size"
+              disabled={!fillPartSizeEnabled}
+              onClick={handleFillPartSize}
+              type="button"
+            >
+              Fill part size
+            </button>
+            <p
+              aria-live="polite"
+              className="min-w-48 flex-1 text-xs leading-relaxed text-[var(--muted)]"
+              data-testid="gcode-fill-part-size-status"
+              id="gcode-fill-part-size-help"
+            >
+              {fillStatus ??
+                (sourcePartSize === null
+                  ? "Analyze source G-code to enable Fill."
+                  : sourcePartSize.width === 0 || sourcePartSize.height === 0
+                    ? "Source must span both X and Y before Fill."
+                    : `${previewNumber(sourcePartSize.width)} x ${previewNumber(sourcePartSize.height)} ${declaredUnit.toUpperCase()} from source bounds.`)}
             </p>
           </div>
 

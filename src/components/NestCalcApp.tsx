@@ -863,7 +863,16 @@ export function NestCalcApp() {
           id="g-code-panel"
           role="tabpanel"
         >
-          <GCodeRotation />
+          <GCodeRotation
+            onApplyPartSize={(partSize, declaredUnit) => {
+              setInputs((current) => ({
+                ...current,
+                partWidth: partSize.width,
+                partHeight: partSize.height,
+                unit: declaredUnit,
+              }));
+            }}
+          />
         </div>
       </div>
     </QuickValuesFocusProvider>

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   analyzeGCode,
   generateRotatedGCode,
+  partSizeFromBounds,
   rotateBounds,
 } from "./gcodeRotation";
 
@@ -366,6 +367,29 @@ function maskMotionNumbers(source: string): string {
   );
 }
 
+describe("partSizeFromBounds", () => {
+  it("uses source-bounds spans regardless of negative or offset origins", () => {
+    expect(
+      partSizeFromBounds({ minX: -3, minY: 10, maxX: 7, maxY: 14 }),
+    ).toEqual({ width: 10, height: 4 });
+  });
+
+  it("rejects non-finite or reversed bounds", () => {
+    expect(
+      partSizeFromBounds({ minX: 0, minY: 0, maxX: Number.NaN, maxY: 1 }),
+    ).toBeNull();
+    expect(
+      partSizeFromBounds({ minX: 2, minY: 0, maxX: 1, maxY: 1 }),
+    ).toBeNull();
+  });
+
+  it("keeps zero spans explicit so the UI can disable Fill", () => {
+    expect(
+      partSizeFromBounds({ minX: 2, minY: -1, maxX: 2, maxY: 3 }),
+    ).toEqual({ width: 0, height: 4 });
+  });
+});
+
 describe("rotateBounds", () => {
   it("rotates all four source-bound corners around code origin", () => {
     expect(
@@ -532,6 +556,21 @@ describe("plotter-only G-code rotation", () => {
 });
 
 describe("golden ACS program bodies", () => {
+  it("keeps source spans stable for the sanitized golden bodies", () => {
+    const sizes = GOLDEN_PROGRAMS.map((program) => {
+      const analysis = analyzeGCode(program);
+      return analysis.ok ? partSizeFromBounds(analysis.bounds) : analysis;
+    });
+
+    expect(sizes).toEqual([
+      { width: 1.965, height: 0.99 },
+      { width: 1.492502118522956, height: 1.492502118522956 },
+      { width: 1.25, height: 1.62 },
+      { width: 2.2699944475703013, height: 2.2699944475703018 },
+      { width: 2.5448294292018443, height: 0.7682594292018445 },
+    ]);
+  });
+
   it("generates all five local program bodies at 0, 90, and -90 with zero alarms", () => {
     expect(GOLDEN_PROGRAMS).toHaveLength(5);
 

@@ -66,6 +66,19 @@ after its trailing debounce, and angle edits rotate the cached source AABB
 corners without rewriting the full program. Generate performs the one full
 rewrite and enables fresh output actions; later edits make output stale.
 
+## Source-bounds part-size fill (Path A)
+
+After source analysis succeeds, the operator declares the program unit with the
+G-code panel's `IN | MM` segmented switch. `Fill part size` copies the source
+toolpath AABB spans (`maxX - minX`, `maxY - minY`) into the calculator and aligns
+the calculator unit to that declaration. The fill never uses the rotated preview
+AABB and does not require `G20` or `G21` in the program.
+
+Fill stays unavailable for invalid analysis or a zero span on either axis.
+Comment/header size parsing and safety buffers are not part of Path A. This
+additive bridge does not change Generate, Copy, Download, or any plotter-only ACS
+rewrite rule.
+
 ## Fixture quarantine
 
 Pure tests use five sanitized IPG LaserCube / ACS motion-and-control bodies
