@@ -18,8 +18,8 @@
   "branch_intent": "codex/next-16-3-platform-bump",
   "execution_route": "codex-cli",
   "flow_id": "NC-20260809-1cf6985f",
-  "goal_memory_commit": "fa1913a60f56d4500e9d9312c02af4b88bafdcb3",
-  "goal_sha256": "sha256:03ca1907a57f1bfbb20f9e612677f7bf22b61b9e8206fcbafb347d76505520da",
+  "goal_memory_commit": "dda9b0fd32e93ad135e703652ea03e9c42ec6597",
+  "goal_sha256": "sha256:6d0add57e6b9722935a24c54a5948d7e59aec0a9e15c63d596975cb49b582379",
   "protected_surfaces": [
     "calculator formulas and UI",
     "AutoNest packing, ranking, counts, trim-edge policies, fallback guards, and search budget",
