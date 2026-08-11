@@ -508,63 +508,96 @@
       border-color: rgba(200, 205, 216, 0.5);
     }
     /*
-      AutoNest | Manual sliding switch — mirrors G-code unit chrome
-      (prog-unit / part-unit: gap-0.5 p-0.5 rounded-lg, bg rgba(0,0,0,0.2),
-      h-6 px-2 rounded-md text-[10px] font-bold; selected solid accent).
-      Width only widened so full labels fit; thumb slides between segments.
+      Seamless sliding segment switches (one continuous track + thumb).
+      Variants:
+        --sm   G-code Source/Part-size + AutoNest|Manual
+               track h28, pad 2, gap 2, r8, bg rgba(0,0,0,0.2), border none
+               segment h24, px 8, r6, 10px/700
+        --header  Header IN|MM
+               track pad 2, gap 2, r8, bg var(--raised), border 1px solid rgba(200,205,216,0.15)
+               segment h28, px 10, r6, 11px/700
     */
-    .nest-mode-switch {
+    .seg-switch {
       position: relative;
       display: inline-flex;
       align-items: center;
-      gap: 2px;            /* gap-0.5 */
-      height: 28px;        /* p-0.5 (2) + h-6 (24) + p-0.5 (2) */
-      padding: 2px;        /* p-0.5 */
-      border-radius: 8px;  /* rounded-lg */
-      background: rgba(0, 0, 0, 0.2);
+      gap: 2px;
+      padding: 2px;
+      border-radius: 8px;
       border: none;
       flex-shrink: 0;
       box-sizing: border-box;
     }
-    .nest-mode-thumb {
+    .seg-switch__thumb {
       position: absolute;
       top: 2px;
       bottom: 2px;
       left: 2px;
       width: 0;
-      border-radius: 6px;  /* rounded-md */
+      border-radius: 6px;
       background: #538BEC;
       pointer-events: none;
       z-index: 0;
       transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-                  width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+                  width 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                  background-color 0.2s ease;
       will-change: transform, width;
     }
-    .nest-mode-switch button {
+    .seg-switch > button {
       position: relative;
       z-index: 1;
-      height: 24px;        /* h-6 */
-      padding: 0 8px;      /* px-2 — widen only as needed for labels */
-      min-width: 0;
-      border-radius: 6px;  /* rounded-md */
-      font-size: 10px;     /* text-[10px] */
-      font-weight: 700;    /* font-bold */
+      margin: 0;
+      border: none;
+      background: transparent !important;
+      color: #fff;
+      border-radius: 6px;
+      font-weight: 700;
       line-height: 1;
       letter-spacing: 0.01em;
-      color: #fff;
-      background: transparent;
-      border: none;
       white-space: nowrap;
       cursor: pointer;
-      transition: color 0.15s ease;
+      outline: none;
+      box-shadow: none;
+      -webkit-tap-highlight-color: transparent;
     }
-    .nest-mode-switch button[aria-pressed="true"] {
+    .seg-switch > button:hover,
+    .seg-switch > button:focus,
+    .seg-switch > button:focus-visible,
+    .seg-switch > button[aria-pressed="true"],
+    .seg-switch > button[aria-pressed="false"] {
+      background: transparent !important;
+      outline: none;
+      box-shadow: none;
       color: #fff;
-      background: transparent; /* thumb provides selected fill */
     }
-    .nest-mode-switch button[aria-pressed="false"]:hover {
-      color: #fff;
-      background: rgba(255, 255, 255, 0.06);
+    /* G-code unit + nest mode (locked sm specs) */
+    .seg-switch--sm {
+      height: 28px;
+      background: rgba(0, 0, 0, 0.2);
+      border: none;
+    }
+    .seg-switch--sm > button {
+      height: 24px;
+      padding: 0 8px;
+      font-size: 10px;
+    }
+    /* Header IN|MM (locked header specs) */
+    .seg-switch--header {
+      height: 32px; /* 2 + 28 + 2 */
+      background: var(--raised);
+      border: 1px solid rgba(200, 205, 216, 0.15);
+    }
+    .seg-switch--header > button {
+      height: 28px;
+      padding: 0 10px;
+      font-size: 11px;
+    }
+    /* Calculator nest part rectangles — 1.5px white stroke (beat Tailwind preflight) */
+    #calc-view .nest-part {
+      background: transparent !important;
+      border: 1.5px solid #FFFFFF !important;
+      border-radius: 4px;
+      box-shadow: none !important;
     }
     .margins-row {
       display: flex;
@@ -704,10 +737,11 @@
     </nav>
 
     <div class="flex items-center gap-1.5">
-      <div class="flex items-center gap-0.5 p-0.5 rounded-lg" style="background: var(--raised); border: 1px solid rgba(200,205,216,0.15);" id="unit-switch">
-          <button type="button" id="unit-in" class="h-7 px-2.5 rounded-md text-[11px] font-bold transition" style="background: #538BEC; color: #fff;">IN</button>
-          <button type="button" id="unit-mm" class="h-7 px-2.5 rounded-md text-[11px] font-bold transition" style="background: transparent; color: #C8CDD8;">MM</button>
-        </div>
+      <div id="unit-switch" class="seg-switch seg-switch--header" role="group" aria-label="Units" data-value="in">
+        <span class="seg-switch__thumb" aria-hidden="true"></span>
+        <button type="button" id="unit-in" aria-pressed="true">IN</button>
+        <button type="button" id="unit-mm" aria-pressed="false">MM</button>
+      </div>
       <button class="h-8 w-8 rounded-lg flex items-center justify-center press transition" style="background: var(--raised); border: 1px solid rgba(83,139,236,0.3); color: #C8CDD8;" title="Clear">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
       </button>
@@ -729,8 +763,8 @@
           <svg id="sheet-close-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>
         </button>
         <div class="flex items-center gap-2 ml-auto" data-calc-only>
-          <div id="autonest-switch" class="nest-mode-switch" role="group" aria-label="Nest mode" data-mode="manual">
-            <span class="nest-mode-thumb" aria-hidden="true"></span>
+          <div id="autonest-switch" class="seg-switch seg-switch--sm" role="group" aria-label="Nest mode" data-mode="manual">
+            <span class="seg-switch__thumb" aria-hidden="true"></span>
             <button type="button" id="mode-autonest" aria-pressed="false" title="AutoNest mode">AutoNest</button>
             <button type="button" id="mode-manual" aria-pressed="true" title="Manual mode">Manual</button>
           </div>
@@ -917,9 +951,10 @@
           <section class="section-card glow-soft overflow-hidden" data-gsection="source">
             <div class="section-header section-header-gcode px-3 py-2 flex items-center justify-between gap-2">
               <span class="text-[11px] font-semibold uppercase tracking-wide section-label">Source</span>
-              <div class="flex items-center gap-0.5 p-0.5 rounded-lg" style="background: rgba(0,0,0,0.2);">
-                <button id="prog-unit-in" class="h-6 px-2 rounded-md text-[10px] font-bold transition" style="background: #EE8C3C; color: #fff;">IN</button>
-                <button id="prog-unit-mm" class="h-6 px-2 rounded-md text-[10px] font-bold transition" style="background: transparent; color: #fff;">MM</button>
+              <div id="prog-unit-switch" class="seg-switch seg-switch--sm" role="group" aria-label="Program units" data-value="in">
+                <span class="seg-switch__thumb" aria-hidden="true"></span>
+                <button type="button" id="prog-unit-in" aria-pressed="true">IN</button>
+                <button type="button" id="prog-unit-mm" aria-pressed="false">MM</button>
               </div>
             </div>
             <div class="px-3 py-3">
@@ -946,9 +981,10 @@
           <section class="section-card glow-soft overflow-hidden" data-gsection="partsize" id="gcode-partsize-sec">
             <div class="section-header section-header-gcode px-3 flex items-center justify-between gap-2">
               <span class="text-[11px] font-semibold uppercase tracking-wide section-label">Part size</span>
-              <div class="flex items-center gap-0.5 p-0.5 rounded-lg" style="background: rgba(0,0,0,0.2);">
-                <button id="part-unit-in" class="h-6 px-2 rounded-md text-[10px] font-bold transition" style="background: #EE8C3C; color: #fff;">IN</button>
-                <button id="part-unit-mm" class="h-6 px-2 rounded-md text-[10px] font-bold transition" style="background: transparent; color: #fff;">MM</button>
+              <div id="part-unit-switch" class="seg-switch seg-switch--sm" role="group" aria-label="Part size units" data-value="in">
+                <span class="seg-switch__thumb" aria-hidden="true"></span>
+                <button type="button" id="part-unit-in" aria-pressed="true">IN</button>
+                <button type="button" id="part-unit-mm" aria-pressed="false">MM</button>
               </div>
             </div>
             <div class="gcode-card-body px-3 py-3 flex flex-col gap-2.5">
@@ -1023,21 +1059,21 @@
             <div class="axis-count absolute left-1/2 -translate-x-1/2 -top-10 text-[22px] tracking-tight">5</div>
             <div class="axis-count absolute top-1/2 -translate-y-1/2 -right-10 text-[22px] tracking-tight">3</div>
             <div class="relative w-[min(52vw,480px)] aspect-[3/2] rounded-xl" style="border: 1px dashed rgba(83,139,236,0.35); background: rgba(11,8,20,0.5);">
-              <div class="absolute left-[5%] top-[7%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
-              <div class="absolute left-[23%] top-[7%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
-              <div class="absolute left-[41%] top-[7%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
-              <div class="absolute left-[59%] top-[7%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
-              <div class="absolute left-[77%] top-[7%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
-              <div class="absolute left-[5%] top-[38%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
-              <div class="absolute left-[23%] top-[38%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
-              <div class="absolute left-[41%] top-[38%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
-              <div class="absolute left-[59%] top-[38%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
-              <div class="absolute left-[77%] top-[38%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
-              <div class="absolute left-[5%] top-[69%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
-              <div class="absolute left-[23%] top-[69%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
-              <div class="absolute left-[41%] top-[69%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
-              <div class="absolute left-[59%] top-[69%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
-              <div class="absolute left-[77%] top-[69%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
+              <div class="nest-part absolute left-[5%] top-[7%] w-[16%] h-[25%]"></div>
+              <div class="nest-part absolute left-[23%] top-[7%] w-[16%] h-[25%]"></div>
+              <div class="nest-part absolute left-[41%] top-[7%] w-[16%] h-[25%]"></div>
+              <div class="nest-part absolute left-[59%] top-[7%] w-[16%] h-[25%]"></div>
+              <div class="nest-part absolute left-[77%] top-[7%] w-[16%] h-[25%]"></div>
+              <div class="nest-part absolute left-[5%] top-[38%] w-[16%] h-[25%]"></div>
+              <div class="nest-part absolute left-[23%] top-[38%] w-[16%] h-[25%]"></div>
+              <div class="nest-part absolute left-[41%] top-[38%] w-[16%] h-[25%]"></div>
+              <div class="nest-part absolute left-[59%] top-[38%] w-[16%] h-[25%]"></div>
+              <div class="nest-part absolute left-[77%] top-[38%] w-[16%] h-[25%]"></div>
+              <div class="nest-part absolute left-[5%] top-[69%] w-[16%] h-[25%]"></div>
+              <div class="nest-part absolute left-[23%] top-[69%] w-[16%] h-[25%]"></div>
+              <div class="nest-part absolute left-[41%] top-[69%] w-[16%] h-[25%]"></div>
+              <div class="nest-part absolute left-[59%] top-[69%] w-[16%] h-[25%]"></div>
+              <div class="nest-part absolute left-[77%] top-[69%] w-[16%] h-[25%]"></div>
             </div>
           </div><!-- /calc-view -->
 
@@ -1365,20 +1401,41 @@
       btn.addEventListener('click', () => btn.classList.toggle('active'));
     });
 
-    /* AutoNest | Manual sliding switch — same isAuto semantics as prior control */
+    /* Seamless sliding segment switches — shared thumb layout (pad 2px tracks) */
+    function syncSegThumb(track, activeBtn, accent) {
+      if (!track || !activeBtn) return;
+      const thumb = track.querySelector('.seg-switch__thumb');
+      if (!thumb) return;
+      const pad = 2;
+      if (accent) thumb.style.background = accent;
+      thumb.style.width = activeBtn.offsetWidth + 'px';
+      thumb.style.transform = 'translateX(' + Math.max(0, activeBtn.offsetLeft - pad) + 'px)';
+    }
+    function bindSegResize(track, syncFn) {
+      if (!track || typeof ResizeObserver === 'undefined') return;
+      new ResizeObserver(syncFn).observe(track);
+    }
+
+    // ---- Mode switch: Calculator ↔ G-code ----
+    /* State declared up-front so thumb syncs never hit TDZ during init/resize */
+    let progUnit = 'in';
+    let partUnit = 'in';
+    let currentAngle = 0;
+    let derivedXY = null;
+    let baseXY = null; // always stored in program units
+    window.calcUnitMode = 'in';
+    function headerAccent() {
+      return isGcodeMode() ? '#EE8C3C' : '#538BEC';
+    }
+
+    /* AutoNest | Manual — same isAuto semantics as prior control */
     const nestModeSwitch = document.getElementById('autonest-switch');
-    const nestModeThumb = nestModeSwitch ? nestModeSwitch.querySelector('.nest-mode-thumb') : null;
     const modeAutoBtn = document.getElementById('mode-autonest');
     const modeManualBtn = document.getElementById('mode-manual');
     let isAuto = false;
     function syncNestModeThumb() {
-      if (!nestModeSwitch || !nestModeThumb) return;
       const active = isAuto ? modeAutoBtn : modeManualBtn;
-      if (!active) return;
-      const pad = 2; /* matches .nest-mode-switch padding */
-      const left = active.offsetLeft - pad;
-      nestModeThumb.style.width = active.offsetWidth + 'px';
-      nestModeThumb.style.transform = 'translateX(' + Math.max(0, left) + 'px)';
+      syncSegThumb(nestModeSwitch, active, '#538BEC');
     }
     function setNestMode(auto) {
       isAuto = !!auto;
@@ -1389,47 +1446,75 @@
     }
     if (modeAutoBtn) modeAutoBtn.addEventListener('click', () => setNestMode(true));
     if (modeManualBtn) modeManualBtn.addEventListener('click', () => setNestMode(false));
-    setNestMode(false);
-    window.addEventListener('resize', syncNestModeThumb);
-    if (typeof ResizeObserver !== 'undefined' && nestModeSwitch) {
-      new ResizeObserver(syncNestModeThumb).observe(nestModeSwitch);
-    }
 
-
-    // ---- Mode switch: Calculator ↔ G-code ----
-    /* currentMode declared at script top (before resize init) — TDZ-safe */
-    let progUnit = 'in';
-    let currentAngle = 0;
-    let derivedXY = null;
-
-    window.calcUnitMode = 'in';
-    function headerAccent() {
-      return isGcodeMode() ? '#EE8C3C' : '#538BEC';
+    const unitSwitch = document.getElementById('unit-switch');
+    const unitInBtn = document.getElementById('unit-in');
+    const unitMmBtn = document.getElementById('unit-mm');
+    function syncHeaderUnitThumb() {
+      const active = (window.calcUnitMode === 'mm') ? unitMmBtn : unitInBtn;
+      syncSegThumb(unitSwitch, active, headerAccent());
     }
     function setCalcUnit(u) {
-      window.calcUnitMode = u;
-      const inn = document.getElementById('unit-in');
-      const mm = document.getElementById('unit-mm');
-      if (!inn || !mm) return;
-      const acc = headerAccent();
-      if (u === 'in') {
-        inn.style.background = acc;
-        inn.style.color = '#fff';
-        mm.style.background = 'transparent';
-        mm.style.color = '#C8CDD8';
-      } else {
-        mm.style.background = acc;
-        mm.style.color = '#fff';
-        inn.style.background = 'transparent';
-        inn.style.color = '#C8CDD8';
-      }
+      window.calcUnitMode = u === 'mm' ? 'mm' : 'in';
+      if (unitInBtn) unitInBtn.setAttribute('aria-pressed', window.calcUnitMode === 'in' ? 'true' : 'false');
+      if (unitMmBtn) unitMmBtn.setAttribute('aria-pressed', window.calcUnitMode === 'mm' ? 'true' : 'false');
+      if (unitSwitch) unitSwitch.setAttribute('data-value', window.calcUnitMode);
+      requestAnimationFrame(syncHeaderUnitThumb);
     }
-    (function () {
-      const a = document.getElementById('unit-in');
-      const b = document.getElementById('unit-mm');
-      if (a) a.addEventListener('click', function () { setCalcUnit('in'); });
-      if (b) b.addEventListener('click', function () { setCalcUnit('mm'); });
-    })();
+    if (unitInBtn) unitInBtn.addEventListener('click', function () { setCalcUnit('in'); });
+    if (unitMmBtn) unitMmBtn.addEventListener('click', function () { setCalcUnit('mm'); });
+
+    const progUnitSwitch = document.getElementById('prog-unit-switch');
+    const progUnitIn = document.getElementById('prog-unit-in');
+    const progUnitMm = document.getElementById('prog-unit-mm');
+    function syncProgUnitThumb() {
+      const active = progUnit === 'mm' ? progUnitMm : progUnitIn;
+      syncSegThumb(progUnitSwitch, active, '#EE8C3C');
+    }
+    function setProgUnit(u) {
+      progUnit = u === 'mm' ? 'mm' : 'in';
+      if (progUnitIn) progUnitIn.setAttribute('aria-pressed', progUnit === 'in' ? 'true' : 'false');
+      if (progUnitMm) progUnitMm.setAttribute('aria-pressed', progUnit === 'mm' ? 'true' : 'false');
+      if (progUnitSwitch) progUnitSwitch.setAttribute('data-value', progUnit);
+      requestAnimationFrame(syncProgUnitThumb);
+      if (typeof refreshPartDisplay === 'function') refreshPartDisplay();
+    }
+    if (progUnitIn) progUnitIn.addEventListener('click', () => setProgUnit('in'));
+    if (progUnitMm) progUnitMm.addEventListener('click', () => setProgUnit('mm'));
+
+    const partUnitSwitch = document.getElementById('part-unit-switch');
+    const partUnitIn = document.getElementById('part-unit-in');
+    const partUnitMm = document.getElementById('part-unit-mm');
+    function syncPartUnitThumb() {
+      const active = partUnit === 'mm' ? partUnitMm : partUnitIn;
+      syncSegThumb(partUnitSwitch, active, '#EE8C3C');
+    }
+    function setPartUnit(u) {
+      partUnit = u === 'mm' ? 'mm' : 'in';
+      if (partUnitIn) partUnitIn.setAttribute('aria-pressed', partUnit === 'in' ? 'true' : 'false');
+      if (partUnitMm) partUnitMm.setAttribute('aria-pressed', partUnit === 'mm' ? 'true' : 'false');
+      if (partUnitSwitch) partUnitSwitch.setAttribute('data-value', partUnit);
+      requestAnimationFrame(syncPartUnitThumb);
+      if (typeof refreshPartDisplay === 'function') refreshPartDisplay();
+    }
+    if (partUnitIn) partUnitIn.addEventListener('click', () => setPartUnit('in'));
+    if (partUnitMm) partUnitMm.addEventListener('click', () => setPartUnit('mm'));
+
+    /* Init all four switches after state + handlers exist */
+    setNestMode(false);
+    setCalcUnit(window.calcUnitMode || 'in');
+    setProgUnit(progUnit);
+    setPartUnit(partUnit);
+    bindSegResize(nestModeSwitch, syncNestModeThumb);
+    bindSegResize(unitSwitch, syncHeaderUnitThumb);
+    bindSegResize(progUnitSwitch, syncProgUnitThumb);
+    bindSegResize(partUnitSwitch, syncPartUnitThumb);
+    window.addEventListener('resize', function () {
+      syncNestModeThumb();
+      syncHeaderUnitThumb();
+      syncProgUnitThumb();
+      syncPartUnitThumb();
+    });
 
     function setTabStyles(mode) {
       const tc = document.getElementById('tab-calc');
@@ -1520,6 +1605,10 @@
           requestAnimationFrame(() => {
             if (gcodePanel) gcodePanel.classList.remove('out');
             if (gcodeView) gcodeView.classList.remove('out');
+            /* thumbs need layout after panel unhide */
+            syncProgUnitThumb();
+            syncPartUnitThumb();
+            syncHeaderUnitThumb();
           });
         }, 180);
       } else {
@@ -1541,42 +1630,6 @@
 
     document.getElementById('tab-calc').addEventListener('click', () => switchMode('calc'));
     document.getElementById('tab-gcode').addEventListener('click', () => switchMode('gcode'));
-
-    function setProgUnit(u) {
-      progUnit = u;
-      const inn = document.getElementById('prog-unit-in');
-      const mm = document.getElementById('prog-unit-mm');
-      if (!inn) return;
-      if (u === 'in') {
-        inn.style.background = '#EE8C3C'; inn.style.color = '#fff';
-        mm.style.background = 'transparent'; mm.style.color = '#fff';
-      } else {
-        mm.style.background = '#EE8C3C'; mm.style.color = '#fff';
-        inn.style.background = 'transparent'; inn.style.color = '#fff';
-      }
-      refreshPartDisplay();
-    }
-    document.getElementById('prog-unit-in').addEventListener('click', () => setProgUnit('in'));
-    document.getElementById('prog-unit-mm').addEventListener('click', () => setProgUnit('mm'));
-
-    let partUnit = 'in';
-    let baseXY = null; // always stored in program units
-    function setPartUnit(u) {
-      partUnit = u;
-      const inn = document.getElementById('part-unit-in');
-      const mm = document.getElementById('part-unit-mm');
-      if (!inn) return;
-      if (u === 'in') {
-        inn.style.background = '#EE8C3C'; inn.style.color = '#fff';
-        mm.style.background = 'transparent'; mm.style.color = '#fff';
-      } else {
-        mm.style.background = '#EE8C3C'; mm.style.color = '#fff';
-        inn.style.background = 'transparent'; inn.style.color = '#fff';
-      }
-      refreshPartDisplay();
-    }
-    document.getElementById('part-unit-in').addEventListener('click', () => setPartUnit('in'));
-    document.getElementById('part-unit-mm').addEventListener('click', () => setPartUnit('mm'));
 
     function refreshPartDisplay() {
       if (!baseXY) return;
