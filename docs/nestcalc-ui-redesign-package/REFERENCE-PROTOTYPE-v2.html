@@ -145,6 +145,7 @@
     }
 
     .sheet {
+      --calc-sheet-w: 300px;
       transition:
         transform 0.72s cubic-bezier(0.34, 1.45, 0.64, 1),
         opacity 0.35s var(--smooth),
@@ -156,6 +157,93 @@
       right: auto;
       width: 300px;
     }
+    /* Calculator mode only: hard min 300 / max 500; locked density at 300 */
+    .sheet:not(.side-right) {
+      width: var(--calc-sheet-w, 300px);
+      min-width: 300px;
+      max-width: 500px;
+      container-type: inline-size;
+      container-name: calc-sheet;
+    }
+    .sheet.is-resizing {
+      transition: none;
+      user-select: none;
+    }
+    .stage.is-resizing {
+      transition: none !important;
+    }
+    /* Free-edge resize only — narrow rim hit target; does not cover sheet controls */
+    .sheet-resize {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 6px;
+      height: 100%;
+      cursor: col-resize;
+      z-index: 50;
+      touch-action: none;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      box-sizing: content-box;
+      border-right: 4px solid transparent; /* outside-leaning hit area */
+      background: transparent;
+    }
+    .sheet-resize::after {
+      content: '';
+      position: absolute;
+      right: 1px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 52px;
+      border-radius: 3px;
+      background: rgba(83, 139, 236, 0.45);
+      box-shadow: 0 0 0 1px rgba(83, 139, 236, 0.15);
+      transition: height 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+      pointer-events: none;
+    }
+    .sheet-resize:hover::after,
+    .sheet.is-resizing .sheet-resize::after {
+      height: 72px;
+      background: rgba(83, 139, 236, 0.95);
+      box-shadow: 0 0 8px rgba(83, 139, 236, 0.45);
+    }
+    .sheet.side-right .sheet-resize,
+    .sheet.closed .sheet-resize,
+    .sheet.panel-full .sheet-resize {
+      display: none;
+      pointer-events: none;
+    }
+    /*
+      Interior flex when wider than 300px: expand spacing only.
+      At 300cqi clamp floors match main locked density (no tighten).
+    */
+    .sheet:not(.side-right) .xy-row {
+      gap: clamp(8px, calc(8px + (100cqi - 300px) * 0.06), 22px);
+    }
+    .sheet:not(.side-right) .xy-row .xy-field {
+      gap: clamp(6px, calc(6px + (100cqi - 300px) * 0.02), 10px);
+    }
+    .sheet:not(.side-right) .num-input {
+      width: clamp(4.1rem, calc(4.1rem + (100cqi - 300px) * 0.012), 5.75rem);
+    }
+    .sheet:not(.side-right) .m-field .num-input {
+      width: 100%;
+      max-width: clamp(4.1rem, calc(4.1rem + (100cqi - 300px) * 0.01), 5.75rem);
+    }
+    .sheet:not(.side-right) .margins-row {
+      gap: clamp(6px, calc(6px + (100cqi - 300px) * 0.05), 18px);
+      justify-content: space-between;
+    }
+    .sheet:not(.side-right) #sections-stack {
+      padding-left: clamp(12px, calc(12px + (100cqi - 300px) * 0.04), 20px);
+      padding-right: clamp(12px, calc(12px + (100cqi - 300px) * 0.04), 20px);
+    }
+    .sheet:not(.side-right) .xy-sep {
+      margin-left: clamp(2px, calc(2px + (100cqi - 300px) * 0.02), 8px);
+      margin-right: clamp(4px, calc(4px + (100cqi - 300px) * 0.03), 12px);
+    }
     .sheet.closed {
       transform: translateX(calc(-100% - 16px));
       opacity: 0;
@@ -165,6 +253,9 @@
       left: auto;
       right: 0.75rem;
       width: 420px;
+      min-width: 0;
+      max-width: none;
+      container-type: normal;
     }
     /* Full expand: animate width from 420px → calc(100% - 1.5rem); avoid width:auto snap */
     .sheet.side-right.panel-full {
@@ -531,7 +622,7 @@
 
   <div class="relative h-[calc(100vh-3rem)] flex overflow-hidden">
 
-    <aside id="sheet" class="sheet absolute left-3 top-3 bottom-3 w-[300px] z-30 flex flex-col glow rounded-2xl overflow-hidden" style="background: #0E0C14;">
+    <aside id="sheet" class="sheet absolute left-3 top-3 bottom-3 z-30 flex flex-col glow rounded-2xl overflow-hidden" style="background: #0E0C14; --calc-sheet-w: 300px; width: 300px;">
       <div class="px-3 py-2.5 flex items-center justify-between shrink-0" style="border-bottom: 1px solid rgba(255,255,255,0.06);">
         <button id="sheet-close" class="h-7 w-7 rounded-lg flex items-center justify-center press transition shrink-0" style="border: 1px solid rgba(83,139,236,0.3); color: #C8CDD8;" title="Collapse panel">
           <svg id="sheet-close-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>
@@ -790,6 +881,8 @@
 
 
       </div>
+      <!-- Calculator free-edge resize (hidden in G-code / closed) -->
+      <div id="sheet-resize" class="sheet-resize" role="separator" aria-orientation="vertical" aria-valuemin="300" aria-valuemax="500" aria-valuenow="300" aria-label="Resize calculator panel" title="Drag to resize"></div>
     </aside>
 
     <div class="stage flex-1 relative flex flex-col p-3" id="stage" class="stage" data-min="1" style="padding-left: 324px;">
@@ -898,12 +991,52 @@
     const sheetOpen = document.getElementById('sheet-open');
     const sheetClose = document.getElementById('sheet-close');
     const stage = document.getElementById('stage');
+    const sheetResize = document.getElementById('sheet-resize');
+
+    /*
+      TDZ-safe: declare currentMode BEFORE any resize/layout init that reads it.
+      typeof currentMode on a later let throws ReferenceError and aborts all handlers.
+    */
+    let currentMode = 'calc';
+
+    /* Calculator left sheet: hard 300–500px. Stage gap: left 12 + sheet + 12 = width + 24 (324 @ 300). */
+    const CALC_SHEET_MIN = 300;
+    const CALC_SHEET_MAX = 500;
+    const CALC_SHEET_EDGE_GAP = 24; /* left-3 (12px) + stage gap (12px) */
+    let calcSheetWidth = 300;
+
+    function isGcodeMode() {
+      return currentMode === 'gcode';
+    }
+
+    function calcStagePaddingLeft(open) {
+      if (!open) return '16px';
+      return (calcSheetWidth + CALC_SHEET_EDGE_GAP) + 'px';
+    }
+
+    function applyCalcSheetWidth(w, opts) {
+      const open = opts && typeof opts.open === 'boolean' ? opts.open : !sheet.classList.contains('closed');
+      calcSheetWidth = Math.min(CALC_SHEET_MAX, Math.max(CALC_SHEET_MIN, Math.round(w)));
+      sheet.style.setProperty('--calc-sheet-w', calcSheetWidth + 'px');
+      sheet.style.width = calcSheetWidth + 'px';
+      if (sheetResize) sheetResize.setAttribute('aria-valuenow', String(calcSheetWidth));
+      if (!isGcodeMode() && open) {
+        stage.style.paddingLeft = calcStagePaddingLeft(true);
+        stage.style.paddingRight = '16px';
+      }
+      return calcSheetWidth;
+    }
+
+    function clearCalcSheetInlineWidth() {
+      sheet.style.removeProperty('width');
+      sheet.style.removeProperty('--calc-sheet-w');
+    }
 
     function setSheet(open) {
       const vex = document.getElementById('viewer-expand');
       if (vex) vex.style.display = 'none';
 
-      if (typeof currentMode !== 'undefined' && currentMode === 'gcode') {
+      if (isGcodeMode()) {
         // G-code: "close" = hide VIEWER, expand PANEL to full width
         // "open" = restore split (viewer left + panel right)
         if (!open) {
@@ -918,7 +1051,7 @@
           const closeBtn = document.getElementById('sheet-close');
           if (closeBtn) closeBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 18l6-6-6-6"/></svg>';
         } else {
-          // Split restored: arrow points LEFT
+          // Split restored: arrow points LEFT — geometry unchanged (420 / 448)
           stage.classList.remove('viewer-collapsed');
           sheet.classList.remove('closed');
           sheet.classList.remove('panel-full');
@@ -936,17 +1069,89 @@
       sheet.classList.toggle('closed', !open);
       sheet.classList.remove('panel-full');
       stage.classList.remove('viewer-collapsed');
-      stage.style.paddingLeft = open ? '324px' : '16px';
-      stage.style.paddingRight = '16px';
+      applyCalcSheetWidth(calcSheetWidth, { open: open });
+      if (!open) {
+        stage.style.paddingLeft = '16px';
+        stage.style.paddingRight = '16px';
+      }
       sheetOpen.style.cssText = '';
       sheetOpen.classList.toggle('hidden', open);
       if (!open) {
         sheetOpen.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 18l6-6-6-6"/></svg>';
       }
     }
+
+    /* Drag free edge to resize calculator sheet (300–500). G-code: no-op. */
+    (function initCalcSheetResize() {
+      if (!sheetResize) return;
+      let dragging = false;
+      let startX = 0;
+      let startW = 300;
+
+      function onMove(e) {
+        if (!dragging) return;
+        if (isGcodeMode()) return;
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const dx = clientX - startX;
+        applyCalcSheetWidth(startW + dx, { open: true });
+        e.preventDefault();
+      }
+      function onUp() {
+        if (!dragging) return;
+        dragging = false;
+        sheet.classList.remove('is-resizing');
+        stage.classList.remove('is-resizing');
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onUp);
+        window.removeEventListener('pointercancel', onUp);
+        window.removeEventListener('touchmove', onMove);
+        window.removeEventListener('touchend', onUp);
+      }
+      function onDown(e) {
+        if (isGcodeMode()) return;
+        if (sheet.classList.contains('closed') || sheet.classList.contains('side-right')) return;
+        dragging = true;
+        startX = e.touches ? e.touches[0].clientX : e.clientX;
+        startW = calcSheetWidth;
+        sheet.classList.add('is-resizing');
+        stage.classList.add('is-resizing');
+        document.body.style.cursor = 'col-resize';
+        document.body.style.userSelect = 'none';
+        window.addEventListener('pointermove', onMove);
+        window.addEventListener('pointerup', onUp);
+        window.addEventListener('pointercancel', onUp);
+        window.addEventListener('touchmove', onMove, { passive: false });
+        window.addEventListener('touchend', onUp);
+        e.preventDefault();
+      }
+      sheetResize.addEventListener('pointerdown', onDown);
+      sheetResize.addEventListener('touchstart', onDown, { passive: false });
+      sheetResize.tabIndex = 0;
+      sheetResize.addEventListener('keydown', (e) => {
+        if (isGcodeMode()) return;
+        if (sheet.classList.contains('closed')) return;
+        const step = e.shiftKey ? 20 : 10;
+        if (e.key === 'ArrowLeft') {
+          applyCalcSheetWidth(calcSheetWidth - step, { open: true });
+          e.preventDefault();
+        } else if (e.key === 'ArrowRight') {
+          applyCalcSheetWidth(calcSheetWidth + step, { open: true });
+          e.preventDefault();
+        } else if (e.key === 'Home') {
+          applyCalcSheetWidth(CALC_SHEET_MIN, { open: true });
+          e.preventDefault();
+        } else if (e.key === 'End') {
+          applyCalcSheetWidth(CALC_SHEET_MAX, { open: true });
+          e.preventDefault();
+        }
+      });
+      applyCalcSheetWidth(CALC_SHEET_MIN, { open: true });
+    })();
     // Toggle semantics for G-code: click close when split → expand panel; click again → restore
     sheetClose.addEventListener('click', () => {
-      if (typeof currentMode !== 'undefined' && currentMode === 'gcode') {
+      if (isGcodeMode()) {
         const expanded = sheet.classList.contains('panel-full');
         setSheet(expanded); // if expanded, restore (open=true); if split, expand (open=false)
       } else {
@@ -1071,14 +1276,14 @@
 
 
     // ---- Mode switch: Calculator ↔ G-code ----
-    let currentMode = 'calc';
+    /* currentMode declared at script top (before resize init) — TDZ-safe */
     let progUnit = 'in';
     let currentAngle = 0;
     let derivedXY = null;
 
     window.calcUnitMode = 'in';
     function headerAccent() {
-      return (typeof currentMode !== 'undefined' && currentMode === 'gcode') ? '#EE8C3C' : '#538BEC';
+      return isGcodeMode() ? '#EE8C3C' : '#538BEC';
     }
     function setCalcUnit(u) {
       window.calcUnitMode = u;
@@ -1149,13 +1354,14 @@
       openBtn.style.cssText = '';
       if (mode === 'gcode') {
         sheetEl.classList.add('side-right');
+        clearCalcSheetInlineWidth();
         stageEl.style.paddingLeft = '16px';
         stageEl.style.paddingRight = '448px';
-        // Split: arrow points LEFT
+        // Split: arrow points LEFT — 420px panel / 448 padding unchanged
         if (closeBtn) closeBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>';
       } else {
         sheetEl.classList.remove('side-right');
-        stageEl.style.paddingLeft = '324px';
+        applyCalcSheetWidth(calcSheetWidth, { open: true });
         stageEl.style.paddingRight = '16px';
         if (closeBtn) closeBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>';
       }
