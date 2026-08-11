@@ -1,4 +1,5 @@
 import type { GCodeUnit } from "../gcodeRotation";
+import { parseNumericInput } from "../numericInput";
 import type { Margins, NestInputs, Unit } from "../types";
 import { convertValue, round3 } from "../units";
 
@@ -36,6 +37,67 @@ export function fieldBindingForId(id: string): ShellFieldBinding | null {
 export function formatShellNumber(value: number | null): string {
   if (value === null) return "";
   return `${round3(value)}`;
+}
+
+export function shouldPreserveNumericDraft(
+  draft: string,
+  persistedValue: number | null,
+): boolean {
+  return parseNumericInput(draft) === persistedValue;
+}
+
+export interface ShellDecimalEdit {
+  value: string;
+  caret: number;
+}
+
+export function insertShellDecimal(
+  value: string,
+  selectionStart: number | null,
+  selectionEnd: number | null,
+  typingFresh: boolean,
+): ShellDecimalEdit | null {
+  if (typingFresh) return { value: "0.", caret: 2 };
+
+  const start = selectionStart ?? value.length;
+  const end = selectionEnd ?? start;
+  const next = `${value.slice(0, start)}.${value.slice(end)}`;
+  if ((next.match(/\./g) ?? []).length > 1) return null;
+  return { value: next, caret: start + 1 };
+}
+
+interface PresetCarouselInput {
+  count: number;
+  selectedIndex: number;
+  visibleCount: number;
+  requestedPage: number;
+}
+
+export interface PresetCarouselState {
+  page: number;
+  maxPage: number;
+  canGoPrevious: boolean;
+  canGoNext: boolean;
+}
+
+export function derivePresetCarousel({
+  count,
+  selectedIndex,
+  visibleCount,
+  requestedPage,
+}: PresetCarouselInput): PresetCarouselState {
+  const safeVisibleCount = Math.max(1, Math.floor(visibleCount));
+  const maxPage = Math.max(0, Math.ceil(Math.max(0, count) / safeVisibleCount) - 1);
+  const selectedPage =
+    selectedIndex >= 0 ? Math.floor(selectedIndex / safeVisibleCount) : requestedPage;
+  const page = Math.min(maxPage, Math.max(0, selectedPage));
+
+  return {
+    page,
+    maxPage,
+    canGoPrevious: page > 0,
+    canGoNext: page < maxPage,
+  };
 }
 
 export interface PartSize {

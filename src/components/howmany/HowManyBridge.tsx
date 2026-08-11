@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { AuthControls } from "@/components/AuthControls";
 import { AutoNestPreview } from "@/components/AutoNestPreview";
@@ -16,10 +16,13 @@ import {
   type GCodeUnit,
 } from "@/lib/gcodeRotation";
 import {
+  derivePresetCarousel,
   displayGCodeSize,
   fieldBindingForId,
   formatShellNumber,
   generationIsFresh,
+  insertShellDecimal,
+  shouldPreserveNumericDraft,
 } from "@/lib/howmany/bridge";
 import {
   applyPartSizeToNestSession,
@@ -115,6 +118,10 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
   const [programUnit, setProgramUnit] = useState<Unit>("in");
   const [partUnit, setPartUnit] = useState<Unit>("in");
   const [generation, setGeneration] = useState<FreshGeneration | null>(null);
+  const fieldDraftsRef = useRef(new Map<string, string>());
+  const typingFreshFieldRef = useRef<string | null>(null);
+  const presetPageRef = useRef(0);
+  const syncPresetCarouselRef = useRef<(() => void) | null>(null);
 
   const fresh = generationIsFresh(generation, source, angle);
   const generatedUnit =
@@ -145,8 +152,35 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
     const stage = shellDocument.createElement("div");
     stage.dataset.howmanyBridge = "stage";
     stage.style.cssText =
-      "width:min(56vw,560px);height:min(66vh,520px);--card-border:rgba(83,139,236,.35);--preview-bg:rgba(11,8,20,.5);--rem-fill:transparent;--rem-stroke:#fff;--margin-fill:rgba(83,139,236,.08);--usable-stroke:rgba(83,139,236,.5);--part-fill:rgba(83,139,236,.2);--part-stroke:#538bec;--origin-stroke:#c8cdd8;--muted:#c8cdd8;--autonest-blank-stroke:rgba(238,140,60,.55);";
+      "display:flex;align-items:center;justify-content:center;width:min(56vw,560px);height:min(66vh,520px);min-width:0;min-height:0;--card:rgba(11,8,20,.72);--foreground:#fff;--card-border:rgba(83,139,236,.35);--preview-bg:rgba(11,8,20,.5);--rem-fill:transparent;--rem-stroke:#fff;--margin-fill:rgba(83,139,236,.08);--usable-stroke:rgba(83,139,236,.5);--part-fill:rgba(83,139,236,.2);--part-stroke:#538bec;--origin-stroke:#c8cdd8;--muted:#c8cdd8;--autonest-zero-fill:rgba(34,211,238,.22);--autonest-zero-stroke:#22d3ee;--autonest-ninety-fill:rgba(16,185,129,.22);--autonest-ninety-stroke:#10b981;--autonest-blank-stroke:rgba(238,140,60,.55);--autonest-trim-stroke:#fb7185;";
     calcView.append(stage);
+
+    const stageStyle = shellDocument.createElement("style");
+    stageStyle.dataset.howmanyBridge = "stage-style";
+    stageStyle.textContent = `
+      [data-howmany-bridge="stage"] .autonest-preview-group-zero {
+        fill: var(--autonest-zero-fill);
+        stroke: var(--autonest-zero-stroke);
+      }
+      [data-howmany-bridge="stage"] .autonest-preview-group-ninety {
+        fill: var(--autonest-ninety-fill);
+        stroke: var(--autonest-ninety-stroke);
+      }
+      [data-howmany-bridge="stage"] .autonest-preview-trim-line {
+        fill: none;
+        stroke: var(--autonest-trim-stroke);
+        stroke-linecap: butt;
+        stroke-width: 3pt;
+      }
+      [data-howmany-bridge="stage"] .autonest-preview-group-bounds {
+        fill: none;
+        stroke: var(--autonest-blank-stroke);
+      }
+      [data-howmany-bridge="stage"] .autonest-preview-summary {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    `;
+    shellDocument.head.append(stageStyle);
 
     const auth = shellDocument.createElement("div");
     auth.dataset.howmanyBridge = "auth";
@@ -164,6 +198,7 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
     return () => {
       cancelled = true;
       stage.remove();
+      stageStyle.remove();
       auth.remove();
       stub.style.display = "";
     };
@@ -175,9 +210,26 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
       const binding = fieldBindingForId(input.id);
       if (!binding) return;
       const value = binding.kind === "input" ? inputs[binding.key] : inputs.margins[binding.key];
-      input.value = formatShellNumber(value);
+      const draft = fieldDraftsRef.current.get(input.id);
+      const preserveDraft =
+        shellDocument.activeElement === input &&
+        draft !== undefined &&
+        shouldPreserveNumericDraft(draft, value);
+      if (!preserveDraft) input.value = formatShellNumber(value);
       input.parentElement?.classList.toggle("has-value", value !== null);
     });
+
+    const moveMarginsWithRotation = select<HTMLInputElement>(
+      shellDocument,
+      '[data-section="margins"] input[type="checkbox"]',
+    );
+    if (moveMarginsWithRotation) {
+      moveMarginsWithRotation.checked = inputs.moveMarginsWithRotation;
+      moveMarginsWithRotation.setAttribute(
+        "aria-checked",
+        inputs.moveMarginsWithRotation ? "true" : "false",
+      );
+    }
 
     setText(shellDocument.getElementById("part-badge"), `${formatShellNumber(inputs.partWidth)} × ${formatShellNumber(inputs.partHeight)}`);
     setText(shellDocument.getElementById("rem-badge"), `${formatShellNumber(inputs.remnantWidth)} × ${formatShellNumber(inputs.remnantHeight)}`);
@@ -259,7 +311,14 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
 
   useEffect(() => {
     const track = shellDocument.getElementById("presets-track");
-    if (!track) return;
+    const carousel = shellDocument.getElementById("presets-carousel");
+    const viewport = shellDocument.getElementById("presets-viewport");
+    const previous = shellDocument.getElementById("presets-prev") as HTMLButtonElement | null;
+    const next = shellDocument.getElementById("presets-next") as HTMLButtonElement | null;
+    const add = shellDocument.getElementById("presets-add") as HTMLButtonElement | null;
+    const edit = shellDocument.getElementById("presets-edit") as HTMLButtonElement | null;
+    const remove = shellDocument.getElementById("presets-delete") as HTMLButtonElement | null;
+    if (!track || !carousel || !viewport) return;
     track.setAttribute("aria-busy", presets.isLoading || presets.isBusy ? "true" : "false");
     track.setAttribute("aria-label", "Saved presets");
     const fragment = shellDocument.createDocumentFragment();
@@ -275,19 +334,149 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
       chip.textContent = record.name;
       fragment.append(chip);
     }
+    if (presets.presets.length === 0) {
+      const empty = shellDocument.createElement("span");
+      empty.dataset.howmanyPresetsEmpty = "true";
+      empty.setAttribute("role", "status");
+      empty.style.cssText =
+        "display:flex;width:100%;height:32px;align-items:center;justify-content:center;color:#C8CDD8;font-size:12px;font-weight:600;";
+      empty.textContent = "No saved presets";
+      fragment.append(empty);
+    }
     track.replaceChildren(fragment);
     track.setAttribute("title", presets.error ?? presets.status);
-    const shellWindow = shellDocument.defaultView as (Window & { __nestPresetsSync?: (() => void) | null }) | null;
-    shellWindow?.__nestPresetsSync?.();
-    track.querySelectorAll<HTMLElement>("[data-preset-id]").forEach((chip) => {
-      const selected = chip.dataset.presetId === presets.selectedPresetId;
-      chip.classList.toggle("is-selected", selected);
-      chip.setAttribute("aria-pressed", selected ? "true" : "false");
+    const selectedIndex = presets.presets.findIndex(
+      ({ presetId }) => presetId === presets.selectedPresetId,
+    );
+
+    const resolveVisibleCount = () => {
+      const sheetWidth = shellDocument.getElementById("sheet")?.getBoundingClientRect().width ?? 0;
+      return sheetWidth > 0 && sheetWidth <= 360 ? 2 : 3;
+    };
+
+    const initialVisibleCount = resolveVisibleCount();
+    presetPageRef.current =
+      selectedIndex >= 0 ? Math.floor(selectedIndex / initialVisibleCount) : 0;
+
+    const syncRealCarousel = () => {
+      const visibleCount = resolveVisibleCount();
+      const chips = Array.from(
+        track.querySelectorAll<HTMLElement>("[data-preset-id]"),
+      );
+      const carouselState = derivePresetCarousel({
+        count: chips.length,
+        selectedIndex: -1,
+        visibleCount,
+        requestedPage: presetPageRef.current,
+      });
+      presetPageRef.current = carouselState.page;
+      carousel.setAttribute("data-visible", `${visibleCount}`);
+
+      const firstChipWidth = chips[0]?.offsetWidth ?? 0;
+      const fallbackChipWidth =
+        viewport.clientWidth > 0
+          ? (viewport.clientWidth - 6 * (visibleCount - 1)) / visibleCount
+          : 0;
+      const chipStep = (firstChipWidth || fallbackChipWidth) + 6;
+      const pageStep = chipStep * visibleCount;
+      track.style.transform =
+        pageStep > 0
+          ? `translateX(${-carouselState.page * pageStep}px)`
+          : "translateX(0px)";
+
+      chips.forEach((chip) => {
+        const selected = chip.dataset.presetId === presets.selectedPresetId;
+        chip.classList.toggle("is-selected", selected);
+        chip.setAttribute("aria-pressed", selected ? "true" : "false");
+        const record = presets.presets.find(
+          ({ presetId }) => presetId === chip.dataset.presetId,
+        );
+        if (record) chip.title = record.name;
+        chip.style.background = "";
+        chip.style.border = "";
+        chip.style.color = "";
+      });
+      if (previous) previous.disabled = !carouselState.canGoPrevious;
+      if (next) next.disabled = !carouselState.canGoNext;
+      if (add) add.disabled = presets.isLoading || presets.isBusy;
+      if (edit) edit.disabled = !presets.selectedPresetId || presets.isBusy;
+      if (remove) remove.disabled = !presets.selectedPresetId || presets.isBusy;
+    };
+
+    syncPresetCarouselRef.current = syncRealCarousel;
+    syncRealCarousel();
+
+    let correctiveFrame: number | undefined;
+    const hasShellDrift = () => {
+      const selectionDrift = Array.from(
+        track.querySelectorAll<HTMLElement>("[data-preset-id]"),
+      ).some((chip) => {
+        const selected = chip.dataset.presetId === presets.selectedPresetId;
+        return (
+          chip.classList.contains("is-selected") !== selected ||
+          chip.getAttribute("aria-pressed") !== (selected ? "true" : "false")
+        );
+      });
+      const editDisabled = !presets.selectedPresetId || presets.isBusy;
+      const removeDisabled = !presets.selectedPresetId || presets.isBusy;
+      return (
+        selectionDrift ||
+        Boolean(edit && edit.disabled !== editDisabled) ||
+        Boolean(remove && remove.disabled !== removeDisabled)
+      );
+    };
+    const driftObserver = new MutationObserver(() => {
+      if (!hasShellDrift() || !shellDocument.defaultView) return;
+      if (correctiveFrame !== undefined) {
+        shellDocument.defaultView.cancelAnimationFrame(correctiveFrame);
+      }
+      correctiveFrame =
+        shellDocument.defaultView.requestAnimationFrame(syncRealCarousel);
     });
-    const edit = shellDocument.getElementById("presets-edit") as HTMLButtonElement | null;
-    const remove = shellDocument.getElementById("presets-delete") as HTMLButtonElement | null;
-    if (edit) edit.disabled = !presets.selectedPresetId || presets.isBusy;
-    if (remove) remove.disabled = !presets.selectedPresetId || presets.presets.length <= 1 || presets.isBusy;
+    driftObserver.observe(track, {
+      attributes: true,
+      attributeFilter: ["aria-pressed", "class"],
+      subtree: true,
+    });
+    if (edit) {
+      driftObserver.observe(edit, {
+        attributes: true,
+        attributeFilter: ["disabled"],
+      });
+    }
+    if (remove) {
+      driftObserver.observe(remove, {
+        attributes: true,
+        attributeFilter: ["disabled"],
+      });
+    }
+
+    const shellWindow = shellDocument.defaultView as
+      | (Window & { __nestPresetsSync?: (() => void) | null })
+      | null;
+    shellWindow?.__nestPresetsSync?.();
+    let deferredFrame: number | undefined;
+    const frame = shellWindow?.requestAnimationFrame(() => {
+      syncRealCarousel();
+      deferredFrame = shellWindow.requestAnimationFrame(syncRealCarousel);
+    });
+    const resizeObserver = new ResizeObserver(syncRealCarousel);
+    resizeObserver.observe(viewport);
+
+    return () => {
+      if (frame !== undefined) shellWindow?.cancelAnimationFrame(frame);
+      if (deferredFrame !== undefined) {
+        shellWindow?.cancelAnimationFrame(deferredFrame);
+      }
+      if (correctiveFrame !== undefined) {
+        shellWindow?.cancelAnimationFrame(correctiveFrame);
+      }
+      driftObserver.disconnect();
+      resizeObserver.disconnect();
+      if (syncPresetCarouselRef.current === syncRealCarousel) {
+        syncPresetCarouselRef.current = null;
+      }
+    };
   }, [presets.error, presets.isBusy, presets.isLoading, presets.presets, presets.selectedPresetId, presets.status, shellDocument]);
 
   useEffect(() => {
@@ -300,6 +489,8 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
       }
       const binding = fieldBindingForId(target.id);
       if (!binding) return;
+      fieldDraftsRef.current.set(target.id, target.value);
+      typingFreshFieldRef.current = null;
       const value = parseNumericInput(target.value);
       if (binding.kind === "input") {
         updateInputs((current) => updateManualField(current, binding.key, value));
@@ -315,11 +506,56 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
       updateInputs((current) => ({ ...current, moveMarginsWithRotation: checkbox.checked }));
     };
 
-    shellDocument.addEventListener("input", handleInput);
+    const handleFocusOut = (event: FocusEvent) => {
+      const target = event.target;
+      if (!(target instanceof shellDocument.defaultView!.HTMLInputElement)) return;
+      if (!fieldBindingForId(target.id)) return;
+      fieldDraftsRef.current.delete(target.id);
+      if (typingFreshFieldRef.current === target.id) {
+        typingFreshFieldRef.current = null;
+      }
+      target.value = formatShellNumber(parseNumericInput(target.value));
+    };
+
+    const handleFocusIn = (event: FocusEvent) => {
+      const target = event.target;
+      if (!(target instanceof shellDocument.defaultView!.HTMLInputElement)) return;
+      if (fieldBindingForId(target.id)) typingFreshFieldRef.current = target.id;
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "." && event.key !== "Decimal") return;
+      const target = event.target;
+      if (!(target instanceof shellDocument.defaultView!.HTMLInputElement)) return;
+      if (!fieldBindingForId(target.id)) return;
+
+      event.preventDefault();
+      const edit = insertShellDecimal(
+        target.value,
+        target.selectionStart,
+        target.selectionEnd,
+        typingFreshFieldRef.current === target.id,
+      );
+      if (!edit) return;
+      typingFreshFieldRef.current = null;
+      target.value = edit.value;
+      target.setSelectionRange(edit.caret, edit.caret);
+      target.dispatchEvent(
+        new shellDocument.defaultView!.Event("input", { bubbles: true }),
+      );
+    };
+
+    shellDocument.addEventListener("input", handleInput, true);
     shellDocument.addEventListener("change", handleChange);
+    shellDocument.addEventListener("focusout", handleFocusOut);
+    shellDocument.addEventListener("focusin", handleFocusIn);
+    shellDocument.addEventListener("keydown", handleKeyDown, true);
     return () => {
-      shellDocument.removeEventListener("input", handleInput);
+      shellDocument.removeEventListener("input", handleInput, true);
       shellDocument.removeEventListener("change", handleChange);
+      shellDocument.removeEventListener("focusout", handleFocusOut);
+      shellDocument.removeEventListener("focusin", handleFocusIn);
+      shellDocument.removeEventListener("keydown", handleKeyDown, true);
     };
   }, [setState, shellDocument, updateInputs]);
 
@@ -378,10 +614,10 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
           setText(output, diagnosticsText(generated.diagnostics));
           return;
         }
-        const size = partSizeFromBounds(generated.bounds);
+        const size = partSizeFromBounds(analysis.bounds);
         if (!size) {
           setGeneration(null);
-          setText(output, "Generated bounds are unavailable.");
+          setText(output, "Analyzed bounds are unavailable.");
           return;
         }
         setGeneration({ source, angle, output: generated.output, size, unit: generated.unit });
@@ -428,6 +664,12 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
         stop(event);
         const name = shellDocument.defaultView?.prompt("Preset name");
         if (name) void presets.savePreset(name);
+        return;
+      }
+      if (button.id === "presets-prev" || button.id === "presets-next") {
+        stop(event);
+        presetPageRef.current += button.id === "presets-next" ? 1 : -1;
+        syncPresetCarouselRef.current?.();
         return;
       }
       if (button.id === "presets-edit") {
