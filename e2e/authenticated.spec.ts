@@ -590,8 +590,8 @@ test("HowMany Option B hosts the canonical shell and bridges authenticated produ
   await shell.locator('[data-angle="90"]').click();
   await shell.locator("#gcode-generate").click();
   await expect(shell.locator("#gcode-output")).toContainText("X-2.00000 Y4.00000");
-  await expect(shell.locator("#gcode-part-x")).toHaveValue("2");
-  await expect(shell.locator("#gcode-part-y")).toHaveValue("4");
+  await expect(shell.locator("#gcode-part-x")).toHaveValue("4");
+  await expect(shell.locator("#gcode-part-y")).toHaveValue("2");
   await expect(shell.locator("#output-body")).not.toHaveClass(/closed/);
   await expect(shell.locator("#gcode-copy")).toBeEnabled();
   await expect(shell.locator("#gcode-download")).toBeEnabled();
@@ -627,8 +627,8 @@ test("HowMany Option B hosts the canonical shell and bridges authenticated produ
   await expect(shell.locator("#mode-switch")).toHaveAttribute("data-mode", "calc", {
     timeout: 2_000,
   });
-  await expect(shell.locator("#part-x")).toHaveValue("2");
-  await expect(shell.locator("#part-y")).toHaveValue("4");
+  await expect(shell.locator("#part-x")).toHaveValue("4");
+  await expect(shell.locator("#part-y")).toHaveValue("2");
   await expect(shell.locator('[data-link="part"]')).not.toHaveClass(/active/);
   await expect(shell.locator("#sheet")).not.toHaveClass(/side-right/, {
     timeout: 2_000,
@@ -640,6 +640,194 @@ test("HowMany Option B hosts the canonical shell and bridges authenticated produ
     animations: "disabled",
     fullPage: true,
   });
+});
+
+test("HowMany residual polish keeps bridge state, presets, previews, and G-code truthful", async ({
+  page,
+}, testInfo) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const shell = howManyShell(page);
+  await expect(shell.locator("#presets-track")).toHaveAttribute(
+    "aria-busy",
+    "false",
+    { timeout: 15_000 },
+  );
+  await deletePresetDatabase(page);
+  await page.evaluate((state) => {
+    localStorage.setItem("nestcalc-app-state-v3", JSON.stringify(state));
+    localStorage.removeItem("nestcalc-state-v2");
+    localStorage.removeItem("nestcalc-state-v1");
+  }, fullPresetState);
+  await page.reload();
+  await expect(shell.locator("#presets-track")).toHaveAttribute(
+    "aria-busy",
+    "false",
+    { timeout: 15_000 },
+  );
+
+  const partX = shell.locator("#part-x");
+  await partX.focus();
+  await partX.press(".");
+  await expect(partX).toHaveValue("0.");
+  await partX.press("5");
+  await expect(partX).toHaveValue("0.5");
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const raw = localStorage.getItem("nestcalc-app-state-v3");
+        return raw ? JSON.parse(raw).manualInputs.partWidth : null;
+      }),
+    )
+    .toBe(0.5);
+
+  await shell.locator('[data-target="margins-body"]').click();
+  const moveMargins = shell.locator(
+    '[data-section="margins"] input[type="checkbox"]',
+  );
+  await expect(moveMargins).toBeChecked();
+  await moveMargins.uncheck();
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const raw = localStorage.getItem("nestcalc-app-state-v3");
+        return raw
+          ? JSON.parse(raw).manualInputs.moveMarginsWithRotation
+          : null;
+      }),
+    )
+    .toBe(false);
+  await moveMargins.check();
+
+  await shell.locator("#mode-manual").click();
+  await shell.locator('[data-target="presets-body"]').click();
+  const presetName = `Residual ${testInfo.workerIndex}-${Date.now()}`;
+  const savedSnapshot = await page.evaluate(() => {
+    const raw = localStorage.getItem("nestcalc-app-state-v3");
+    if (!raw) throw new Error("Missing v3 state before residual preset save.");
+    return JSON.parse(raw) as unknown;
+  });
+  page.once("dialog", (dialog) => dialog.accept(presetName));
+  await shell.locator("#presets-add").click();
+  const shellPreset = shell.getByRole("listitem", {
+    name: `Load preset ${presetName}`,
+  });
+  await expect(shellPreset).toBeVisible();
+  await expect(shellPreset).toHaveClass(/is-selected/);
+  await expect(shellPreset).toHaveAttribute("aria-pressed", "true");
+
+  const storedPreset = await page.evaluate(async () => {
+    function requestResult<T>(request: IDBRequest<T>): Promise<T> {
+      return new Promise((resolve, reject) => {
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () =>
+          reject(request.error ?? new Error("IndexedDB request failed"));
+      });
+    }
+    const database = await requestResult(indexedDB.open("nestcalc-presets", 1));
+    const records = (await requestResult(
+      database.transaction("presets", "readonly").objectStore("presets").getAll(),
+    )) as Array<Record<string, unknown>>;
+    database.close();
+    return {
+      count: records.length,
+      ownerPresent:
+        typeof records[0]?.ownerClerkUserId === "string" &&
+        records[0].ownerClerkUserId.length > 0,
+      snapshot: records[0]?.snapshot,
+    };
+  });
+  expect(storedPreset).toEqual({
+    count: 1,
+    ownerPresent: true,
+    snapshot: savedSnapshot,
+  });
+
+  await partX.fill("9");
+  await moveMargins.uncheck();
+  await shell.locator("#mode-autonest").click();
+  await shellPreset.click();
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const raw = localStorage.getItem("nestcalc-app-state-v3");
+        return raw ? JSON.parse(raw) : null;
+      }),
+    )
+    .toEqual(savedSnapshot);
+  await expect(partX).toHaveValue("0.5");
+  await expect(moveMargins).toBeChecked();
+  await expect(shell.locator("#autonest-switch")).toHaveAttribute(
+    "data-mode",
+    "manual",
+  );
+  await expect(shellPreset).toHaveClass(/is-selected/);
+
+  page.once("dialog", (dialog) => dialog.accept());
+  await shell.locator("#presets-delete").click();
+  await expect(shellPreset).toHaveCount(0);
+  await expect(shell.locator("[data-howmany-presets-empty]")).toHaveText(
+    "No saved presets",
+  );
+  await expect(shell.locator("#presets-delete")).toBeDisabled();
+  await expect(shell.locator("#presets-edit")).toBeDisabled();
+
+  await page.addInitScript(seedComputedAutoNestState);
+  await page.reload();
+  await expect(shell.locator("#presets-track")).toHaveAttribute(
+    "aria-busy",
+    "false",
+    { timeout: 15_000 },
+  );
+  await partX.fill("6");
+  await shell.locator("#part-y").fill("4");
+  await shell.locator("#rem-x").fill("10");
+  await shell.locator("#rem-y").fill("10");
+  await shell.locator("#gap-x").fill("0");
+  await shell.locator("#gap-y").fill("0");
+  for (const id of ["m-left", "m-right", "m-bottom", "m-top"]) {
+    await shell.locator(`#${id}`).fill("0");
+  }
+  await shell.locator("#mode-autonest").click();
+  const hostedAutoNest = shell.getByRole("img", {
+    name: "AutoNest computed preview",
+  });
+  await expect(hostedAutoNest).toBeVisible();
+  await expect(
+    hostedAutoNest.locator('[data-testid="autonest-part-0deg"]'),
+  ).toHaveCount(2);
+  await expect(
+    hostedAutoNest.locator('[data-testid="autonest-part-90deg"]'),
+  ).toHaveCount(1);
+  await expect
+    .poll(() =>
+      hostedAutoNest
+        .locator('[data-testid="autonest-part-0deg"]')
+        .first()
+        .evaluate((element) => ({
+          fill: getComputedStyle(element).fill,
+          stroke: getComputedStyle(element).stroke,
+        })),
+    )
+    .toEqual({ fill: "rgba(34, 211, 238, 0.22)", stroke: "rgb(34, 211, 238)" });
+  await expect(
+    hostedAutoNest.locator('[data-testid="autonest-preview-trim-summary"]'),
+  ).toContainText("Trim");
+
+  await shell.locator("#tab-gcode").click();
+  await shell.locator("#gcode-input").fill("G90 G20\nG0 X0 Y0\nG1 X4 Y2");
+  await shell.locator('[data-angle="90"]').click();
+  await shell.locator("#gcode-generate").click();
+  await expect(shell.locator("#gcode-output")).toContainText("X-2.00000 Y4.00000");
+  await expect(shell.locator("#gcode-part-x")).toHaveValue("4");
+  await expect(shell.locator("#gcode-part-y")).toHaveValue("2");
+  await shell.locator("#fill-part-size").click();
+  await expect(shell.locator("#mode-switch")).toHaveAttribute(
+    "data-mode",
+    "calc",
+  );
+  await expect(partX).toHaveValue("4");
+  await expect(shell.locator("#part-y")).toHaveValue("2");
 });
 
 test("authenticated user reaches the NestCalc calculator shell", async ({

@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
+  derivePresetCarousel,
   displayGCodeSize,
   fieldBindingForId,
   formatShellNumber,
   generationIsFresh,
+  insertShellDecimal,
+  shouldPreserveNumericDraft,
 } from "./bridge";
 
 describe("HowMany shell bridge helpers", () => {
@@ -23,6 +26,47 @@ describe("HowMany shell bridge helpers", () => {
     expect(formatShellNumber(null)).toBe("");
     expect(formatShellNumber(12)).toBe("12");
     expect(formatShellNumber(1.23456)).toBe("1.235");
+  });
+
+  it("preserves focused decimal drafts that still represent current state", () => {
+    expect(shouldPreserveNumericDraft(".", null)).toBe(true);
+    expect(shouldPreserveNumericDraft("0.", 0)).toBe(true);
+    expect(shouldPreserveNumericDraft(".5", 0.5)).toBe(true);
+    expect(shouldPreserveNumericDraft("1.", 1)).toBe(true);
+    expect(shouldPreserveNumericDraft("1.25", 1.25)).toBe(true);
+    expect(shouldPreserveNumericDraft("1.25", 2)).toBe(false);
+  });
+
+  it("matches the shell keypad's decimal insertion rules", () => {
+    expect(insertShellDecimal("12", 2, 2, true)).toEqual({
+      value: "0.",
+      caret: 2,
+    });
+    expect(insertShellDecimal("12", 1, 2, false)).toEqual({
+      value: "1.",
+      caret: 2,
+    });
+    expect(insertShellDecimal("1.2", 3, 3, false)).toBeNull();
+  });
+
+  it("keeps preset pages truthful for selection and an empty carousel", () => {
+    expect(
+      derivePresetCarousel({
+        count: 5,
+        selectedIndex: 3,
+        visibleCount: 2,
+        requestedPage: 0,
+      }),
+    ).toEqual({ page: 1, maxPage: 2, canGoPrevious: true, canGoNext: true });
+
+    expect(
+      derivePresetCarousel({
+        count: 0,
+        selectedIndex: -1,
+        visibleCount: 3,
+        requestedPage: 2,
+      }),
+    ).toEqual({ page: 0, maxPage: 0, canGoPrevious: false, canGoNext: false });
   });
 
   it("converts generated bounds only at the display boundary", () => {
