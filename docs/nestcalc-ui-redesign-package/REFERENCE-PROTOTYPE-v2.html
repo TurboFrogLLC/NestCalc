@@ -362,16 +362,120 @@
       transition: padding-left 0.72s cubic-bezier(0.34, 1.45, 0.64, 1), padding-right 0.72s cubic-bezier(0.34, 1.45, 0.64, 1);
     }
 
-    .section-html, body {
-      overflow-x: auto;
-    }
-    body {
+    .section-body {
       transition: max-height 0.42s var(--spring), opacity 0.22s ease;
       overflow: hidden;
+      /* Frosted light-gray glass fill (same family as pad) */
+      background: rgba(228, 230, 236, 0.72);
+      backdrop-filter: blur(14px) saturate(1.15);
+      -webkit-backdrop-filter: blur(14px) saturate(1.15);
+      color: #1a1a24;
     }
     .section-body.closed {
       max-height: 0 !important;
       opacity: 0;
+    }
+    /* Non-collapsible G-code card bodies + source wrapper */
+    .frost-body {
+      background: rgba(228, 230, 236, 0.72);
+      backdrop-filter: blur(14px) saturate(1.15);
+      -webkit-backdrop-filter: blur(14px) saturate(1.15);
+      color: #1a1a24;
+    }
+    .frost-body .text-\[10px\],
+    .frost-body .m-label,
+    .section-body .text-\[10px\],
+    .section-body .m-label {
+      color: #3a3a48 !important;
+    }
+    /* Dark code surfaces stay dark on frost */
+    .frost-body #gcode-input,
+    .frost-body #gcode-output,
+    .section-body #gcode-input,
+    .section-body #gcode-output {
+      background: #1E1A2A !important;
+      color: #FFFFFF !important;
+      border-color: rgba(200, 205, 216, 0.22) !important;
+    }
+    /* Subtle lift language for controls */
+    .lift {
+      border: 1px solid rgba(0, 0, 0, 0.16);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.12) inset,
+        0 1px 2px rgba(0, 0, 0, 0.18);
+    }
+    .lift-icon {
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid rgba(0, 0, 0, 0.14);
+      color: #2a2a36;
+      cursor: pointer;
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.75) inset,
+        0 1px 2px rgba(0, 0, 0, 0.12);
+      flex-shrink: 0;
+    }
+    .lift-icon:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.9);
+      color: #111;
+    }
+    .lift-icon:disabled {
+      opacity: 0.35;
+      cursor: default;
+      box-shadow: none;
+    }
+    .lift-icon--danger {
+      color: #8a3030;
+      border-color: rgba(180, 60, 60, 0.35);
+    }
+    .lift-icon--danger:hover:not(:disabled) {
+      background: rgba(220, 80, 80, 0.15);
+      color: #a02020;
+    }
+    /* Inputs on frost bodies: dark field contrast */
+    .section-body .num-input,
+    .frost-body .num-input {
+      background: rgba(30, 26, 42, 0.92) !important;
+      color: #fff !important;
+      border: 1px solid rgba(0, 0, 0, 0.22) !important;
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.06) inset,
+        0 1px 2px rgba(0, 0, 0, 0.12);
+    }
+    .section-body label,
+    .frost-body label,
+    .section-body .xy-field > span,
+    .frost-body .xy-field > span,
+    .section-body .m-label,
+    .frost-body .m-label {
+      color: #3a3a48 !important;
+    }
+    /* Override light inline muted text on frosted surfaces */
+    .section-body span[style*="color: #C8CDD8"],
+    .frost-body span[style*="color: #C8CDD8"],
+    .section-body span[style*="color:#C8CDD8"],
+    .frost-body span[style*="color:#C8CDD8"] {
+      color: #3a3a48 !important;
+    }
+    /* Subtle lift on frost-surface control buttons (not heavy) */
+    .frost-body .gcode-angle,
+    .frost-body #gcode-generate,
+    .frost-body #fill-part-size {
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.1) inset,
+        0 1px 2px rgba(0, 0, 0, 0.16);
+    }
+    .section-body [data-link],
+    .section-body .btn-group-h {
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.08) inset,
+        0 1px 2px rgba(0, 0, 0, 0.14);
     }
     .chevron {
       transition: transform 0.35s var(--spring);
@@ -537,12 +641,98 @@
     }
     .numpad-quick {
       display: flex;
-      flex-wrap: wrap;
+      align-items: center;
       gap: 4px;
       margin-bottom: 8px;
     }
     .numpad.numpad--calc .numpad-quick {
       display: none;
+    }
+    .quick-carousel {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+    .quick-carousel__btn {
+      flex-shrink: 0;
+      width: 22px;
+      height: 26px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      color: #2a2a36;
+      cursor: pointer;
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.8) inset,
+        0 1px 1px rgba(0, 0, 0, 0.1);
+      padding: 0;
+    }
+    .quick-carousel__btn:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.92);
+    }
+    .quick-carousel__btn:disabled {
+      opacity: 0.3;
+      cursor: default;
+      box-shadow: none;
+    }
+    .quick-carousel__viewport {
+      flex: 1 1 auto;
+      min-width: 0;
+      overflow: hidden;
+      container-type: inline-size;
+      container-name: quick-viewport;
+    }
+    .quick-carousel__track {
+      display: flex;
+      gap: 4px;
+      transition: transform 0.2s var(--smooth);
+      will-change: transform;
+    }
+    /* 4 chips visible (3 gaps × 4px = 12px) */
+    .quick-carousel__track .quick-chip {
+      flex: 0 0 calc((100cqi - 12px) / 4);
+      width: calc((100cqi - 12px) / 4);
+      min-width: 0;
+      height: 26px;
+      padding: 0 2px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+      background: linear-gradient(180deg, rgba(255,255,255,0.78) 0%, rgba(255,255,255,0.58) 100%);
+      color: #2a2a36;
+      border: 1px solid rgba(0, 0, 0, 0.14);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.85) inset,
+        0 1px 1px rgba(0, 0, 0, 0.1);
+    }
+    .quick-carousel__track .quick-chip:hover {
+      background: rgba(255, 255, 255, 0.95);
+    }
+    .quick-carousel__track .quick-chip.is-selected {
+      background: linear-gradient(180deg, #6A9FF0 0%, #538BEC 100%);
+      color: #fff;
+      border-color: rgba(30, 70, 140, 0.4);
+    }
+    .quick-manage {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      flex-shrink: 0;
+    }
+    .quick-manage .lift-icon {
+      width: 26px;
+      height: 26px;
+      background: rgba(255, 255, 255, 0.55);
     }
     .numpad-keys {
       display: grid;
@@ -580,32 +770,34 @@
       filter: brightness(0.92);
     }
 
-    /* Presets carousel: at most 4 chips centered in visible window */
+    /* Presets carousel: at most 3 chips (readable labels) */
     .presets-carousel {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 6px;
       width: 100%;
     }
     .presets-carousel__btn {
       flex-shrink: 0;
-      width: 30px;
+      width: 28px;
       height: 32px;
       border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: var(--raised);
-      border: 1px solid rgba(83, 139, 236, 0.45);
-      color: #E8ECF4;
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid rgba(0, 0, 0, 0.14);
+      color: #2a2a36;
       cursor: pointer;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.75) inset,
+        0 1px 2px rgba(0, 0, 0, 0.12);
+      padding: 0;
     }
     .presets-carousel__btn:hover:not(:disabled) {
-      color: #fff;
-      border-color: rgba(83, 139, 236, 0.75);
-      background: rgba(83, 139, 236, 0.22);
+      background: rgba(255, 255, 255, 0.92);
+      color: #111;
     }
     .presets-carousel__btn:disabled {
       opacity: 0.32;
@@ -617,7 +809,6 @@
       min-width: 0;
       max-width: 100%;
       overflow: hidden;
-      /* fixed 4-chip window; track slides underneath */
       container-type: inline-size;
       container-name: presets-viewport;
     }
@@ -627,74 +818,40 @@
       transition: transform 0.22s var(--smooth);
       will-change: transform;
     }
-    /* Exactly 4 chips fit the viewport (3 gaps × 6px = 18px) */
+    /* Exactly 3 chips fit (2 gaps × 6px = 12px) */
     .presets-carousel__track .preset-chip {
-      flex: 0 0 calc((100cqi - 18px) / 4);
-      width: calc((100cqi - 18px) / 4);
+      flex: 0 0 calc((100cqi - 12px) / 3);
+      width: calc((100cqi - 12px) / 3);
       min-width: 0;
       box-sizing: border-box;
       height: 32px;
-      padding: 0 6px;
+      padding: 0 8px;
       border-radius: 8px;
       font-size: 12px;
-      font-weight: 500;
+      font-weight: 600;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       transition: transform 0.15s var(--spring), background 0.15s ease, border-color 0.15s ease;
       cursor: pointer;
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid rgba(0, 0, 0, 0.14);
+      color: #2a2a36;
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.7) inset,
+        0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+    .presets-carousel__track .preset-chip.is-selected {
+      background: linear-gradient(180deg, #6A9FF0 0%, #538BEC 100%);
+      border-color: rgba(30, 70, 140, 0.4);
+      color: #fff;
     }
     .presets-manage {
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-wrap: wrap;
       gap: 6px;
       margin-top: 10px;
-    }
-    .presets-manage__btn {
-      height: 28px;
-      padding: 0 10px;
-      border-radius: 8px;
-      font-size: 11px;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      background: var(--raised);
-      border: 1px solid rgba(83, 139, 236, 0.4);
-      color: #C8CDD8;
-      cursor: pointer;
-    }
-    .presets-manage__btn:hover:not(:disabled) {
-      color: #fff;
-      border-color: rgba(83, 139, 236, 0.7);
-      background: rgba(83, 139, 236, 0.18);
-    }
-    .presets-manage__btn--add {
-      border-style: dashed;
-      border-color: rgba(83, 139, 236, 0.55);
-    }
-    .presets-manage__btn--delete {
-      border-color: rgba(236, 90, 90, 0.45);
-      color: #E8B4B4;
-    }
-    .presets-manage__btn--delete:hover:not(:disabled) {
-      background: rgba(220, 70, 70, 0.18);
-      border-color: rgba(236, 90, 90, 0.7);
-      color: #ffd0d0;
-    }
-    .presets-manage__btn:disabled {
-      opacity: 0.35;
-      cursor: default;
-    }
-    .presets-status {
-      width: 100%;
-      text-align: center;
-      font-size: 10px;
-      color: #8A90A0;
-      min-height: 14px;
-      margin-top: 2px;
     }
 
     .value-badge {
@@ -848,8 +1005,11 @@
     /* G-code unit + nest mode (locked sm specs) */
     .seg-switch--sm {
       height: 28px;
-      background: rgba(0, 0, 0, 0.2);
-      border: none;
+      background: rgba(0, 0, 0, 0.22);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.06) inset,
+        0 1px 2px rgba(0, 0, 0, 0.2);
     }
     .seg-switch--sm > button {
       height: 24px;
@@ -860,7 +1020,10 @@
     .seg-switch--header {
       height: 32px; /* 2 + 28 + 2 */
       background: var(--raised);
-      border: 1px solid rgba(200, 205, 216, 0.15);
+      border: 1px solid rgba(200, 205, 216, 0.22);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.06) inset,
+        0 1px 2px rgba(0, 0, 0, 0.22);
     }
     .seg-switch--header > button {
       height: 28px;
@@ -874,7 +1037,10 @@
       gap: 2px;
       border-radius: 12px;
       background: rgba(11, 8, 20, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.06) inset,
+        0 1px 3px rgba(0, 0, 0, 0.28);
     }
     .seg-switch--mode > .seg-switch__thumb {
       border-radius: 8px;
@@ -928,14 +1094,23 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      background: var(--raised);
-      border: 1px solid rgba(83, 139, 236, 0.3);
+      background: linear-gradient(180deg, #2A2638 0%, #1E1A2A 100%);
+      border: 1px solid rgba(83, 139, 236, 0.35);
       color: #C8CDD8;
       cursor: pointer;
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.08) inset,
+        0 1px 2px rgba(0, 0, 0, 0.25);
     }
     .sheet-chrome-icon:hover {
       color: #fff;
-      border-color: rgba(83, 139, 236, 0.5);
+      border-color: rgba(83, 139, 236, 0.55);
+    }
+    /* header icon lift (app bar controls) */
+    header .h-8.w-8.rounded-lg {
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.06) inset,
+        0 1px 2px rgba(0, 0, 0, 0.22);
     }
     /* Calculator nest part rectangles — 1.5px white stroke (beat Tailwind preflight) */
     #calc-view .nest-part {
@@ -1178,42 +1353,38 @@
           </div>
           <div id="presets-body" class="section-body closed">
             <div class="px-3 py-3">
-              <!-- Carousel: max 4 chips visible, arrows for additional -->
+              <!-- Carousel: max 3 chips visible; tooltips for full name -->
               <div class="presets-carousel" id="presets-carousel">
                 <button type="button" class="presets-carousel__btn press" id="presets-prev" aria-label="Previous presets" title="Previous presets">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
                 </button>
                 <div class="presets-carousel__viewport" id="presets-viewport">
                   <div class="presets-carousel__track" id="presets-track" role="list">
-                    <!-- Seed list 6+ items so page 2 proves horizontal scroll; only Default selected -->
-                    <button type="button" class="preset-chip press" role="listitem" data-preset="Default">Default</button>
-                    <button type="button" class="preset-chip press" role="listitem" data-preset="4×8">4×8</button>
-                    <button type="button" class="preset-chip press" role="listitem" data-preset="5×10">5×10</button>
-                    <button type="button" class="preset-chip press" role="listitem" data-preset="Scrap A">Scrap A</button>
-                    <button type="button" class="preset-chip press" role="listitem" data-preset="Remnant">Remnant</button>
-                    <button type="button" class="preset-chip press" role="listitem" data-preset="Custom">Custom</button>
-                    <button type="button" class="preset-chip press" role="listitem" data-preset="Drop-in">Drop-in</button>
+                    <button type="button" class="preset-chip press is-selected" role="listitem" data-preset="Default" title="Default">Default</button>
+                    <button type="button" class="preset-chip press" role="listitem" data-preset="4×8" title="4×8">4×8</button>
+                    <button type="button" class="preset-chip press" role="listitem" data-preset="5×10" title="5×10">5×10</button>
+                    <button type="button" class="preset-chip press" role="listitem" data-preset="Scrap A" title="Scrap A">Scrap A</button>
+                    <button type="button" class="preset-chip press" role="listitem" data-preset="Remnant" title="Remnant">Remnant</button>
+                    <button type="button" class="preset-chip press" role="listitem" data-preset="Custom" title="Custom">Custom</button>
+                    <button type="button" class="preset-chip press" role="listitem" data-preset="Drop-in" title="Drop-in">Drop-in</button>
                   </div>
                 </div>
                 <button type="button" class="presets-carousel__btn press" id="presets-next" aria-label="Next presets" title="Next presets">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
                 </button>
               </div>
-              <!-- Management: Add / Edit / Delete (in-memory shell stubs) -->
+              <!-- Icon-only manage: + / pencil / trash -->
               <div class="presets-manage" id="presets-manage" role="toolbar" aria-label="Preset management">
-                <button type="button" class="presets-manage__btn presets-manage__btn--add press" id="presets-add" title="Add preset">
-                  <span aria-hidden="true">+</span> Add
+                <button type="button" class="lift-icon press" id="presets-add" title="Add preset" aria-label="Add preset">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
                 </button>
-                <button type="button" class="presets-manage__btn press" id="presets-edit" title="Edit selected preset">
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-                  Edit
+                <button type="button" class="lift-icon press" id="presets-edit" title="Edit selected preset" aria-label="Edit selected preset">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
                 </button>
-                <button type="button" class="presets-manage__btn presets-manage__btn--delete press" id="presets-delete" title="Delete selected preset">
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>
-                  Delete
+                <button type="button" class="lift-icon lift-icon--danger press" id="presets-delete" title="Delete selected preset" aria-label="Delete selected preset">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>
                 </button>
               </div>
-              <div class="presets-status" id="presets-status" aria-live="polite"></div>
             </div>
           </div>
         </section>
@@ -1377,7 +1548,7 @@
                 <button type="button" id="prog-unit-mm" aria-pressed="false">MM</button>
               </div>
             </div>
-            <div class="px-3 py-3">
+            <div class="px-3 py-3 frost-body">
               <textarea id="gcode-input" rows="11" placeholder="Paste G-code here" class="w-full rounded-lg px-2.5 py-2 text-[11px] font-mono leading-relaxed resize-y transition" style="background: var(--raised); border: 1px solid rgba(200,205,216,0.2); color: #FFFFFF; min-height: 180px; white-space: pre; overflow-x: auto;"></textarea>
             </div>
           </section>
@@ -1388,7 +1559,7 @@
             <div class="section-header section-header-gcode px-3 flex items-center justify-between gap-2">
               <span class="text-[11px] font-semibold uppercase tracking-wide section-label">Rotation</span>
             </div>
-            <div class="gcode-card-body px-3 py-3 flex flex-col gap-2.5">
+            <div class="gcode-card-body frost-body px-3 py-3 flex flex-col gap-2.5">
               <div class="flex items-center justify-center gap-1.5 flex-wrap flex-1">
                 <button data-angle="0" class="gcode-angle h-9 px-3 rounded-lg text-[11px] font-semibold transition press" style="background: #EE8C3C; color: #fff;">0°</button>
                 <button data-angle="90" class="gcode-angle h-9 px-3 rounded-lg text-[11px] font-semibold transition press" style="background: var(--raised); border: 1px solid rgba(200,205,216,0.2); color: #C8CDD8;">90°</button>
@@ -1407,7 +1578,7 @@
                 <button type="button" id="part-unit-mm" aria-pressed="false">MM</button>
               </div>
             </div>
-            <div class="gcode-card-body px-3 py-3 flex flex-col gap-2.5">
+            <div class="gcode-card-body frost-body px-3 py-3 flex flex-col gap-2.5">
               <div class="flex items-center justify-center gap-3 flex-1">
                 <div class="xy-field">
                   <span class="text-[10px] font-medium" style="color: #C8CDD8;">X</span>
@@ -1439,7 +1610,7 @@
                 </button>
               </div>
             </div>
-            <div id="output-body" class="px-3 pb-3" style="display:none;">
+            <div id="output-body" class="px-3 pb-3 frost-body" style="display:none;">
               <pre id="gcode-output" class="w-full rounded-lg px-2.5 py-2 text-[10px] font-mono leading-relaxed overflow-auto" style="background: var(--raised); border: 1px solid rgba(200,205,216,0.15); color: #C8CDD8; max-height: 160px; min-height: 72px; white-space: pre; overflow-x: auto;">—</pre>
             </div>
           </section>
@@ -1552,11 +1723,33 @@
     </div>
     <div id="numpad-lcd" class="numpad-lcd" aria-live="polite" aria-hidden="true"></div>
     <div class="numpad-quick" id="numpad-quick">
-      <button type="button" data-quick="0.060" class="h-6 px-1.5 rounded-md text-[10px] font-mono font-medium transition press key-util">.060</button>
-      <button type="button" data-quick="0.125" class="h-6 px-1.5 rounded-md text-[10px] font-mono font-medium transition press key-util">.125</button>
-      <button type="button" data-quick="0.250" class="h-6 px-1.5 rounded-md text-[10px] font-mono font-medium transition press key-util">.250</button>
-      <button type="button" data-quick="0.375" class="h-6 px-1.5 rounded-md text-[10px] font-mono font-medium transition press key-util">.375</button>
-      <button type="button" data-quick="0.500" class="h-6 px-1.5 rounded-md text-[10px] font-mono font-medium transition press key-util">.500</button>
+      <div class="quick-carousel" id="quick-carousel">
+        <button type="button" class="quick-carousel__btn press" id="quick-prev" aria-label="Previous quick values" title="Previous">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <div class="quick-carousel__viewport" id="quick-viewport">
+          <div class="quick-carousel__track" id="quick-track" role="list">
+            <button type="button" class="quick-chip press" role="listitem" data-quick="0.060" title="0.060">.060</button>
+            <button type="button" class="quick-chip press" role="listitem" data-quick="0.125" title="0.125">.125</button>
+            <button type="button" class="quick-chip press" role="listitem" data-quick="0.250" title="0.250">.250</button>
+            <button type="button" class="quick-chip press" role="listitem" data-quick="0.375" title="0.375">.375</button>
+            <button type="button" class="quick-chip press" role="listitem" data-quick="0.500" title="0.500">.500</button>
+            <button type="button" class="quick-chip press" role="listitem" data-quick="0.750" title="0.750">.750</button>
+            <button type="button" class="quick-chip press" role="listitem" data-quick="1.000" title="1.000">1.00</button>
+          </div>
+        </div>
+        <button type="button" class="quick-carousel__btn press" id="quick-next" aria-label="Next quick values" title="Next">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+      <div class="quick-manage" role="toolbar" aria-label="Quick value management">
+        <button type="button" class="lift-icon press" id="quick-add" title="Add quick value" aria-label="Add quick value">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <button type="button" class="lift-icon press" id="quick-edit" title="Edit selected quick value" aria-label="Edit selected quick value">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+        </button>
+      </div>
     </div>
     <div class="numpad-keys" id="numpad-keys">
       <button type="button" data-key="7" class="h-11 rounded-xl text-sm font-medium transition press key-num">7</button>
@@ -2461,16 +2654,7 @@
       });
     })();
 
-    /* Quick thickness chips — ENTRY only writes into active field */
-    document.querySelectorAll('#numpad [data-quick]').forEach(btn => {
-      btn.addEventListener('mousedown', e => e.preventDefault());
-      btn.addEventListener('click', () => {
-        if (padMode !== 'entry' || !activeField) return;
-        activeField.value = btn.dataset.quick;
-        typingFresh = false;
-        activeField.dispatchEvent(new Event('input'));
-      });
-    });
+    /* quick carousel init below (after pad keys) */
 
     /* Digit / . / back / Enter — label stays "Enter" (never "=") */
     document.querySelectorAll('#numpad [data-key]').forEach(btn => {
@@ -2518,7 +2702,7 @@
 
     setPadMode('entry');
 
-    /* ---- Presets carousel: max 4 visible, arrows, add/edit/delete (in-memory) ---- */
+    /* ---- Sheet presets: max 3 visible, icon-only +/pencil/trash, tooltips ---- */
     window.__nestPresetsSync = null;
     (function initPresetsCarousel() {
       const track = document.getElementById('presets-track');
@@ -2528,30 +2712,22 @@
       const addBtn = document.getElementById('presets-add');
       const editBtn = document.getElementById('presets-edit');
       const deleteBtn = document.getElementById('presets-delete');
-      const statusEl = document.getElementById('presets-status');
       if (!track || !viewport) return;
 
-      const VISIBLE = 4;
+      const VISIBLE = 3;
       const GAP = 6;
       let page = 0;
       let selectedPreset = 'Default';
-      let seed = 0;
-
-      function setStatus(msg) {
-        if (statusEl) statusEl.textContent = msg || '';
-      }
 
       function chips() {
         return Array.from(track.querySelectorAll('.preset-chip'));
       }
       function maxPage() {
-        const n = chips().length;
-        return Math.max(0, Math.ceil(n / VISIBLE) - 1);
+        return Math.max(0, Math.ceil(chips().length / VISIBLE) - 1);
       }
       function chipStep() {
         const list = chips();
         if (!list.length) return 0;
-        /* Prefer measured width; fall back to viewport/4 when closed (0-width) */
         const w = list[0].offsetWidth;
         if (w > 0) return w + GAP;
         const vw = viewport.clientWidth;
@@ -2571,66 +2747,48 @@
         if (page > mp) page = mp;
         if (page < 0) page = 0;
         const step = chipStep() * VISIBLE;
-        if (step > 0) {
-          track.style.transform = 'translateX(' + (-page * step) + 'px)';
-        } else {
-          track.style.transform = 'translateX(0px)';
-        }
+        track.style.transform = step > 0 ? ('translateX(' + (-page * step) + 'px)') : 'translateX(0px)';
         if (prevBtn) prevBtn.disabled = page <= 0;
         if (nextBtn) nextBtn.disabled = page >= mp || list.length <= VISIBLE;
-        if (deleteBtn) {
-          const canDelete = list.length > 1 && !!selectedPreset;
-          deleteBtn.disabled = !canDelete;
-        }
+        if (deleteBtn) deleteBtn.disabled = list.length <= 1 || !selectedPreset;
         if (editBtn) editBtn.disabled = !selectedPreset || list.length === 0;
         list.forEach(chip => {
-          const on = chip.dataset.preset === selectedPreset;
-          if (on) {
-            chip.style.background = '#538BEC';
-            chip.style.border = '1px solid #538BEC';
-            chip.style.color = '#fff';
-            chip.setAttribute('aria-pressed', 'true');
-          } else {
-            chip.style.background = 'var(--raised)';
-            chip.style.border = '1px solid rgba(83,139,236,0.35)';
-            chip.style.color = '#C8CDD8';
-            chip.setAttribute('aria-pressed', 'false');
-          }
+          const name = chip.dataset.preset || chip.textContent.trim();
+          chip.title = name;
+          const on = name === selectedPreset;
+          chip.classList.toggle('is-selected', on);
+          chip.setAttribute('aria-pressed', on ? 'true' : 'false');
+          /* clear inline styles from older stub */
+          chip.style.background = '';
+          chip.style.border = '';
+          chip.style.color = '';
         });
       }
       function bindChip(chip) {
         chip.addEventListener('click', () => {
           selectedPreset = chip.dataset.preset || chip.textContent.trim();
-          setStatus('Selected: ' + selectedPreset);
           syncCarousel();
         });
       }
       chips().forEach(bindChip);
 
-      if (prevBtn) prevBtn.addEventListener('click', () => {
-        page -= 1;
-        syncCarousel();
-      });
-      if (nextBtn) nextBtn.addEventListener('click', () => {
-        page += 1;
-        syncCarousel();
-      });
+      if (prevBtn) prevBtn.addEventListener('click', () => { page -= 1; syncCarousel(); });
+      if (nextBtn) nextBtn.addEventListener('click', () => { page += 1; syncCarousel(); });
 
       if (addBtn) {
         addBtn.addEventListener('click', () => {
-          seed += 1;
           const name = 'Preset ' + (chips().length + 1);
           const btn = document.createElement('button');
           btn.type = 'button';
           btn.className = 'preset-chip press';
           btn.setAttribute('role', 'listitem');
           btn.dataset.preset = name;
+          btn.title = name;
           btn.textContent = name;
           track.appendChild(btn);
           bindChip(btn);
           selectedPreset = name;
           page = maxPage();
-          setStatus('Added "' + name + '" (in-memory)');
           syncCarousel();
           remountOpenHeight();
         });
@@ -2639,24 +2797,17 @@
       if (editBtn) {
         editBtn.addEventListener('click', () => {
           if (!selectedPreset) return;
-          const chip = chips().find(c => c.dataset.preset === selectedPreset);
+          const chip = chips().find(c => (c.dataset.preset || c.textContent.trim()) === selectedPreset);
           if (!chip) return;
           const next = window.prompt('Rename preset', selectedPreset);
           if (next == null) return;
           const name = String(next).trim();
-          if (!name) {
-            setStatus('Edit cancelled — empty name');
-            return;
-          }
-          if (chips().some(c => c !== chip && c.dataset.preset === name)) {
-            setStatus('Name already exists');
-            return;
-          }
-          const prev = selectedPreset;
+          if (!name) return;
+          if (chips().some(c => c !== chip && (c.dataset.preset || c.textContent.trim()) === name)) return;
           chip.dataset.preset = name;
+          chip.title = name;
           chip.textContent = name;
           selectedPreset = name;
-          setStatus('Renamed "' + prev + '" → "' + name + '"');
           syncCarousel();
         });
       }
@@ -2664,20 +2815,15 @@
       if (deleteBtn) {
         deleteBtn.addEventListener('click', () => {
           const list = chips();
-          if (list.length <= 1) {
-            setStatus('Keep at least one preset');
-            return;
-          }
-          const chip = list.find(c => c.dataset.preset === selectedPreset);
+          if (list.length <= 1) return;
+          const chip = list.find(c => (c.dataset.preset || c.textContent.trim()) === selectedPreset);
           if (!chip) return;
-          const removed = selectedPreset;
           const idx = list.indexOf(chip);
           chip.remove();
           const remaining = chips();
           const pick = remaining[Math.max(0, Math.min(idx, remaining.length - 1))];
           selectedPreset = pick ? (pick.dataset.preset || pick.textContent.trim()) : '';
           if (page > maxPage()) page = maxPage();
-          setStatus('Deleted "' + removed + '"');
           syncCarousel();
           remountOpenHeight();
         });
@@ -2694,10 +2840,144 @@
         new ResizeObserver(function () { syncCarousel(); }).observe(viewport);
       }
       window.addEventListener('resize', syncCarousel);
-      requestAnimationFrame(function () {
-        syncCarousel();
-        setStatus(chips().length + ' presets · max 4 visible');
-      });
+      requestAnimationFrame(syncCarousel);
+    })();
+
+    /* ---- Keypad quick-value carousel: 4-up, add + edit(with delete) ---- */
+    (function initQuickCarousel() {
+      const track = document.getElementById('quick-track');
+      const viewport = document.getElementById('quick-viewport');
+      const prevBtn = document.getElementById('quick-prev');
+      const nextBtn = document.getElementById('quick-next');
+      const addBtn = document.getElementById('quick-add');
+      const editBtn = document.getElementById('quick-edit');
+      if (!track || !viewport) return;
+
+      const VISIBLE = 4;
+      const GAP = 4;
+      let page = 0;
+      let selectedQuick = null;
+
+      function chips() {
+        return Array.from(track.querySelectorAll('.quick-chip'));
+      }
+      function maxPage() {
+        return Math.max(0, Math.ceil(chips().length / VISIBLE) - 1);
+      }
+      function chipStep() {
+        const list = chips();
+        if (!list.length) return 0;
+        const w = list[0].offsetWidth;
+        if (w > 0) return w + GAP;
+        const vw = viewport.clientWidth;
+        if (vw > 0) return (vw - GAP * (VISIBLE - 1)) / VISIBLE + GAP;
+        return 0;
+      }
+      function formatQuick(v) {
+        const n = parseFloat(v);
+        if (!isFinite(n)) return String(v);
+        if (Math.abs(n) >= 1) {
+          const s = n.toFixed(2);
+          return s.replace(/\.?0+$/, '');
+        }
+        const s = n.toFixed(3);
+        return s.replace(/^0/, '');
+      }
+      function sync() {
+        const list = chips();
+        const mp = maxPage();
+        if (page > mp) page = mp;
+        if (page < 0) page = 0;
+        const step = chipStep() * VISIBLE;
+        track.style.transform = step > 0 ? ('translateX(' + (-page * step) + 'px)') : 'translateX(0px)';
+        if (prevBtn) prevBtn.disabled = page <= 0;
+        if (nextBtn) nextBtn.disabled = page >= mp || list.length <= VISIBLE;
+        if (editBtn) editBtn.disabled = !selectedQuick || list.length === 0;
+        list.forEach(chip => {
+          chip.classList.toggle('is-selected', chip.dataset.quick === selectedQuick);
+        });
+      }
+      function bindChip(chip) {
+        chip.addEventListener('mousedown', e => e.preventDefault());
+        chip.addEventListener('click', () => {
+          selectedQuick = chip.dataset.quick;
+          sync();
+          if (padMode !== 'entry' || !activeField) return;
+          activeField.value = chip.dataset.quick;
+          typingFresh = false;
+          activeField.dispatchEvent(new Event('input'));
+        });
+      }
+      chips().forEach(bindChip);
+
+      if (prevBtn) prevBtn.addEventListener('click', () => { page -= 1; sync(); });
+      if (nextBtn) nextBtn.addEventListener('click', () => { page += 1; sync(); });
+
+      if (addBtn) {
+        addBtn.addEventListener('mousedown', e => e.preventDefault());
+        addBtn.addEventListener('click', () => {
+          const raw = window.prompt('New quick value (e.g. 0.062)', '0.062');
+          if (raw == null) return;
+          const n = parseFloat(String(raw).trim());
+          if (!isFinite(n) || n < 0) return;
+          const val = String(n);
+          if (chips().some(c => c.dataset.quick === val)) return;
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'quick-chip press';
+          btn.setAttribute('role', 'listitem');
+          btn.dataset.quick = val;
+          btn.title = val;
+          btn.textContent = formatQuick(val);
+          track.appendChild(btn);
+          bindChip(btn);
+          selectedQuick = val;
+          page = maxPage();
+          sync();
+        });
+      }
+
+      if (editBtn) {
+        editBtn.addEventListener('mousedown', e => e.preventDefault());
+        editBtn.addEventListener('click', () => {
+          if (!selectedQuick) return;
+          const chip = chips().find(c => c.dataset.quick === selectedQuick);
+          if (!chip) return;
+          const action = window.prompt(
+            'Edit quick value "' + selectedQuick + '"\nEnter new number to rename, or type DELETE to remove.',
+            selectedQuick
+          );
+          if (action == null) return;
+          const t = String(action).trim();
+          if (!t) return;
+          if (/^delete$/i.test(t)) {
+            if (chips().length <= 1) return;
+            const idx = chips().indexOf(chip);
+            chip.remove();
+            const rem = chips();
+            const pick = rem[Math.max(0, Math.min(idx, rem.length - 1))];
+            selectedQuick = pick ? pick.dataset.quick : null;
+            if (page > maxPage()) page = maxPage();
+            sync();
+            return;
+          }
+          const n = parseFloat(t);
+          if (!isFinite(n) || n < 0) return;
+          const val = String(n);
+          if (chips().some(c => c !== chip && c.dataset.quick === val)) return;
+          chip.dataset.quick = val;
+          chip.title = val;
+          chip.textContent = formatQuick(val);
+          selectedQuick = val;
+          sync();
+        });
+      }
+
+      if (typeof ResizeObserver !== 'undefined') {
+        new ResizeObserver(sync).observe(viewport);
+      }
+      window.addEventListener('resize', sync);
+      requestAnimationFrame(sync);
     })();
   </script>
 </body>
