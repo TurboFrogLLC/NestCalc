@@ -451,12 +451,13 @@
       user-select: none;
     }
 
+    /* Part / Rem / Gap: whole cluster (X|Y|sep|swap-link) centered as one unit */
     .xy-row {
       display: flex;
       align-items: center;
       width: 100%;
       gap: 8px;
-      justify-content: flex-start;
+      justify-content: center;
     }
     .xy-row .xy-field {
       display: flex;
@@ -464,13 +465,12 @@
       gap: 6px;
       flex-shrink: 0;
     }
-    /* Remaining row space: center swap/link (not jammed right) */
+    /* Keep sep + button group tight to XY — do not flex-grow or center alone */
     .xy-row .xy-actions {
-      flex: 1 1 auto;
-      min-width: 0;
+      flex: 0 0 auto;
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       gap: 8px;
     }
     .xy-row .btn-group-h {
@@ -507,38 +507,64 @@
       box-shadow: none !important;
       border-color: rgba(200, 205, 216, 0.5);
     }
-    /* AutoNest | Manual segmented switch */
+    /*
+      AutoNest | Manual sliding switch — mirrors G-code unit chrome
+      (prog-unit / part-unit: gap-0.5 p-0.5 rounded-lg, bg rgba(0,0,0,0.2),
+      h-6 px-2 rounded-md text-[10px] font-bold; selected solid accent).
+      Width only widened so full labels fit; thumb slides between segments.
+    */
     .nest-mode-switch {
+      position: relative;
       display: inline-flex;
-      align-items: stretch;
-      height: 28px;
-      padding: 2px;
-      border-radius: 8px;
-      background: var(--raised);
-      border: 1px solid rgba(200, 205, 216, 0.22);
+      align-items: center;
+      gap: 2px;            /* gap-0.5 */
+      height: 28px;        /* p-0.5 (2) + h-6 (24) + p-0.5 (2) */
+      padding: 2px;        /* p-0.5 */
+      border-radius: 8px;  /* rounded-lg */
+      background: rgba(0, 0, 0, 0.2);
+      border: none;
       flex-shrink: 0;
+      box-sizing: border-box;
+    }
+    .nest-mode-thumb {
+      position: absolute;
+      top: 2px;
+      bottom: 2px;
+      left: 2px;
+      width: 0;
+      border-radius: 6px;  /* rounded-md */
+      background: #538BEC;
+      pointer-events: none;
+      z-index: 0;
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                  width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      will-change: transform, width;
     }
     .nest-mode-switch button {
-      height: 100%;
-      padding: 0 0.55rem;
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: 600;
+      position: relative;
+      z-index: 1;
+      height: 24px;        /* h-6 */
+      padding: 0 8px;      /* px-2 — widen only as needed for labels */
+      min-width: 0;
+      border-radius: 6px;  /* rounded-md */
+      font-size: 10px;     /* text-[10px] */
+      font-weight: 700;    /* font-bold */
       line-height: 1;
-      color: #C8CDD8;
+      letter-spacing: 0.01em;
+      color: #fff;
       background: transparent;
       border: none;
       white-space: nowrap;
-      transition: background 0.15s ease, color 0.15s ease;
       cursor: pointer;
+      transition: color 0.15s ease;
     }
     .nest-mode-switch button[aria-pressed="true"] {
-      background: #538BEC;
       color: #fff;
+      background: transparent; /* thumb provides selected fill */
     }
     .nest-mode-switch button[aria-pressed="false"]:hover {
       color: #fff;
-      background: rgba(83, 139, 236, 0.18);
+      background: rgba(255, 255, 255, 0.06);
     }
     .margins-row {
       display: flex;
@@ -703,7 +729,8 @@
           <svg id="sheet-close-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>
         </button>
         <div class="flex items-center gap-2 ml-auto" data-calc-only>
-          <div id="autonest-switch" class="nest-mode-switch" role="group" aria-label="Nest mode">
+          <div id="autonest-switch" class="nest-mode-switch" role="group" aria-label="Nest mode" data-mode="manual">
+            <span class="nest-mode-thumb" aria-hidden="true"></span>
             <button type="button" id="mode-autonest" aria-pressed="false" title="AutoNest mode">AutoNest</button>
             <button type="button" id="mode-manual" aria-pressed="true" title="Manual mode">Manual</button>
           </div>
@@ -1338,18 +1365,35 @@
       btn.addEventListener('click', () => btn.classList.toggle('active'));
     });
 
-    /* AutoNest | Manual segmented switch — same isAuto semantics as prior button+label */
+    /* AutoNest | Manual sliding switch — same isAuto semantics as prior control */
+    const nestModeSwitch = document.getElementById('autonest-switch');
+    const nestModeThumb = nestModeSwitch ? nestModeSwitch.querySelector('.nest-mode-thumb') : null;
     const modeAutoBtn = document.getElementById('mode-autonest');
     const modeManualBtn = document.getElementById('mode-manual');
     let isAuto = false;
+    function syncNestModeThumb() {
+      if (!nestModeSwitch || !nestModeThumb) return;
+      const active = isAuto ? modeAutoBtn : modeManualBtn;
+      if (!active) return;
+      const pad = 2; /* matches .nest-mode-switch padding */
+      const left = active.offsetLeft - pad;
+      nestModeThumb.style.width = active.offsetWidth + 'px';
+      nestModeThumb.style.transform = 'translateX(' + Math.max(0, left) + 'px)';
+    }
     function setNestMode(auto) {
       isAuto = !!auto;
       if (modeAutoBtn) modeAutoBtn.setAttribute('aria-pressed', isAuto ? 'true' : 'false');
       if (modeManualBtn) modeManualBtn.setAttribute('aria-pressed', isAuto ? 'false' : 'true');
+      if (nestModeSwitch) nestModeSwitch.setAttribute('data-mode', isAuto ? 'autonest' : 'manual');
+      requestAnimationFrame(syncNestModeThumb);
     }
     if (modeAutoBtn) modeAutoBtn.addEventListener('click', () => setNestMode(true));
     if (modeManualBtn) modeManualBtn.addEventListener('click', () => setNestMode(false));
     setNestMode(false);
+    window.addEventListener('resize', syncNestModeThumb);
+    if (typeof ResizeObserver !== 'undefined' && nestModeSwitch) {
+      new ResizeObserver(syncNestModeThumb).observe(nestModeSwitch);
+    }
 
 
     // ---- Mode switch: Calculator ↔ G-code ----
