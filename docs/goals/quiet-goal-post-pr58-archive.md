@@ -35,7 +35,9 @@
 ## Quiet-state disposition
 
 The root `GOAL.md` contains no active product implementation objective. Quiet
-Flow `NC-20260811-c3c74ccb` binds that repository state. Carousel
+Flow `NC-20260811-c3c74ccb` binds that repository state through quiet freeze
+`a2168e84a3704cefd3f2daf71e059c5f2c8d0775` and metadata bind
+`f1697dd236021b98cbd9cc87191161426d4abe90`. Carousel
 `selectedIndex` follow-up is explicitly not active or authorized here; any
 future product work requires a new human-approved freeze. Product source, the
 exact prototype, engine algorithms, Clerk, PWA, secrets, deployment,
