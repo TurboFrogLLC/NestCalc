@@ -68,7 +68,7 @@ Visual authority: `REFERENCE-PROTOTYPE-v2.html`
 
 | Role | Spec |
 |------|------|
-| Wordmark | **Nest** white + **Calc** italic blue (`#538BEC`) — mirror NanoTate login two-tone |
+| Wordmark | Free-standing **h** + Lucide **CircleQuestionMark** + **wMany** (HowMany) — no pill/box/outline; not Nest/Calc two-tone |
 | Section labels | 11px uppercase semibold tracking-wide |
 | Inputs | 13px tabular-nums |
 | G-code textarea | 11px mono, `white-space: pre`, horizontal scroll OK |

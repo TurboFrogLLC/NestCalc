@@ -3,13 +3,14 @@
 **Status:** Exploratory R&D complete · sandbox prototype locked · **not** a product GOAL  
 **Date:** 2026-08-10  
 **Authority:** SuperGrok sandbox only. NestCalc `AGENTS.md` / quiet `GOAL.md` win for any product execution.  
-**NestCalc main tip (reference):** `18ecb29` (quiet after PR #40 G-code fill + PR #41 Terra grilling pin)
+**Prototype product identity (visible):** **HowMany** — free-standing `h` + CircleQuestionMark + `wMany` (locked tip `ff8b7d61`)  
+**Repo package path still uses NestCalc naming** (implementer docs / codebase seams); do not treat NestCalc as the prototype’s on-screen wordmark.
 
 ## What this is
 
-A complete visual/UX redesign package for NestCalc (calculator + nest viewer + presets + G-code rotation + auth chrome). Functionally the same product family; look/feel/format/ergonomics modernized.
+A complete visual/UX redesign package for the NestCalc app lineage (calculator + nest viewer + presets + G-code rotation + auth chrome), with the locked sandbox prototype presenting the **HowMany** wordmark. Functionally the same product family; look/feel/format/ergonomics modernized.
 
-**This package does not authorize product implementation.** It is the freeze-ready design authority for a *future* NestCalc product GOAL after human approval and goal-grilling.
+**This package does not authorize product implementation.** It is the freeze-ready design authority for a *future* product GOAL after human approval and goal-grilling.
 
 ## Contents
 
@@ -24,7 +25,7 @@ A complete visual/UX redesign package for NestCalc (calculator + nest viewer + p
 
 ## Prototype authority
 
-`REFERENCE-PROTOTYPE-v2.html` is the visual source of truth for this wave. Product code must match its **intent** (layout, tokens, motion, mode behaviors), not paste CDN Tailwind HTML into Next.js.
+`REFERENCE-PROTOTYPE-v2.html` is the visual source of truth for this wave (exact tip bytes from authority lock `ff8b7d61`: HowMany title + free-standing wordmark + evolved shell). Product code must match its **intent** (layout, tokens, motion, mode behaviors), not paste CDN Tailwind HTML into Next.js.
 
 ## NestCalc baseline (product facts)
 

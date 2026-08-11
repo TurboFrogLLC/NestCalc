@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NestCalc — Preview-first Prototype</title>
+  <title>HowMany — Preview-first Prototype</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -41,8 +41,14 @@
   </script>
   <style>
     :root {
-      --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-      --smooth: cubic-bezier(0.22, 1, 0.36, 1);
+      /* Soft ease — slight open bounce; uniform collapse rate (~25% faster) */
+      --spring: cubic-bezier(0.25, 1.08, 0.35, 1);
+      --smooth: cubic-bezier(0.33, 0.1, 0.25, 1);
+      --sheet-ease: cubic-bezier(0.4, 0, 0.2, 1);
+      --collapse-dur: 0.41s; /* was 0.55s */
+      --sheet-dur: 0.71s;   /* was 0.95s — still slow smooth slide */
+      --view-dur: 0.68s;    /* was 0.9s */
+      --morph-dur: 0.3s;    /* was 0.4s */
       --bg: #08060D;
       --panel: #0E0C14;
       --surface: #16121F;
@@ -145,16 +151,130 @@
     }
 
     .sheet {
+      --calc-sheet-w: 500px;
+      --gcode-sheet-w: 620px;
       transition:
-        transform 0.72s cubic-bezier(0.34, 1.45, 0.64, 1),
-        opacity 0.35s var(--smooth),
-        left 0.72s cubic-bezier(0.34, 1.45, 0.64, 1),
-        right 0.72s cubic-bezier(0.34, 1.45, 0.64, 1),
-        width 0.72s cubic-bezier(0.34, 1.45, 0.64, 1);
+        transform var(--sheet-dur) var(--sheet-ease),
+        opacity 0.34s var(--smooth),
+        left var(--sheet-dur) var(--sheet-ease),
+        right var(--sheet-dur) var(--sheet-ease),
+        width var(--sheet-dur) var(--sheet-ease);
       will-change: transform, left, right, width;
       left: 0.75rem;
       right: auto;
-      width: 300px;
+      width: 500px;
+    }
+    /* Calculator mode only: hard min 300 / max 500; default max; locked density at 300 */
+    .sheet:not(.side-right) {
+      width: var(--calc-sheet-w, 500px);
+      min-width: 300px;
+      max-width: 500px;
+      container-type: inline-size;
+      container-name: calc-sheet;
+    }
+    .sheet.is-resizing {
+      transition: none;
+      user-select: none;
+    }
+    .stage.is-resizing {
+      transition: none !important;
+    }
+    /* Free-edge resize only — narrow rim hit target; does not cover sheet controls */
+    .sheet-resize {
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: auto;
+      width: 6px;
+      height: 100%;
+      cursor: col-resize;
+      z-index: 50;
+      touch-action: none;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      box-sizing: content-box;
+      border-right: 4px solid transparent; /* outside-leaning hit area */
+      border-left: none;
+      background: transparent;
+    }
+    .sheet-resize::after {
+      content: '';
+      position: absolute;
+      right: 1px;
+      left: auto;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 52px;
+      border-radius: 3px;
+      background: rgba(83, 139, 236, 0.45);
+      box-shadow: 0 0 0 1px rgba(83, 139, 236, 0.15);
+      transition: height 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+      pointer-events: none;
+    }
+    /* G-code: free edge is the inner (left) rim */
+    .sheet.side-right .sheet-resize {
+      right: auto;
+      left: 0;
+      justify-content: flex-start;
+      border-right: none;
+      border-left: 4px solid transparent;
+    }
+    .sheet.side-right .sheet-resize::after {
+      right: auto;
+      left: 1px;
+      background: rgba(238, 140, 60, 0.5);
+      box-shadow: 0 0 0 1px rgba(238, 140, 60, 0.18);
+    }
+    .sheet-resize:hover::after,
+    .sheet.is-resizing .sheet-resize::after {
+      height: 72px;
+      background: rgba(83, 139, 236, 0.95);
+      box-shadow: 0 0 8px rgba(83, 139, 236, 0.45);
+    }
+    .sheet.side-right .sheet-resize:hover::after,
+    .sheet.side-right.is-resizing .sheet-resize::after {
+      background: rgba(238, 140, 60, 0.95);
+      box-shadow: 0 0 8px rgba(238, 140, 60, 0.45);
+    }
+    /* Hide handle when closed or full-bleed (calc or gcode) */
+    .sheet.closed .sheet-resize,
+    .sheet.panel-full .sheet-resize {
+      display: none;
+      pointer-events: none;
+    }
+    /*
+      Interior flex when wider than 300px: expand spacing only.
+      At 300cqi clamp floors match main locked density (no tighten).
+    */
+    .sheet:not(.side-right) .xy-row {
+      gap: clamp(8px, calc(8px + (100cqi - 300px) * 0.06), 22px);
+    }
+    .sheet:not(.side-right) .xy-row .xy-field {
+      gap: clamp(6px, calc(6px + (100cqi - 300px) * 0.02), 10px);
+    }
+    /*
+      Adaptive input width: locked 4.1rem at 300cqi; grows equally to ~6.75rem at 500cqi
+      so values like 13.125 / 10.125 stay fully visible. Coefficient is px→px (not rem).
+    */
+    .sheet:not(.side-right) .num-input-wrap {
+      width: clamp(4.1rem, calc(4.1rem + (100cqi - 300px) * 0.212), 6.75rem);
+    }
+    .sheet:not(.side-right) .m-field .num-input-wrap {
+      width: 100%;
+      max-width: clamp(4.1rem, calc(4.1rem + (100cqi - 300px) * 0.212), 6.75rem);
+    }
+    .sheet:not(.side-right) .margins-row {
+      gap: clamp(6px, calc(6px + (100cqi - 300px) * 0.05), 18px);
+      justify-content: space-between;
+    }
+    .sheet:not(.side-right) #sections-stack {
+      padding-left: clamp(12px, calc(12px + (100cqi - 300px) * 0.04), 20px);
+      padding-right: clamp(12px, calc(12px + (100cqi - 300px) * 0.04), 20px);
+    }
+    .sheet:not(.side-right) .xy-row .xy-actions {
+      gap: clamp(8px, calc(8px + (100cqi - 300px) * 0.04), 16px);
     }
     .sheet.closed {
       transform: translateX(calc(-100% - 16px));
@@ -164,20 +284,25 @@
     .sheet.side-right {
       left: auto;
       right: 0.75rem;
-      width: 420px;
+      width: var(--gcode-sheet-w, 620px);
+      min-width: 420px;
+      max-width: 620px; /* default = max = 420 + 200 */
+      container-type: normal;
     }
-    /* Full expand: animate width from 420px → calc(100% - 1.5rem); avoid width:auto snap */
+    /* Full expand: slow width morph (explicit calc — never width:auto snap) */
     .sheet.side-right.panel-full {
-      left: 0.75rem;
-      right: auto;
-      width: calc(100% - 1.5rem);
+      left: 0.75rem !important;
+      right: 0.75rem !important;
+      width: calc(100% - 1.5rem) !important;
+      min-width: 0;
+      max-width: none;
     }
     .gcode-mid-row {
       display: flex;
       flex-direction: column;
       gap: 0.625rem;
       align-items: stretch;
-      transition: gap 0.4s var(--smooth), flex-direction 0.01s;
+      transition: gap var(--morph-dur) var(--smooth), flex-direction 0.01s;
     }
     .sheet.panel-full .gcode-mid-row {
       flex-direction: row;
@@ -189,6 +314,14 @@
       display: flex;
       flex-direction: column;
       gap: 0.625rem;
+      box-sizing: border-box;
+    }
+    /* Output code surface: user-resizable height; hard max so it cannot runaway */
+    .gcode-output-surface {
+      min-height: 72px;
+      height: 160px;
+      max-height: min(420px, 55vh);
+      resize: vertical;
       box-sizing: border-box;
     }
     .gcode-card-body > div:first-child {
@@ -208,7 +341,7 @@
       display: flex;
       flex-direction: column;
       height: 100%;
-      transition: flex 0.72s cubic-bezier(0.34, 1.45, 0.64, 1), transform 0.72s cubic-bezier(0.34, 1.45, 0.64, 1);
+      transition: flex var(--sheet-dur) var(--sheet-ease), transform var(--sheet-dur) var(--sheet-ease);
     }
     .sheet.panel-full .gcode-mid-row > section .gcode-card-body {
       flex: 1 1 auto;
@@ -219,7 +352,7 @@
       min-width: 0;
       display: flex;
       flex-direction: column;
-      transition: flex 0.32s var(--spring), transform 0.32s var(--spring);
+      transition: flex var(--collapse-dur) var(--smooth), transform var(--collapse-dur) var(--smooth);
     }
     .sheet.panel-full .gcode-mid-row > section > .section-header,
     .sheet.panel-full .gcode-mid-row > section > .section-header-gcode {
@@ -231,19 +364,12 @@
       flex-direction: column;
       justify-content: center;
     }
-    .sheet.panel-full {
-
-      left: 0.75rem !important;
-      right: 0.75rem !important;
-      width: auto !important;
-      max-width: none;
-    }
     /* viewer fades via opacity — see unified rule */
     .sheet.side-right.closed {
       transform: translateX(calc(100% + 16px));
     }
     #calc-view, #gcode-view {
-      transition: opacity 0.72s cubic-bezier(0.34, 1.45, 0.64, 1), transform 0.72s cubic-bezier(0.34, 1.45, 0.64, 1);
+      transition: opacity var(--view-dur) var(--sheet-ease), transform var(--view-dur) var(--sheet-ease);
     }
     .stage.viewer-collapsed #calc-view,
     .stage.viewer-collapsed #gcode-view {
@@ -269,27 +395,84 @@
       /* keep fixed width; stage padding reserves gap — no bleed */
     }
     .stage {
-      transition: padding-left 0.72s cubic-bezier(0.34, 1.45, 0.64, 1), padding-right 0.72s cubic-bezier(0.34, 1.45, 0.64, 1);
+      transition: padding-left var(--sheet-dur) var(--sheet-ease), padding-right var(--sheet-dur) var(--sheet-ease);
     }
 
-    .section-html, body {
-      overflow-x: auto;
-    }
-    body {
-      transition: max-height 0.42s var(--spring), opacity 0.22s ease;
+    /* Dark section bodies — uniform open/close rate; slight bounce on open via --spring in JS */
+    .section-body {
+      transition: max-height var(--collapse-dur) var(--smooth), opacity 0.24s ease;
       overflow: hidden;
+    }
+    .section-body.is-opening {
+      transition: max-height var(--collapse-dur) var(--spring), opacity 0.24s ease;
     }
     .section-body.closed {
       max-height: 0 !important;
       opacity: 0;
     }
+    /* Icon buttons: light glass on frosted pad; dark shell override for presets */
+    .lift-icon {
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid rgba(0, 0, 0, 0.14);
+      color: #2a2a36;
+      cursor: pointer;
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.75) inset,
+        0 1px 2px rgba(0, 0, 0, 0.12);
+      flex-shrink: 0;
+    }
+    .lift-icon:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.9);
+      color: #111;
+    }
+    .lift-icon:disabled {
+      opacity: 0.35;
+      cursor: default;
+      box-shadow: none;
+    }
+    .lift-icon--danger {
+      color: #8a3030;
+      border-color: rgba(180, 60, 60, 0.35);
+    }
+    .lift-icon--danger:hover:not(:disabled) {
+      background: rgba(220, 80, 80, 0.15);
+      color: #a02020;
+    }
+    /* Dark-shell manage icons (presets) */
+    .presets-manage .lift-icon {
+      background: var(--raised);
+      border: 1px solid rgba(83, 139, 236, 0.4);
+      color: #C8CDD8;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    }
+    .presets-manage .lift-icon:hover:not(:disabled) {
+      color: #fff;
+      border-color: rgba(83, 139, 236, 0.7);
+      background: rgba(83, 139, 236, 0.18);
+    }
+    .presets-manage .lift-icon--danger {
+      border-color: rgba(236, 90, 90, 0.45);
+      color: #E8B4B4;
+    }
+    .presets-manage .lift-icon--danger:hover:not(:disabled) {
+      background: rgba(220, 70, 70, 0.18);
+      border-color: rgba(236, 90, 90, 0.7);
+      color: #ffd0d0;
+    }
     .chevron {
-      transition: transform 0.35s var(--spring);
+      transition: transform 0.34s var(--smooth);
     }
     .chevron.rotated { transform: rotate(180deg); }
 
     .section-card {
-      transition: transform 0.4s var(--spring);
+      transition: transform 0.38s var(--smooth);
       border-radius: 8px;
     }
     @keyframes hydrateFlash {
@@ -298,38 +481,395 @@
       100% { box-shadow: 0 0 0 0 rgba(83,139,236,0.0); }
     }
     .hydrate-flash {
-      animation: hydrateFlash 0.55s ease;
+      animation: hydrateFlash 0.49s ease;
     }
     .mode-morph {
-      transition: opacity 0.28s var(--smooth), transform 0.36s var(--spring);
+      transition: opacity var(--morph-dur) var(--smooth), transform 0.38s var(--smooth);
     }
     .mode-morph.out {
       opacity: 0;
-      transform: translateY(6px) scale(0.985);
+      transform: translateY(5px) scale(0.99);
       pointer-events: none;
     }
     .section-card.settle {
-      animation: settleBounce 0.5s var(--spring);
+      animation: settleBounce 0.41s var(--smooth);
     }
     @keyframes settleBounce {
       0%   { transform: translateY(0); }
-      30%  { transform: translateY(4px); }
-      55%  { transform: translateY(-2px); }
+      40%  { transform: translateY(1.5px); }
       100% { transform: translateY(0); }
     }
 
     .press {
-      transition: transform 0.15s var(--spring);
+      transition: transform 0.18s var(--smooth);
     }
-    .press:active { transform: scale(0.96); }
+    .press:active { transform: scale(0.97); }
 
+    /* Frosted light-gray glass pad — soft depth (subtle pop, not heavy) */
     .numpad {
-      transition: transform 0.4s var(--spring), opacity 0.22s ease;
+      position: fixed;
+      z-index: 40;
+      touch-action: none;
+      transition: opacity 0.17s ease, transform 0.3s var(--spring), width 0.21s var(--smooth);
+      user-select: none;
+      width: 230px;
+      background: rgba(232, 234, 240, 0.82);
+      backdrop-filter: blur(22px) saturate(1.25);
+      -webkit-backdrop-filter: blur(22px) saturate(1.25);
+      /* soft outer edge + thin dark hairline for stage separation */
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.14),
+        0 2px 4px rgba(0, 0, 0, 0.12),
+        0 12px 28px -8px rgba(0, 0, 0, 0.42),
+        inset 0 1px 0 rgba(255, 255, 255, 0.78),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.04);
+      color: #1a1a24;
+    }
+    .numpad.numpad--calc {
+      width: 292px;
     }
     .numpad.hidden-pad {
-      transform: translateY(18px) scale(0.96);
       opacity: 0;
       pointer-events: none;
+      /* keep last translate from drag; only scale/fade when hiding */
+      transform: translate(var(--pad-x, 0px), var(--pad-y, 0px)) scale(0.96);
+    }
+    .numpad:not(.hidden-pad) {
+      transform: translate(var(--pad-x, 0px), var(--pad-y, 0px)) scale(1);
+    }
+    .numpad.is-dragging {
+      transition: none;
+      cursor: grabbing;
+    }
+    .numpad-chrome {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+      min-height: 28px;
+    }
+    /* ENTRY: Add + Edit sit centered in the drag strip (above chips) */
+    .numpad-chrome .quick-manage {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      flex-shrink: 0;
+      pointer-events: auto;
+    }
+    .numpad.numpad--calc .numpad-chrome .quick-manage {
+      display: none;
+    }
+    .numpad-chrome .quick-manage .lift-icon {
+      width: 26px;
+      height: 26px;
+      background: rgba(255, 255, 255, 0.62);
+    }
+    .numpad-mode-btn {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      color: #3a3a48;
+      cursor: pointer;
+    }
+    .numpad-mode-btn:hover {
+      background: rgba(255, 255, 255, 0.85);
+      color: #111;
+    }
+    .numpad-mode-btn.is-active {
+      background: rgba(83, 139, 236, 0.2);
+      border-color: rgba(83, 139, 236, 0.55);
+      color: #2a5db0;
+    }
+    .numpad-drag-handle {
+      flex: 1 1 auto;
+      min-width: 0;
+      height: 28px;
+      border-radius: 8px;
+      cursor: grab;
+      touch-action: none;
+      background: rgba(255, 255, 255, 0.28);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 0 4px;
+    }
+    .numpad.is-dragging .numpad-drag-handle {
+      cursor: grabbing;
+    }
+    .numpad-close {
+      flex-shrink: 0;
+      position: static;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      color: #3a3a48;
+      cursor: pointer;
+    }
+    .numpad-close:hover {
+      color: #111;
+      background: rgba(255, 255, 255, 0.9);
+      border-color: rgba(0, 0, 0, 0.16);
+    }
+    /* LCD: calculator mode only (math expression) */
+    .numpad-lcd {
+      display: none;
+      align-items: center;
+      justify-content: flex-end;
+      min-height: 36px;
+      margin-bottom: 8px;
+      padding: 6px 10px;
+      border-radius: 10px;
+      background: rgba(18, 16, 28, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #F5F3FF;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.35);
+    }
+    .numpad.numpad--calc .numpad-lcd {
+      display: flex;
+    }
+    .numpad-quick {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 8px;
+      width: 100%;
+    }
+    .numpad.numpad--calc .numpad-quick {
+      display: none;
+    }
+    .quick-carousel {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex: 1 1 auto;
+      width: 100%;
+      min-width: 0;
+    }
+    /* Arrows only when >4 values (JS toggles .is-scrollable) */
+    .quick-carousel:not(.is-scrollable) .quick-carousel__btn {
+      display: none;
+    }
+    .quick-carousel__btn {
+      flex-shrink: 0;
+      width: 22px;
+      height: 26px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      color: #2a2a36;
+      cursor: pointer;
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.8) inset,
+        0 1px 1px rgba(0, 0, 0, 0.1);
+      padding: 0;
+    }
+    .quick-carousel__btn:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.92);
+    }
+    .quick-carousel__btn:disabled {
+      opacity: 0.3;
+      cursor: default;
+      box-shadow: none;
+    }
+    .quick-carousel__viewport {
+      flex: 1 1 auto;
+      min-width: 0;
+      overflow: hidden;
+      container-type: inline-size;
+      container-name: quick-viewport;
+    }
+    .quick-carousel__track {
+      display: flex;
+      gap: 4px;
+      transition: transform 0.2s var(--smooth);
+      will-change: transform;
+    }
+    /* 4 chips span full pad width (3 gaps × 4px = 12px); readable, not cramped */
+    .quick-carousel__track .quick-chip {
+      flex: 0 0 calc((100cqi - 12px) / 4);
+      width: calc((100cqi - 12px) / 4);
+      min-width: 0;
+      height: 28px;
+      padding: 0 4px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: clip;
+      cursor: pointer;
+      background: linear-gradient(180deg, rgba(255,255,255,0.78) 0%, rgba(255,255,255,0.58) 100%);
+      color: #2a2a36;
+      border: 1px solid rgba(0, 0, 0, 0.14);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.85) inset,
+        0 1px 1px rgba(0, 0, 0, 0.1);
+    }
+    .quick-carousel__track .quick-chip:hover {
+      background: rgba(255, 255, 255, 0.95);
+    }
+    .quick-carousel__track .quick-chip.is-selected {
+      background: linear-gradient(180deg, #6A9FF0 0%, #538BEC 100%);
+      color: #fff;
+      border-color: rgba(30, 70, 140, 0.4);
+    }
+    .numpad-keys {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+    .numpad.numpad--calc .numpad-keys {
+      grid-template-columns: repeat(3, 1fr) 52px;
+    }
+    .numpad-keys .key-eq {
+      grid-column: 1 / -1;
+    }
+    .numpad-ops {
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+      grid-column: 4;
+      grid-row: 1 / span 4;
+    }
+    .numpad.numpad--calc .numpad-ops {
+      display: flex;
+    }
+    .numpad-ops .key-op {
+      flex: 1 1 0;
+      min-height: 44px;
+      height: auto;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    /* Normal press only — no logo gradient flash */
+    #numpad button[data-key]:active,
+    #numpad button[data-quick]:active,
+    #numpad button[data-op]:active {
+      filter: brightness(0.92);
+    }
+
+    /* Presets carousel: 3 chips wide; 2 chips near min sheet (readable labels) */
+    .presets-carousel {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+    }
+    .presets-carousel__btn {
+      flex-shrink: 0;
+      width: 28px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--raised);
+      border: 1px solid rgba(83, 139, 236, 0.45);
+      color: #E8ECF4;
+      cursor: pointer;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+      padding: 0;
+    }
+    .presets-carousel__btn:hover:not(:disabled) {
+      color: #fff;
+      border-color: rgba(83, 139, 236, 0.75);
+      background: rgba(83, 139, 236, 0.22);
+    }
+    .presets-carousel__btn:disabled {
+      opacity: 0.32;
+      cursor: default;
+      box-shadow: none;
+    }
+    .presets-carousel__viewport {
+      flex: 1 1 auto;
+      min-width: 0;
+      max-width: 100%;
+      overflow: hidden;
+      container-type: inline-size;
+      container-name: presets-viewport;
+    }
+    .presets-carousel__track {
+      display: flex;
+      gap: 6px;
+      transition: transform 0.22s var(--smooth);
+      will-change: transform;
+    }
+    /* Default: 3 chips (2 gaps × 6px = 12px). Near min sheet: 2 chips via data-visible. */
+    .presets-carousel__track .preset-chip {
+      flex: 0 0 calc((100cqi - 12px) / 3);
+      width: calc((100cqi - 12px) / 3);
+      min-width: 0;
+      box-sizing: border-box;
+      height: 32px;
+      padding: 0 8px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: transform 0.15s var(--smooth), background 0.15s ease, border-color 0.15s ease, flex-basis 0.15s var(--smooth), width 0.15s var(--smooth);
+      cursor: pointer;
+      background: var(--raised);
+      border: 1px solid rgba(83, 139, 236, 0.35);
+      color: #C8CDD8;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+    /* Adaptive: at/near 300px sheet show 2 chips so labels stay fully readable */
+    .presets-carousel[data-visible="2"] .presets-carousel__track .preset-chip {
+      flex: 0 0 calc((100cqi - 6px) / 2);
+      width: calc((100cqi - 6px) / 2);
+    }
+    @container calc-sheet (max-width: 360px) {
+      .presets-carousel:not([data-visible="3"]) .presets-carousel__track .preset-chip {
+        flex: 0 0 calc((100cqi - 6px) / 2);
+        width: calc((100cqi - 6px) / 2);
+      }
+    }
+    .presets-carousel__track .preset-chip:hover {
+      border-color: rgba(83, 139, 236, 0.6);
+      color: #fff;
+    }
+    .presets-carousel__track .preset-chip.is-selected {
+      background: #538BEC;
+      border-color: rgba(83, 139, 236, 0.85);
+      color: #fff;
+    }
+    .presets-manage {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 10px;
     }
 
     .value-badge {
@@ -352,6 +892,62 @@
       border: 1px solid rgba(200, 205, 216, 0.2);
       color: var(--text);
     }
+    /* Inline clear (X) wrapper — width lives on wrap so adaptive clamp can grow */
+    .num-input-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      width: 4.1rem;
+      min-width: 0;
+      flex-shrink: 0;
+    }
+    .num-input-wrap .num-input {
+      width: 100%;
+      padding-right: 1.5rem; /* room for clear icon-button hit target */
+      box-sizing: border-box;
+    }
+    /* Clear X: real icon button — fixed square, glyph centered, no inner padding bloat */
+    .num-input-clear {
+      position: absolute;
+      right: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+      box-sizing: border-box;
+      width: 18px;
+      height: 18px;
+      min-width: 18px;
+      min-height: 18px;
+      padding: 0;
+      margin: 0;
+      border: none;
+      border-radius: 5px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(200, 205, 216, 0.14);
+      color: #C8CDD8;
+      cursor: pointer;
+      line-height: 0;
+      font-size: 0;
+      z-index: 2;
+      flex-shrink: 0;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    .num-input-clear svg {
+      display: block;
+      width: 10px;
+      height: 10px;
+      flex-shrink: 0;
+      pointer-events: none;
+    }
+    .num-input-clear:hover {
+      background: rgba(200, 205, 216, 0.28);
+      color: #fff;
+    }
+    .num-input-wrap.has-value .num-input-clear {
+      display: inline-flex;
+    }
 
     .axis-count {
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
@@ -361,27 +957,241 @@
       user-select: none;
     }
 
+    /* Part / Rem / Gap: whole cluster (X|Y|sep|swap-link) centered as one unit */
     .xy-row {
       display: flex;
       align-items: center;
       width: 100%;
       gap: 8px;
-      justify-content: flex-start;
+      justify-content: center;
     }
     .xy-row .xy-field {
       display: flex;
       align-items: center;
       gap: 6px;
+      flex-shrink: 0;
+    }
+    /* Keep sep + button group tight to XY — do not flex-grow or center alone */
+    .xy-row .xy-actions {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 8px;
     }
     .xy-row .btn-group-h {
       margin-left: 0;
+      flex-shrink: 0;
     }
     .xy-sep {
       width: 1px;
       height: 28px;
       background: rgba(255, 255, 255, 0.12);
-      margin: 0 4px 0 2px;
+      margin: 0;
       flex-shrink: 0;
+    }
+    .xy-row .xy-actions .xy-sep {
+      margin: 0;
+    }
+    /* Part # — longer field, no blue focus ring/glow */
+    .part-num-input {
+      width: 8.75rem;
+      min-width: 8.75rem;
+      max-width: 11rem;
+      background: var(--raised);
+      border: 1px solid rgba(200, 205, 216, 0.28);
+      color: var(--text);
+      outline: none;
+      box-shadow: none;
+    }
+    .part-num-input:hover {
+      border-color: rgba(200, 205, 216, 0.4);
+    }
+    .part-num-input:focus,
+    .part-num-input:focus-visible {
+      outline: none !important;
+      box-shadow: none !important;
+      border-color: rgba(200, 205, 216, 0.5);
+    }
+    /*
+      Seamless sliding segment switches (one continuous track + thumb).
+      Variants:
+        --sm   G-code Source/Part-size + AutoNest|Manual
+               track h28, pad 2, gap 2, r8, bg rgba(0,0,0,0.2), border none
+               segment h24, px 8, r6, 10px/700
+        --header  Header IN|MM
+               track pad 2, gap 2, r8, bg var(--raised), border 1px solid rgba(200,205,216,0.15)
+               segment h28, px 10, r6, 11px/700
+    */
+    .seg-switch {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      padding: 2px;
+      border-radius: 8px;
+      border: none;
+      flex-shrink: 0;
+      box-sizing: border-box;
+    }
+    .seg-switch__thumb {
+      position: absolute;
+      top: 2px;
+      bottom: 2px;
+      left: 2px;
+      width: 0;
+      border-radius: 6px;
+      background: #538BEC;
+      pointer-events: none;
+      z-index: 0;
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                  width 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                  background-color 0.2s ease;
+      will-change: transform, width;
+    }
+    .seg-switch > button {
+      position: relative;
+      z-index: 1;
+      margin: 0;
+      border: none;
+      background: transparent !important;
+      color: #fff;
+      border-radius: 6px;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+      cursor: pointer;
+      outline: none;
+      box-shadow: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .seg-switch > button:hover,
+    .seg-switch > button:focus,
+    .seg-switch > button:focus-visible,
+    .seg-switch > button[aria-pressed="true"],
+    .seg-switch > button[aria-pressed="false"] {
+      background: transparent !important;
+      outline: none;
+      box-shadow: none;
+      color: #fff;
+    }
+    /* G-code unit + nest mode (locked sm specs) */
+    .seg-switch--sm {
+      height: 28px;
+      background: rgba(0, 0, 0, 0.22);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.06) inset,
+        0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+    .seg-switch--sm > button {
+      height: 24px;
+      padding: 0 8px;
+      font-size: 10px;
+    }
+    /* Header IN|MM (locked header specs) */
+    .seg-switch--header {
+      height: 32px; /* 2 + 28 + 2 */
+      background: var(--raised);
+      border: 1px solid rgba(200, 205, 216, 0.22);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.06) inset,
+        0 1px 2px rgba(0, 0, 0, 0.22);
+    }
+    .seg-switch--header > button {
+      height: 28px;
+      padding: 0 10px;
+      font-size: 11px;
+    }
+    /* Calculator | G-code mode tabs — same seamless track + thumb (~200ms) */
+    .seg-switch--mode {
+      height: 36px;
+      padding: 2px;
+      gap: 2px;
+      border-radius: 12px;
+      background: rgba(11, 8, 20, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.06) inset,
+        0 1px 3px rgba(0, 0, 0, 0.28);
+    }
+    .seg-switch--mode > .seg-switch__thumb {
+      border-radius: 8px;
+      top: 2px;
+      bottom: 2px;
+      left: 2px;
+    }
+    .seg-switch--mode > button {
+      height: 32px;
+      padding: 0 14px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 8px;
+      color: #C8CDD8;
+      transition: color 0.2s ease, opacity 0.2s ease;
+    }
+    .seg-switch--mode > button:hover,
+    .seg-switch--mode > button:focus,
+    .seg-switch--mode > button:focus-visible,
+    .seg-switch--mode > button[aria-pressed="true"],
+    .seg-switch--mode > button[aria-pressed="false"] {
+      color: inherit;
+      background: transparent !important;
+    }
+    /* Active segment: white on colored thumb */
+    .seg-switch--mode > button[aria-pressed="true"] {
+      color: #fff !important;
+      opacity: 1;
+    }
+    /* Unselected Calculator side → muted blue (readable, not selected) */
+    .seg-switch--mode[data-mode="gcode"] > #tab-calc {
+      color: rgba(83, 139, 236, 0.72) !important;
+      opacity: 1;
+    }
+    /* Unselected G-code side → muted orange (readable, not selected) */
+    .seg-switch--mode[data-mode="calc"] > #tab-gcode {
+      color: rgba(238, 140, 60, 0.72) !important;
+      opacity: 1;
+    }
+    /* AutoNest | Manual: soft Calculator-blue opacity behind the track */
+    #autonest-switch.seg-switch--sm {
+      background: rgba(83, 139, 236, 0.18);
+      box-shadow: inset 0 0 0 1px rgba(83, 139, 236, 0.12);
+    }
+    /* Sheet chrome icon buttons (match top-header h-8 w-8 raised + blue-tint border) */
+    .sheet-chrome-icon {
+      height: 32px;
+      width: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      background: linear-gradient(180deg, #2A2638 0%, #1E1A2A 100%);
+      border: 1px solid rgba(83, 139, 236, 0.35);
+      color: #C8CDD8;
+      cursor: pointer;
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.08) inset,
+        0 1px 2px rgba(0, 0, 0, 0.25);
+    }
+    .sheet-chrome-icon:hover {
+      color: #fff;
+      border-color: rgba(83, 139, 236, 0.55);
+    }
+    /* header icon lift (app bar controls) */
+    header .h-8.w-8.rounded-lg {
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.06) inset,
+        0 1px 2px rgba(0, 0, 0, 0.22);
+    }
+    /* Calculator nest part rectangles — 1.5px white stroke (beat Tailwind preflight) */
+    #calc-view .nest-part {
+      background: transparent !important;
+      border: 1.5px solid #FFFFFF !important;
+      border-radius: 4px;
+      box-shadow: none !important;
     }
     .margins-row {
       display: flex;
@@ -389,6 +1199,25 @@
       justify-content: space-between;
       gap: 6px;
       width: 100%;
+    }
+    /* Vertical seps between L|R|B|T — height matches input box (h-9 = 36px), xy-sep language */
+    .margins-row .margins-sep {
+      width: 1px;
+      height: 36px;
+      background: rgba(255, 255, 255, 0.12);
+      margin: 0;
+      flex-shrink: 0;
+      align-self: flex-end; /* sit on input row, not under labels */
+      margin-bottom: 0;
+    }
+    /* Stay right at 300px and 500px — no center/left drift on resize */
+    .margins-rotate-row {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      margin-left: auto;
+      margin-right: 0;
     }
     .m-field {
       display: flex;
@@ -398,9 +1227,12 @@
       flex: 1;
       min-width: 0;
     }
-    .m-field .num-input {
+    .m-field .num-input-wrap {
       width: 100%;
       max-width: 4.1rem;
+    }
+    .m-field .num-input {
+      width: 100%;
     }
     .m-label {
       font-size: 10px;
@@ -409,31 +1241,56 @@
       letter-spacing: 0.02em;
     }
 
-    /* Calculator keys matching reference */
+    /* Calculator keys — micro elevation so keys read as buttons */
     .key-num {
-      background: #222230;
-      color: #E8E4F0;
-      border: 1px solid rgba(255,255,255,0.06);
+      background: linear-gradient(180deg, #323244 0%, #2A2A38 100%);
+      color: #F0EEF6;
+      border: 1px solid rgba(0, 0, 0, 0.28);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.1) inset,
+        0 1px 2px rgba(0, 0, 0, 0.22);
     }
-    .key-num:hover { background: #2E2E40; }
+    .key-num:hover { background: linear-gradient(180deg, #3C3C50 0%, #323244 100%); }
+    /* Solid orange ops column (#EE8C3C family) — calculator mode */
     .key-op {
-      background: #538BEC;
+      background: linear-gradient(180deg, #F29A4E 0%, #EE8C3C 100%);
       color: #fff;
-      border: 1px solid rgba(255,255,255,0.1);
+      border: 1px solid rgba(120, 60, 10, 0.35);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.22) inset,
+        0 1px 2px rgba(0, 0, 0, 0.2);
     }
-    .key-op:hover { filter: brightness(1.1); }
+    .key-op:hover { filter: brightness(1.06); background: linear-gradient(180deg, #F5A85C 0%, #F09A4E 100%); }
     .key-eq {
-      background: #538BEC;
+      background: linear-gradient(180deg, #6A9FF0 0%, #538BEC 100%);
       color: #fff;
-      border: 1px solid rgba(255,255,255,0.12);
+      border: 1px solid rgba(30, 70, 140, 0.4);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.22) inset,
+        0 1px 2px rgba(0, 0, 0, 0.2);
     }
-    .key-eq:hover { filter: brightness(1.1); }
+    .key-eq:hover { filter: brightness(1.06); }
     .key-util {
-      background: #2A2238;
-      color: #C8CDD8;
-      border: 1px solid rgba(83, 139, 236, 0.25);
+      background: linear-gradient(180deg, #464054 0%, #3A3448 100%);
+      color: #E0DCE8;
+      border: 1px solid rgba(0, 0, 0, 0.28);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.08) inset,
+        0 1px 2px rgba(0, 0, 0, 0.2);
     }
-    .key-util:hover { background: #3D3554; color: #fff; }
+    .key-util:hover { background: linear-gradient(180deg, #524C60 0%, #464054 100%); color: #fff; }
+    #numpad .key-util[data-quick] {
+      background: linear-gradient(180deg, rgba(255,255,255,0.72) 0%, rgba(255,255,255,0.55) 100%);
+      color: #2a2a36;
+      border: 1px solid rgba(0, 0, 0, 0.14);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.85) inset,
+        0 1px 1px rgba(0, 0, 0, 0.1);
+    }
+    #numpad .key-util[data-quick]:hover {
+      background: rgba(255, 255, 255, 0.92);
+      color: #111;
+    }
     .section-label {
       color: #ffffff;
     }
@@ -479,6 +1336,19 @@
     .section-header input::placeholder {
       color: rgba(255, 255, 255, 0.55);
     }
+    /* Rotation nested under Source — same orange header-bar language, not a top-level card */
+    .gcode-rotation-block {
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(217, 120, 48, 0.35);
+      background: var(--surface);
+    }
+    .gcode-rotation-block > .section-header-gcode {
+      border-radius: 0;
+    }
+    .section-header-gcode .chevron {
+      color: #ffffff !important;
+    }
     .section-header .value-badge {
       background: rgba(0, 0, 0, 0.22);
       border-color: rgba(255, 255, 255, 0.28);
@@ -496,26 +1366,38 @@
   <header class="h-12 border-b border-white/5 flex items-center justify-between px-4 relative z-50" style="background: rgba(18,14,28,0.85); backdrop-filter: blur(12px);">
     <div class="flex items-center gap-2.5">
       <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background: linear-gradient(135deg, #8B5CF6, #C13CD1); box-shadow: 0 0 14px -2px rgba(193,60,209,0.55);">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.4">
-          <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>
-          <rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
+        <!-- Lucide LayoutDashboard — larger fill of the gradient square -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.35" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect width="7" height="9" x="3" y="3" rx="1"/>
+          <rect width="7" height="5" x="14" y="3" rx="1"/>
+          <rect width="7" height="9" x="14" y="12" rx="1"/>
+          <rect width="7" height="5" x="3" y="16" rx="1"/>
         </svg>
       </div>
-      <span class="font-semibold tracking-tight text-[15px]">
-        <span style="color: #FFFFFF;">Nest</span><span style="color: #538BEC; font-style: italic; font-weight: 600;">Calc</span>
+      <!-- Clean free-standing wordmark: h[CircleQuestionMark]wMany — no pill/box/outline -->
+      <span class="inline-flex items-center tracking-tight text-[17px]" style="font-weight: 600; font-style: normal; line-height: 1;" aria-label="HowMany">
+        <span style="color: #FFFFFF; font-weight: 600; font-style: normal;">h</span><!--
+        --><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.35" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width: 1.15em; height: 1.15em; color: #FFFFFF; display: block; flex-shrink: 0; margin: 0 0.02em;"><!-- Lucide CircleQuestionMark -->
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+          <path d="M12 17h.01"/>
+        </svg><!--
+        --><span style="color: #FFFFFF; font-weight: 600; font-style: normal;">w</span><span style="color: #538BEC; font-weight: 600; font-style: normal;">Many</span>
       </span>
     </div>
 
-    <nav class="flex items-center gap-0.5 p-0.5 rounded-xl border border-white/10" style="background: rgba(11,8,20,0.7);">
-      <button id="tab-calc" class="px-3.5 py-1.5 rounded-lg text-[13px] font-semibold text-white" style="background: #538BEC;">Calculator</button>
-      <button id="tab-gcode" class="px-3.5 py-1.5 rounded-lg text-[13px] font-semibold transition hover:text-white" style="color: #C8CDD8;">G-code</button>
+    <nav id="mode-switch" class="seg-switch seg-switch--mode" role="group" aria-label="App mode" data-mode="calc">
+      <span class="seg-switch__thumb" aria-hidden="true"></span>
+      <button type="button" id="tab-calc" aria-pressed="true">Calculator</button>
+      <button type="button" id="tab-gcode" aria-pressed="false">G-code</button>
     </nav>
 
     <div class="flex items-center gap-1.5">
-      <div class="flex items-center gap-0.5 p-0.5 rounded-lg" style="background: var(--raised); border: 1px solid rgba(200,205,216,0.15);" id="unit-switch">
-          <button type="button" id="unit-in" class="h-7 px-2.5 rounded-md text-[11px] font-bold transition" style="background: #538BEC; color: #fff;">IN</button>
-          <button type="button" id="unit-mm" class="h-7 px-2.5 rounded-md text-[11px] font-bold transition" style="background: transparent; color: #C8CDD8;">MM</button>
-        </div>
+      <div id="unit-switch" class="seg-switch seg-switch--header" role="group" aria-label="Units" data-value="in">
+        <span class="seg-switch__thumb" aria-hidden="true"></span>
+        <button type="button" id="unit-in" aria-pressed="true">IN</button>
+        <button type="button" id="unit-mm" aria-pressed="false">MM</button>
+      </div>
       <button class="h-8 w-8 rounded-lg flex items-center justify-center press transition" style="background: var(--raised); border: 1px solid rgba(83,139,236,0.3); color: #C8CDD8;" title="Clear">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
       </button>
@@ -531,14 +1413,35 @@
 
   <div class="relative h-[calc(100vh-3rem)] flex overflow-hidden">
 
-    <aside id="sheet" class="sheet absolute left-3 top-3 bottom-3 w-[300px] z-30 flex flex-col glow rounded-2xl overflow-hidden" style="background: #0E0C14;">
+    <aside id="sheet" class="sheet absolute left-3 top-3 bottom-3 z-30 flex flex-col glow rounded-2xl overflow-hidden" style="background: #0E0C14; --calc-sheet-w: 500px; width: 500px;">
       <div class="px-3 py-2.5 flex items-center justify-between shrink-0" style="border-bottom: 1px solid rgba(255,255,255,0.06);">
-        <button id="sheet-close" class="h-7 w-7 rounded-lg flex items-center justify-center press transition shrink-0" style="border: 1px solid rgba(83,139,236,0.3); color: #C8CDD8;" title="Collapse panel">
-          <svg id="sheet-close-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>
-        </button>
-        <div class="flex items-center gap-2 ml-auto">
-          <button id="autonest-btn" data-calc-only class="h-7 px-2.5 rounded-lg text-[11px] font-semibold transition press" style="background: var(--raised); border: 1px solid rgba(83,139,236,0.35); color: #C8CDD8;" aria-pressed="false">AutoNest</button>
-          <span id="mode-label" data-calc-only class="text-[11px]" style="color: var(--text-muted);">Manual</span>
+        <div class="flex items-center gap-1.5 shrink-0">
+          <button id="sheet-close" class="sheet-chrome-icon press transition" title="Collapse panel" aria-label="Collapse panel">
+            <svg id="sheet-close-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <!-- Lucide-style calculator; sheet chrome only — not top app header -->
+          <button type="button" id="sheet-calc-btn" class="sheet-chrome-icon press transition" title="Open calculator pad" aria-label="Open calculator pad">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="2" width="16" height="20" rx="2"/>
+              <line x1="8" y1="6" x2="16" y2="6"/>
+              <line x1="8" y1="10" x2="8.01" y2="10"/>
+              <line x1="12" y1="10" x2="12.01" y2="10"/>
+              <line x1="16" y1="10" x2="16.01" y2="10"/>
+              <line x1="8" y1="14" x2="8.01" y2="14"/>
+              <line x1="12" y1="14" x2="12.01" y2="14"/>
+              <line x1="16" y1="14" x2="16.01" y2="14"/>
+              <line x1="8" y1="18" x2="8.01" y2="18"/>
+              <line x1="12" y1="18" x2="12.01" y2="18"/>
+              <line x1="16" y1="18" x2="16.01" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="flex items-center gap-2 ml-auto" data-calc-only>
+          <div id="autonest-switch" class="seg-switch seg-switch--sm" role="group" aria-label="Nest mode" data-mode="manual">
+            <span class="seg-switch__thumb" aria-hidden="true"></span>
+            <button type="button" id="mode-autonest" aria-pressed="false" title="AutoNest mode">AutoNest</button>
+            <button type="button" id="mode-manual" aria-pressed="true" title="Manual mode">Manual</button>
+          </div>
         </div>
       </div>
 
@@ -547,23 +1450,48 @@
         <!-- PRESETS -->
         <div id="calc-panel" class="space-y-2.5">
         <section class="section-card glow-soft overflow-hidden" data-section="presets">
-          <div class="section-header px-3 py-2 flex items-center justify-between gap-2">
-            <button class="section-trigger flex items-center gap-2 min-w-0 flex-1 text-left hover:opacity-90 transition" data-target="presets-body">
+          <button type="button" class="section-trigger section-header w-full px-3 py-2 flex items-center justify-between transition gap-2" data-target="presets-body" aria-label="Toggle presets">
+            <div class="flex items-center gap-2 min-w-0">
               <span class="text-[11px] font-semibold uppercase tracking-wide section-label">Presets</span>
-            </button>
-            <div id="presets-header-actions" class="flex items-center gap-1.5" style="display:none">
-              <button class="h-6 px-2 rounded-md text-[10px] font-semibold transition press save-btn" style="background: var(--raised); border: 1px solid rgba(83,139,236,0.35); color: #C8CDD8;">Save</button>
-              <button class="h-6 px-2 rounded-md text-[10px] font-medium transition press" style="background: var(--raised); border: 1px solid rgba(83,139,236,0.3); color: #C8CDD8;">Manage</button>
             </div>
-            <button class="section-trigger h-6 w-6 flex items-center justify-center shrink-0" data-target="presets-body" aria-label="Toggle presets">
-              <svg class="chevron rotated w-3 h-3" style="color: #C8CDD8;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-            </button>
-          </div>
+            <div id="presets-header-actions" class="flex items-center gap-1.5" style="display:none" aria-hidden="true">
+              <!-- manage lives in body (Add / Edit / Delete); header slot kept for open-state layout -->
+            </div>
+            <svg class="chevron w-3 h-3 shrink-0" style="color: #C8CDD8;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </button>
           <div id="presets-body" class="section-body closed">
             <div class="px-3 py-3">
-              <div class="flex flex-wrap gap-1.5">
-                <button class="h-8 px-3 rounded-lg text-[12px] font-medium transition press" style="background: #538BEC; border: 1px solid #538BEC; color: #fff;">Default</button>
-                <button class="h-8 px-3 rounded-lg text-[12px] font-medium transition press" style="background: #538BEC; border: 1px solid #538BEC; color: #fff;">4×8</button>
+              <!-- Carousel: 3 chips wide / 2 near min; tooltips for full name -->
+              <div class="presets-carousel" id="presets-carousel">
+                <button type="button" class="presets-carousel__btn press" id="presets-prev" aria-label="Previous presets" title="Previous presets">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+                </button>
+                <div class="presets-carousel__viewport" id="presets-viewport">
+                  <div class="presets-carousel__track" id="presets-track" role="list">
+                    <button type="button" class="preset-chip press is-selected" role="listitem" data-preset="Default" title="Default">Default</button>
+                    <button type="button" class="preset-chip press" role="listitem" data-preset="4×8" title="4×8">4×8</button>
+                    <button type="button" class="preset-chip press" role="listitem" data-preset="5×10" title="5×10">5×10</button>
+                    <button type="button" class="preset-chip press" role="listitem" data-preset="Scrap A" title="Scrap A">Scrap A</button>
+                    <button type="button" class="preset-chip press" role="listitem" data-preset="Remnant" title="Remnant">Remnant</button>
+                    <button type="button" class="preset-chip press" role="listitem" data-preset="Custom" title="Custom">Custom</button>
+                    <button type="button" class="preset-chip press" role="listitem" data-preset="Drop-in" title="Drop-in">Drop-in</button>
+                  </div>
+                </div>
+                <button type="button" class="presets-carousel__btn press" id="presets-next" aria-label="Next presets" title="Next presets">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+              </div>
+              <!-- Icon-only manage: + / pencil / trash -->
+              <div class="presets-manage" id="presets-manage" role="toolbar" aria-label="Preset management">
+                <button type="button" class="lift-icon press" id="presets-add" title="Add preset" aria-label="Add preset">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                </button>
+                <button type="button" class="lift-icon press" id="presets-edit" title="Edit selected preset" aria-label="Edit selected preset">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                </button>
+                <button type="button" class="lift-icon lift-icon--danger press" id="presets-delete" title="Delete selected preset" aria-label="Delete selected preset">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>
+                </button>
               </div>
             </div>
           </div>
@@ -574,7 +1502,7 @@
           <button class="section-trigger section-header w-full px-3 py-2 flex items-center justify-between transition gap-2" data-target="part-body" data-badge="part-badge">
             <div class="flex items-center gap-2 min-w-0">
               <span class="text-[11px] font-semibold uppercase tracking-wide shrink-0 section-label">Part</span>
-              <input type="text" placeholder="Part #" class="h-6 w-[4.75rem] px-1.5 rounded-md text-[10px] transition" style="background: var(--raised); border: 1px solid rgba(83,139,236,0.3); color: var(--text);" title="Part number" onclick="event.stopPropagation()" />
+              <input type="text" placeholder="Part #" class="part-num-input h-6 px-2 rounded-md text-[10px] transition" title="Part number" onclick="event.stopPropagation()" />
               <span id="part-badge" class="value-badge hidden">120 × 80</span>
             </div>
             <svg class="chevron rotated w-3 h-3 shrink-0" style="color: #C8CDD8;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
@@ -584,20 +1512,28 @@
               <div class="xy-row">
                 <div class="xy-field">
                   <span class="text-[10px] font-medium" style="color: var(--text-muted);">X</span>
-                  <input data-field id="part-x" type="number" value="120" step="0.01" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" />
+                  <div class="num-input-wrap has-value">
+                    <input data-field id="part-x" type="text" inputmode="decimal" value="120" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" autocomplete="off" />
+                    <button type="button" class="num-input-clear" aria-label="Clear" title="Clear" tabindex="-1"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 3l6 6M9 3L3 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+                  </div>
                 </div>
                 <div class="xy-field">
                   <span class="text-[10px] font-medium" style="color: var(--text-muted);">Y</span>
-                  <input data-field id="part-y" type="number" value="80" step="0.01" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" />
+                  <div class="num-input-wrap has-value">
+                    <input data-field id="part-y" type="text" inputmode="decimal" value="80" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" autocomplete="off" />
+                    <button type="button" class="num-input-clear" aria-label="Clear" title="Clear" tabindex="-1"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 3l6 6M9 3L3 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+                  </div>
                 </div>
-                <div class="xy-sep" aria-hidden="true"></div>
-                <div class="btn-group-h">
-                  <button title="Swap X & Y">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
-                  </button>
-                  <button class="active" title="Link X & Y" data-link="part">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-                  </button>
+                <div class="xy-actions">
+                  <div class="xy-sep" aria-hidden="true"></div>
+                  <div class="btn-group-h">
+                    <button title="Swap X & Y">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
+                    </button>
+                    <button class="active" title="Link X & Y" data-link="part">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -618,20 +1554,28 @@
               <div class="xy-row">
                 <div class="xy-field">
                   <span class="text-[10px] font-medium" style="color: var(--text-muted);">X</span>
-                  <input data-field id="rem-x" type="number" value="600" step="0.01" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" />
+                  <div class="num-input-wrap has-value">
+                    <input data-field id="rem-x" type="text" inputmode="decimal" value="600" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" autocomplete="off" />
+                    <button type="button" class="num-input-clear" aria-label="Clear" title="Clear" tabindex="-1"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 3l6 6M9 3L3 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+                  </div>
                 </div>
                 <div class="xy-field">
                   <span class="text-[10px] font-medium" style="color: var(--text-muted);">Y</span>
-                  <input data-field id="rem-y" type="number" value="400" step="0.01" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" />
+                  <div class="num-input-wrap has-value">
+                    <input data-field id="rem-y" type="text" inputmode="decimal" value="400" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" autocomplete="off" />
+                    <button type="button" class="num-input-clear" aria-label="Clear" title="Clear" tabindex="-1"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 3l6 6M9 3L3 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+                  </div>
                 </div>
-                <div class="xy-sep" aria-hidden="true"></div>
-                <div class="btn-group-h">
-                  <button title="Swap X & Y">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
-                  </button>
-                  <button class="active" title="Link X & Y" data-link="rem">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-                  </button>
+                <div class="xy-actions">
+                  <div class="xy-sep" aria-hidden="true"></div>
+                  <div class="btn-group-h">
+                    <button title="Swap X & Y">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
+                    </button>
+                    <button class="active" title="Link X & Y" data-link="rem">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -652,20 +1596,28 @@
               <div class="xy-row">
                 <div class="xy-field">
                   <span class="text-[10px] font-medium" style="color: var(--text-muted);">X</span>
-                  <input data-field id="gap-x" type="number" value="5" step="0.1" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" />
+                  <div class="num-input-wrap has-value">
+                    <input data-field id="gap-x" type="text" inputmode="decimal" value="5" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" autocomplete="off" />
+                    <button type="button" class="num-input-clear" aria-label="Clear" title="Clear" tabindex="-1"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 3l6 6M9 3L3 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+                  </div>
                 </div>
                 <div class="xy-field">
                   <span class="text-[10px] font-medium" style="color: var(--text-muted);">Y</span>
-                  <input data-field id="gap-y" type="number" value="5" step="0.1" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" />
+                  <div class="num-input-wrap has-value">
+                    <input data-field id="gap-y" type="text" inputmode="decimal" value="5" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" autocomplete="off" />
+                    <button type="button" class="num-input-clear" aria-label="Clear" title="Clear" tabindex="-1"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 3l6 6M9 3L3 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+                  </div>
                 </div>
-                <div class="xy-sep" aria-hidden="true"></div>
-                <div class="btn-group-h">
-                  <button title="Swap X & Y">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
-                  </button>
-                  <button class="active" title="Link X & Y" data-link="gap">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-                  </button>
+                <div class="xy-actions">
+                  <div class="xy-sep" aria-hidden="true"></div>
+                  <div class="btn-group-h">
+                    <button title="Swap X & Y">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
+                    </button>
+                    <button class="active" title="Link X & Y" data-link="gap">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -686,22 +1638,37 @@
               <div class="margins-row">
                 <div class="m-field">
                   <span class="m-label">L</span>
-                  <input data-field id="m-left" type="number" value="10" step="0.1" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" />
+                  <div class="num-input-wrap has-value">
+                    <input data-field id="m-left" type="text" inputmode="decimal" value="10" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" autocomplete="off" />
+                    <button type="button" class="num-input-clear" aria-label="Clear" title="Clear" tabindex="-1"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 3l6 6M9 3L3 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+                  </div>
                 </div>
+                <span class="margins-sep" aria-hidden="true"></span>
                 <div class="m-field">
                   <span class="m-label">R</span>
-                  <input data-field id="m-right" type="number" value="10" step="0.1" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" />
+                  <div class="num-input-wrap has-value">
+                    <input data-field id="m-right" type="text" inputmode="decimal" value="10" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" autocomplete="off" />
+                    <button type="button" class="num-input-clear" aria-label="Clear" title="Clear" tabindex="-1"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 3l6 6M9 3L3 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+                  </div>
                 </div>
+                <span class="margins-sep" aria-hidden="true"></span>
                 <div class="m-field">
                   <span class="m-label">B</span>
-                  <input data-field id="m-bottom" type="number" value="10" step="0.1" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" />
+                  <div class="num-input-wrap has-value">
+                    <input data-field id="m-bottom" type="text" inputmode="decimal" value="10" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" autocomplete="off" />
+                    <button type="button" class="num-input-clear" aria-label="Clear" title="Clear" tabindex="-1"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 3l6 6M9 3L3 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+                  </div>
                 </div>
+                <span class="margins-sep" aria-hidden="true"></span>
                 <div class="m-field">
                   <span class="m-label">T</span>
-                  <input data-field id="m-top" type="number" value="10" step="0.1" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" />
+                  <div class="num-input-wrap has-value">
+                    <input data-field id="m-top" type="text" inputmode="decimal" value="10" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" autocomplete="off" />
+                    <button type="button" class="num-input-clear" aria-label="Clear" title="Clear" tabindex="-1"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 3l6 6M9 3L3 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+                  </div>
                 </div>
               </div>
-              <label class="mt-2.5 flex items-center justify-center gap-2 text-[11px] cursor-pointer" style="color: var(--text-muted);">
+              <label class="margins-rotate-row mt-2.5 gap-2 text-[11px] cursor-pointer" style="color: var(--text-muted);">
                 <input type="checkbox" checked class="h-3.5 w-3.5 rounded" style="accent-color: #538BEC;" />
                 Move with rotation
               </label>
@@ -712,87 +1679,113 @@
 
         <!-- ========== G-CODE MODE PANEL ========== -->
         <div id="gcode-panel" class="hidden space-y-2.5">
-          <!-- 1. Source -->
+          <!-- 1. Source (collapsible, starts open) — Rotation merged below textarea -->
           <section class="section-card glow-soft overflow-hidden" data-gsection="source">
             <div class="section-header section-header-gcode px-3 py-2 flex items-center justify-between gap-2">
-              <span class="text-[11px] font-semibold uppercase tracking-wide section-label">Source</span>
-              <div class="flex items-center gap-0.5 p-0.5 rounded-lg" style="background: rgba(0,0,0,0.2);">
-                <button id="prog-unit-in" class="h-6 px-2 rounded-md text-[10px] font-bold transition" style="background: #EE8C3C; color: #fff;">IN</button>
-                <button id="prog-unit-mm" class="h-6 px-2 rounded-md text-[10px] font-bold transition" style="background: transparent; color: #fff;">MM</button>
+              <button type="button" class="section-trigger flex items-center gap-2 min-w-0 flex-1 text-left hover:opacity-90 transition" data-target="source-body">
+                <span class="text-[11px] font-semibold uppercase tracking-wide section-label">Source</span>
+              </button>
+              <div class="flex items-center gap-2 shrink-0">
+                <div id="prog-unit-switch" class="seg-switch seg-switch--sm" role="group" aria-label="Program units" data-value="in">
+                  <span class="seg-switch__thumb" aria-hidden="true"></span>
+                  <button type="button" id="prog-unit-in" aria-pressed="true">IN</button>
+                  <button type="button" id="prog-unit-mm" aria-pressed="false">MM</button>
+                </div>
+                <button type="button" class="section-trigger h-6 w-6 flex items-center justify-center shrink-0" data-target="source-body" aria-label="Toggle source">
+                  <svg class="chevron rotated w-3 h-3" style="color: #fff;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                </button>
               </div>
             </div>
-            <div class="px-3 py-3">
-              <textarea id="gcode-input" rows="11" placeholder="Paste G-code here" class="w-full rounded-lg px-2.5 py-2 text-[11px] font-mono leading-relaxed resize-y transition" style="background: var(--raised); border: 1px solid rgba(200,205,216,0.2); color: #FFFFFF; min-height: 180px; white-space: pre; overflow-x: auto;"></textarea>
+            <div id="source-body" class="section-body">
+              <div class="px-3 py-3 space-y-3">
+                <textarea id="gcode-input" rows="11" placeholder="Paste G-code here" class="w-full rounded-lg px-2.5 py-2 text-[11px] font-mono leading-relaxed resize-y transition" style="background: var(--raised); border: 1px solid rgba(200,205,216,0.2); color: #FFFFFF; min-height: 180px; white-space: pre; overflow-x: auto;"></textarea>
+                <!-- Rotation row: orange header-bar language; not a standalone card -->
+                <div class="gcode-rotation-block" id="gcode-rotation-sec">
+                  <div class="section-header section-header-gcode px-3 flex items-center justify-between gap-2">
+                    <span class="text-[11px] font-semibold uppercase tracking-wide section-label">Rotation</span>
+                  </div>
+                  <div class="px-3 py-3 flex flex-col gap-2.5">
+                    <div class="flex items-center justify-center gap-1.5 flex-wrap">
+                      <button type="button" data-angle="0" class="gcode-angle h-9 px-3 rounded-lg text-[11px] font-semibold transition press" style="background: #EE8C3C; color: #fff;">0°</button>
+                      <button type="button" data-angle="90" class="gcode-angle h-9 px-3 rounded-lg text-[11px] font-semibold transition press" style="background: var(--raised); border: 1px solid rgba(200,205,216,0.2); color: #C8CDD8;">90°</button>
+                      <button type="button" data-angle="-90" class="gcode-angle h-9 px-3 rounded-lg text-[11px] font-semibold transition press" style="background: var(--raised); border: 1px solid rgba(200,205,216,0.2); color: #C8CDD8;">−90°</button>
+                      <button type="button" data-angle="180" class="gcode-angle h-9 px-3 rounded-lg text-[11px] font-semibold transition press" style="background: var(--raised); border: 1px solid rgba(200,205,216,0.2); color: #C8CDD8;">180°</button>
+                    </div>
+                    <button type="button" id="gcode-generate" class="w-full h-9 rounded-lg text-[12px] font-semibold transition press shrink-0" style="background: rgba(238, 140, 60, 0.25); border: 1px solid rgba(238, 140, 60, 0.45); color: #fff;">Generate</button>
+                  </div>
+                </div>
+              </div>
             </div>
           </section>
 
-          <!-- 2. Rotation + Generate (product flow: angle then Generate) -->
-          <div id="gcode-mid-row" class="gcode-mid-row">
-          <section class="section-card glow-soft overflow-hidden" data-gsection="rotation" id="gcode-rotation-sec">
-            <div class="section-header section-header-gcode px-3 flex items-center justify-between gap-2">
-              <span class="text-[11px] font-semibold uppercase tracking-wide section-label">Rotation</span>
-            </div>
-            <div class="gcode-card-body px-3 py-3 flex flex-col gap-2.5">
-              <div class="flex items-center justify-center gap-1.5 flex-wrap flex-1">
-                <button data-angle="0" class="gcode-angle h-9 px-3 rounded-lg text-[11px] font-semibold transition press" style="background: #EE8C3C; color: #fff;">0°</button>
-                <button data-angle="90" class="gcode-angle h-9 px-3 rounded-lg text-[11px] font-semibold transition press" style="background: var(--raised); border: 1px solid rgba(200,205,216,0.2); color: #C8CDD8;">90°</button>
-                <button data-angle="-90" class="gcode-angle h-9 px-3 rounded-lg text-[11px] font-semibold transition press" style="background: var(--raised); border: 1px solid rgba(200,205,216,0.2); color: #C8CDD8;">−90°</button>
-                <button data-angle="180" class="gcode-angle h-9 px-3 rounded-lg text-[11px] font-semibold transition press" style="background: var(--raised); border: 1px solid rgba(200,205,216,0.2); color: #C8CDD8;">180°</button>
-              </div>
-              <button id="gcode-generate" class="w-full h-9 rounded-lg text-[12px] font-semibold transition press shrink-0" style="background: rgba(238, 140, 60, 0.25); border: 1px solid rgba(238, 140, 60, 0.45); color: #fff;">Generate</button>
-            </div>
-          </section>
+          <!-- 2. Part size (collapsible) -->
           <section class="section-card glow-soft overflow-hidden" data-gsection="partsize" id="gcode-partsize-sec">
-            <div class="section-header section-header-gcode px-3 flex items-center justify-between gap-2">
-              <span class="text-[11px] font-semibold uppercase tracking-wide section-label">Part size</span>
-              <div class="flex items-center gap-0.5 p-0.5 rounded-lg" style="background: rgba(0,0,0,0.2);">
-                <button id="part-unit-in" class="h-6 px-2 rounded-md text-[10px] font-bold transition" style="background: #EE8C3C; color: #fff;">IN</button>
-                <button id="part-unit-mm" class="h-6 px-2 rounded-md text-[10px] font-bold transition" style="background: transparent; color: #fff;">MM</button>
+            <div class="section-header section-header-gcode px-3 py-2 flex items-center justify-between gap-2">
+              <button type="button" class="section-trigger flex items-center gap-2 min-w-0 flex-1 text-left hover:opacity-90 transition" data-target="partsize-body">
+                <span class="text-[11px] font-semibold uppercase tracking-wide section-label">Part size</span>
+              </button>
+              <div class="flex items-center gap-2 shrink-0">
+                <div id="part-unit-switch" class="seg-switch seg-switch--sm" role="group" aria-label="Part size units" data-value="in">
+                  <span class="seg-switch__thumb" aria-hidden="true"></span>
+                  <button type="button" id="part-unit-in" aria-pressed="true">IN</button>
+                  <button type="button" id="part-unit-mm" aria-pressed="false">MM</button>
+                </div>
+                <button type="button" class="section-trigger h-6 w-6 flex items-center justify-center shrink-0" data-target="partsize-body" aria-label="Toggle part size">
+                  <svg class="chevron rotated w-3 h-3" style="color: #fff;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                </button>
               </div>
             </div>
-            <div class="gcode-card-body px-3 py-3 flex flex-col gap-2.5">
-              <div class="flex items-center justify-center gap-3 flex-1">
-                <div class="xy-field">
-                  <span class="text-[10px] font-medium" style="color: #C8CDD8;">X</span>
-                  <input id="gcode-part-x" type="text" readonly value="—" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" style="background: var(--raised); border: 1px solid rgba(200,205,216,0.25); color: #fff;" />
+            <div id="partsize-body" class="section-body">
+              <div class="gcode-card-body px-3 py-3 flex flex-col gap-2.5">
+                <div class="flex items-center justify-center gap-3 flex-1">
+                  <div class="xy-field">
+                    <span class="text-[10px] font-medium" style="color: #C8CDD8;">X</span>
+                    <input id="gcode-part-x" type="text" readonly value="—" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" style="background: var(--raised); border: 1px solid rgba(200,205,216,0.25); color: #fff;" />
+                  </div>
+                  <div class="xy-field">
+                    <span class="text-[10px] font-medium" style="color: #C8CDD8;">Y</span>
+                    <input id="gcode-part-y" type="text" readonly value="—" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" style="background: var(--raised); border: 1px solid rgba(200,205,216,0.25); color: #fff;" />
+                  </div>
                 </div>
-                <div class="xy-field">
-                  <span class="text-[10px] font-medium" style="color: #C8CDD8;">Y</span>
-                  <input id="gcode-part-y" type="text" readonly value="—" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" style="background: var(--raised); border: 1px solid rgba(200,205,216,0.25); color: #fff;" />
-                </div>
+                <button type="button" id="fill-part-size" class="w-full h-9 rounded-lg text-[12px] font-semibold transition press shrink-0" style="background: rgba(238, 140, 60, 0.25); border: 1px solid rgba(238, 140, 60, 0.45); color: #fff;" disabled>Fill part size → Calculator</button>
               </div>
-              <button id="fill-part-size" class="w-full h-9 rounded-lg text-[12px] font-semibold transition press shrink-0" style="background: rgba(238, 140, 60, 0.25); border: 1px solid rgba(238, 140, 60, 0.45); color: #fff;" disabled>Fill part size → Calculator</button>
             </div>
           </section>
-        </div>
 
-          <!-- 4. Output (collapsible; auto-open on Generate; icons in header) -->
+          <!-- 3. Output (collapsible; auto-open on Generate; Copy/Download + chevron match Source/Part size) -->
           <section class="section-card glow-soft overflow-hidden" data-gsection="output">
             <div class="section-header section-header-gcode px-3 py-2 flex items-center justify-between gap-2">
-              <button type="button" id="output-toggle" class="flex items-center gap-2 min-w-0 text-left">
+              <button type="button" id="output-toggle" class="section-trigger flex items-center gap-2 min-w-0 flex-1 text-left hover:opacity-90 transition" data-target="output-body">
                 <span class="text-[11px] font-semibold uppercase tracking-wide section-label">Output</span>
-                <svg id="output-chevron" class="w-3 h-3" style="color: #fff;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
               </button>
-              <div class="flex items-center gap-1">
-                <button id="gcode-copy" title="Copy" aria-label="Copy" class="h-7 w-7 rounded-md flex items-center justify-center transition press" style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.22); color: #fff;">
+              <div class="flex items-center gap-2 shrink-0">
+                <button type="button" id="gcode-copy" title="Copy" aria-label="Copy" class="h-7 w-7 rounded-md flex items-center justify-center transition press" style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.22); color: #fff;">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                 </button>
-                <button id="gcode-download" title="Download" aria-label="Download" class="h-7 w-7 rounded-md flex items-center justify-center transition press" style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.22); color: #fff;">
+                <button type="button" id="gcode-download" title="Download" aria-label="Download" class="h-7 w-7 rounded-md flex items-center justify-center transition press" style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.22); color: #fff;">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                </button>
+                <button type="button" class="section-trigger h-6 w-6 flex items-center justify-center shrink-0" data-target="output-body" aria-label="Toggle output">
+                  <svg id="output-chevron" class="chevron w-3 h-3" style="color: #fff;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
                 </button>
               </div>
             </div>
-            <div id="output-body" class="px-3 pb-3" style="display:none;">
-              <pre id="gcode-output" class="w-full rounded-lg px-2.5 py-2 text-[10px] font-mono leading-relaxed overflow-auto" style="background: var(--raised); border: 1px solid rgba(200,205,216,0.15); color: #C8CDD8; max-height: 160px; min-height: 72px; white-space: pre; overflow-x: auto;">—</pre>
+            <div id="output-body" class="section-body closed">
+              <!-- Match Source: equal gap all around under orange header (px-3 py-3) -->
+              <div class="px-3 py-3">
+                <pre id="gcode-output" class="gcode-output-surface w-full rounded-lg px-2.5 py-2 text-[10px] font-mono leading-relaxed overflow-auto" style="background: var(--raised); border: 1px solid rgba(200,205,216,0.15); color: #C8CDD8; white-space: pre; overflow-x: auto;">—</pre>
+              </div>
             </div>
           </section>
         </div>
 
 
       </div>
+      <!-- Free-edge resize: calc right rim 300–500; gcode left rim 420–620; hidden when full/closed -->
+      <div id="sheet-resize" class="sheet-resize" role="separator" aria-orientation="vertical" aria-valuemin="300" aria-valuemax="500" aria-valuenow="500" aria-label="Resize panel" title="Drag to resize"></div>
     </aside>
 
-    <div class="stage flex-1 relative flex flex-col p-3" id="stage" class="stage" data-min="1" style="padding-left: 324px;">
+    <div class="stage flex-1 relative flex flex-col p-3" id="stage" class="stage" data-min="1" style="padding-left: 524px;">
       <button type="button" id="viewer-expand" class="h-8 w-8 rounded-lg items-center justify-center transition press" style="display:none; position:absolute; left:12px; top:50%; transform:translateY(-50%); z-index:20; background: var(--panel); border: 1px solid rgba(238,140,60,0.45); color: #EE8C3C;" title="Expand viewer">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 18l6-6-6-6"/></svg>
       </button>
@@ -820,21 +1813,21 @@
             <div class="axis-count absolute left-1/2 -translate-x-1/2 -top-10 text-[22px] tracking-tight">5</div>
             <div class="axis-count absolute top-1/2 -translate-y-1/2 -right-10 text-[22px] tracking-tight">3</div>
             <div class="relative w-[min(52vw,480px)] aspect-[3/2] rounded-xl" style="border: 1px dashed rgba(83,139,236,0.35); background: rgba(11,8,20,0.5);">
-              <div class="absolute left-[5%] top-[7%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
-              <div class="absolute left-[23%] top-[7%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
-              <div class="absolute left-[41%] top-[7%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
-              <div class="absolute left-[59%] top-[7%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
-              <div class="absolute left-[77%] top-[7%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
-              <div class="absolute left-[5%] top-[38%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
-              <div class="absolute left-[23%] top-[38%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
-              <div class="absolute left-[41%] top-[38%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
-              <div class="absolute left-[59%] top-[38%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
-              <div class="absolute left-[77%] top-[38%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
-              <div class="absolute left-[5%] top-[69%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
-              <div class="absolute left-[23%] top-[69%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
-              <div class="absolute left-[41%] top-[69%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
-              <div class="absolute left-[59%] top-[69%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
-              <div class="absolute left-[77%] top-[69%] w-[16%] h-[25%]" style="background: transparent; border: 1px solid #FFFFFF; border-radius: 4px; box-shadow: none;"></div>
+              <div class="nest-part absolute left-[5%] top-[7%] w-[16%] h-[25%]"></div>
+              <div class="nest-part absolute left-[23%] top-[7%] w-[16%] h-[25%]"></div>
+              <div class="nest-part absolute left-[41%] top-[7%] w-[16%] h-[25%]"></div>
+              <div class="nest-part absolute left-[59%] top-[7%] w-[16%] h-[25%]"></div>
+              <div class="nest-part absolute left-[77%] top-[7%] w-[16%] h-[25%]"></div>
+              <div class="nest-part absolute left-[5%] top-[38%] w-[16%] h-[25%]"></div>
+              <div class="nest-part absolute left-[23%] top-[38%] w-[16%] h-[25%]"></div>
+              <div class="nest-part absolute left-[41%] top-[38%] w-[16%] h-[25%]"></div>
+              <div class="nest-part absolute left-[59%] top-[38%] w-[16%] h-[25%]"></div>
+              <div class="nest-part absolute left-[77%] top-[38%] w-[16%] h-[25%]"></div>
+              <div class="nest-part absolute left-[5%] top-[69%] w-[16%] h-[25%]"></div>
+              <div class="nest-part absolute left-[23%] top-[69%] w-[16%] h-[25%]"></div>
+              <div class="nest-part absolute left-[41%] top-[69%] w-[16%] h-[25%]"></div>
+              <div class="nest-part absolute left-[59%] top-[69%] w-[16%] h-[25%]"></div>
+              <div class="nest-part absolute left-[77%] top-[69%] w-[16%] h-[25%]"></div>
             </div>
           </div><!-- /calc-view -->
 
@@ -867,29 +1860,81 @@
     </div>
   </div>
 
-  <!-- Calculator — matching reference contrast -->
-  <div id="numpad" class="numpad hidden-pad fixed bottom-5 right-5 z-40 glow rounded-2xl p-3 w-[230px]">
-    <div class="flex flex-wrap gap-1 mb-2.5">
-      <button data-quick="0.060" class="h-6 px-1.5 rounded-md text-[10px] font-mono font-medium transition press key-util">.060</button>
-      <button data-quick="0.125" class="h-6 px-1.5 rounded-md text-[10px] font-mono font-medium transition press key-util">.125</button>
-      <button data-quick="0.250" class="h-6 px-1.5 rounded-md text-[10px] font-mono font-medium transition press key-util">.250</button>
-      <button data-quick="0.375" class="h-6 px-1.5 rounded-md text-[10px] font-mono font-medium transition press key-util">.375</button>
-      <button data-quick="0.500" class="h-6 px-1.5 rounded-md text-[10px] font-mono font-medium transition press key-util">.500</button>
+  <!-- Calculator pad — dual-mode (ENTRY / CALCULATOR), frosted, free-drag chrome bar, X / sheet-icon close only -->
+  <div id="numpad" class="numpad hidden-pad rounded-2xl p-3" data-pad-mode="entry" style="left: auto; top: auto; right: 20px; bottom: 20px; --pad-x: 0px; --pad-y: 0px;" aria-hidden="true">
+    <div class="numpad-chrome">
+      <button type="button" id="numpad-mode-btn" class="numpad-mode-btn press" title="Calculator mode" aria-label="Toggle calculator mode" aria-pressed="false">
+        <!-- Calculator icon: switch ENTRY → CALCULATOR (and reverse) -->
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="4" y="2" width="16" height="20" rx="2"/>
+          <line x1="8" y1="6" x2="16" y2="6"/>
+          <line x1="8" y1="11" x2="8" y2="11.01"/>
+          <line x1="12" y1="11" x2="12" y2="11.01"/>
+          <line x1="16" y1="11" x2="16" y2="11.01"/>
+          <line x1="8" y1="15" x2="8" y2="15.01"/>
+          <line x1="12" y1="15" x2="12" y2="15.01"/>
+          <line x1="16" y1="15" x2="16" y2="15.01"/>
+          <line x1="8" y1="19" x2="8" y2="19.01"/>
+          <line x1="12" y1="19" x2="12" y2="19.01"/>
+          <line x1="16" y1="19" x2="16" y2="19.01"/>
+        </svg>
+      </button>
+      <div class="numpad-drag-handle select-none" title="Drag to move" aria-hidden="true">
+        <div class="quick-manage" role="toolbar" aria-label="Quick value management">
+          <button type="button" class="lift-icon press" id="quick-add" title="Add quick value" aria-label="Add quick value">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+          <button type="button" class="lift-icon press" id="quick-edit" title="Edit selected quick value" aria-label="Edit selected quick value">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          </button>
+        </div>
+      </div>
+      <button type="button" id="numpad-close" class="numpad-close press" title="Close pad" aria-label="Close pad">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
     </div>
-    <div class="grid grid-cols-3 gap-1.5">
-      <button data-key="7" class="h-11 rounded-xl text-sm font-medium transition press key-num">7</button>
-      <button data-key="8" class="h-11 rounded-xl text-sm font-medium transition press key-num">8</button>
-      <button data-key="9" class="h-11 rounded-xl text-sm font-medium transition press key-num">9</button>
-      <button data-key="4" class="h-11 rounded-xl text-sm font-medium transition press key-num">4</button>
-      <button data-key="5" class="h-11 rounded-xl text-sm font-medium transition press key-num">5</button>
-      <button data-key="6" class="h-11 rounded-xl text-sm font-medium transition press key-num">6</button>
-      <button data-key="1" class="h-11 rounded-xl text-sm font-medium transition press key-num">1</button>
-      <button data-key="2" class="h-11 rounded-xl text-sm font-medium transition press key-num">2</button>
-      <button data-key="3" class="h-11 rounded-xl text-sm font-medium transition press key-num">3</button>
-      <button data-key="." class="h-11 rounded-xl text-sm font-medium transition press key-num">.</button>
-      <button data-key="0" class="h-11 rounded-xl text-sm font-medium transition press key-num">0</button>
-      <button data-key="back" class="h-11 rounded-xl text-sm font-medium transition press key-util" title="Backspace">⌫</button>
-      <button data-key="enter" class="h-11 rounded-xl text-sm font-semibold transition press key-eq col-span-3">↵ Enter</button>
+    <div id="numpad-lcd" class="numpad-lcd" aria-live="polite" aria-hidden="true"></div>
+    <div class="numpad-quick" id="numpad-quick">
+      <div class="quick-carousel is-scrollable" id="quick-carousel">
+        <button type="button" class="quick-carousel__btn press" id="quick-prev" aria-label="Previous quick values" title="Previous">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <div class="quick-carousel__viewport" id="quick-viewport">
+          <div class="quick-carousel__track" id="quick-track" role="list">
+            <button type="button" class="quick-chip press" role="listitem" data-quick="0.060" title="0.060">.060</button>
+            <button type="button" class="quick-chip press" role="listitem" data-quick="0.125" title="0.125">.125</button>
+            <button type="button" class="quick-chip press" role="listitem" data-quick="0.250" title="0.250">.250</button>
+            <button type="button" class="quick-chip press" role="listitem" data-quick="0.375" title="0.375">.375</button>
+            <button type="button" class="quick-chip press" role="listitem" data-quick="0.500" title="0.500">.500</button>
+            <button type="button" class="quick-chip press" role="listitem" data-quick="0.750" title="0.750">.750</button>
+            <button type="button" class="quick-chip press" role="listitem" data-quick="1.000" title="1.000">1.00</button>
+          </div>
+        </div>
+        <button type="button" class="quick-carousel__btn press" id="quick-next" aria-label="Next quick values" title="Next">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="numpad-keys" id="numpad-keys">
+      <button type="button" data-key="7" class="h-11 rounded-xl text-sm font-medium transition press key-num">7</button>
+      <button type="button" data-key="8" class="h-11 rounded-xl text-sm font-medium transition press key-num">8</button>
+      <button type="button" data-key="9" class="h-11 rounded-xl text-sm font-medium transition press key-num">9</button>
+      <div class="numpad-ops" id="numpad-ops" aria-hidden="true">
+        <button type="button" data-op="+" class="rounded-xl transition press key-op" title="Add">+</button>
+        <button type="button" data-op="−" class="rounded-xl transition press key-op" title="Subtract">−</button>
+        <button type="button" data-op="×" class="rounded-xl transition press key-op" title="Multiply">×</button>
+        <button type="button" data-op="÷" class="rounded-xl transition press key-op" title="Divide">÷</button>
+      </div>
+      <button type="button" data-key="4" class="h-11 rounded-xl text-sm font-medium transition press key-num">4</button>
+      <button type="button" data-key="5" class="h-11 rounded-xl text-sm font-medium transition press key-num">5</button>
+      <button type="button" data-key="6" class="h-11 rounded-xl text-sm font-medium transition press key-num">6</button>
+      <button type="button" data-key="1" class="h-11 rounded-xl text-sm font-medium transition press key-num">1</button>
+      <button type="button" data-key="2" class="h-11 rounded-xl text-sm font-medium transition press key-num">2</button>
+      <button type="button" data-key="3" class="h-11 rounded-xl text-sm font-medium transition press key-num">3</button>
+      <button type="button" data-key="." class="h-11 rounded-xl text-sm font-medium transition press key-num">.</button>
+      <button type="button" data-key="0" class="h-11 rounded-xl text-sm font-medium transition press key-num">0</button>
+      <button type="button" data-key="back" class="h-11 rounded-xl text-sm font-medium transition press key-util" title="Backspace">⌫</button>
+      <button type="button" data-key="enter" class="h-11 rounded-xl text-sm font-semibold transition press key-eq">↵ Enter</button>
     </div>
   </div>
 
@@ -898,19 +1943,111 @@
     const sheetOpen = document.getElementById('sheet-open');
     const sheetClose = document.getElementById('sheet-close');
     const stage = document.getElementById('stage');
+    const sheetResize = document.getElementById('sheet-resize');
+
+    /*
+      TDZ-safe: declare currentMode BEFORE any resize/layout init that reads it.
+      typeof currentMode on a later let throws ReferenceError and aborts all handlers.
+    */
+    let currentMode = 'calc';
+
+    /* Calculator left sheet: hard 300–500px; default = max 500. Stage gap: width + 24 (524 @ 500). */
+    const CALC_SHEET_MIN = 300;
+    const CALC_SHEET_MAX = 500;
+    const CALC_SHEET_EDGE_GAP = 24; /* left-3 (12px) + stage gap (12px) */
+    let calcSheetWidth = 500;
+    /* G-code right sheet: hard min 420, default = max 620. Padding tracks width + 28. */
+    const GCODE_SHEET_MIN = 420;
+    const GCODE_SHEET_MAX = 620;
+    const GCODE_SHEET_EDGE_GAP = 28; /* right 12 + stage gap ≈ 16 → 648 @ 620 */
+    let gcodeSheetWidth = 620;
+
+    function isGcodeMode() {
+      return currentMode === 'gcode';
+    }
+
+    function calcStagePaddingLeft(open) {
+      if (!open) return '16px';
+      return (calcSheetWidth + CALC_SHEET_EDGE_GAP) + 'px';
+    }
+
+    function gcodeStagePaddingRight(splitOpen) {
+      if (!splitOpen) return '16px';
+      return (gcodeSheetWidth + GCODE_SHEET_EDGE_GAP) + 'px';
+    }
+
+    function syncResizeAria() {
+      if (!sheetResize) return;
+      if (isGcodeMode()) {
+        sheetResize.setAttribute('aria-valuemin', String(GCODE_SHEET_MIN));
+        sheetResize.setAttribute('aria-valuemax', String(GCODE_SHEET_MAX));
+        sheetResize.setAttribute('aria-valuenow', String(gcodeSheetWidth));
+        sheetResize.setAttribute('aria-label', 'Resize G-code panel');
+      } else {
+        sheetResize.setAttribute('aria-valuemin', String(CALC_SHEET_MIN));
+        sheetResize.setAttribute('aria-valuemax', String(CALC_SHEET_MAX));
+        sheetResize.setAttribute('aria-valuenow', String(calcSheetWidth));
+        sheetResize.setAttribute('aria-label', 'Resize calculator panel');
+      }
+    }
+
+    function applyCalcSheetWidth(w, opts) {
+      const open = opts && typeof opts.open === 'boolean' ? opts.open : !sheet.classList.contains('closed');
+      calcSheetWidth = Math.min(CALC_SHEET_MAX, Math.max(CALC_SHEET_MIN, Math.round(w)));
+      sheet.style.setProperty('--calc-sheet-w', calcSheetWidth + 'px');
+      sheet.style.width = calcSheetWidth + 'px';
+      syncResizeAria();
+      if (!isGcodeMode() && open) {
+        stage.style.paddingLeft = calcStagePaddingLeft(true);
+        stage.style.paddingRight = '16px';
+      }
+      /* adaptive presets 3↔2 when sheet crosses narrow threshold */
+      if (typeof window.__nestPresetsSync === 'function') {
+        requestAnimationFrame(function () { window.__nestPresetsSync(); });
+      }
+      return calcSheetWidth;
+    }
+
+    function applyGcodeSheetWidth(w, opts) {
+      const split = opts && typeof opts.split === 'boolean'
+        ? opts.split
+        : (isGcodeMode() && !sheet.classList.contains('panel-full') && !sheet.classList.contains('closed'));
+      gcodeSheetWidth = Math.min(GCODE_SHEET_MAX, Math.max(GCODE_SHEET_MIN, Math.round(w)));
+      sheet.style.setProperty('--gcode-sheet-w', gcodeSheetWidth + 'px');
+      if (isGcodeMode() && !sheet.classList.contains('panel-full')) {
+        sheet.style.width = gcodeSheetWidth + 'px';
+      }
+      syncResizeAria();
+      if (isGcodeMode() && split) {
+        stage.style.paddingRight = gcodeStagePaddingRight(true);
+        stage.style.paddingLeft = '16px';
+      }
+      return gcodeSheetWidth;
+    }
+
+    function clearCalcSheetInlineWidth() {
+      sheet.style.removeProperty('width');
+      sheet.style.removeProperty('--calc-sheet-w');
+    }
+
+    function clearGcodeSheetInlineWidth() {
+      sheet.style.removeProperty('width');
+      /* keep --gcode-sheet-w so restore lands on last width */
+    }
 
     function setSheet(open) {
       const vex = document.getElementById('viewer-expand');
       if (vex) vex.style.display = 'none';
 
-      if (typeof currentMode !== 'undefined' && currentMode === 'gcode') {
-        // G-code: "close" = hide VIEWER, expand PANEL to full width
-        // "open" = restore split (viewer left + panel right)
+      if (isGcodeMode()) {
+        // G-code: "close" = hide VIEWER, expand PANEL to full width (slow slide)
+        // "open" = restore split (viewer left + panel right at last width)
         if (!open) {
           // Panel full-bleed: arrow points RIGHT
           stage.classList.add('viewer-collapsed');
           sheet.classList.remove('closed');
           sheet.classList.add('panel-full');
+          clearGcodeSheetInlineWidth();
           stage.style.paddingLeft = '16px';
           stage.style.paddingRight = '16px';
           sheetOpen.classList.add('hidden');
@@ -918,12 +2055,11 @@
           const closeBtn = document.getElementById('sheet-close');
           if (closeBtn) closeBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 18l6-6-6-6"/></svg>';
         } else {
-          // Split restored: arrow points LEFT
+          // Split restored: arrow points LEFT — width + stage padding in sync
           stage.classList.remove('viewer-collapsed');
           sheet.classList.remove('closed');
           sheet.classList.remove('panel-full');
-          stage.style.paddingLeft = '16px';
-          stage.style.paddingRight = '448px';
+          applyGcodeSheetWidth(gcodeSheetWidth, { split: true });
           sheetOpen.classList.add('hidden');
           sheetOpen.style.cssText = '';
           const closeBtn = document.getElementById('sheet-close');
@@ -936,17 +2072,119 @@
       sheet.classList.toggle('closed', !open);
       sheet.classList.remove('panel-full');
       stage.classList.remove('viewer-collapsed');
-      stage.style.paddingLeft = open ? '324px' : '16px';
-      stage.style.paddingRight = '16px';
+      applyCalcSheetWidth(calcSheetWidth, { open: open });
+      if (!open) {
+        stage.style.paddingLeft = '16px';
+        stage.style.paddingRight = '16px';
+      }
       sheetOpen.style.cssText = '';
       sheetOpen.classList.toggle('hidden', open);
       if (!open) {
         sheetOpen.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 18l6-6-6-6"/></svg>';
       }
     }
+
+    /* Drag free edge: calc right rim 300–500; gcode left rim 420–620. Hidden when full/closed. */
+    (function initSheetResize() {
+      if (!sheetResize) return;
+      let dragging = false;
+      let startX = 0;
+      let startW = 500;
+      let dragMode = 'calc'; /* 'calc' | 'gcode' */
+
+      function onMove(e) {
+        if (!dragging) return;
+        if (sheet.classList.contains('panel-full') || sheet.classList.contains('closed')) return;
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const dx = clientX - startX;
+        if (dragMode === 'gcode') {
+          /* free edge on left: drag left (neg dx) widens panel */
+          applyGcodeSheetWidth(startW - dx, { split: true });
+        } else {
+          applyCalcSheetWidth(startW + dx, { open: true });
+        }
+        e.preventDefault();
+      }
+      function onUp() {
+        if (!dragging) return;
+        dragging = false;
+        sheet.classList.remove('is-resizing');
+        stage.classList.remove('is-resizing');
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onUp);
+        window.removeEventListener('pointercancel', onUp);
+        window.removeEventListener('touchmove', onMove);
+        window.removeEventListener('touchend', onUp);
+      }
+      function onDown(e) {
+        if (sheet.classList.contains('closed') || sheet.classList.contains('panel-full')) return;
+        if (isGcodeMode()) {
+          if (!sheet.classList.contains('side-right')) return;
+          dragMode = 'gcode';
+          startW = gcodeSheetWidth;
+        } else {
+          if (sheet.classList.contains('side-right')) return;
+          dragMode = 'calc';
+          startW = calcSheetWidth;
+        }
+        dragging = true;
+        startX = e.touches ? e.touches[0].clientX : e.clientX;
+        sheet.classList.add('is-resizing');
+        stage.classList.add('is-resizing');
+        document.body.style.cursor = 'col-resize';
+        document.body.style.userSelect = 'none';
+        window.addEventListener('pointermove', onMove);
+        window.addEventListener('pointerup', onUp);
+        window.addEventListener('pointercancel', onUp);
+        window.addEventListener('touchmove', onMove, { passive: false });
+        window.addEventListener('touchend', onUp);
+        e.preventDefault();
+      }
+      sheetResize.addEventListener('pointerdown', onDown);
+      sheetResize.addEventListener('touchstart', onDown, { passive: false });
+      sheetResize.tabIndex = 0;
+      sheetResize.addEventListener('keydown', (e) => {
+        if (sheet.classList.contains('closed') || sheet.classList.contains('panel-full')) return;
+        const step = e.shiftKey ? 20 : 10;
+        if (isGcodeMode()) {
+          if (e.key === 'ArrowLeft') {
+            applyGcodeSheetWidth(gcodeSheetWidth + step, { split: true });
+            e.preventDefault();
+          } else if (e.key === 'ArrowRight') {
+            applyGcodeSheetWidth(gcodeSheetWidth - step, { split: true });
+            e.preventDefault();
+          } else if (e.key === 'Home') {
+            applyGcodeSheetWidth(GCODE_SHEET_MIN, { split: true });
+            e.preventDefault();
+          } else if (e.key === 'End') {
+            applyGcodeSheetWidth(GCODE_SHEET_MAX, { split: true });
+            e.preventDefault();
+          }
+          return;
+        }
+        if (e.key === 'ArrowLeft') {
+          applyCalcSheetWidth(calcSheetWidth - step, { open: true });
+          e.preventDefault();
+        } else if (e.key === 'ArrowRight') {
+          applyCalcSheetWidth(calcSheetWidth + step, { open: true });
+          e.preventDefault();
+        } else if (e.key === 'Home') {
+          applyCalcSheetWidth(CALC_SHEET_MIN, { open: true });
+          e.preventDefault();
+        } else if (e.key === 'End') {
+          applyCalcSheetWidth(CALC_SHEET_MAX, { open: true });
+          e.preventDefault();
+        }
+      });
+      applyCalcSheetWidth(CALC_SHEET_MAX, { open: true });
+      sheet.style.setProperty('--gcode-sheet-w', gcodeSheetWidth + 'px');
+      syncResizeAria();
+    })();
     // Toggle semantics for G-code: click close when split → expand panel; click again → restore
     sheetClose.addEventListener('click', () => {
-      if (typeof currentMode !== 'undefined' && currentMode === 'gcode') {
+      if (isGcodeMode()) {
         const expanded = sheet.classList.contains('panel-full');
         setSheet(expanded); // if expanded, restore (open=true); if split, expand (open=false)
       } else {
@@ -962,7 +2200,39 @@
       set('gap-badge', (document.getElementById('gap-x')?.value || '—') + ' × ' + (document.getElementById('gap-y')?.value || '—'));
       set('margins-badge', 'L' + (document.getElementById('m-left')?.value || '—') + ' R' + (document.getElementById('m-right')?.value || '—') + ' B' + (document.getElementById('m-bottom')?.value || '—') + ' T' + (document.getElementById('m-top')?.value || '—'));
     }
-    document.querySelectorAll('[data-field]').forEach(inp => inp.addEventListener('input', updateBadges));
+    function syncNumInputClear(inp) {
+      const wrap = inp && inp.closest ? inp.closest('.num-input-wrap') : null;
+      if (!wrap) return;
+      const has = String(inp.value ?? '').length > 0;
+      wrap.classList.toggle('has-value', has);
+    }
+    document.querySelectorAll('[data-field]').forEach(inp => {
+      inp.addEventListener('input', () => {
+        updateBadges();
+        syncNumInputClear(inp);
+      });
+      syncNumInputClear(inp);
+    });
+    /* Inline clear (X) on Part/Rem/Gap/Margins number fields */
+    document.querySelectorAll('.num-input-clear').forEach(btn => {
+      btn.addEventListener('mousedown', e => {
+        e.preventDefault(); /* keep field focus / avoid pad blur races */
+        e.stopPropagation();
+      });
+      btn.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        const wrap = btn.closest('.num-input-wrap');
+        const inp = wrap ? wrap.querySelector('[data-field]') : null;
+        if (!inp) return;
+        inp.value = '';
+        typingFresh = true;
+        activeField = inp;
+        syncNumInputClear(inp);
+        inp.dispatchEvent(new Event('input'));
+        try { inp.focus(); } catch (_) {}
+      });
+    });
     updateBadges();
 
     const cards = Array.from(document.querySelectorAll('.section-card'));
@@ -972,7 +2242,7 @@
         card.classList.remove('settle');
         void card.offsetWidth;
         card.classList.add('settle');
-        setTimeout(() => card.classList.remove('settle'), 520);
+        setTimeout(() => card.classList.remove('settle'), 390);
       }
     }
 
@@ -981,17 +2251,38 @@
       if (actions) actions.style.display = open ? 'flex' : 'none';
     }
     function openSection(body, chev, badge) {
+      /* Same duration open/close; slight bounce only on open via --spring */
+      body.classList.add('is-opening');
       body.classList.remove('closed');
-      body.style.maxHeight = 'none';
-      const h = body.scrollHeight;
       body.style.maxHeight = '0px';
-      body.offsetHeight;
+      body.offsetHeight; /* force reflow at 0 before expand */
+      const h = body.scrollHeight;
       body.style.maxHeight = h + 'px';
       if (chev) chev.classList.add('rotated');
       if (badge) badge.classList.add('hidden');
-      if (body.id === 'presets-body') syncPresetsActions(true);
+      const clearOpen = function () {
+        body.classList.remove('is-opening');
+        if (!body.classList.contains('closed')) {
+          /* none after settle: allows textarea resize + nested growth; close pins height first */
+          body.style.maxHeight = 'none';
+        }
+      };
+      body.addEventListener('transitionend', function te(e) {
+        if (e.propertyName && e.propertyName !== 'max-height') return;
+        body.removeEventListener('transitionend', te);
+        clearOpen();
+      });
+      setTimeout(clearOpen, 430);
+      if (body.id === 'presets-body') {
+        syncPresetsActions(true);
+        /* remeasure after collapse animation — not mid-open (avoids pop) */
+        setTimeout(function () {
+          if (typeof window.__nestPresetsSync === 'function') window.__nestPresetsSync();
+        }, 420);
+      }
     }
     function closeSection(body, chev, badge) {
+      body.classList.remove('is-opening');
       body.style.maxHeight = body.scrollHeight + 'px';
       body.offsetHeight;
       body.classList.add('closed');
@@ -1016,8 +2307,8 @@
       });
     });
 
-    // Only Part starts open
-    ['presets-body', 'rem-body', 'gap-body', 'margins-body'].forEach(id => {
+    // Calc: only Part starts open. G-code: Source + Part size open; Output closed.
+    ['presets-body', 'rem-body', 'gap-body', 'margins-body', 'output-body'].forEach(id => {
       const el = document.getElementById(id);
       if (!el) return;
       el.classList.add('closed');
@@ -1031,12 +2322,13 @@
         if (badge) badge.classList.remove('hidden');
       }
     });
-    const partBody = document.getElementById('part-body');
-    if (partBody) {
-      partBody.classList.remove('closed');
-      partBody.style.maxHeight = 'none';
-      partBody.style.maxHeight = partBody.scrollHeight + 'px';
-      const card = partBody.closest('.section-card');
+    function mountOpenSection(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.remove('closed');
+      el.style.maxHeight = 'none';
+      el.style.maxHeight = el.scrollHeight + 'px';
+      const card = el.closest('.section-card');
       if (card) {
         const chev = card.querySelector('.chevron');
         if (chev) chev.classList.add('rotated');
@@ -1044,83 +2336,154 @@
         if (badge) badge.classList.add('hidden');
       }
     }
+    mountOpenSection('part-body');
+    mountOpenSection('source-body');
+    mountOpenSection('partsize-body');
     syncPresetsActions(false);
 
     document.querySelectorAll('[data-link]').forEach(btn => {
       btn.addEventListener('click', () => btn.classList.toggle('active'));
     });
 
-    const autoBtn = document.getElementById('autonest-btn');
-    const modeLabel = document.getElementById('mode-label');
-    let isAuto = false;
-    autoBtn.addEventListener('click', () => {
-      isAuto = !isAuto;
-      autoBtn.setAttribute('aria-pressed', isAuto);
-      if (isAuto) {
-        autoBtn.style.background = '#538BEC';
-        autoBtn.style.borderColor = 'transparent';
-        autoBtn.style.color = '#fff';
-        modeLabel.textContent = 'AutoNest';
-      } else {
-        autoBtn.style.background = 'var(--raised)';
-        autoBtn.style.borderColor = 'rgba(83,139,236,0.35)';
-        autoBtn.style.color = '#C8CDD8';
-        modeLabel.textContent = 'Manual';
-      }
-    });
-
+    /* Seamless sliding segment switches — shared thumb layout (pad 2px tracks) */
+    function syncSegThumb(track, activeBtn, accent) {
+      if (!track || !activeBtn) return;
+      const thumb = track.querySelector('.seg-switch__thumb');
+      if (!thumb) return;
+      const pad = 2;
+      if (accent) thumb.style.background = accent;
+      thumb.style.width = activeBtn.offsetWidth + 'px';
+      thumb.style.transform = 'translateX(' + Math.max(0, activeBtn.offsetLeft - pad) + 'px)';
+    }
+    function bindSegResize(track, syncFn) {
+      if (!track || typeof ResizeObserver === 'undefined') return;
+      new ResizeObserver(syncFn).observe(track);
+    }
 
     // ---- Mode switch: Calculator ↔ G-code ----
-    let currentMode = 'calc';
+    /* State declared up-front so thumb syncs never hit TDZ during init/resize */
     let progUnit = 'in';
+    let partUnit = 'in';
     let currentAngle = 0;
     let derivedXY = null;
-
+    let baseXY = null; // always stored in program units
     window.calcUnitMode = 'in';
     function headerAccent() {
-      return (typeof currentMode !== 'undefined' && currentMode === 'gcode') ? '#EE8C3C' : '#538BEC';
+      return isGcodeMode() ? '#EE8C3C' : '#538BEC';
+    }
+
+    /* AutoNest | Manual — same isAuto semantics as prior control */
+    const nestModeSwitch = document.getElementById('autonest-switch');
+    const modeAutoBtn = document.getElementById('mode-autonest');
+    const modeManualBtn = document.getElementById('mode-manual');
+    let isAuto = false;
+    function syncNestModeThumb() {
+      const active = isAuto ? modeAutoBtn : modeManualBtn;
+      syncSegThumb(nestModeSwitch, active, '#538BEC');
+    }
+    function setNestMode(auto) {
+      isAuto = !!auto;
+      if (modeAutoBtn) modeAutoBtn.setAttribute('aria-pressed', isAuto ? 'true' : 'false');
+      if (modeManualBtn) modeManualBtn.setAttribute('aria-pressed', isAuto ? 'false' : 'true');
+      if (nestModeSwitch) nestModeSwitch.setAttribute('data-mode', isAuto ? 'autonest' : 'manual');
+      requestAnimationFrame(syncNestModeThumb);
+    }
+    if (modeAutoBtn) modeAutoBtn.addEventListener('click', () => setNestMode(true));
+    if (modeManualBtn) modeManualBtn.addEventListener('click', () => setNestMode(false));
+
+    const unitSwitch = document.getElementById('unit-switch');
+    const unitInBtn = document.getElementById('unit-in');
+    const unitMmBtn = document.getElementById('unit-mm');
+    function syncHeaderUnitThumb() {
+      const active = (window.calcUnitMode === 'mm') ? unitMmBtn : unitInBtn;
+      syncSegThumb(unitSwitch, active, headerAccent());
     }
     function setCalcUnit(u) {
-      window.calcUnitMode = u;
-      const inn = document.getElementById('unit-in');
-      const mm = document.getElementById('unit-mm');
-      if (!inn || !mm) return;
-      const acc = headerAccent();
-      if (u === 'in') {
-        inn.style.background = acc;
-        inn.style.color = '#fff';
-        mm.style.background = 'transparent';
-        mm.style.color = '#C8CDD8';
-      } else {
-        mm.style.background = acc;
-        mm.style.color = '#fff';
-        inn.style.background = 'transparent';
-        inn.style.color = '#C8CDD8';
-      }
+      window.calcUnitMode = u === 'mm' ? 'mm' : 'in';
+      if (unitInBtn) unitInBtn.setAttribute('aria-pressed', window.calcUnitMode === 'in' ? 'true' : 'false');
+      if (unitMmBtn) unitMmBtn.setAttribute('aria-pressed', window.calcUnitMode === 'mm' ? 'true' : 'false');
+      if (unitSwitch) unitSwitch.setAttribute('data-value', window.calcUnitMode);
+      requestAnimationFrame(syncHeaderUnitThumb);
     }
-    (function () {
-      const a = document.getElementById('unit-in');
-      const b = document.getElementById('unit-mm');
-      if (a) a.addEventListener('click', function () { setCalcUnit('in'); });
-      if (b) b.addEventListener('click', function () { setCalcUnit('mm'); });
-    })();
+    if (unitInBtn) unitInBtn.addEventListener('click', function () { setCalcUnit('in'); });
+    if (unitMmBtn) unitMmBtn.addEventListener('click', function () { setCalcUnit('mm'); });
 
+    const progUnitSwitch = document.getElementById('prog-unit-switch');
+    const progUnitIn = document.getElementById('prog-unit-in');
+    const progUnitMm = document.getElementById('prog-unit-mm');
+    function syncProgUnitThumb() {
+      const active = progUnit === 'mm' ? progUnitMm : progUnitIn;
+      syncSegThumb(progUnitSwitch, active, '#EE8C3C');
+    }
+    function setProgUnit(u) {
+      progUnit = u === 'mm' ? 'mm' : 'in';
+      if (progUnitIn) progUnitIn.setAttribute('aria-pressed', progUnit === 'in' ? 'true' : 'false');
+      if (progUnitMm) progUnitMm.setAttribute('aria-pressed', progUnit === 'mm' ? 'true' : 'false');
+      if (progUnitSwitch) progUnitSwitch.setAttribute('data-value', progUnit);
+      requestAnimationFrame(syncProgUnitThumb);
+      if (typeof refreshPartDisplay === 'function') refreshPartDisplay();
+    }
+    if (progUnitIn) progUnitIn.addEventListener('click', () => setProgUnit('in'));
+    if (progUnitMm) progUnitMm.addEventListener('click', () => setProgUnit('mm'));
+
+    const partUnitSwitch = document.getElementById('part-unit-switch');
+    const partUnitIn = document.getElementById('part-unit-in');
+    const partUnitMm = document.getElementById('part-unit-mm');
+    function syncPartUnitThumb() {
+      const active = partUnit === 'mm' ? partUnitMm : partUnitIn;
+      syncSegThumb(partUnitSwitch, active, '#EE8C3C');
+    }
+    function setPartUnit(u) {
+      partUnit = u === 'mm' ? 'mm' : 'in';
+      if (partUnitIn) partUnitIn.setAttribute('aria-pressed', partUnit === 'in' ? 'true' : 'false');
+      if (partUnitMm) partUnitMm.setAttribute('aria-pressed', partUnit === 'mm' ? 'true' : 'false');
+      if (partUnitSwitch) partUnitSwitch.setAttribute('data-value', partUnit);
+      requestAnimationFrame(syncPartUnitThumb);
+      if (typeof refreshPartDisplay === 'function') refreshPartDisplay();
+    }
+    if (partUnitIn) partUnitIn.addEventListener('click', () => setPartUnit('in'));
+    if (partUnitMm) partUnitMm.addEventListener('click', () => setPartUnit('mm'));
+
+    /* Init all four switches after state + handlers exist */
+    setNestMode(false);
+    setCalcUnit(window.calcUnitMode || 'in');
+    setProgUnit(progUnit);
+    setPartUnit(partUnit);
+    bindSegResize(nestModeSwitch, syncNestModeThumb);
+    bindSegResize(unitSwitch, syncHeaderUnitThumb);
+    bindSegResize(progUnitSwitch, syncProgUnitThumb);
+    bindSegResize(partUnitSwitch, syncPartUnitThumb);
+    window.addEventListener('resize', function () {
+      syncNestModeThumb();
+      syncHeaderUnitThumb();
+      syncProgUnitThumb();
+      syncPartUnitThumb();
+    });
+
+    /* Calculator | G-code — seamless sliding track (not hard-swap buttons) */
+    const modeSwitch = document.getElementById('mode-switch');
+    const tabCalc = document.getElementById('tab-calc');
+    const tabGcode = document.getElementById('tab-gcode');
+    function syncModeThumb() {
+      if (!modeSwitch) return;
+      const active = currentMode === 'gcode' ? tabGcode : tabCalc;
+      const accent = currentMode === 'gcode' ? '#EE8C3C' : '#538BEC';
+      syncSegThumb(modeSwitch, active, accent);
+    }
     function setTabStyles(mode) {
-      const tc = document.getElementById('tab-calc');
-      const tg = document.getElementById('tab-gcode');
+      const tc = tabCalc || document.getElementById('tab-calc');
+      const tg = tabGcode || document.getElementById('tab-gcode');
       if (!tc || !tg) return;
       document.body.classList.toggle('mode-gcode', mode === 'gcode');
-      if (mode === 'calc') {
-        tc.style.background = '#538BEC';
-        tc.style.color = '#fff';
-        tg.style.background = 'transparent';
-        tg.style.color = '#C8CDD8';
-      } else {
-        tg.style.background = '#EE8C3C';
-        tg.style.color = '#fff';
-        tc.style.background = 'transparent';
-        tc.style.color = '#C8CDD8';
-      }
+      if (modeSwitch) modeSwitch.setAttribute('data-mode', mode === 'gcode' ? 'gcode' : 'calc');
+      tc.setAttribute('aria-pressed', mode === 'calc' ? 'true' : 'false');
+      tg.setAttribute('aria-pressed', mode === 'gcode' ? 'true' : 'false');
+      // Clear any legacy inline hard-swap styles; thumb + CSS own selected/muted look
+      tc.style.background = '';
+      tg.style.background = '';
+      tc.style.color = '';
+      tg.style.color = '';
+      requestAnimationFrame(syncModeThumb);
       // Header IN|MM follows mode accent
       if (typeof setCalcUnit === 'function') setCalcUnit(window.calcUnitMode || 'in');
     }
@@ -1138,26 +2501,71 @@
       });
     }
 
-    function layoutForMode(mode) {
+    /*
+      Layout sheet for mode. opts.open (default true): when false, leave sheet .closed
+      so caller can reflow then open — same closed→open slide language both sides.
+    */
+    function layoutForMode(mode, opts) {
+      const open = !(opts && opts.open === false);
       const sheetEl = document.getElementById('sheet');
       const stageEl = document.getElementById('stage');
       const openBtn = document.getElementById('sheet-open');
       const closeBtn = document.getElementById('sheet-close');
-      sheetEl.classList.remove('closed', 'panel-full');
+      sheetEl.classList.remove('panel-full');
       stageEl.classList.remove('viewer-collapsed');
       openBtn.classList.add('hidden');
       openBtn.style.cssText = '';
       if (mode === 'gcode') {
         sheetEl.classList.add('side-right');
-        stageEl.style.paddingLeft = '16px';
-        stageEl.style.paddingRight = '448px';
-        // Split: arrow points LEFT
+        clearCalcSheetInlineWidth();
+        sheetEl.style.setProperty('--gcode-sheet-w', gcodeSheetWidth + 'px');
+        sheetEl.style.width = gcodeSheetWidth + 'px';
+        // Split: arrow points LEFT — width + stage padding stay in sync
         if (closeBtn) closeBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>';
+        if (open) {
+          sheetEl.classList.remove('closed');
+          applyGcodeSheetWidth(gcodeSheetWidth, { split: true });
+        } else {
+          sheetEl.classList.add('closed');
+          stageEl.style.paddingLeft = '16px';
+          stageEl.style.paddingRight = '16px';
+        }
       } else {
         sheetEl.classList.remove('side-right');
-        stageEl.style.paddingLeft = '324px';
-        stageEl.style.paddingRight = '16px';
+        sheetEl.style.setProperty('--gcode-sheet-w', gcodeSheetWidth + 'px');
+        sheetEl.style.setProperty('--calc-sheet-w', calcSheetWidth + 'px');
+        sheetEl.style.width = calcSheetWidth + 'px';
         if (closeBtn) closeBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>';
+        if (open) {
+          sheetEl.classList.remove('closed');
+          applyCalcSheetWidth(calcSheetWidth, { open: true });
+          stageEl.style.paddingRight = '16px';
+        } else {
+          sheetEl.classList.add('closed');
+          stageEl.style.paddingLeft = '16px';
+          stageEl.style.paddingRight = '16px';
+        }
+      }
+      syncResizeAria();
+    }
+
+    /* Open sheet after destination side is set — mirrors .sheet.closed / .side-right.closed slide */
+    function openSheetForMode(mode) {
+      const sheetEl = document.getElementById('sheet');
+      const stageEl = document.getElementById('stage');
+      /* Snap closed on the NEW side (no mid-flight transform from the old free edge) */
+      const prevTransition = sheetEl.style.transition;
+      sheetEl.style.transition = 'none';
+      sheetEl.classList.add('closed');
+      void sheetEl.offsetWidth;
+      sheetEl.style.transition = prevTransition;
+      void sheetEl.offsetWidth;
+      sheetEl.classList.remove('closed');
+      if (mode === 'gcode') {
+        applyGcodeSheetWidth(gcodeSheetWidth, { split: true });
+      } else {
+        applyCalcSheetWidth(calcSheetWidth, { open: true });
+        stageEl.style.paddingRight = '16px';
       }
     }
 
@@ -1168,6 +2576,9 @@
       setTabStyles(mode);
       setCalcOnlyVisible(mode === 'calc');
 
+      const sheetEl = document.getElementById('sheet');
+      const stageEl = document.getElementById('stage');
+      const openBtn = document.getElementById('sheet-open');
       const calcPanel = document.getElementById('calc-panel');
       const gcodePanel = document.getElementById('gcode-panel');
       const calcView = document.getElementById('calc-view');
@@ -1178,8 +2589,22 @@
         if (el) el.classList.add('mode-morph');
       });
 
-      // Side swap + content morph together
-      layoutForMode(mode);
+      /*
+        Symmetric motion both directions (existing closed transform language):
+        1) Slide current sheet off its free edge (.closed / .side-right.closed)
+        2) While off-screen: flip side + swap panel content
+        3) Slide destination sheet in from its free edge
+        G-code was already the working slide-in; Calculator now uses the same path.
+      */
+      sheetEl.classList.remove('panel-full');
+      stageEl.classList.remove('viewer-collapsed');
+      sheetEl.classList.add('closed');
+      stageEl.style.paddingLeft = '16px';
+      stageEl.style.paddingRight = '16px';
+      if (openBtn) {
+        openBtn.classList.add('hidden');
+        openBtn.style.cssText = '';
+      }
 
       if (mode === 'gcode') {
         if (calcPanel) calcPanel.classList.add('out');
@@ -1190,11 +2615,24 @@
           if (calcFooter) calcFooter.classList.add('hidden');
           if (gcodePanel) { gcodePanel.classList.remove('hidden'); gcodePanel.classList.add('out'); }
           if (gcodeView) { gcodeView.classList.remove('hidden'); gcodeView.classList.add('out'); }
+          layoutForMode('gcode', { open: false });
+          openSheetForMode('gcode');
           requestAnimationFrame(() => {
             if (gcodePanel) gcodePanel.classList.remove('out');
             if (gcodeView) gcodeView.classList.remove('out');
+            /* thumbs need layout after panel unhide; remount open section heights */
+            syncProgUnitThumb();
+            syncPartUnitThumb();
+            syncHeaderUnitThumb();
+            ['source-body', 'partsize-body', 'output-body'].forEach(function (id) {
+              const el = document.getElementById(id);
+              if (el && !el.classList.contains('closed')) {
+                el.style.maxHeight = 'none';
+                el.style.maxHeight = el.scrollHeight + 'px';
+              }
+            });
           });
-        }, 180);
+        }, 210);
       } else {
         if (gcodePanel) gcodePanel.classList.add('out');
         if (gcodeView) gcodeView.classList.add('out');
@@ -1204,52 +2642,24 @@
           if (calcPanel) { calcPanel.classList.remove('hidden'); calcPanel.classList.add('out'); }
           if (calcView) { calcView.classList.remove('hidden'); calcView.classList.add('out'); }
           if (calcFooter) calcFooter.classList.remove('hidden');
+          layoutForMode('calc', { open: false });
+          openSheetForMode('calc');
           requestAnimationFrame(() => {
             if (calcPanel) calcPanel.classList.remove('out');
             if (calcView) calcView.classList.remove('out');
           });
-        }, 180);
+        }, 210);
       }
     }
 
-    document.getElementById('tab-calc').addEventListener('click', () => switchMode('calc'));
-    document.getElementById('tab-gcode').addEventListener('click', () => switchMode('gcode'));
-
-    function setProgUnit(u) {
-      progUnit = u;
-      const inn = document.getElementById('prog-unit-in');
-      const mm = document.getElementById('prog-unit-mm');
-      if (!inn) return;
-      if (u === 'in') {
-        inn.style.background = '#EE8C3C'; inn.style.color = '#fff';
-        mm.style.background = 'transparent'; mm.style.color = '#fff';
-      } else {
-        mm.style.background = '#EE8C3C'; mm.style.color = '#fff';
-        inn.style.background = 'transparent'; inn.style.color = '#fff';
-      }
-      refreshPartDisplay();
-    }
-    document.getElementById('prog-unit-in').addEventListener('click', () => setProgUnit('in'));
-    document.getElementById('prog-unit-mm').addEventListener('click', () => setProgUnit('mm'));
-
-    let partUnit = 'in';
-    let baseXY = null; // always stored in program units
-    function setPartUnit(u) {
-      partUnit = u;
-      const inn = document.getElementById('part-unit-in');
-      const mm = document.getElementById('part-unit-mm');
-      if (!inn) return;
-      if (u === 'in') {
-        inn.style.background = '#EE8C3C'; inn.style.color = '#fff';
-        mm.style.background = 'transparent'; mm.style.color = '#fff';
-      } else {
-        mm.style.background = '#EE8C3C'; mm.style.color = '#fff';
-        inn.style.background = 'transparent'; inn.style.color = '#fff';
-      }
-      refreshPartDisplay();
-    }
-    document.getElementById('part-unit-in').addEventListener('click', () => setPartUnit('in'));
-    document.getElementById('part-unit-mm').addEventListener('click', () => setPartUnit('mm'));
+    if (tabCalc) tabCalc.addEventListener('click', () => switchMode('calc'));
+    if (tabGcode) tabGcode.addEventListener('click', () => switchMode('gcode'));
+    bindSegResize(modeSwitch, syncModeThumb);
+    setTabStyles(currentMode);
+    requestAnimationFrame(syncModeThumb);
+    window.addEventListener('resize', function () {
+      syncModeThumb();
+    });
 
     function refreshPartDisplay() {
       if (!baseXY) return;
@@ -1269,18 +2679,46 @@
     function openOutput() {
       const body = document.getElementById('output-body');
       const chev = document.getElementById('output-chevron');
-      if (body) body.style.display = 'block';
-      if (chev) chev.style.transform = 'rotate(180deg)';
+      if (!body) return;
+      if (body.classList.contains('closed')) openSection(body, chev, null);
     }
     function toggleOutput() {
       const body = document.getElementById('output-body');
       const chev = document.getElementById('output-chevron');
       if (!body) return;
-      const open = body.style.display !== 'none';
-      body.style.display = open ? 'none' : 'block';
-      if (chev) chev.style.transform = open ? 'rotate(0deg)' : 'rotate(180deg)';
+      if (body.classList.contains('closed')) openSection(body, chev, null);
+      else closeSection(body, chev, null);
     }
-    document.getElementById('output-toggle').addEventListener('click', toggleOutput);
+    /* Output uses section-trigger data-target; keep explicit handler only as fallback if needed.
+       section-trigger listener already covers #output-toggle when data-target is set. */
+
+    /* Keep Source / Output body heights in sync when user resizes code surfaces */
+    (function () {
+      function remountSectionBody(bodyId) {
+        const body = document.getElementById(bodyId);
+        if (!body || body.classList.contains('closed') || body.classList.contains('is-opening')) return;
+        body.style.maxHeight = 'none';
+        body.style.maxHeight = body.scrollHeight + 'px';
+      }
+      const ta = document.getElementById('gcode-input');
+      if (ta) {
+        const remountSource = function () { remountSectionBody('source-body'); };
+        ta.addEventListener('mouseup', remountSource);
+        ta.addEventListener('input', remountSource);
+      }
+      const out = document.getElementById('gcode-output');
+      if (out) {
+        const remountOut = function () { remountSectionBody('output-body'); };
+        out.addEventListener('mouseup', remountOut);
+        /* capture live resize drag via ResizeObserver when available */
+        if (typeof ResizeObserver !== 'undefined') {
+          try {
+            const ro = new ResizeObserver(remountOut);
+            ro.observe(out);
+          } catch (_) {}
+        }
+      }
+    })();
 
     // Single primary action: Generate = analyze + rotate + output (matches product)
     document.getElementById('gcode-generate').addEventListener('click', () => {
@@ -1364,53 +2802,661 @@
     });
 
 
+    /* ---- Numpad: dual-mode ENTRY / CALCULATOR, frosted, free-drag, manual close only ---- */
+    const numpad = document.getElementById('numpad');
+    const numpadClose = document.getElementById('numpad-close');
+    const numpadModeBtn = document.getElementById('numpad-mode-btn');
+    const numpadLcd = document.getElementById('numpad-lcd');
+    const numpadOps = document.getElementById('numpad-ops');
+    const sheetCalcBtn = document.getElementById('sheet-calc-btn');
     let activeField = null;
-    let entryMode = false;
+    let typingFresh = false; /* replace field value on first digit after focus */
+    let numpadOpen = false;
+    /* padMode: 'entry' (default, writes fields) | 'calc' (standalone math, LCD only) */
+    let padMode = 'entry';
+    let calcExpr = '';
+    let calcJustEvaluated = false;
+
+    function showNumpad() {
+      if (!numpad) return;
+      numpadOpen = true;
+      numpad.classList.remove('hidden-pad');
+      numpad.setAttribute('aria-hidden', 'false');
+    }
+    function hideNumpad() {
+      if (!numpad) return;
+      numpadOpen = false;
+      numpad.classList.add('hidden-pad');
+      numpad.setAttribute('aria-hidden', 'true');
+    }
+
+    function syncLcd() {
+      if (!numpadLcd) return;
+      numpadLcd.textContent = calcExpr || '';
+      numpadLcd.setAttribute('aria-hidden', padMode === 'calc' ? 'false' : 'true');
+    }
+
+    function setPadMode(mode) {
+      padMode = mode === 'calc' ? 'calc' : 'entry';
+      if (!numpad) return;
+      numpad.dataset.padMode = padMode;
+      numpad.classList.toggle('numpad--calc', padMode === 'calc');
+      if (numpadOps) numpadOps.setAttribute('aria-hidden', padMode === 'calc' ? 'false' : 'true');
+      if (numpadModeBtn) {
+        numpadModeBtn.classList.toggle('is-active', padMode === 'calc');
+        numpadModeBtn.setAttribute('aria-pressed', padMode === 'calc' ? 'true' : 'false');
+        numpadModeBtn.title = padMode === 'calc' ? 'Entry mode (numpad)' : 'Calculator mode';
+        numpadModeBtn.setAttribute('aria-label', padMode === 'calc' ? 'Switch to entry mode' : 'Switch to calculator mode');
+      }
+      syncLcd();
+    }
+
+    /* Safe evaluate for calculator LCD only — digits, ops, decimal */
+    function evalCalcExpr(raw) {
+      if (!raw || typeof raw !== 'string') return null;
+      let s = raw.trim()
+        .replace(/×/g, '*')
+        .replace(/÷/g, '/')
+        .replace(/−/g, '-')
+        .replace(/\s+/g, '');
+      if (!s) return null;
+      if (/[+\-*/.]$/.test(s)) s = s.slice(0, -1);
+      if (!s || !/^[\d.+\-*/]+$/.test(s)) return null;
+      if (!/\d/.test(s)) return null;
+      try {
+        const n = Function('"use strict"; return (' + s + ')')();
+        if (typeof n !== 'number' || !isFinite(n)) return null;
+        const t = Math.round(n * 1e10) / 1e10;
+        return String(t);
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function appendCalcToken(token) {
+      if (calcJustEvaluated && /[0-9.]/.test(token)) {
+        calcExpr = '';
+        calcJustEvaluated = false;
+      }
+      if (calcJustEvaluated && /[+\-×÷−]/.test(token)) {
+        calcJustEvaluated = false;
+      }
+      const ops = '+−×÷';
+      if (ops.indexOf(token) !== -1) {
+        if (!calcExpr) return;
+        const last = calcExpr.slice(-1);
+        if (ops.indexOf(last) !== -1) {
+          calcExpr = calcExpr.slice(0, -1) + token;
+        } else {
+          calcExpr += token;
+        }
+      } else if (token === '.') {
+        const parts = calcExpr.split(/[+\-×÷−]/);
+        const cur = parts[parts.length - 1] || '';
+        if (cur.indexOf('.') !== -1) return;
+        calcExpr += (cur === '' ? '0.' : '.');
+      } else {
+        calcExpr += token;
+      }
+      syncLcd();
+    }
+
+    function backspaceCalc() {
+      if (!calcExpr) return;
+      calcExpr = calcExpr.slice(0, -1);
+      calcJustEvaluated = false;
+      syncLcd();
+    }
+
+    function enterCalc() {
+      const result = evalCalcExpr(calcExpr);
+      if (result == null) return;
+      calcExpr = result;
+      calcJustEvaluated = true;
+      syncLcd();
+    }
+
+    if (numpad) {
+      /* Keep field focus when interacting with pad chrome/keys (except close) */
+      numpad.addEventListener('mousedown', (e) => {
+        if (e.target && e.target.closest && e.target.closest('#numpad-close')) return;
+        e.preventDefault();
+      });
+    }
+
+    if (numpadModeBtn) {
+      numpadModeBtn.addEventListener('mousedown', e => e.preventDefault());
+      numpadModeBtn.addEventListener('click', () => {
+        setPadMode(padMode === 'calc' ? 'entry' : 'calc');
+        showNumpad();
+      });
+    }
+
     document.querySelectorAll('[data-field]').forEach(input => {
       input.addEventListener('focus', () => {
         activeField = input;
-        entryMode = false;
-        document.getElementById('numpad').classList.remove('hidden-pad');
+        typingFresh = true;
+        /* Focusing any number input forces ENTRY mode */
+        if (padMode === 'calc') setPadMode('entry');
+        showNumpad();
       });
-      input.addEventListener('blur', () => {
-        setTimeout(() => {
-          if (document.activeElement && document.activeElement.closest && document.activeElement.closest('#numpad')) return;
-          document.getElementById('numpad').classList.add('hidden-pad');
-        }, 180);
-      });
+      /* No auto-close on blur — pad stays until X or sheet calc icon toggle */
     });
-    document.querySelectorAll('[data-quick]').forEach(btn => {
-      btn.addEventListener('mousedown', e => e.preventDefault());
-      btn.addEventListener('click', () => {
-        if (!activeField) return;
-        activeField.value = btn.dataset.quick;
-        activeField.dispatchEvent(new Event('input'));
-        entryMode = false;
+
+    if (sheetCalcBtn) {
+      sheetCalcBtn.addEventListener('mousedown', e => e.preventDefault());
+      sheetCalcBtn.addEventListener('click', () => {
+        if (numpad && !numpad.classList.contains('hidden-pad') && numpadOpen) {
+          hideNumpad();
+        } else {
+          activeField = activeField && document.contains(activeField) ? activeField : null;
+          setPadMode('entry');
+          showNumpad();
+        }
       });
-    });
+    }
+    if (numpadClose) {
+      numpadClose.addEventListener('mousedown', e => e.preventDefault());
+      numpadClose.addEventListener('click', () => {
+        hideNumpad();
+        if (activeField && typeof activeField.blur === 'function') activeField.blur();
+      });
+    }
+
+    /* Free drag via top chrome bar (no grip graphic); keys stay clickable */
+    (function initNumpadDrag() {
+      if (!numpad) return;
+      const handle = numpad.querySelector('.numpad-drag-handle');
+      let dragging = false;
+      let startX = 0, startY = 0;
+      let originLeft = 0, originTop = 0;
+
+      function pinPadPosition() {
+        const r = numpad.getBoundingClientRect();
+        numpad.style.left = r.left + 'px';
+        numpad.style.top = r.top + 'px';
+        numpad.style.right = 'auto';
+        numpad.style.bottom = 'auto';
+        numpad.style.setProperty('--pad-x', '0px');
+        numpad.style.setProperty('--pad-y', '0px');
+      }
+
+      function onMove(e) {
+        if (!dragging) return;
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        let nx = originLeft + (clientX - startX);
+        let ny = originTop + (clientY - startY);
+        const w = numpad.offsetWidth;
+        const h = numpad.offsetHeight;
+        const maxX = Math.max(0, window.innerWidth - w);
+        const maxY = Math.max(0, window.innerHeight - h);
+        nx = Math.min(maxX, Math.max(0, nx));
+        ny = Math.min(maxY, Math.max(0, ny));
+        numpad.style.left = nx + 'px';
+        numpad.style.top = ny + 'px';
+        numpad.style.right = 'auto';
+        numpad.style.bottom = 'auto';
+        numpad.style.setProperty('--pad-x', '0px');
+        numpad.style.setProperty('--pad-y', '0px');
+        e.preventDefault();
+      }
+      function onUp() {
+        if (!dragging) return;
+        dragging = false;
+        numpad.classList.remove('is-dragging');
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onUp);
+        window.removeEventListener('pointercancel', onUp);
+        window.removeEventListener('touchmove', onMove);
+        window.removeEventListener('touchend', onUp);
+      }
+      function onDown(e) {
+        if (e.target.closest && (
+          e.target.closest('button[data-key]') ||
+          e.target.closest('button[data-quick]') ||
+          e.target.closest('button[data-op]') ||
+          e.target.closest('#numpad-close') ||
+          e.target.closest('#numpad-mode-btn') ||
+          e.target.closest('.quick-manage') ||
+          e.target.closest('#quick-add') ||
+          e.target.closest('#quick-edit')
+        )) return;
+        const fromHandle = handle && (e.target === handle || (handle.contains(e.target) && !e.target.closest('.quick-manage')));
+        const fromChrome = e.target === numpad || (e.target.classList && e.target.classList.contains('numpad-chrome'));
+        if (!fromHandle && !fromChrome) {
+          if (!numpad.contains(e.target)) return;
+          if (e.target.closest('button') || e.target.closest('.numpad-lcd') || e.target.closest('.numpad-keys') || e.target.closest('.quick-manage')) return;
+        }
+        pinPadPosition();
+        dragging = true;
+        numpad.classList.add('is-dragging');
+        startX = e.touches ? e.touches[0].clientX : e.clientX;
+        startY = e.touches ? e.touches[0].clientY : e.clientY;
+        originLeft = parseFloat(numpad.style.left) || numpad.getBoundingClientRect().left;
+        originTop = parseFloat(numpad.style.top) || numpad.getBoundingClientRect().top;
+        window.addEventListener('pointermove', onMove);
+        window.addEventListener('pointerup', onUp);
+        window.addEventListener('pointercancel', onUp);
+        window.addEventListener('touchmove', onMove, { passive: false });
+        window.addEventListener('touchend', onUp);
+        e.preventDefault();
+      }
+      if (handle) {
+        handle.addEventListener('pointerdown', onDown);
+        handle.addEventListener('touchstart', onDown, { passive: false });
+      }
+      numpad.addEventListener('pointerdown', function (e) {
+        if (e.target.closest && e.target.closest('button')) return;
+        onDown(e);
+      });
+    })();
+
+    /* quick carousel init below (after pad keys) */
+
+    /* Digit / . / back / Enter — label stays "Enter" (never "=") */
     document.querySelectorAll('#numpad [data-key]').forEach(btn => {
       btn.addEventListener('mousedown', e => e.preventDefault());
       btn.addEventListener('click', () => {
-        if (!activeField) return;
         const key = btn.dataset.key;
+
+        if (padMode === 'calc') {
+          /* CALCULATOR: math only — never write into fields */
+          if (key === 'back') backspaceCalc();
+          else if (key === 'enter') enterCalc();
+          else if (key === '.' || (key >= '0' && key <= '9')) appendCalcToken(key);
+          return;
+        }
+
+        /* ENTRY: values only appear in the focused input (no LCD) */
+        if (!activeField) return;
         let val = activeField.value || '';
+        const start = activeField.selectionStart;
+        const end = activeField.selectionEnd;
+        const canSel = typeof start === 'number' && typeof end === 'number';
+        function writeAtCaret(chunk) {
+          if (typingFresh) {
+            activeField.value = chunk;
+            typingFresh = false;
+            try { activeField.setSelectionRange(chunk.length, chunk.length); } catch (_) {}
+            return;
+          }
+          if (canSel) {
+            const next = val.slice(0, start) + chunk + val.slice(end);
+            activeField.value = next;
+            const caret = start + chunk.length;
+            try { activeField.setSelectionRange(caret, caret); } catch (_) {}
+          } else {
+            activeField.value = val + chunk;
+          }
+          typingFresh = false;
+        }
         if (key === 'back') {
-          activeField.value = val.slice(0, -1);
-          entryMode = true;
+          if (canSel && start !== end) {
+            activeField.value = val.slice(0, start) + val.slice(end);
+            try { activeField.setSelectionRange(start, start); } catch (_) {}
+          } else if (canSel && start > 0) {
+            activeField.value = val.slice(0, start - 1) + val.slice(end);
+            try { activeField.setSelectionRange(start - 1, start - 1); } catch (_) {}
+          } else {
+            activeField.value = val.slice(0, -1);
+          }
+          typingFresh = false;
         } else if (key === 'enter') {
-          activeField.blur();
-          document.getElementById('numpad').classList.add('hidden-pad');
+          /* Confirm field only — do NOT auto-close pad (X / sheet icon only) */
+          if (typeof activeField.blur === 'function') activeField.blur();
           return;
         } else if (key === '.') {
-          if (!entryMode) { activeField.value = '0.'; entryMode = true; }
-          else if (val.indexOf('.') === -1) activeField.value = val + '.';
+          if (typingFresh) {
+            writeAtCaret('0.');
+          } else if (canSel) {
+            const next = val.slice(0, start) + '.' + val.slice(end);
+            if ((next.match(/\./g) || []).length <= 1) writeAtCaret('.');
+          } else if (val.indexOf('.') === -1) {
+            writeAtCaret('.');
+          }
         } else {
-          if (!entryMode) { activeField.value = key; entryMode = true; }
-          else activeField.value = val + key;
+          writeAtCaret(key);
         }
         activeField.dispatchEvent(new Event('input'));
       });
     });
+
+    /* Orange ops column — calculator mode only */
+    document.querySelectorAll('#numpad [data-op]').forEach(btn => {
+      btn.addEventListener('mousedown', e => e.preventDefault());
+      btn.addEventListener('click', () => {
+        if (padMode !== 'calc') return;
+        appendCalcToken(btn.dataset.op);
+      });
+    });
+
+    setPadMode('entry');
+
+    /* ---- Sheet presets: max 3 visible, icon-only +/pencil/trash, tooltips ---- */
+    window.__nestPresetsSync = null;
+    (function initPresetsCarousel() {
+      const track = document.getElementById('presets-track');
+      const viewport = document.getElementById('presets-viewport');
+      const prevBtn = document.getElementById('presets-prev');
+      const nextBtn = document.getElementById('presets-next');
+      const addBtn = document.getElementById('presets-add');
+      const editBtn = document.getElementById('presets-edit');
+      const deleteBtn = document.getElementById('presets-delete');
+      if (!track || !viewport) return;
+
+      const GAP = 6;
+      const VISIBLE_WIDE = 3;
+      const VISIBLE_NARROW = 2;
+      const NARROW_SHEET = 360; /* at/near min 300 → 2 chips for full labels */
+      let page = 0;
+      let selectedPreset = 'Default';
+      let visibleCount = VISIBLE_WIDE;
+
+      function chips() {
+        return Array.from(track.querySelectorAll('.preset-chip'));
+      }
+      function resolveVisible() {
+        /* Prefer live sheet width (calc mode); fall back to viewport */
+        let w = typeof calcSheetWidth === 'number' ? calcSheetWidth : 0;
+        if (!w && sheet) w = sheet.getBoundingClientRect().width;
+        return (w > 0 && w <= NARROW_SHEET) ? VISIBLE_NARROW : VISIBLE_WIDE;
+      }
+      function maxPage() {
+        return Math.max(0, Math.ceil(chips().length / visibleCount) - 1);
+      }
+      function chipStep() {
+        const list = chips();
+        if (!list.length) return 0;
+        const w = list[0].offsetWidth;
+        if (w > 0) return w + GAP;
+        const vw = viewport.clientWidth;
+        if (vw > 0) return (vw - GAP * (visibleCount - 1)) / visibleCount + GAP;
+        return 0;
+      }
+      function remountOpenHeight() {
+        const body = document.getElementById('presets-body');
+        if (body && !body.classList.contains('closed') && !body.classList.contains('is-opening')) {
+          body.style.maxHeight = 'none';
+          body.style.maxHeight = body.scrollHeight + 'px';
+        }
+      }
+      function syncCarousel() {
+        const nextVis = resolveVisible();
+        if (nextVis !== visibleCount) {
+          visibleCount = nextVis;
+          page = 0;
+        }
+        const carousel = document.getElementById('presets-carousel');
+        if (carousel) carousel.setAttribute('data-visible', String(visibleCount));
+        const list = chips();
+        const mp = maxPage();
+        if (page > mp) page = mp;
+        if (page < 0) page = 0;
+        const step = chipStep() * visibleCount;
+        track.style.transform = step > 0 ? ('translateX(' + (-page * step) + 'px)') : 'translateX(0px)';
+        if (prevBtn) prevBtn.disabled = page <= 0;
+        if (nextBtn) nextBtn.disabled = page >= mp || list.length <= visibleCount;
+        if (deleteBtn) deleteBtn.disabled = list.length <= 1 || !selectedPreset;
+        if (editBtn) editBtn.disabled = !selectedPreset || list.length === 0;
+        list.forEach(chip => {
+          const name = chip.dataset.preset || chip.textContent.trim();
+          chip.title = name;
+          const on = name === selectedPreset;
+          chip.classList.toggle('is-selected', on);
+          chip.setAttribute('aria-pressed', on ? 'true' : 'false');
+          /* clear inline styles from older stub */
+          chip.style.background = '';
+          chip.style.border = '';
+          chip.style.color = '';
+        });
+      }
+      function bindChip(chip) {
+        chip.addEventListener('click', () => {
+          selectedPreset = chip.dataset.preset || chip.textContent.trim();
+          syncCarousel();
+        });
+      }
+      chips().forEach(bindChip);
+
+      if (prevBtn) prevBtn.addEventListener('click', () => { page -= 1; syncCarousel(); });
+      if (nextBtn) nextBtn.addEventListener('click', () => { page += 1; syncCarousel(); });
+
+      if (addBtn) {
+        addBtn.addEventListener('click', () => {
+          const name = 'Preset ' + (chips().length + 1);
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'preset-chip press';
+          btn.setAttribute('role', 'listitem');
+          btn.dataset.preset = name;
+          btn.title = name;
+          btn.textContent = name;
+          track.appendChild(btn);
+          bindChip(btn);
+          selectedPreset = name;
+          page = maxPage();
+          syncCarousel();
+          remountOpenHeight();
+        });
+      }
+
+      if (editBtn) {
+        editBtn.addEventListener('click', () => {
+          if (!selectedPreset) return;
+          const chip = chips().find(c => (c.dataset.preset || c.textContent.trim()) === selectedPreset);
+          if (!chip) return;
+          const next = window.prompt('Rename preset', selectedPreset);
+          if (next == null) return;
+          const name = String(next).trim();
+          if (!name) return;
+          if (chips().some(c => c !== chip && (c.dataset.preset || c.textContent.trim()) === name)) return;
+          chip.dataset.preset = name;
+          chip.title = name;
+          chip.textContent = name;
+          selectedPreset = name;
+          syncCarousel();
+        });
+      }
+
+      if (deleteBtn) {
+        deleteBtn.addEventListener('click', () => {
+          const list = chips();
+          if (list.length <= 1) return;
+          const chip = list.find(c => (c.dataset.preset || c.textContent.trim()) === selectedPreset);
+          if (!chip) return;
+          const idx = list.indexOf(chip);
+          chip.remove();
+          const remaining = chips();
+          const pick = remaining[Math.max(0, Math.min(idx, remaining.length - 1))];
+          selectedPreset = pick ? (pick.dataset.preset || pick.textContent.trim()) : '';
+          if (page > maxPage()) page = maxPage();
+          syncCarousel();
+          remountOpenHeight();
+        });
+      }
+
+      window.__nestPresetsSync = function () {
+        requestAnimationFrame(function () {
+          syncCarousel();
+          remountOpenHeight();
+        });
+      };
+
+      if (typeof ResizeObserver !== 'undefined') {
+        new ResizeObserver(function () { syncCarousel(); }).observe(viewport);
+      }
+      window.addEventListener('resize', syncCarousel);
+      requestAnimationFrame(syncCarousel);
+    })();
+
+    /* ---- Keypad quick-value carousel: 4-up, add + edit(with delete) ---- */
+    (function initQuickCarousel() {
+      const track = document.getElementById('quick-track');
+      const viewport = document.getElementById('quick-viewport');
+      const prevBtn = document.getElementById('quick-prev');
+      const nextBtn = document.getElementById('quick-next');
+      const addBtn = document.getElementById('quick-add');
+      const editBtn = document.getElementById('quick-edit');
+      if (!track || !viewport) return;
+
+      const VISIBLE = 4;
+      const GAP = 4;
+      let page = 0;
+      let selectedQuick = null;
+
+      function chips() {
+        return Array.from(track.querySelectorAll('.quick-chip'));
+      }
+      function maxPage() {
+        return Math.max(0, Math.ceil(chips().length / VISIBLE) - 1);
+      }
+      function chipStep() {
+        const list = chips();
+        if (!list.length) return 0;
+        const w = list[0].offsetWidth;
+        if (w > 0) return w + GAP;
+        const vw = viewport.clientWidth;
+        if (vw > 0) return (vw - GAP * (VISIBLE - 1)) / VISIBLE + GAP;
+        return 0;
+      }
+      function formatQuick(v) {
+        const n = parseFloat(v);
+        if (!isFinite(n)) return String(v);
+        if (Math.abs(n) >= 1) {
+          const s = n.toFixed(2);
+          return s.replace(/\.?0+$/, '');
+        }
+        const s = n.toFixed(3);
+        return s.replace(/^0/, '');
+      }
+      /**
+       * Quick chip insert: at caret when no selection; replace selection when selected.
+       * Uses chip label form (e.g. ".125") so "10" + chip → "10.125".
+       * Falls back to append when selection API is unavailable (rare on text fields).
+       */
+      function applyQuickChipToField(field, quickVal) {
+        if (!field) return;
+        const insert = formatQuick(quickVal);
+        const val = String(field.value ?? '');
+        let start = field.selectionStart;
+        let end = field.selectionEnd;
+        const canSel = typeof start === 'number' && typeof end === 'number';
+        if (canSel) {
+          const next = val.slice(0, start) + insert + val.slice(end);
+          field.value = next;
+          const caret = start + insert.length;
+          try {
+            field.focus();
+            field.setSelectionRange(caret, caret);
+          } catch (_) {}
+        } else if (typingFresh) {
+          field.value = insert;
+        } else {
+          field.value = val + insert;
+        }
+        typingFresh = false;
+        field.dispatchEvent(new Event('input'));
+        if (typeof syncNumInputClear === 'function') syncNumInputClear(field);
+      }
+      function sync() {
+        const list = chips();
+        const mp = maxPage();
+        if (page > mp) page = mp;
+        if (page < 0) page = 0;
+        const scrollable = list.length > VISIBLE;
+        const carousel = document.getElementById('quick-carousel');
+        if (carousel) carousel.classList.toggle('is-scrollable', scrollable);
+        if (!scrollable) page = 0;
+        const step = chipStep() * VISIBLE;
+        track.style.transform = step > 0 ? ('translateX(' + (-page * step) + 'px)') : 'translateX(0px)';
+        if (prevBtn) prevBtn.disabled = page <= 0;
+        if (nextBtn) nextBtn.disabled = page >= mp || !scrollable;
+        if (editBtn) editBtn.disabled = !selectedQuick || list.length === 0;
+        list.forEach(chip => {
+          chip.classList.toggle('is-selected', chip.dataset.quick === selectedQuick);
+        });
+      }
+      function bindChip(chip) {
+        chip.addEventListener('mousedown', e => e.preventDefault());
+        chip.addEventListener('click', () => {
+          selectedQuick = chip.dataset.quick;
+          sync();
+          if (padMode !== 'entry' || !activeField) return;
+          applyQuickChipToField(activeField, chip.dataset.quick);
+        });
+      }
+      chips().forEach(bindChip);
+
+      if (prevBtn) prevBtn.addEventListener('click', () => { page -= 1; sync(); });
+      if (nextBtn) nextBtn.addEventListener('click', () => { page += 1; sync(); });
+
+      if (addBtn) {
+        addBtn.addEventListener('mousedown', e => e.preventDefault());
+        addBtn.addEventListener('click', () => {
+          const raw = window.prompt('New quick value (e.g. 0.062)', '0.062');
+          if (raw == null) return;
+          const n = parseFloat(String(raw).trim());
+          if (!isFinite(n) || n < 0) return;
+          const val = String(n);
+          if (chips().some(c => c.dataset.quick === val)) return;
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'quick-chip press';
+          btn.setAttribute('role', 'listitem');
+          btn.dataset.quick = val;
+          btn.title = val;
+          btn.textContent = formatQuick(val);
+          track.appendChild(btn);
+          bindChip(btn);
+          selectedQuick = val;
+          page = maxPage();
+          sync();
+        });
+      }
+
+      if (editBtn) {
+        editBtn.addEventListener('mousedown', e => e.preventDefault());
+        editBtn.addEventListener('click', () => {
+          if (!selectedQuick) return;
+          const chip = chips().find(c => c.dataset.quick === selectedQuick);
+          if (!chip) return;
+          const action = window.prompt(
+            'Edit quick value "' + selectedQuick + '"\nEnter new number to rename, or type DELETE to remove.',
+            selectedQuick
+          );
+          if (action == null) return;
+          const t = String(action).trim();
+          if (!t) return;
+          if (/^delete$/i.test(t)) {
+            if (chips().length <= 1) return;
+            const idx = chips().indexOf(chip);
+            chip.remove();
+            const rem = chips();
+            const pick = rem[Math.max(0, Math.min(idx, rem.length - 1))];
+            selectedQuick = pick ? pick.dataset.quick : null;
+            if (page > maxPage()) page = maxPage();
+            sync();
+            return;
+          }
+          const n = parseFloat(t);
+          if (!isFinite(n) || n < 0) return;
+          const val = String(n);
+          if (chips().some(c => c !== chip && c.dataset.quick === val)) return;
+          chip.dataset.quick = val;
+          chip.title = val;
+          chip.textContent = formatQuick(val);
+          selectedQuick = val;
+          sync();
+        });
+      }
+
+      if (typeof ResizeObserver !== 'undefined') {
+        new ResizeObserver(sync).observe(viewport);
+      }
+      window.addEventListener('resize', sync);
+      requestAnimationFrame(sync);
+    })();
   </script>
 </body>
 </html>
