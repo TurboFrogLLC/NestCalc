@@ -240,9 +240,8 @@
       padding-left: clamp(12px, calc(12px + (100cqi - 300px) * 0.04), 20px);
       padding-right: clamp(12px, calc(12px + (100cqi - 300px) * 0.04), 20px);
     }
-    .sheet:not(.side-right) .xy-sep {
-      margin-left: clamp(2px, calc(2px + (100cqi - 300px) * 0.02), 8px);
-      margin-right: clamp(4px, calc(4px + (100cqi - 300px) * 0.03), 12px);
+    .sheet:not(.side-right) .xy-row .xy-actions {
+      gap: clamp(8px, calc(8px + (100cqi - 300px) * 0.04), 16px);
     }
     .sheet.closed {
       transform: translateX(calc(-100% - 16px));
@@ -463,16 +462,83 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      flex-shrink: 0;
+    }
+    /* Remaining row space: center swap/link (not jammed right) */
+    .xy-row .xy-actions {
+      flex: 1 1 auto;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
     .xy-row .btn-group-h {
       margin-left: 0;
+      flex-shrink: 0;
     }
     .xy-sep {
       width: 1px;
       height: 28px;
       background: rgba(255, 255, 255, 0.12);
-      margin: 0 4px 0 2px;
+      margin: 0;
       flex-shrink: 0;
+    }
+    .xy-row .xy-actions .xy-sep {
+      margin: 0;
+    }
+    /* Part # — longer field, no blue focus ring/glow */
+    .part-num-input {
+      width: 8.75rem;
+      min-width: 8.75rem;
+      max-width: 11rem;
+      background: var(--raised);
+      border: 1px solid rgba(200, 205, 216, 0.28);
+      color: var(--text);
+      outline: none;
+      box-shadow: none;
+    }
+    .part-num-input:hover {
+      border-color: rgba(200, 205, 216, 0.4);
+    }
+    .part-num-input:focus,
+    .part-num-input:focus-visible {
+      outline: none !important;
+      box-shadow: none !important;
+      border-color: rgba(200, 205, 216, 0.5);
+    }
+    /* AutoNest | Manual segmented switch */
+    .nest-mode-switch {
+      display: inline-flex;
+      align-items: stretch;
+      height: 28px;
+      padding: 2px;
+      border-radius: 8px;
+      background: var(--raised);
+      border: 1px solid rgba(200, 205, 216, 0.22);
+      flex-shrink: 0;
+    }
+    .nest-mode-switch button {
+      height: 100%;
+      padding: 0 0.55rem;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1;
+      color: #C8CDD8;
+      background: transparent;
+      border: none;
+      white-space: nowrap;
+      transition: background 0.15s ease, color 0.15s ease;
+      cursor: pointer;
+    }
+    .nest-mode-switch button[aria-pressed="true"] {
+      background: #538BEC;
+      color: #fff;
+    }
+    .nest-mode-switch button[aria-pressed="false"]:hover {
+      color: #fff;
+      background: rgba(83, 139, 236, 0.18);
     }
     .margins-row {
       display: flex;
@@ -480,6 +546,15 @@
       justify-content: space-between;
       gap: 6px;
       width: 100%;
+    }
+    /* Stay right at 300px and 500px — no center/left drift on resize */
+    .margins-rotate-row {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      margin-left: auto;
+      margin-right: 0;
     }
     .m-field {
       display: flex;
@@ -627,9 +702,11 @@
         <button id="sheet-close" class="h-7 w-7 rounded-lg flex items-center justify-center press transition shrink-0" style="border: 1px solid rgba(83,139,236,0.3); color: #C8CDD8;" title="Collapse panel">
           <svg id="sheet-close-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>
         </button>
-        <div class="flex items-center gap-2 ml-auto">
-          <button id="autonest-btn" data-calc-only class="h-7 px-2.5 rounded-lg text-[11px] font-semibold transition press" style="background: var(--raised); border: 1px solid rgba(83,139,236,0.35); color: #C8CDD8;" aria-pressed="false">AutoNest</button>
-          <span id="mode-label" data-calc-only class="text-[11px]" style="color: var(--text-muted);">Manual</span>
+        <div class="flex items-center gap-2 ml-auto" data-calc-only>
+          <div id="autonest-switch" class="nest-mode-switch" role="group" aria-label="Nest mode">
+            <button type="button" id="mode-autonest" aria-pressed="false" title="AutoNest mode">AutoNest</button>
+            <button type="button" id="mode-manual" aria-pressed="true" title="Manual mode">Manual</button>
+          </div>
         </div>
       </div>
 
@@ -665,7 +742,7 @@
           <button class="section-trigger section-header w-full px-3 py-2 flex items-center justify-between transition gap-2" data-target="part-body" data-badge="part-badge">
             <div class="flex items-center gap-2 min-w-0">
               <span class="text-[11px] font-semibold uppercase tracking-wide shrink-0 section-label">Part</span>
-              <input type="text" placeholder="Part #" class="h-6 w-[4.75rem] px-1.5 rounded-md text-[10px] transition" style="background: var(--raised); border: 1px solid rgba(83,139,236,0.3); color: var(--text);" title="Part number" onclick="event.stopPropagation()" />
+              <input type="text" placeholder="Part #" class="part-num-input h-6 px-2 rounded-md text-[10px] transition" title="Part number" onclick="event.stopPropagation()" />
               <span id="part-badge" class="value-badge hidden">120 × 80</span>
             </div>
             <svg class="chevron rotated w-3 h-3 shrink-0" style="color: #C8CDD8;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
@@ -681,14 +758,16 @@
                   <span class="text-[10px] font-medium" style="color: var(--text-muted);">Y</span>
                   <input data-field id="part-y" type="number" value="80" step="0.01" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" />
                 </div>
-                <div class="xy-sep" aria-hidden="true"></div>
-                <div class="btn-group-h">
-                  <button title="Swap X & Y">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
-                  </button>
-                  <button class="active" title="Link X & Y" data-link="part">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-                  </button>
+                <div class="xy-actions">
+                  <div class="xy-sep" aria-hidden="true"></div>
+                  <div class="btn-group-h">
+                    <button title="Swap X & Y">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
+                    </button>
+                    <button class="active" title="Link X & Y" data-link="part">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -715,14 +794,16 @@
                   <span class="text-[10px] font-medium" style="color: var(--text-muted);">Y</span>
                   <input data-field id="rem-y" type="number" value="400" step="0.01" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" />
                 </div>
-                <div class="xy-sep" aria-hidden="true"></div>
-                <div class="btn-group-h">
-                  <button title="Swap X & Y">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
-                  </button>
-                  <button class="active" title="Link X & Y" data-link="rem">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-                  </button>
+                <div class="xy-actions">
+                  <div class="xy-sep" aria-hidden="true"></div>
+                  <div class="btn-group-h">
+                    <button title="Swap X & Y">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
+                    </button>
+                    <button class="active" title="Link X & Y" data-link="rem">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -749,14 +830,16 @@
                   <span class="text-[10px] font-medium" style="color: var(--text-muted);">Y</span>
                   <input data-field id="gap-y" type="number" value="5" step="0.1" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" />
                 </div>
-                <div class="xy-sep" aria-hidden="true"></div>
-                <div class="btn-group-h">
-                  <button title="Swap X & Y">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
-                  </button>
-                  <button class="active" title="Link X & Y" data-link="gap">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-                  </button>
+                <div class="xy-actions">
+                  <div class="xy-sep" aria-hidden="true"></div>
+                  <div class="btn-group-h">
+                    <button title="Swap X & Y">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
+                    </button>
+                    <button class="active" title="Link X & Y" data-link="gap">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -792,7 +875,7 @@
                   <input data-field id="m-top" type="number" value="10" step="0.1" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" />
                 </div>
               </div>
-              <label class="mt-2.5 flex items-center justify-center gap-2 text-[11px] cursor-pointer" style="color: var(--text-muted);">
+              <label class="margins-rotate-row mt-2.5 gap-2 text-[11px] cursor-pointer" style="color: var(--text-muted);">
                 <input type="checkbox" checked class="h-3.5 w-3.5 rounded" style="accent-color: #538BEC;" />
                 Move with rotation
               </label>
@@ -1255,24 +1338,18 @@
       btn.addEventListener('click', () => btn.classList.toggle('active'));
     });
 
-    const autoBtn = document.getElementById('autonest-btn');
-    const modeLabel = document.getElementById('mode-label');
+    /* AutoNest | Manual segmented switch — same isAuto semantics as prior button+label */
+    const modeAutoBtn = document.getElementById('mode-autonest');
+    const modeManualBtn = document.getElementById('mode-manual');
     let isAuto = false;
-    autoBtn.addEventListener('click', () => {
-      isAuto = !isAuto;
-      autoBtn.setAttribute('aria-pressed', isAuto);
-      if (isAuto) {
-        autoBtn.style.background = '#538BEC';
-        autoBtn.style.borderColor = 'transparent';
-        autoBtn.style.color = '#fff';
-        modeLabel.textContent = 'AutoNest';
-      } else {
-        autoBtn.style.background = 'var(--raised)';
-        autoBtn.style.borderColor = 'rgba(83,139,236,0.35)';
-        autoBtn.style.color = '#C8CDD8';
-        modeLabel.textContent = 'Manual';
-      }
-    });
+    function setNestMode(auto) {
+      isAuto = !!auto;
+      if (modeAutoBtn) modeAutoBtn.setAttribute('aria-pressed', isAuto ? 'true' : 'false');
+      if (modeManualBtn) modeManualBtn.setAttribute('aria-pressed', isAuto ? 'false' : 'true');
+    }
+    if (modeAutoBtn) modeAutoBtn.addEventListener('click', () => setNestMode(true));
+    if (modeManualBtn) modeManualBtn.addEventListener('click', () => setNestMode(false));
+    setNestMode(false);
 
 
     // ---- Mode switch: Calculator ↔ G-code ----
