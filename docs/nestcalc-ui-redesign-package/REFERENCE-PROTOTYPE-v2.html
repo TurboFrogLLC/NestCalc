@@ -316,6 +316,14 @@
       gap: 0.625rem;
       box-sizing: border-box;
     }
+    /* Output code surface: user-resizable height; hard max so it cannot runaway */
+    .gcode-output-surface {
+      min-height: 72px;
+      height: 160px;
+      max-height: min(420px, 55vh);
+      resize: vertical;
+      box-sizing: border-box;
+    }
     .gcode-card-body > div:first-child {
       flex: 1 1 auto;
       display: flex;
@@ -895,36 +903,50 @@
     }
     .num-input-wrap .num-input {
       width: 100%;
-      padding-right: 1.35rem; /* room for clear control */
+      padding-right: 1.5rem; /* room for clear icon-button hit target */
       box-sizing: border-box;
     }
+    /* Clear X: real icon button — fixed square, glyph centered, no inner padding bloat */
     .num-input-clear {
       position: absolute;
-      right: 3px;
+      right: 4px;
       top: 50%;
       transform: translateY(-50%);
-      width: 16px;
-      height: 16px;
+      box-sizing: border-box;
+      width: 18px;
+      height: 18px;
+      min-width: 18px;
+      min-height: 18px;
       padding: 0;
+      margin: 0;
       border: none;
-      border-radius: 4px;
+      border-radius: 5px;
       display: none;
       align-items: center;
       justify-content: center;
       background: rgba(200, 205, 216, 0.14);
       color: #C8CDD8;
       cursor: pointer;
-      line-height: 1;
-      font-size: 11px;
-      font-weight: 700;
+      line-height: 0;
+      font-size: 0;
       z-index: 2;
+      flex-shrink: 0;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    .num-input-clear svg {
+      display: block;
+      width: 10px;
+      height: 10px;
+      flex-shrink: 0;
+      pointer-events: none;
     }
     .num-input-clear:hover {
       background: rgba(200, 205, 216, 0.28);
       color: #fff;
     }
     .num-input-wrap.has-value .num-input-clear {
-      display: flex;
+      display: inline-flex;
     }
 
     .axis-count {
@@ -1177,6 +1199,16 @@
       justify-content: space-between;
       gap: 6px;
       width: 100%;
+    }
+    /* Vertical seps between L|R|B|T — height matches input box (h-9 = 36px), xy-sep language */
+    .margins-row .margins-sep {
+      width: 1px;
+      height: 36px;
+      background: rgba(255, 255, 255, 0.12);
+      margin: 0;
+      flex-shrink: 0;
+      align-self: flex-end; /* sit on input row, not under labels */
+      margin-bottom: 0;
     }
     /* Stay right at 300px and 500px — no center/left drift on resize */
     .margins-rotate-row {
@@ -1472,14 +1504,14 @@
                   <span class="text-[10px] font-medium" style="color: var(--text-muted);">X</span>
                   <div class="num-input-wrap has-value">
                     <input data-field id="part-x" type="text" inputmode="decimal" value="120" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" autocomplete="off" />
-                    <button type="button" class="num-input-clear" aria-label="Clear" title="Clear" tabindex="-1">×</button>
+                    <button type="button" class="num-input-clear" aria-label="Clear" title="Clear" tabindex="-1"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 3l6 6M9 3L3 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
                   </div>
                 </div>
                 <div class="xy-field">
                   <span class="text-[10px] font-medium" style="color: var(--text-muted);">Y</span>
                   <div class="num-input-wrap has-value">
                     <input data-field id="part-y" type="text" inputmode="decimal" value="80" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" autocomplete="off" />
-                    <button type="button" class="num-input-clear" aria-label="Clear" title="Clear" tabindex="-1">×</button>
+                    <button type="button" class="num-input-clear" aria-label="Clear" title="Clear" tabindex="-1"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 3l6 6M9 3L3 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
                   </div>
                 </div>
                 <div class="xy-actions">
@@ -1514,14 +1546,14 @@
                   <span class="text-[10px] font-medium" style="color: var(--text-muted);">X</span>
                   <div class="num-input-wrap has-value">
                     <input data-field id="rem-x" type="text" inputmode="decimal" value="600" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" autocomplete="off" />
-                    <button type="button" class="num-input-clear" aria-label="Clear" title="Clear" tabindex="-1">×</button>
+                    <button type="button" class="num-input-clear" aria-label="Clear" title="Clear" tabindex="-1"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 3l6 6M9 3L3 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
                   </div>
                 </div>
                 <div class="xy-field">
                   <span class="text-[10px] font-medium" style="color: var(--text-muted);">Y</span>
                   <div class="num-input-wrap has-value">
                     <input data-field id="rem-y" type="text" inputmode="decimal" value="400" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" autocomplete="off" />
-                    <button type="button" class="num-input-clear" aria-label="Clear" title="Clear" tabindex="-1">×</button>
+                    <button type="button" class="num-input-clear" aria-label="Clear" title="Clear" tabindex="-1"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 3l6 6M9 3L3 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
                   </div>
                 </div>
                 <div class="xy-actions">
@@ -1556,14 +1588,14 @@
                   <span class="text-[10px] font-medium" style="color: var(--text-muted);">X</span>
                   <div class="num-input-wrap has-value">
                     <input data-field id="gap-x" type="text" inputmode="decimal" value="5" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" autocomplete="off" />
-                    <button type="button" class="num-input-clear" aria-label="Clear" title="Clear" tabindex="-1">×</button>
+                    <button type="button" class="num-input-clear" aria-label="Clear" title="Clear" tabindex="-1"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 3l6 6M9 3L3 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
                   </div>
                 </div>
                 <div class="xy-field">
                   <span class="text-[10px] font-medium" style="color: var(--text-muted);">Y</span>
                   <div class="num-input-wrap has-value">
                     <input data-field id="gap-y" type="text" inputmode="decimal" value="5" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" autocomplete="off" />
-                    <button type="button" class="num-input-clear" aria-label="Clear" title="Clear" tabindex="-1">×</button>
+                    <button type="button" class="num-input-clear" aria-label="Clear" title="Clear" tabindex="-1"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 3l6 6M9 3L3 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
                   </div>
                 </div>
                 <div class="xy-actions">
@@ -1598,28 +1630,31 @@
                   <span class="m-label">L</span>
                   <div class="num-input-wrap has-value">
                     <input data-field id="m-left" type="text" inputmode="decimal" value="10" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" autocomplete="off" />
-                    <button type="button" class="num-input-clear" aria-label="Clear" title="Clear" tabindex="-1">×</button>
+                    <button type="button" class="num-input-clear" aria-label="Clear" title="Clear" tabindex="-1"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 3l6 6M9 3L3 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
                   </div>
                 </div>
+                <span class="margins-sep" aria-hidden="true"></span>
                 <div class="m-field">
                   <span class="m-label">R</span>
                   <div class="num-input-wrap has-value">
                     <input data-field id="m-right" type="text" inputmode="decimal" value="10" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" autocomplete="off" />
-                    <button type="button" class="num-input-clear" aria-label="Clear" title="Clear" tabindex="-1">×</button>
+                    <button type="button" class="num-input-clear" aria-label="Clear" title="Clear" tabindex="-1"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 3l6 6M9 3L3 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
                   </div>
                 </div>
+                <span class="margins-sep" aria-hidden="true"></span>
                 <div class="m-field">
                   <span class="m-label">B</span>
                   <div class="num-input-wrap has-value">
                     <input data-field id="m-bottom" type="text" inputmode="decimal" value="10" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" autocomplete="off" />
-                    <button type="button" class="num-input-clear" aria-label="Clear" title="Clear" tabindex="-1">×</button>
+                    <button type="button" class="num-input-clear" aria-label="Clear" title="Clear" tabindex="-1"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 3l6 6M9 3L3 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
                   </div>
                 </div>
+                <span class="margins-sep" aria-hidden="true"></span>
                 <div class="m-field">
                   <span class="m-label">T</span>
                   <div class="num-input-wrap has-value">
                     <input data-field id="m-top" type="text" inputmode="decimal" value="10" class="num-input h-9 px-1.5 rounded-lg text-[13px] font-medium tabular-nums transition" autocomplete="off" />
-                    <button type="button" class="num-input-clear" aria-label="Clear" title="Clear" tabindex="-1">×</button>
+                    <button type="button" class="num-input-clear" aria-label="Clear" title="Clear" tabindex="-1"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 3l6 6M9 3L3 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
                   </div>
                 </div>
               </div>
@@ -1726,8 +1761,9 @@
               </div>
             </div>
             <div id="output-body" class="section-body closed">
-              <div class="px-3 pb-3">
-                <pre id="gcode-output" class="w-full rounded-lg px-2.5 py-2 text-[10px] font-mono leading-relaxed overflow-auto" style="background: var(--raised); border: 1px solid rgba(200,205,216,0.15); color: #C8CDD8; max-height: 160px; min-height: 72px; white-space: pre; overflow-x: auto;">—</pre>
+              <!-- Match Source: equal gap all around under orange header (px-3 py-3) -->
+              <div class="px-3 py-3">
+                <pre id="gcode-output" class="gcode-output-surface w-full rounded-lg px-2.5 py-2 text-[10px] font-mono leading-relaxed overflow-auto" style="background: var(--raised); border: 1px solid rgba(200,205,216,0.15); color: #C8CDD8; white-space: pre; overflow-x: auto;">—</pre>
               </div>
             </div>
           </section>
@@ -2455,30 +2491,72 @@
       });
     }
 
-    function layoutForMode(mode) {
+    /*
+      Layout sheet for mode. opts.open (default true): when false, leave sheet .closed
+      so caller can reflow then open — same closed→open slide language both sides.
+    */
+    function layoutForMode(mode, opts) {
+      const open = !(opts && opts.open === false);
       const sheetEl = document.getElementById('sheet');
       const stageEl = document.getElementById('stage');
       const openBtn = document.getElementById('sheet-open');
       const closeBtn = document.getElementById('sheet-close');
-      sheetEl.classList.remove('closed', 'panel-full');
+      sheetEl.classList.remove('panel-full');
       stageEl.classList.remove('viewer-collapsed');
       openBtn.classList.add('hidden');
       openBtn.style.cssText = '';
       if (mode === 'gcode') {
         sheetEl.classList.add('side-right');
         clearCalcSheetInlineWidth();
-        applyGcodeSheetWidth(gcodeSheetWidth, { split: true });
+        sheetEl.style.setProperty('--gcode-sheet-w', gcodeSheetWidth + 'px');
+        sheetEl.style.width = gcodeSheetWidth + 'px';
         // Split: arrow points LEFT — width + stage padding stay in sync
         if (closeBtn) closeBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>';
+        if (open) {
+          sheetEl.classList.remove('closed');
+          applyGcodeSheetWidth(gcodeSheetWidth, { split: true });
+        } else {
+          sheetEl.classList.add('closed');
+          stageEl.style.paddingLeft = '16px';
+          stageEl.style.paddingRight = '16px';
+        }
       } else {
         sheetEl.classList.remove('side-right');
-        sheetEl.style.removeProperty('--gcode-sheet-w'); /* leave var on root via setProperty on sheet */
         sheetEl.style.setProperty('--gcode-sheet-w', gcodeSheetWidth + 'px');
-        applyCalcSheetWidth(calcSheetWidth, { open: true });
-        stageEl.style.paddingRight = '16px';
+        sheetEl.style.setProperty('--calc-sheet-w', calcSheetWidth + 'px');
+        sheetEl.style.width = calcSheetWidth + 'px';
         if (closeBtn) closeBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>';
+        if (open) {
+          sheetEl.classList.remove('closed');
+          applyCalcSheetWidth(calcSheetWidth, { open: true });
+          stageEl.style.paddingRight = '16px';
+        } else {
+          sheetEl.classList.add('closed');
+          stageEl.style.paddingLeft = '16px';
+          stageEl.style.paddingRight = '16px';
+        }
       }
       syncResizeAria();
+    }
+
+    /* Open sheet after destination side is set — mirrors .sheet.closed / .side-right.closed slide */
+    function openSheetForMode(mode) {
+      const sheetEl = document.getElementById('sheet');
+      const stageEl = document.getElementById('stage');
+      /* Snap closed on the NEW side (no mid-flight transform from the old free edge) */
+      const prevTransition = sheetEl.style.transition;
+      sheetEl.style.transition = 'none';
+      sheetEl.classList.add('closed');
+      void sheetEl.offsetWidth;
+      sheetEl.style.transition = prevTransition;
+      void sheetEl.offsetWidth;
+      sheetEl.classList.remove('closed');
+      if (mode === 'gcode') {
+        applyGcodeSheetWidth(gcodeSheetWidth, { split: true });
+      } else {
+        applyCalcSheetWidth(calcSheetWidth, { open: true });
+        stageEl.style.paddingRight = '16px';
+      }
     }
 
     
@@ -2488,6 +2566,9 @@
       setTabStyles(mode);
       setCalcOnlyVisible(mode === 'calc');
 
+      const sheetEl = document.getElementById('sheet');
+      const stageEl = document.getElementById('stage');
+      const openBtn = document.getElementById('sheet-open');
       const calcPanel = document.getElementById('calc-panel');
       const gcodePanel = document.getElementById('gcode-panel');
       const calcView = document.getElementById('calc-view');
@@ -2498,8 +2579,22 @@
         if (el) el.classList.add('mode-morph');
       });
 
-      // Side swap + content morph together
-      layoutForMode(mode);
+      /*
+        Symmetric motion both directions (existing closed transform language):
+        1) Slide current sheet off its free edge (.closed / .side-right.closed)
+        2) While off-screen: flip side + swap panel content
+        3) Slide destination sheet in from its free edge
+        G-code was already the working slide-in; Calculator now uses the same path.
+      */
+      sheetEl.classList.remove('panel-full');
+      stageEl.classList.remove('viewer-collapsed');
+      sheetEl.classList.add('closed');
+      stageEl.style.paddingLeft = '16px';
+      stageEl.style.paddingRight = '16px';
+      if (openBtn) {
+        openBtn.classList.add('hidden');
+        openBtn.style.cssText = '';
+      }
 
       if (mode === 'gcode') {
         if (calcPanel) calcPanel.classList.add('out');
@@ -2510,6 +2605,8 @@
           if (calcFooter) calcFooter.classList.add('hidden');
           if (gcodePanel) { gcodePanel.classList.remove('hidden'); gcodePanel.classList.add('out'); }
           if (gcodeView) { gcodeView.classList.remove('hidden'); gcodeView.classList.add('out'); }
+          layoutForMode('gcode', { open: false });
+          openSheetForMode('gcode');
           requestAnimationFrame(() => {
             if (gcodePanel) gcodePanel.classList.remove('out');
             if (gcodeView) gcodeView.classList.remove('out');
@@ -2535,6 +2632,8 @@
           if (calcPanel) { calcPanel.classList.remove('hidden'); calcPanel.classList.add('out'); }
           if (calcView) { calcView.classList.remove('hidden'); calcView.classList.add('out'); }
           if (calcFooter) calcFooter.classList.remove('hidden');
+          layoutForMode('calc', { open: false });
+          openSheetForMode('calc');
           requestAnimationFrame(() => {
             if (calcPanel) calcPanel.classList.remove('out');
             if (calcView) calcView.classList.remove('out');
@@ -2583,17 +2682,32 @@
     /* Output uses section-trigger data-target; keep explicit handler only as fallback if needed.
        section-trigger listener already covers #output-toggle when data-target is set. */
 
-    /* Keep Source body height in sync when user resizes G-code textarea */
+    /* Keep Source / Output body heights in sync when user resizes code surfaces */
     (function () {
-      const ta = document.getElementById('gcode-input');
-      if (!ta) return;
-      function remountSource() {
-        const body = document.getElementById('source-body');
+      function remountSectionBody(bodyId) {
+        const body = document.getElementById(bodyId);
         if (!body || body.classList.contains('closed') || body.classList.contains('is-opening')) return;
         body.style.maxHeight = 'none';
+        body.style.maxHeight = body.scrollHeight + 'px';
       }
-      ta.addEventListener('mouseup', remountSource);
-      ta.addEventListener('input', remountSource);
+      const ta = document.getElementById('gcode-input');
+      if (ta) {
+        const remountSource = function () { remountSectionBody('source-body'); };
+        ta.addEventListener('mouseup', remountSource);
+        ta.addEventListener('input', remountSource);
+      }
+      const out = document.getElementById('gcode-output');
+      if (out) {
+        const remountOut = function () { remountSectionBody('output-body'); };
+        out.addEventListener('mouseup', remountOut);
+        /* capture live resize drag via ResizeObserver when available */
+        if (typeof ResizeObserver !== 'undefined') {
+          try {
+            const ro = new ResizeObserver(remountOut);
+            ro.observe(out);
+          } catch (_) {}
+        }
+      }
     })();
 
     // Single primary action: Generate = analyze + rotate + output (matches product)
