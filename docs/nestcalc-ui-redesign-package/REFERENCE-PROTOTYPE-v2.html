@@ -414,12 +414,143 @@
     .press:active { transform: scale(0.96); }
 
     .numpad {
-      transition: transform 0.4s var(--spring), opacity 0.22s ease;
+      position: fixed;
+      z-index: 40;
+      touch-action: none;
+      transition: opacity 0.22s ease, transform 0.4s var(--spring);
+      user-select: none;
     }
     .numpad.hidden-pad {
-      transform: translateY(18px) scale(0.96);
       opacity: 0;
       pointer-events: none;
+      /* keep last translate from drag; only scale/fade when hiding */
+      transform: translate(var(--pad-x, 0px), var(--pad-y, 0px)) scale(0.96);
+    }
+    .numpad:not(.hidden-pad) {
+      transform: translate(var(--pad-x, 0px), var(--pad-y, 0px)) scale(1);
+    }
+    .numpad.is-dragging {
+      transition: none;
+      cursor: grabbing;
+    }
+    .numpad-drag-handle {
+      cursor: grab;
+      touch-action: none;
+    }
+    .numpad.is-dragging .numpad-drag-handle {
+      cursor: grabbing;
+    }
+    .numpad-close {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      z-index: 2;
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--raised);
+      border: 1px solid rgba(83, 139, 236, 0.35);
+      color: #C8CDD8;
+      cursor: pointer;
+    }
+    .numpad-close:hover {
+      color: #fff;
+      border-color: rgba(83, 139, 236, 0.55);
+    }
+    /* Press-held only: logo gradient; glyph stays white (not a selected state) */
+    .key-num:active,
+    .key-op:active,
+    .key-eq:active,
+    .key-util:active,
+    #numpad button[data-key]:active,
+    #numpad button[data-quick]:active {
+      background: linear-gradient(135deg, #8B5CF6, #C13CD1) !important;
+      color: #fff !important;
+      border-color: rgba(255, 255, 255, 0.18) !important;
+      filter: none !important;
+    }
+
+    /* Presets carousel: at most 4 chips in the visible window */
+    .presets-carousel {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+    }
+    .presets-carousel__btn {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--raised);
+      border: 1px solid rgba(83, 139, 236, 0.35);
+      color: #C8CDD8;
+      cursor: pointer;
+    }
+    .presets-carousel__btn:hover:not(:disabled) {
+      color: #fff;
+      border-color: rgba(83, 139, 236, 0.55);
+    }
+    .presets-carousel__btn:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+    .presets-carousel__viewport {
+      flex: 1 1 auto;
+      min-width: 0;
+      overflow: hidden;
+      container-type: inline-size;
+      container-name: presets-viewport;
+    }
+    .presets-carousel__track {
+      display: flex;
+      gap: 6px;
+      transition: transform 0.22s var(--smooth);
+      will-change: transform;
+    }
+    /* Exactly 4 chips fit the viewport (3 gaps × 6px = 18px) */
+    .presets-carousel__track .preset-chip {
+      flex: 0 0 calc((100cqi - 18px) / 4);
+      width: calc((100cqi - 18px) / 4);
+      min-width: 0;
+      box-sizing: border-box;
+      height: 32px;
+      padding: 0 6px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: transform 0.15s var(--spring), background 0.15s ease;
+    }
+    .presets-add-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .presets-add-btn {
+      height: 28px;
+      padding: 0 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--raised);
+      border: 1px dashed rgba(83, 139, 236, 0.45);
+      color: #C8CDD8;
+      cursor: pointer;
+    }
+    .presets-add-btn:hover {
+      color: #fff;
+      border-color: rgba(83, 139, 236, 0.7);
+      background: rgba(83, 139, 236, 0.15);
     }
 
     .value-badge {
@@ -592,6 +723,76 @@
       padding: 0 10px;
       font-size: 11px;
     }
+    /* Calculator | G-code mode tabs — same seamless track + thumb (~200ms) */
+    .seg-switch--mode {
+      height: 36px;
+      padding: 2px;
+      gap: 2px;
+      border-radius: 12px;
+      background: rgba(11, 8, 20, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .seg-switch--mode > .seg-switch__thumb {
+      border-radius: 8px;
+      top: 2px;
+      bottom: 2px;
+      left: 2px;
+    }
+    .seg-switch--mode > button {
+      height: 32px;
+      padding: 0 14px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 8px;
+      color: #C8CDD8;
+      transition: color 0.2s ease, opacity 0.2s ease;
+    }
+    .seg-switch--mode > button:hover,
+    .seg-switch--mode > button:focus,
+    .seg-switch--mode > button:focus-visible,
+    .seg-switch--mode > button[aria-pressed="true"],
+    .seg-switch--mode > button[aria-pressed="false"] {
+      color: inherit;
+      background: transparent !important;
+    }
+    /* Active segment: white on colored thumb */
+    .seg-switch--mode > button[aria-pressed="true"] {
+      color: #fff !important;
+      opacity: 1;
+    }
+    /* Unselected Calculator side → muted blue (readable, not selected) */
+    .seg-switch--mode[data-mode="gcode"] > #tab-calc {
+      color: rgba(83, 139, 236, 0.72) !important;
+      opacity: 1;
+    }
+    /* Unselected G-code side → muted orange (readable, not selected) */
+    .seg-switch--mode[data-mode="calc"] > #tab-gcode {
+      color: rgba(238, 140, 60, 0.72) !important;
+      opacity: 1;
+    }
+    /* AutoNest | Manual: soft Calculator-blue opacity behind the track */
+    #autonest-switch.seg-switch--sm {
+      background: rgba(83, 139, 236, 0.18);
+      box-shadow: inset 0 0 0 1px rgba(83, 139, 236, 0.12);
+    }
+    /* Sheet chrome icon buttons (match top-header h-8 w-8 raised + blue-tint border) */
+    .sheet-chrome-icon {
+      height: 32px;
+      width: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      background: var(--raised);
+      border: 1px solid rgba(83, 139, 236, 0.3);
+      color: #C8CDD8;
+      cursor: pointer;
+    }
+    .sheet-chrome-icon:hover {
+      color: #fff;
+      border-color: rgba(83, 139, 236, 0.5);
+    }
     /* Calculator nest part rectangles — 1.5px white stroke (beat Tailwind preflight) */
     #calc-view .nest-part {
       background: transparent !important;
@@ -731,9 +932,10 @@
       </span>
     </div>
 
-    <nav class="flex items-center gap-0.5 p-0.5 rounded-xl border border-white/10" style="background: rgba(11,8,20,0.7);">
-      <button id="tab-calc" class="px-3.5 py-1.5 rounded-lg text-[13px] font-semibold text-white" style="background: #538BEC;">Calculator</button>
-      <button id="tab-gcode" class="px-3.5 py-1.5 rounded-lg text-[13px] font-semibold transition hover:text-white" style="color: #C8CDD8;">G-code</button>
+    <nav id="mode-switch" class="seg-switch seg-switch--mode" role="group" aria-label="App mode" data-mode="calc">
+      <span class="seg-switch__thumb" aria-hidden="true"></span>
+      <button type="button" id="tab-calc" aria-pressed="true">Calculator</button>
+      <button type="button" id="tab-gcode" aria-pressed="false">G-code</button>
     </nav>
 
     <div class="flex items-center gap-1.5">
@@ -759,9 +961,27 @@
 
     <aside id="sheet" class="sheet absolute left-3 top-3 bottom-3 z-30 flex flex-col glow rounded-2xl overflow-hidden" style="background: #0E0C14; --calc-sheet-w: 300px; width: 300px;">
       <div class="px-3 py-2.5 flex items-center justify-between shrink-0" style="border-bottom: 1px solid rgba(255,255,255,0.06);">
-        <button id="sheet-close" class="h-7 w-7 rounded-lg flex items-center justify-center press transition shrink-0" style="border: 1px solid rgba(83,139,236,0.3); color: #C8CDD8;" title="Collapse panel">
-          <svg id="sheet-close-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>
-        </button>
+        <div class="flex items-center gap-1.5 shrink-0">
+          <button id="sheet-close" class="sheet-chrome-icon press transition" title="Collapse panel" aria-label="Collapse panel">
+            <svg id="sheet-close-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <!-- Lucide-style calculator; sheet chrome only — not top app header -->
+          <button type="button" id="sheet-calc-btn" class="sheet-chrome-icon press transition" title="Open calculator pad" aria-label="Open calculator pad">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="2" width="16" height="20" rx="2"/>
+              <line x1="8" y1="6" x2="16" y2="6"/>
+              <line x1="8" y1="10" x2="8.01" y2="10"/>
+              <line x1="12" y1="10" x2="12.01" y2="10"/>
+              <line x1="16" y1="10" x2="16.01" y2="10"/>
+              <line x1="8" y1="14" x2="8.01" y2="14"/>
+              <line x1="12" y1="14" x2="12.01" y2="14"/>
+              <line x1="16" y1="14" x2="16.01" y2="14"/>
+              <line x1="8" y1="18" x2="8.01" y2="18"/>
+              <line x1="12" y1="18" x2="12.01" y2="18"/>
+              <line x1="16" y1="18" x2="16.01" y2="18"/>
+            </svg>
+          </button>
+        </div>
         <div class="flex items-center gap-2 ml-auto" data-calc-only>
           <div id="autonest-switch" class="seg-switch seg-switch--sm" role="group" aria-label="Nest mode" data-mode="manual">
             <span class="seg-switch__thumb" aria-hidden="true"></span>
@@ -790,9 +1010,29 @@
           </div>
           <div id="presets-body" class="section-body closed">
             <div class="px-3 py-3">
-              <div class="flex flex-wrap gap-1.5">
-                <button class="h-8 px-3 rounded-lg text-[12px] font-medium transition press" style="background: #538BEC; border: 1px solid #538BEC; color: #fff;">Default</button>
-                <button class="h-8 px-3 rounded-lg text-[12px] font-medium transition press" style="background: #538BEC; border: 1px solid #538BEC; color: #fff;">4×8</button>
+              <div class="presets-carousel" id="presets-carousel">
+                <button type="button" class="presets-carousel__btn press" id="presets-prev" aria-label="Previous presets" title="Previous">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>
+                </button>
+                <div class="presets-carousel__viewport" id="presets-viewport">
+                  <div class="presets-carousel__track" id="presets-track" role="list">
+                    <button type="button" class="preset-chip press" role="listitem" data-preset="Default" style="background: #538BEC; border: 1px solid #538BEC; color: #fff;">Default</button>
+                    <button type="button" class="preset-chip press" role="listitem" data-preset="4×8" style="background: #538BEC; border: 1px solid #538BEC; color: #fff;">4×8</button>
+                    <button type="button" class="preset-chip press" role="listitem" data-preset="5×10" style="background: var(--raised); border: 1px solid rgba(83,139,236,0.35); color: #C8CDD8;">5×10</button>
+                    <button type="button" class="preset-chip press" role="listitem" data-preset="Scrap A" style="background: var(--raised); border: 1px solid rgba(83,139,236,0.35); color: #C8CDD8;">Scrap A</button>
+                    <button type="button" class="preset-chip press" role="listitem" data-preset="Remnant" style="background: var(--raised); border: 1px solid rgba(83,139,236,0.35); color: #C8CDD8;">Remnant</button>
+                    <button type="button" class="preset-chip press" role="listitem" data-preset="Custom" style="background: var(--raised); border: 1px solid rgba(83,139,236,0.35); color: #C8CDD8;">Custom</button>
+                  </div>
+                </div>
+                <button type="button" class="presets-carousel__btn press" id="presets-next" aria-label="Next presets" title="Next">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+              </div>
+              <div class="presets-add-row">
+                <button type="button" class="presets-add-btn press" id="presets-add" title="Add preset (UI shell stub)">+ Add preset</button>
+                <button type="button" class="presets-add-btn press" id="presets-edit" title="Edit preset (UI shell stub)" style="border-style: solid; padding: 0 8px;" aria-label="Edit selected preset">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                </button>
               </div>
             </div>
           </div>
@@ -1106,8 +1346,19 @@
     </div>
   </div>
 
-  <!-- Calculator — matching reference contrast -->
-  <div id="numpad" class="numpad hidden-pad fixed bottom-5 right-5 z-40 glow rounded-2xl p-3 w-[230px]">
+  <!-- Calculator pad — draggable, closable, reopened from sheet chrome calc icon -->
+  <div id="numpad" class="numpad hidden-pad glow rounded-2xl p-3 w-[230px]" style="left: auto; top: auto; right: 20px; bottom: 20px; --pad-x: 0px; --pad-y: 0px;" aria-hidden="true">
+    <button type="button" id="numpad-close" class="numpad-close press" title="Close calculator" aria-label="Close calculator">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+    <div class="numpad-drag-handle flex items-center gap-1.5 pr-8 mb-2 select-none" title="Drag to move">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #C8CDD8; opacity: 0.7;">
+        <circle cx="9" cy="6" r="1.2" fill="currentColor"/><circle cx="15" cy="6" r="1.2" fill="currentColor"/>
+        <circle cx="9" cy="12" r="1.2" fill="currentColor"/><circle cx="15" cy="12" r="1.2" fill="currentColor"/>
+        <circle cx="9" cy="18" r="1.2" fill="currentColor"/><circle cx="15" cy="18" r="1.2" fill="currentColor"/>
+      </svg>
+      <span class="text-[10px] font-semibold uppercase tracking-wider" style="color: #C8CDD8;">Pad</span>
+    </div>
     <div class="flex flex-wrap gap-1 mb-2.5">
       <button data-quick="0.060" class="h-6 px-1.5 rounded-md text-[10px] font-mono font-medium transition press key-util">.060</button>
       <button data-quick="0.125" class="h-6 px-1.5 rounded-md text-[10px] font-mono font-medium transition press key-util">.125</button>
@@ -1516,22 +1767,30 @@
       syncPartUnitThumb();
     });
 
+    /* Calculator | G-code — seamless sliding track (not hard-swap buttons) */
+    const modeSwitch = document.getElementById('mode-switch');
+    const tabCalc = document.getElementById('tab-calc');
+    const tabGcode = document.getElementById('tab-gcode');
+    function syncModeThumb() {
+      if (!modeSwitch) return;
+      const active = currentMode === 'gcode' ? tabGcode : tabCalc;
+      const accent = currentMode === 'gcode' ? '#EE8C3C' : '#538BEC';
+      syncSegThumb(modeSwitch, active, accent);
+    }
     function setTabStyles(mode) {
-      const tc = document.getElementById('tab-calc');
-      const tg = document.getElementById('tab-gcode');
+      const tc = tabCalc || document.getElementById('tab-calc');
+      const tg = tabGcode || document.getElementById('tab-gcode');
       if (!tc || !tg) return;
       document.body.classList.toggle('mode-gcode', mode === 'gcode');
-      if (mode === 'calc') {
-        tc.style.background = '#538BEC';
-        tc.style.color = '#fff';
-        tg.style.background = 'transparent';
-        tg.style.color = '#C8CDD8';
-      } else {
-        tg.style.background = '#EE8C3C';
-        tg.style.color = '#fff';
-        tc.style.background = 'transparent';
-        tc.style.color = '#C8CDD8';
-      }
+      if (modeSwitch) modeSwitch.setAttribute('data-mode', mode === 'gcode' ? 'gcode' : 'calc');
+      tc.setAttribute('aria-pressed', mode === 'calc' ? 'true' : 'false');
+      tg.setAttribute('aria-pressed', mode === 'gcode' ? 'true' : 'false');
+      // Clear any legacy inline hard-swap styles; thumb + CSS own selected/muted look
+      tc.style.background = '';
+      tg.style.background = '';
+      tc.style.color = '';
+      tg.style.color = '';
+      requestAnimationFrame(syncModeThumb);
       // Header IN|MM follows mode accent
       if (typeof setCalcUnit === 'function') setCalcUnit(window.calcUnitMode || 'in');
     }
@@ -1628,8 +1887,14 @@
       }
     }
 
-    document.getElementById('tab-calc').addEventListener('click', () => switchMode('calc'));
-    document.getElementById('tab-gcode').addEventListener('click', () => switchMode('gcode'));
+    if (tabCalc) tabCalc.addEventListener('click', () => switchMode('calc'));
+    if (tabGcode) tabGcode.addEventListener('click', () => switchMode('gcode'));
+    bindSegResize(modeSwitch, syncModeThumb);
+    setTabStyles(currentMode);
+    requestAnimationFrame(syncModeThumb);
+    window.addEventListener('resize', function () {
+      syncModeThumb();
+    });
 
     function refreshPartDisplay() {
       if (!baseXY) return;
@@ -1744,21 +2009,175 @@
     });
 
 
+    /* ---- Numpad: focus-stable, free-drag, X close, reopen via sheet calc ---- */
+    const numpad = document.getElementById('numpad');
+    const numpadClose = document.getElementById('numpad-close');
+    const sheetCalcBtn = document.getElementById('sheet-calc-btn');
     let activeField = null;
     let entryMode = false;
+    let numpadOpen = false;
+    let blurHideTimer = null;
+
+    let pointerInNumpad = false;
+
+    function isNumpadRelated(el) {
+      if (!el || !el.closest) return false;
+      if (el.closest('#numpad')) return true;
+      if (el.matches && el.matches('[data-field]')) return true;
+      if (el.closest && el.closest('[data-field]')) return true;
+      if (el.id === 'sheet-calc-btn' || (el.closest && el.closest('#sheet-calc-btn'))) return true;
+      return false;
+    }
+
+    function showNumpad() {
+      if (!numpad) return;
+      if (blurHideTimer) { clearTimeout(blurHideTimer); blurHideTimer = null; }
+      numpadOpen = true;
+      numpad.classList.remove('hidden-pad');
+      numpad.setAttribute('aria-hidden', 'false');
+    }
+    function hideNumpad() {
+      if (!numpad) return;
+      if (blurHideTimer) { clearTimeout(blurHideTimer); blurHideTimer = null; }
+      numpadOpen = false;
+      numpad.classList.add('hidden-pad');
+      numpad.setAttribute('aria-hidden', 'true');
+    }
+
+    if (numpad) {
+      numpad.addEventListener('pointerenter', () => { pointerInNumpad = true; });
+      numpad.addEventListener('pointerleave', () => { pointerInNumpad = false; });
+      /* Keep field focus when interacting with pad chrome/keys */
+      numpad.addEventListener('mousedown', (e) => {
+        if (e.target && e.target.closest && e.target.closest('#numpad-close')) return;
+        e.preventDefault();
+      });
+    }
+
     document.querySelectorAll('[data-field]').forEach(input => {
       input.addEventListener('focus', () => {
         activeField = input;
         entryMode = false;
-        document.getElementById('numpad').classList.remove('hidden-pad');
+        showNumpad();
       });
       input.addEventListener('blur', () => {
-        setTimeout(() => {
-          if (document.activeElement && document.activeElement.closest && document.activeElement.closest('#numpad')) return;
-          document.getElementById('numpad').classList.add('hidden-pad');
+        /* Field-to-field focus must keep pad usable — only hide when leaving fields + pad */
+        if (blurHideTimer) clearTimeout(blurHideTimer);
+        blurHideTimer = setTimeout(() => {
+          blurHideTimer = null;
+          const ae = document.activeElement;
+          if (isNumpadRelated(ae) || pointerInNumpad) return;
+          /* Pad opened via sheet calc (no field) stays until X / toggle */
+          if (!activeField) return;
+          hideNumpad();
+          activeField = null;
         }, 180);
       });
     });
+
+    if (sheetCalcBtn) {
+      sheetCalcBtn.addEventListener('mousedown', e => e.preventDefault());
+      sheetCalcBtn.addEventListener('click', () => {
+        if (numpad && !numpad.classList.contains('hidden-pad') && numpadOpen) {
+          hideNumpad();
+        } else {
+          /* Reopen without requiring a focused field */
+          activeField = activeField && document.contains(activeField) ? activeField : null;
+          showNumpad();
+        }
+      });
+    }
+    if (numpadClose) {
+      numpadClose.addEventListener('mousedown', e => e.preventDefault());
+      numpadClose.addEventListener('click', () => {
+        hideNumpad();
+        if (activeField && typeof activeField.blur === 'function') activeField.blur();
+      });
+    }
+
+    /* Free drag anywhere in viewport (handle + pad chrome; keys still clickable) */
+    (function initNumpadDrag() {
+      if (!numpad) return;
+      const handle = numpad.querySelector('.numpad-drag-handle');
+      let dragging = false;
+      let startX = 0, startY = 0;
+      let originLeft = 0, originTop = 0;
+
+      function padRectToCssVars() {
+        /* After first drag we pin left/top and zero --pad-x/y for clean re-drags */
+        const r = numpad.getBoundingClientRect();
+        numpad.style.left = r.left + 'px';
+        numpad.style.top = r.top + 'px';
+        numpad.style.right = 'auto';
+        numpad.style.bottom = 'auto';
+        numpad.style.setProperty('--pad-x', '0px');
+        numpad.style.setProperty('--pad-y', '0px');
+      }
+
+      function onMove(e) {
+        if (!dragging) return;
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        let nx = originLeft + (clientX - startX);
+        let ny = originTop + (clientY - startY);
+        const w = numpad.offsetWidth;
+        const h = numpad.offsetHeight;
+        const maxX = Math.max(0, window.innerWidth - w);
+        const maxY = Math.max(0, window.innerHeight - h);
+        nx = Math.min(maxX, Math.max(0, nx));
+        ny = Math.min(maxY, Math.max(0, ny));
+        numpad.style.left = nx + 'px';
+        numpad.style.top = ny + 'px';
+        numpad.style.right = 'auto';
+        numpad.style.bottom = 'auto';
+        numpad.style.setProperty('--pad-x', '0px');
+        numpad.style.setProperty('--pad-y', '0px');
+        e.preventDefault();
+      }
+      function onUp() {
+        if (!dragging) return;
+        dragging = false;
+        numpad.classList.remove('is-dragging');
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onUp);
+        window.removeEventListener('pointercancel', onUp);
+        window.removeEventListener('touchmove', onMove);
+        window.removeEventListener('touchend', onUp);
+      }
+      function onDown(e) {
+        if (e.target.closest && (e.target.closest('button[data-key]') || e.target.closest('button[data-quick]') || e.target.closest('#numpad-close'))) return;
+        /* Allow drag from handle or empty pad chrome */
+        const fromHandle = handle && handle.contains(e.target);
+        const fromChrome = e.target === numpad || (e.target.classList && e.target.classList.contains('numpad-drag-handle'));
+        if (!fromHandle && !fromChrome && !(handle && (e.target === handle || handle.contains(e.target)))) {
+          /* still allow drag from the pad panel background */
+          if (!numpad.contains(e.target)) return;
+          if (e.target.closest('button')) return;
+        }
+        padRectToCssVars();
+        dragging = true;
+        numpad.classList.add('is-dragging');
+        startX = e.touches ? e.touches[0].clientX : e.clientX;
+        startY = e.touches ? e.touches[0].clientY : e.clientY;
+        originLeft = parseFloat(numpad.style.left) || numpad.getBoundingClientRect().left;
+        originTop = parseFloat(numpad.style.top) || numpad.getBoundingClientRect().top;
+        window.addEventListener('pointermove', onMove);
+        window.addEventListener('pointerup', onUp);
+        window.addEventListener('pointercancel', onUp);
+        window.addEventListener('touchmove', onMove, { passive: false });
+        window.addEventListener('touchend', onUp);
+        e.preventDefault();
+      }
+      if (handle) {
+        handle.addEventListener('pointerdown', onDown);
+        handle.addEventListener('touchstart', onDown, { passive: false });
+      }
+      numpad.addEventListener('pointerdown', function (e) {
+        if (e.target.closest && e.target.closest('button')) return;
+        onDown(e);
+      });
+    })();
+
     document.querySelectorAll('[data-quick]').forEach(btn => {
       btn.addEventListener('mousedown', e => e.preventDefault());
       btn.addEventListener('click', () => {
@@ -1779,7 +2198,7 @@
           entryMode = true;
         } else if (key === 'enter') {
           activeField.blur();
-          document.getElementById('numpad').classList.add('hidden-pad');
+          hideNumpad();
           return;
         } else if (key === '.') {
           if (!entryMode) { activeField.value = '0.'; entryMode = true; }
@@ -1791,6 +2210,106 @@
         activeField.dispatchEvent(new Event('input'));
       });
     });
+
+    /* ---- Presets carousel: max 4 visible, arrows, add stub ---- */
+    (function initPresetsCarousel() {
+      const track = document.getElementById('presets-track');
+      const viewport = document.getElementById('presets-viewport');
+      const prevBtn = document.getElementById('presets-prev');
+      const nextBtn = document.getElementById('presets-next');
+      const addBtn = document.getElementById('presets-add');
+      const editBtn = document.getElementById('presets-edit');
+      if (!track || !viewport) return;
+
+      const VISIBLE = 4;
+      let page = 0;
+      let selectedPreset = 'Default';
+
+      function chips() {
+        return Array.from(track.querySelectorAll('.preset-chip'));
+      }
+      function maxPage() {
+        const n = chips().length;
+        return Math.max(0, Math.ceil(n / VISIBLE) - 1);
+      }
+      function chipStep() {
+        const list = chips();
+        if (!list.length) return 0;
+        const gap = 6;
+        return list[0].offsetWidth + gap;
+      }
+      function syncCarousel() {
+        const list = chips();
+        const mp = maxPage();
+        if (page > mp) page = mp;
+        if (page < 0) page = 0;
+        const step = chipStep() * VISIBLE;
+        track.style.transform = 'translateX(' + (-page * step) + 'px)';
+        if (prevBtn) prevBtn.disabled = page <= 0;
+        if (nextBtn) nextBtn.disabled = page >= mp || list.length <= VISIBLE;
+        list.forEach(chip => {
+          const on = chip.dataset.preset === selectedPreset;
+          if (on) {
+            chip.style.background = '#538BEC';
+            chip.style.border = '1px solid #538BEC';
+            chip.style.color = '#fff';
+          } else {
+            chip.style.background = 'var(--raised)';
+            chip.style.border = '1px solid rgba(83,139,236,0.35)';
+            chip.style.color = '#C8CDD8';
+          }
+        });
+      }
+      function bindChip(chip) {
+        chip.addEventListener('click', () => {
+          selectedPreset = chip.dataset.preset || chip.textContent.trim();
+          syncCarousel();
+        });
+      }
+      chips().forEach(bindChip);
+
+      if (prevBtn) prevBtn.addEventListener('click', () => { page -= 1; syncCarousel(); });
+      if (nextBtn) nextBtn.addEventListener('click', () => { page += 1; syncCarousel(); });
+
+      if (addBtn) {
+        addBtn.addEventListener('click', () => {
+          const n = chips().length + 1;
+          const name = 'Preset ' + n;
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'preset-chip press';
+          btn.setAttribute('role', 'listitem');
+          btn.dataset.preset = name;
+          btn.textContent = name;
+          btn.style.background = 'var(--raised)';
+          btn.style.border = '1px solid rgba(83,139,236,0.35)';
+          btn.style.color = '#C8CDD8';
+          track.appendChild(btn);
+          bindChip(btn);
+          selectedPreset = name;
+          page = maxPage();
+          syncCarousel();
+          /* remeasure open section height after add */
+          const body = document.getElementById('presets-body');
+          if (body && !body.classList.contains('closed')) {
+            body.style.maxHeight = body.scrollHeight + 'px';
+          }
+        });
+      }
+      if (editBtn) {
+        editBtn.addEventListener('click', () => {
+          /* UI shell stub — no backend */
+          const label = selectedPreset || 'preset';
+          editBtn.title = 'Edit "' + label + '" (stub)';
+        });
+      }
+
+      if (typeof ResizeObserver !== 'undefined') {
+        new ResizeObserver(syncCarousel).observe(viewport);
+      }
+      window.addEventListener('resize', syncCarousel);
+      requestAnimationFrame(syncCarousel);
+    })();
   </script>
 </body>
 </html>
