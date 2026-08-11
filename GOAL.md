@@ -30,8 +30,8 @@
   "branch_intent": "codex/howmany-option-b-host-bridge",
   "execution_route": "codex-cli",
   "flow_id": "NC-20260810-d2781f90",
-  "goal_memory_commit": "0000000000000000000000000000000000000000",
-  "goal_sha256": "sha256:97e9d3bac0b76942c49f6fc24849f81ab092bfee643de628902acf2dc86d59b8",
+  "goal_memory_commit": "d5edc5591a3b697490d96eddad77a16acf2339cc",
+  "goal_sha256": "sha256:baf0c2a84ea67e09b6e6e3e5935b644aa36511931d680ad021174b33557b60e5",
   "protected_surfaces": [
     "exact bytes, structure, visual language, motion, product identity, and wordmark of docs/nestcalc-ui-redesign-package/REFERENCE-PROTOTYPE-v2.html",
     "calculator math and nest-session calculation, conversion, rotation, link, persistence, and numeric semantics beyond call-site wiring",
