@@ -35,6 +35,7 @@ import {
   gcodeStage,
   gcodeSourceInput,
   gcodeTab,
+  howManyShell,
   globalClampMarginInput,
   managePresetsButton,
   manualNestPreview,
@@ -64,6 +65,38 @@ function clearNestStorage() {
   window.localStorage.removeItem("nestcalc-app-state-v3");
   window.localStorage.removeItem("nestcalc-state-v2");
   window.localStorage.removeItem("nestcalc-state-v1");
+}
+
+function seedHowManyOptionBState() {
+  window.localStorage.removeItem("nestcalc-state-v2");
+  window.localStorage.removeItem("nestcalc-state-v1");
+  window.localStorage.setItem(
+    "nestcalc-app-state-v3",
+    JSON.stringify({
+      version: 3,
+      mode: "manual",
+      manualInputs: {
+        partWidth: 2,
+        partHeight: 1,
+        remnantWidth: 10,
+        remnantHeight: 5,
+        margins: { left: 0, right: 0, top: 0, bottom: 0 },
+        gapX: 0,
+        gapY: 0,
+        partLinked: false,
+        gapLinked: false,
+        moveMarginsWithRotation: false,
+        unit: "in",
+      },
+      autoNestSettings: {
+        globalClampMargin: 0,
+        trimEdgePolicy: "open",
+        sharedTrimClearance: 0,
+        overrideGlobalMargins: false,
+        marginOverrides: { left: null, right: null, top: null, bottom: null },
+      },
+    }),
+  );
 }
 
 const fullPresetState = {
@@ -427,6 +460,186 @@ test.beforeAll(() => {
       "Clerk auth storage state was not created by the setup project.",
     );
   }
+});
+
+test("HowMany Option B hosts the canonical shell and bridges authenticated product flows", async ({
+  page,
+}, testInfo) => {
+  await page.addInitScript(seedHowManyOptionBState);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+
+  expect(
+    await page.evaluate(async () => {
+      const bytes = await (await fetch("/howmany-shell")).arrayBuffer();
+      const digest = await crypto.subtle.digest("SHA-256", bytes);
+      return Array.from(new Uint8Array(digest), (byte) =>
+        byte.toString(16).padStart(2, "0"),
+      ).join("");
+    }),
+  ).toBe("bed7567d093b73c08e2538f3e5939c32bc8765ae2cfbe9d43e7b2848d3f4475d");
+
+  const shell = howManyShell(page);
+  await expect(shell.locator("#mode-switch")).toHaveAttribute("data-mode", "calc");
+  await expect(shell.locator('[data-howmany-bridge="auth"] .cl-userButtonTrigger')).toBeVisible({
+    timeout: 20_000,
+  });
+  await expect(shell.locator('[title="Clerk (stub)"]')).toBeHidden();
+
+  await shell.locator("#part-x").fill("2");
+  await shell.locator("#part-y").fill("1");
+  await shell.locator("#rem-x").fill("10");
+  await shell.locator("#rem-y").fill("5");
+  await shell.locator("#gap-x").fill("0");
+  await shell.locator("#gap-y").fill("0");
+  for (const id of ["m-left", "m-right", "m-bottom", "m-top"]) {
+    await shell.locator(`#${id}`).fill("0");
+  }
+  await expect(shell.locator("#calc-footer .tabular-nums").first()).toHaveText("25");
+  await expect(shell.locator('[aria-label="Nest preview"]')).toBeVisible();
+
+  await shell.locator("#unit-mm").click();
+  await expect(shell.locator("#part-x")).toHaveValue("50.8");
+  await expect(shell.locator("#rem-x")).toHaveValue("254");
+  await shell.locator("#unit-in").click();
+  await expect(shell.locator("#part-x")).toHaveValue("2");
+  await expect(shell.locator("#rem-x")).toHaveValue("10");
+
+  await shell.getByRole("button", { name: "Part 90°" }).click();
+  await expect(shell.locator("#part-x")).toHaveValue("1");
+  await expect(shell.locator("#part-y")).toHaveValue("2");
+  await shell.locator("#btn-rem-90").click();
+  await expect(shell.locator("#rem-x")).toHaveValue("5");
+  await expect(shell.locator("#rem-y")).toHaveValue("10");
+  await shell.getByRole("button", { name: "Part 90°" }).click();
+  await shell.locator("#btn-rem-90").click();
+  await expect(shell.locator("#part-x")).toHaveValue("2");
+  await expect(shell.locator("#part-y")).toHaveValue("1");
+  await expect(shell.locator("#rem-x")).toHaveValue("10");
+  await expect(shell.locator("#rem-y")).toHaveValue("5");
+
+  await shell.locator("#numpad-close").click();
+  await expect(shell.locator("#numpad")).toHaveAttribute("aria-hidden", "true");
+
+  const resize = shell.locator("#sheet-resize");
+  await resize.press("Home");
+  await expect(resize).toHaveAttribute("aria-valuenow", "300");
+  await resize.press("End");
+  await expect(resize).toHaveAttribute("aria-valuenow", "500");
+
+  await shell.locator("#part-x").fill("6");
+  await shell.locator("#part-y").fill("4");
+  await shell.locator("#rem-x").fill("10");
+  await shell.locator("#rem-y").fill("10");
+  await shell.locator("#numpad-close").click();
+  await shell.locator("#mode-autonest").click();
+  await expect(shell.locator("#autonest-switch")).toHaveAttribute("data-mode", "autonest");
+  await expect(shell.getByRole("img", { name: "AutoNest computed preview" })).toBeVisible();
+  await expect(shell.locator("#calc-footer .tabular-nums").first()).toHaveText("3");
+  await shell.locator("#mode-manual").click();
+
+  await shell.locator('[data-target="presets-body"]').click();
+  await expect(shell.locator("#presets-track")).toHaveAttribute("aria-busy", "false", {
+    timeout: 15_000,
+  });
+  const suffix = `${testInfo.workerIndex}-${Date.now()}`;
+  const firstPreset = `Option B A ${suffix}`;
+  const secondPreset = `Option B B ${suffix}`;
+  const renamedPreset = `Option B real ${suffix}`;
+  const firstPresetState = await page.evaluate(() => {
+    const stored = localStorage.getItem("nestcalc-app-state-v3");
+    if (!stored) throw new Error("Missing v3 state before preset save.");
+    return JSON.parse(stored) as unknown;
+  });
+  page.once("dialog", (dialog) => dialog.accept(firstPreset));
+  await shell.locator("#presets-add").click();
+  await expect(shell.getByRole("listitem", { name: `Load preset ${firstPreset}` })).toBeVisible();
+  page.once("dialog", (dialog) => dialog.accept(secondPreset));
+  await shell.locator("#presets-add").click();
+  await expect(shell.getByRole("listitem", { name: `Load preset ${secondPreset}` })).toBeVisible();
+  page.once("dialog", (dialog) => dialog.accept(renamedPreset));
+  await shell.locator("#presets-edit").click();
+  await expect(shell.getByRole("listitem", { name: `Load preset ${renamedPreset}` })).toBeVisible();
+  page.once("dialog", (dialog) => dialog.accept());
+  await shell.locator("#presets-delete").click();
+  await expect(shell.getByRole("listitem", { name: `Load preset ${renamedPreset}` })).toHaveCount(0);
+
+  await shell.locator("#unit-mm").click();
+  await shell.locator("#mode-autonest").click();
+  await shell.locator("#part-x").fill("200");
+  await shell.getByRole("listitem", { name: `Load preset ${firstPreset}` }).click();
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const stored = localStorage.getItem("nestcalc-app-state-v3");
+        return stored ? JSON.parse(stored) : null;
+      }),
+    )
+    .toEqual(firstPresetState);
+  await expect(shell.locator("#unit-switch")).toHaveAttribute("data-value", "in");
+  await expect(shell.locator("#autonest-switch")).toHaveAttribute("data-mode", "manual");
+  await expect(shell.locator("#part-x")).toHaveValue("6");
+  await expect(shell.locator("#part-y")).toHaveValue("4");
+  await shell.locator("#numpad-close").click();
+  await expect(shell.locator("#numpad")).toHaveAttribute("aria-hidden", "true");
+
+  await shell.locator("#tab-gcode").click();
+  await expect(shell.locator("#mode-switch")).toHaveAttribute("data-mode", "gcode");
+  await expect(shell.locator("#sheet")).toHaveClass(/side-right/);
+  await shell.locator("#gcode-input").fill("G90 G20\nG0 X0 Y0\nG1 X4 Y2");
+  await shell.locator('[data-angle="90"]').click();
+  await shell.locator("#gcode-generate").click();
+  await expect(shell.locator("#gcode-output")).toContainText("X-2.00000 Y4.00000");
+  await expect(shell.locator("#gcode-part-x")).toHaveValue("2");
+  await expect(shell.locator("#gcode-part-y")).toHaveValue("4");
+  await expect(shell.locator("#output-body")).not.toHaveClass(/closed/);
+  await expect(shell.locator("#gcode-copy")).toBeEnabled();
+  await expect(shell.locator("#gcode-download")).toBeEnabled();
+  const [download] = await Promise.all([
+    page.waitForEvent("download"),
+    shell.locator("#gcode-download").click(),
+  ]);
+  expect(download.suggestedFilename()).toBe("nestcalc-rotated.nc");
+
+  await shell.locator('[data-angle="180"]').click();
+  await expect(shell.locator("#gcode-copy")).toBeDisabled();
+  await expect(shell.locator("#gcode-download")).toBeDisabled();
+  await shell.locator('[data-angle="90"]').click();
+  await shell.locator("#gcode-generate").click();
+  await page.screenshot({
+    path: testInfo.outputPath("howmany-option-b-gcode-split.png"),
+    animations: "disabled",
+    fullPage: true,
+  });
+
+  await shell.locator("#sheet-close").click();
+  await expect(shell.locator("#sheet")).toHaveClass(/panel-full/);
+  await expect(shell.locator("#stage")).toHaveClass(/viewer-collapsed/);
+  await page.screenshot({
+    path: testInfo.outputPath("howmany-option-b-gcode-full.png"),
+    animations: "disabled",
+    fullPage: true,
+  });
+  await shell.locator("#sheet-close").click();
+  await expect(shell.locator("#sheet")).not.toHaveClass(/panel-full/);
+
+  await shell.locator("#fill-part-size").click();
+  await expect(shell.locator("#mode-switch")).toHaveAttribute("data-mode", "calc", {
+    timeout: 2_000,
+  });
+  await expect(shell.locator("#part-x")).toHaveValue("2");
+  await expect(shell.locator("#part-y")).toHaveValue("4");
+  await expect(shell.locator('[data-link="part"]')).not.toHaveClass(/active/);
+  await expect(shell.locator("#sheet")).not.toHaveClass(/side-right/, {
+    timeout: 2_000,
+  });
+  await expect(shell.locator("#calc-view")).toBeVisible();
+
+  await page.screenshot({
+    path: testInfo.outputPath("howmany-option-b-calculator.png"),
+    animations: "disabled",
+    fullPage: true,
+  });
 });
 
 test("authenticated user reaches the NestCalc calculator shell", async ({

@@ -1,9 +1,5 @@
-import { NestCalcApp } from "@/components/NestCalcApp";
+import { HowManyHost } from "@/components/howmany/HowManyHost";
 
 export default function Home() {
-  return (
-    <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
-      <NestCalcApp />
-    </main>
-  );
+  return <HowManyHost />;
 }

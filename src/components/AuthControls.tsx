@@ -11,7 +11,23 @@ export function AuthControls() {
           ...nestcalcUserButtonAppearance,
           elements: {
             ...nestcalcUserButtonAppearance.elements,
-            avatarBox: "h-8 w-8",
+            rootBox: { width: "2rem", height: "2rem" },
+            userButtonBox: { width: "2rem", height: "2rem" },
+            userButtonTrigger: { width: "2rem", height: "2rem" },
+            avatarBox: {
+              width: "2rem",
+              height: "2rem",
+              overflow: "hidden",
+              borderRadius: "9999px",
+            },
+            avatarImage: { width: "2rem", height: "2rem" },
+            userButtonAvatarBox: {
+              width: "2rem",
+              height: "2rem",
+              overflow: "hidden",
+              borderRadius: "9999px",
+            },
+            userButtonAvatarImage: { width: "2rem", height: "2rem" },
           },
         }}
       />
