@@ -24,8 +24,8 @@
   "branch_intent": "codex/quiet-goal-post-pr58",
   "execution_route": "codex-cli",
   "flow_id": "NC-20260811-c3c74ccb",
-  "goal_memory_commit": "0000000000000000000000000000000000000000",
-  "goal_sha256": "sha256:565a192a4a321e4249ca51062a68db27e78ded6b7474a949ee9a658537799735",
+  "goal_memory_commit": "a2168e84a3704cefd3f2daf71e059c5f2c8d0775",
+  "goal_sha256": "sha256:e3b0f4bd91901c043735478c7885cb0e58c373c414e412e7b260484ea07ea38c",
   "protected_surfaces": [
     "HowMany product identity, full brand line, free-standing header wordmark, exact prototype checksum, docs/ui-shell lineage, and Option B package authority",
     "all product implementation, bridge and host behavior, calculator math, nest-session transforms, AutoNest behavior, G-code behavior, presets, Clerk, PWA, secrets, deployment, Production, and docs/governance/MODE"
