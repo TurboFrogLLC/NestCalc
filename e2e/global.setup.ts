@@ -3,7 +3,7 @@ import { clerk, clerkSetup } from "@clerk/testing/playwright";
 import { expect, test as setup } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
-import { visiblePartsSummary } from "./locators";
+import { howManyShell } from "./locators";
 
 const authFile = path.join(__dirname, "../playwright/.clerk/user.json");
 
@@ -58,8 +58,15 @@ setup("create Clerk test user and save auth state", async ({ page }) => {
   await clerk.signIn({ page, emailAddress });
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { name: "NestCalc" })).toBeVisible();
-  await expect(visiblePartsSummary(page)).toBeVisible();
+  const shell = howManyShell(page);
+  await expect(shell.locator("#mode-switch")).toHaveAttribute(
+    "data-mode",
+    "calc",
+  );
+  await expect(
+    shell.locator('[data-howmany-bridge="auth"] .cl-userButtonTrigger'),
+  ).toBeVisible({ timeout: 20_000 });
+  await expect(shell.locator('[aria-label="Nest preview"]')).toBeVisible();
 
   fs.mkdirSync(path.dirname(authFile), { recursive: true });
   await page.context().storageState({ path: authFile });

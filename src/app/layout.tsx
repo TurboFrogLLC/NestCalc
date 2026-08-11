@@ -9,10 +9,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const APP_NAME = "NestCalc";
-const APP_TITLE = "NestCalc — Rem Nesting";
+const APP_NAME = "HowMany";
+const APP_TITLE = "HowMany by wReckless Toddler LLC";
 const APP_DESCRIPTION =
-  "Quick rectangular nesting calculator for laser shop rems. Independent margins, gap, and dual rotation.";
+  "Fast rectangular nesting for shop-floor scraps and remnants.";
 
 export const metadata: Metadata = {
   applicationName: APP_NAME,
