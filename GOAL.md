@@ -30,8 +30,8 @@
   "branch_intent": "codex/howmany-residual-polish",
   "execution_route": "codex-cli",
   "flow_id": "NC-20260811-6ec4fb02",
-  "goal_memory_commit": "0000000000000000000000000000000000000000",
-  "goal_sha256": "sha256:56da2ec513e656e7d8a9f0d111f27530e917cd291bf64a9de325af66794b66e1",
+  "goal_memory_commit": "c2780bbd2ecbef4e7144080f9ae25038b2596675",
+  "goal_sha256": "sha256:51e9fc55fd5d2b9f0945eb4f15632637d0b91e7f90c2b1870701e9e6b81c047c",
   "protected_surfaces": [
     "exact bytes, structure, visual language, motion, product identity, and wordmark of docs/nestcalc-ui-redesign-package/REFERENCE-PROTOTYPE-v2.html",
     "calculator math, numeric semantics outside bridge-local input drafting, and nest-session calculation, conversion, rotation, link, and persistence behavior",
