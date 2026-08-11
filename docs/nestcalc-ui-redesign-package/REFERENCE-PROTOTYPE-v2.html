@@ -413,12 +413,26 @@
     }
     .press:active { transform: scale(0.96); }
 
+    /* Frosted light-gray glass pad — readable separation from dark stage */
     .numpad {
       position: fixed;
       z-index: 40;
       touch-action: none;
-      transition: opacity 0.22s ease, transform 0.4s var(--spring);
+      transition: opacity 0.22s ease, transform 0.4s var(--spring), width 0.28s var(--smooth);
       user-select: none;
+      width: 230px;
+      background: rgba(228, 230, 236, 0.78);
+      backdrop-filter: blur(22px) saturate(1.25);
+      -webkit-backdrop-filter: blur(22px) saturate(1.25);
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.08),
+        0 14px 40px -10px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.65);
+      color: #1a1a24;
+    }
+    .numpad.numpad--calc {
+      width: 292px;
     }
     .numpad.hidden-pad {
       opacity: 0;
@@ -433,44 +447,134 @@
       transition: none;
       cursor: grabbing;
     }
+    .numpad-chrome {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+      min-height: 28px;
+    }
+    .numpad-mode-btn {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      color: #3a3a48;
+      cursor: pointer;
+    }
+    .numpad-mode-btn:hover {
+      background: rgba(255, 255, 255, 0.85);
+      color: #111;
+    }
+    .numpad-mode-btn.is-active {
+      background: rgba(83, 139, 236, 0.2);
+      border-color: rgba(83, 139, 236, 0.55);
+      color: #2a5db0;
+    }
     .numpad-drag-handle {
+      flex: 1 1 auto;
+      min-width: 0;
+      height: 28px;
+      border-radius: 8px;
       cursor: grab;
       touch-action: none;
+      background: rgba(255, 255, 255, 0.28);
+      border: 1px solid rgba(0, 0, 0, 0.06);
     }
     .numpad.is-dragging .numpad-drag-handle {
       cursor: grabbing;
     }
     .numpad-close {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      z-index: 2;
-      width: 26px;
-      height: 26px;
+      flex-shrink: 0;
+      position: static;
+      width: 28px;
+      height: 28px;
       border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: var(--raised);
-      border: 1px solid rgba(83, 139, 236, 0.35);
-      color: #C8CDD8;
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      color: #3a3a48;
       cursor: pointer;
     }
     .numpad-close:hover {
-      color: #fff;
-      border-color: rgba(83, 139, 236, 0.55);
+      color: #111;
+      background: rgba(255, 255, 255, 0.9);
+      border-color: rgba(0, 0, 0, 0.16);
     }
-    /* Press-held only: logo gradient; glyph stays white (not a selected state) */
-    .key-num:active,
-    .key-op:active,
-    .key-eq:active,
-    .key-util:active,
+    /* LCD: calculator mode only (math expression) */
+    .numpad-lcd {
+      display: none;
+      align-items: center;
+      justify-content: flex-end;
+      min-height: 36px;
+      margin-bottom: 8px;
+      padding: 6px 10px;
+      border-radius: 10px;
+      background: rgba(18, 16, 28, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #F5F3FF;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.35);
+    }
+    .numpad.numpad--calc .numpad-lcd {
+      display: flex;
+    }
+    .numpad-quick {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+    .numpad.numpad--calc .numpad-quick {
+      display: none;
+    }
+    .numpad-keys {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+    .numpad.numpad--calc .numpad-keys {
+      grid-template-columns: repeat(3, 1fr) 52px;
+    }
+    .numpad-keys .key-eq {
+      grid-column: 1 / -1;
+    }
+    .numpad-ops {
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+      grid-column: 4;
+      grid-row: 1 / span 4;
+    }
+    .numpad.numpad--calc .numpad-ops {
+      display: flex;
+    }
+    .numpad-ops .key-op {
+      flex: 1 1 0;
+      min-height: 44px;
+      height: auto;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    /* Normal press only — no logo gradient flash */
     #numpad button[data-key]:active,
-    #numpad button[data-quick]:active {
-      background: linear-gradient(135deg, #8B5CF6, #C13CD1) !important;
-      color: #fff !important;
-      border-color: rgba(255, 255, 255, 0.18) !important;
-      filter: none !important;
+    #numpad button[data-quick]:active,
+    #numpad button[data-op]:active {
+      filter: brightness(0.92);
     }
 
     /* Presets carousel: at most 4 chips in the visible window */
@@ -837,29 +941,40 @@
 
     /* Calculator keys matching reference */
     .key-num {
-      background: #222230;
-      color: #E8E4F0;
-      border: 1px solid rgba(255,255,255,0.06);
-    }
-    .key-num:hover { background: #2E2E40; }
-    .key-op {
-      background: #538BEC;
-      color: #fff;
+      background: #2A2A38;
+      color: #F0EEF6;
       border: 1px solid rgba(255,255,255,0.1);
     }
-    .key-op:hover { filter: brightness(1.1); }
+    .key-num:hover { background: #363648; }
+    /* Solid orange ops column (#EE8C3C family) — calculator mode */
+    .key-op {
+      background: #EE8C3C;
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
+    }
+    .key-op:hover { filter: brightness(1.08); background: #F09A4E; }
     .key-eq {
       background: #538BEC;
       color: #fff;
-      border: 1px solid rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.14);
     }
-    .key-eq:hover { filter: brightness(1.1); }
+    .key-eq:hover { filter: brightness(1.08); }
     .key-util {
-      background: #2A2238;
-      color: #C8CDD8;
-      border: 1px solid rgba(83, 139, 236, 0.25);
+      background: #3A3448;
+      color: #E0DCE8;
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
-    .key-util:hover { background: #3D3554; color: #fff; }
+    .key-util:hover { background: #4A4458; color: #fff; }
+    #numpad .key-util[data-quick] {
+      background: rgba(255, 255, 255, 0.55);
+      color: #2a2a36;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    #numpad .key-util[data-quick]:hover {
+      background: rgba(255, 255, 255, 0.9);
+      color: #111;
+    }
     .section-label {
       color: #ffffff;
     }
@@ -1346,40 +1461,58 @@
     </div>
   </div>
 
-  <!-- Calculator pad — draggable, closable, reopened from sheet chrome calc icon -->
-  <div id="numpad" class="numpad hidden-pad glow rounded-2xl p-3 w-[230px]" style="left: auto; top: auto; right: 20px; bottom: 20px; --pad-x: 0px; --pad-y: 0px;" aria-hidden="true">
-    <button type="button" id="numpad-close" class="numpad-close press" title="Close calculator" aria-label="Close calculator">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6L6 18M6 6l12 12"/></svg>
-    </button>
-    <div class="numpad-drag-handle flex items-center gap-1.5 pr-8 mb-2 select-none" title="Drag to move">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #C8CDD8; opacity: 0.7;">
-        <circle cx="9" cy="6" r="1.2" fill="currentColor"/><circle cx="15" cy="6" r="1.2" fill="currentColor"/>
-        <circle cx="9" cy="12" r="1.2" fill="currentColor"/><circle cx="15" cy="12" r="1.2" fill="currentColor"/>
-        <circle cx="9" cy="18" r="1.2" fill="currentColor"/><circle cx="15" cy="18" r="1.2" fill="currentColor"/>
-      </svg>
-      <span class="text-[10px] font-semibold uppercase tracking-wider" style="color: #C8CDD8;">Pad</span>
+  <!-- Calculator pad — dual-mode (ENTRY / CALCULATOR), frosted, free-drag chrome bar, X / sheet-icon close only -->
+  <div id="numpad" class="numpad hidden-pad rounded-2xl p-3" data-pad-mode="entry" style="left: auto; top: auto; right: 20px; bottom: 20px; --pad-x: 0px; --pad-y: 0px;" aria-hidden="true">
+    <div class="numpad-chrome">
+      <button type="button" id="numpad-mode-btn" class="numpad-mode-btn press" title="Calculator mode" aria-label="Toggle calculator mode" aria-pressed="false">
+        <!-- Calculator icon: switch ENTRY → CALCULATOR (and reverse) -->
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="4" y="2" width="16" height="20" rx="2"/>
+          <line x1="8" y1="6" x2="16" y2="6"/>
+          <line x1="8" y1="11" x2="8" y2="11.01"/>
+          <line x1="12" y1="11" x2="12" y2="11.01"/>
+          <line x1="16" y1="11" x2="16" y2="11.01"/>
+          <line x1="8" y1="15" x2="8" y2="15.01"/>
+          <line x1="12" y1="15" x2="12" y2="15.01"/>
+          <line x1="16" y1="15" x2="16" y2="15.01"/>
+          <line x1="8" y1="19" x2="8" y2="19.01"/>
+          <line x1="12" y1="19" x2="12" y2="19.01"/>
+          <line x1="16" y1="19" x2="16" y2="19.01"/>
+        </svg>
+      </button>
+      <div class="numpad-drag-handle select-none" title="Drag to move" aria-hidden="true"></div>
+      <button type="button" id="numpad-close" class="numpad-close press" title="Close pad" aria-label="Close pad">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
     </div>
-    <div class="flex flex-wrap gap-1 mb-2.5">
-      <button data-quick="0.060" class="h-6 px-1.5 rounded-md text-[10px] font-mono font-medium transition press key-util">.060</button>
-      <button data-quick="0.125" class="h-6 px-1.5 rounded-md text-[10px] font-mono font-medium transition press key-util">.125</button>
-      <button data-quick="0.250" class="h-6 px-1.5 rounded-md text-[10px] font-mono font-medium transition press key-util">.250</button>
-      <button data-quick="0.375" class="h-6 px-1.5 rounded-md text-[10px] font-mono font-medium transition press key-util">.375</button>
-      <button data-quick="0.500" class="h-6 px-1.5 rounded-md text-[10px] font-mono font-medium transition press key-util">.500</button>
+    <div id="numpad-lcd" class="numpad-lcd" aria-live="polite" aria-hidden="true"></div>
+    <div class="numpad-quick" id="numpad-quick">
+      <button type="button" data-quick="0.060" class="h-6 px-1.5 rounded-md text-[10px] font-mono font-medium transition press key-util">.060</button>
+      <button type="button" data-quick="0.125" class="h-6 px-1.5 rounded-md text-[10px] font-mono font-medium transition press key-util">.125</button>
+      <button type="button" data-quick="0.250" class="h-6 px-1.5 rounded-md text-[10px] font-mono font-medium transition press key-util">.250</button>
+      <button type="button" data-quick="0.375" class="h-6 px-1.5 rounded-md text-[10px] font-mono font-medium transition press key-util">.375</button>
+      <button type="button" data-quick="0.500" class="h-6 px-1.5 rounded-md text-[10px] font-mono font-medium transition press key-util">.500</button>
     </div>
-    <div class="grid grid-cols-3 gap-1.5">
-      <button data-key="7" class="h-11 rounded-xl text-sm font-medium transition press key-num">7</button>
-      <button data-key="8" class="h-11 rounded-xl text-sm font-medium transition press key-num">8</button>
-      <button data-key="9" class="h-11 rounded-xl text-sm font-medium transition press key-num">9</button>
-      <button data-key="4" class="h-11 rounded-xl text-sm font-medium transition press key-num">4</button>
-      <button data-key="5" class="h-11 rounded-xl text-sm font-medium transition press key-num">5</button>
-      <button data-key="6" class="h-11 rounded-xl text-sm font-medium transition press key-num">6</button>
-      <button data-key="1" class="h-11 rounded-xl text-sm font-medium transition press key-num">1</button>
-      <button data-key="2" class="h-11 rounded-xl text-sm font-medium transition press key-num">2</button>
-      <button data-key="3" class="h-11 rounded-xl text-sm font-medium transition press key-num">3</button>
-      <button data-key="." class="h-11 rounded-xl text-sm font-medium transition press key-num">.</button>
-      <button data-key="0" class="h-11 rounded-xl text-sm font-medium transition press key-num">0</button>
-      <button data-key="back" class="h-11 rounded-xl text-sm font-medium transition press key-util" title="Backspace">⌫</button>
-      <button data-key="enter" class="h-11 rounded-xl text-sm font-semibold transition press key-eq col-span-3">↵ Enter</button>
+    <div class="numpad-keys" id="numpad-keys">
+      <button type="button" data-key="7" class="h-11 rounded-xl text-sm font-medium transition press key-num">7</button>
+      <button type="button" data-key="8" class="h-11 rounded-xl text-sm font-medium transition press key-num">8</button>
+      <button type="button" data-key="9" class="h-11 rounded-xl text-sm font-medium transition press key-num">9</button>
+      <div class="numpad-ops" id="numpad-ops" aria-hidden="true">
+        <button type="button" data-op="+" class="rounded-xl transition press key-op" title="Add">+</button>
+        <button type="button" data-op="−" class="rounded-xl transition press key-op" title="Subtract">−</button>
+        <button type="button" data-op="×" class="rounded-xl transition press key-op" title="Multiply">×</button>
+        <button type="button" data-op="÷" class="rounded-xl transition press key-op" title="Divide">÷</button>
+      </div>
+      <button type="button" data-key="4" class="h-11 rounded-xl text-sm font-medium transition press key-num">4</button>
+      <button type="button" data-key="5" class="h-11 rounded-xl text-sm font-medium transition press key-num">5</button>
+      <button type="button" data-key="6" class="h-11 rounded-xl text-sm font-medium transition press key-num">6</button>
+      <button type="button" data-key="1" class="h-11 rounded-xl text-sm font-medium transition press key-num">1</button>
+      <button type="button" data-key="2" class="h-11 rounded-xl text-sm font-medium transition press key-num">2</button>
+      <button type="button" data-key="3" class="h-11 rounded-xl text-sm font-medium transition press key-num">3</button>
+      <button type="button" data-key="." class="h-11 rounded-xl text-sm font-medium transition press key-num">.</button>
+      <button type="button" data-key="0" class="h-11 rounded-xl text-sm font-medium transition press key-num">0</button>
+      <button type="button" data-key="back" class="h-11 rounded-xl text-sm font-medium transition press key-util" title="Backspace">⌫</button>
+      <button type="button" data-key="enter" class="h-11 rounded-xl text-sm font-semibold transition press key-eq">↵ Enter</button>
     </div>
   </div>
 
@@ -2009,70 +2142,145 @@
     });
 
 
-    /* ---- Numpad: focus-stable, free-drag, X close, reopen via sheet calc ---- */
+    /* ---- Numpad: dual-mode ENTRY / CALCULATOR, frosted, free-drag, manual close only ---- */
     const numpad = document.getElementById('numpad');
     const numpadClose = document.getElementById('numpad-close');
+    const numpadModeBtn = document.getElementById('numpad-mode-btn');
+    const numpadLcd = document.getElementById('numpad-lcd');
+    const numpadOps = document.getElementById('numpad-ops');
     const sheetCalcBtn = document.getElementById('sheet-calc-btn');
     let activeField = null;
-    let entryMode = false;
+    let typingFresh = false; /* replace field value on first digit after focus */
     let numpadOpen = false;
-    let blurHideTimer = null;
-
-    let pointerInNumpad = false;
-
-    function isNumpadRelated(el) {
-      if (!el || !el.closest) return false;
-      if (el.closest('#numpad')) return true;
-      if (el.matches && el.matches('[data-field]')) return true;
-      if (el.closest && el.closest('[data-field]')) return true;
-      if (el.id === 'sheet-calc-btn' || (el.closest && el.closest('#sheet-calc-btn'))) return true;
-      return false;
-    }
+    /* padMode: 'entry' (default, writes fields) | 'calc' (standalone math, LCD only) */
+    let padMode = 'entry';
+    let calcExpr = '';
+    let calcJustEvaluated = false;
 
     function showNumpad() {
       if (!numpad) return;
-      if (blurHideTimer) { clearTimeout(blurHideTimer); blurHideTimer = null; }
       numpadOpen = true;
       numpad.classList.remove('hidden-pad');
       numpad.setAttribute('aria-hidden', 'false');
     }
     function hideNumpad() {
       if (!numpad) return;
-      if (blurHideTimer) { clearTimeout(blurHideTimer); blurHideTimer = null; }
       numpadOpen = false;
       numpad.classList.add('hidden-pad');
       numpad.setAttribute('aria-hidden', 'true');
     }
 
+    function syncLcd() {
+      if (!numpadLcd) return;
+      numpadLcd.textContent = calcExpr || '';
+      numpadLcd.setAttribute('aria-hidden', padMode === 'calc' ? 'false' : 'true');
+    }
+
+    function setPadMode(mode) {
+      padMode = mode === 'calc' ? 'calc' : 'entry';
+      if (!numpad) return;
+      numpad.dataset.padMode = padMode;
+      numpad.classList.toggle('numpad--calc', padMode === 'calc');
+      if (numpadOps) numpadOps.setAttribute('aria-hidden', padMode === 'calc' ? 'false' : 'true');
+      if (numpadModeBtn) {
+        numpadModeBtn.classList.toggle('is-active', padMode === 'calc');
+        numpadModeBtn.setAttribute('aria-pressed', padMode === 'calc' ? 'true' : 'false');
+        numpadModeBtn.title = padMode === 'calc' ? 'Entry mode (numpad)' : 'Calculator mode';
+        numpadModeBtn.setAttribute('aria-label', padMode === 'calc' ? 'Switch to entry mode' : 'Switch to calculator mode');
+      }
+      syncLcd();
+    }
+
+    /* Safe evaluate for calculator LCD only — digits, ops, decimal */
+    function evalCalcExpr(raw) {
+      if (!raw || typeof raw !== 'string') return null;
+      let s = raw.trim()
+        .replace(/×/g, '*')
+        .replace(/÷/g, '/')
+        .replace(/−/g, '-')
+        .replace(/\s+/g, '');
+      if (!s) return null;
+      if (/[+\-*/.]$/.test(s)) s = s.slice(0, -1);
+      if (!s || !/^[\d.+\-*/]+$/.test(s)) return null;
+      if (!/\d/.test(s)) return null;
+      try {
+        const n = Function('"use strict"; return (' + s + ')')();
+        if (typeof n !== 'number' || !isFinite(n)) return null;
+        const t = Math.round(n * 1e10) / 1e10;
+        return String(t);
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function appendCalcToken(token) {
+      if (calcJustEvaluated && /[0-9.]/.test(token)) {
+        calcExpr = '';
+        calcJustEvaluated = false;
+      }
+      if (calcJustEvaluated && /[+\-×÷−]/.test(token)) {
+        calcJustEvaluated = false;
+      }
+      const ops = '+−×÷';
+      if (ops.indexOf(token) !== -1) {
+        if (!calcExpr) return;
+        const last = calcExpr.slice(-1);
+        if (ops.indexOf(last) !== -1) {
+          calcExpr = calcExpr.slice(0, -1) + token;
+        } else {
+          calcExpr += token;
+        }
+      } else if (token === '.') {
+        const parts = calcExpr.split(/[+\-×÷−]/);
+        const cur = parts[parts.length - 1] || '';
+        if (cur.indexOf('.') !== -1) return;
+        calcExpr += (cur === '' ? '0.' : '.');
+      } else {
+        calcExpr += token;
+      }
+      syncLcd();
+    }
+
+    function backspaceCalc() {
+      if (!calcExpr) return;
+      calcExpr = calcExpr.slice(0, -1);
+      calcJustEvaluated = false;
+      syncLcd();
+    }
+
+    function enterCalc() {
+      const result = evalCalcExpr(calcExpr);
+      if (result == null) return;
+      calcExpr = result;
+      calcJustEvaluated = true;
+      syncLcd();
+    }
+
     if (numpad) {
-      numpad.addEventListener('pointerenter', () => { pointerInNumpad = true; });
-      numpad.addEventListener('pointerleave', () => { pointerInNumpad = false; });
-      /* Keep field focus when interacting with pad chrome/keys */
+      /* Keep field focus when interacting with pad chrome/keys (except close) */
       numpad.addEventListener('mousedown', (e) => {
         if (e.target && e.target.closest && e.target.closest('#numpad-close')) return;
         e.preventDefault();
       });
     }
 
+    if (numpadModeBtn) {
+      numpadModeBtn.addEventListener('mousedown', e => e.preventDefault());
+      numpadModeBtn.addEventListener('click', () => {
+        setPadMode(padMode === 'calc' ? 'entry' : 'calc');
+        showNumpad();
+      });
+    }
+
     document.querySelectorAll('[data-field]').forEach(input => {
       input.addEventListener('focus', () => {
         activeField = input;
-        entryMode = false;
+        typingFresh = true;
+        /* Focusing any number input forces ENTRY mode */
+        if (padMode === 'calc') setPadMode('entry');
         showNumpad();
       });
-      input.addEventListener('blur', () => {
-        /* Field-to-field focus must keep pad usable — only hide when leaving fields + pad */
-        if (blurHideTimer) clearTimeout(blurHideTimer);
-        blurHideTimer = setTimeout(() => {
-          blurHideTimer = null;
-          const ae = document.activeElement;
-          if (isNumpadRelated(ae) || pointerInNumpad) return;
-          /* Pad opened via sheet calc (no field) stays until X / toggle */
-          if (!activeField) return;
-          hideNumpad();
-          activeField = null;
-        }, 180);
-      });
+      /* No auto-close on blur — pad stays until X or sheet calc icon toggle */
     });
 
     if (sheetCalcBtn) {
@@ -2081,8 +2289,8 @@
         if (numpad && !numpad.classList.contains('hidden-pad') && numpadOpen) {
           hideNumpad();
         } else {
-          /* Reopen without requiring a focused field */
           activeField = activeField && document.contains(activeField) ? activeField : null;
+          setPadMode('entry');
           showNumpad();
         }
       });
@@ -2095,7 +2303,7 @@
       });
     }
 
-    /* Free drag anywhere in viewport (handle + pad chrome; keys still clickable) */
+    /* Free drag via top chrome bar (no grip graphic); keys stay clickable */
     (function initNumpadDrag() {
       if (!numpad) return;
       const handle = numpad.querySelector('.numpad-drag-handle');
@@ -2103,8 +2311,7 @@
       let startX = 0, startY = 0;
       let originLeft = 0, originTop = 0;
 
-      function padRectToCssVars() {
-        /* After first drag we pin left/top and zero --pad-x/y for clean re-drags */
+      function pinPadPosition() {
         const r = numpad.getBoundingClientRect();
         numpad.style.left = r.left + 'px';
         numpad.style.top = r.top + 'px';
@@ -2145,16 +2352,20 @@
         window.removeEventListener('touchend', onUp);
       }
       function onDown(e) {
-        if (e.target.closest && (e.target.closest('button[data-key]') || e.target.closest('button[data-quick]') || e.target.closest('#numpad-close'))) return;
-        /* Allow drag from handle or empty pad chrome */
-        const fromHandle = handle && handle.contains(e.target);
-        const fromChrome = e.target === numpad || (e.target.classList && e.target.classList.contains('numpad-drag-handle'));
-        if (!fromHandle && !fromChrome && !(handle && (e.target === handle || handle.contains(e.target)))) {
-          /* still allow drag from the pad panel background */
+        if (e.target.closest && (
+          e.target.closest('button[data-key]') ||
+          e.target.closest('button[data-quick]') ||
+          e.target.closest('button[data-op]') ||
+          e.target.closest('#numpad-close') ||
+          e.target.closest('#numpad-mode-btn')
+        )) return;
+        const fromHandle = handle && (e.target === handle || handle.contains(e.target));
+        const fromChrome = e.target === numpad || (e.target.classList && e.target.classList.contains('numpad-chrome'));
+        if (!fromHandle && !fromChrome) {
           if (!numpad.contains(e.target)) return;
-          if (e.target.closest('button')) return;
+          if (e.target.closest('button') || e.target.closest('.numpad-lcd') || e.target.closest('.numpad-keys')) return;
         }
-        padRectToCssVars();
+        pinPadPosition();
         dragging = true;
         numpad.classList.add('is-dragging');
         startX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -2178,38 +2389,62 @@
       });
     })();
 
-    document.querySelectorAll('[data-quick]').forEach(btn => {
+    /* Quick thickness chips — ENTRY only writes into active field */
+    document.querySelectorAll('#numpad [data-quick]').forEach(btn => {
       btn.addEventListener('mousedown', e => e.preventDefault());
       btn.addEventListener('click', () => {
-        if (!activeField) return;
+        if (padMode !== 'entry' || !activeField) return;
         activeField.value = btn.dataset.quick;
+        typingFresh = false;
         activeField.dispatchEvent(new Event('input'));
-        entryMode = false;
       });
     });
+
+    /* Digit / . / back / Enter — label stays "Enter" (never "=") */
     document.querySelectorAll('#numpad [data-key]').forEach(btn => {
       btn.addEventListener('mousedown', e => e.preventDefault());
       btn.addEventListener('click', () => {
-        if (!activeField) return;
         const key = btn.dataset.key;
+
+        if (padMode === 'calc') {
+          /* CALCULATOR: math only — never write into fields */
+          if (key === 'back') backspaceCalc();
+          else if (key === 'enter') enterCalc();
+          else if (key === '.' || (key >= '0' && key <= '9')) appendCalcToken(key);
+          return;
+        }
+
+        /* ENTRY: values only appear in the focused input (no LCD) */
+        if (!activeField) return;
         let val = activeField.value || '';
         if (key === 'back') {
           activeField.value = val.slice(0, -1);
-          entryMode = true;
+          typingFresh = false;
         } else if (key === 'enter') {
-          activeField.blur();
-          hideNumpad();
+          /* Confirm field only — do NOT auto-close pad (X / sheet icon only) */
+          if (typeof activeField.blur === 'function') activeField.blur();
           return;
         } else if (key === '.') {
-          if (!entryMode) { activeField.value = '0.'; entryMode = true; }
+          if (typingFresh) { activeField.value = '0.'; typingFresh = false; }
           else if (val.indexOf('.') === -1) activeField.value = val + '.';
         } else {
-          if (!entryMode) { activeField.value = key; entryMode = true; }
+          if (typingFresh) { activeField.value = key; typingFresh = false; }
           else activeField.value = val + key;
         }
         activeField.dispatchEvent(new Event('input'));
       });
     });
+
+    /* Orange ops column — calculator mode only */
+    document.querySelectorAll('#numpad [data-op]').forEach(btn => {
+      btn.addEventListener('mousedown', e => e.preventDefault());
+      btn.addEventListener('click', () => {
+        if (padMode !== 'calc') return;
+        appendCalcToken(btn.dataset.op);
+      });
+    });
+
+    setPadMode('entry');
 
     /* ---- Presets carousel: max 4 visible, arrows, add stub ---- */
     (function initPresetsCarousel() {
