@@ -1,5 +1,7 @@
 # Wiring — NestCalc UI Redesign
 
+**Option B:** Bridge existing engines into the **exact** `REFERENCE-PROTOTYPE-v2.html` shell. Shell layout, resize, and motion already live in that HTML — do **not** reimplement competing transitions in a parallel React chrome layer.
+
 ## Shared state (Calculator ↔ G-code)
 
 | Field | Owner | Bridge |
@@ -12,7 +14,7 @@
 
 ## G-code primary action
 
-**Single button: Generate** (matches product `GCodeRotation.tsx`)
+**Single button: Generate** (product engine: same semantics as `GCodeRotation` / lib)
 
 1. Parse / analyze source (product: `analyzeGCode`)  
 2. Apply angle (product: `generateRotatedGCode`)  
@@ -29,18 +31,20 @@ No separate Analyze in the redesign UI.
 4. Brief “Filled ✓”  
 5. **Morph switch to Calculator mode** so the bridge is visible  
 
-Product reference: PR #40 (`Fill calculator part size from G-code bounds`).
+Product reference: PR #40 (`Fill calculator part size from G-code bounds`). Keep Fill / Generate / mode morph **semantics**; host them on the exact shell controls.
 
-## Mode morph
+## Mode morph (tip geometry + motion)
 
 | From → To | Behavior |
 |-----------|----------|
-| Calculator → G-code | Sheet to right (420px); viewer → single-part; calc chrome hidden; accent → orange |
-| G-code → Calculator | Sheet to left (300px); nest grid; gcode chrome hidden; accent → blue |
-| G-code split → full | Viewer fades; panel width `420px` → `calc(100% - 1.5rem)`; mid-row Rotation\|Part size |
-| G-code full → split | Viewer fades in; panel back to 420px right |
+| Calculator → G-code | Sheet to right (default **620px**, min 420 / max 620); viewer → single-part; calc chrome hidden; accent → orange |
+| G-code → Calculator | Sheet to left (default **500px**, min 300 / max 500); nest grid; gcode chrome hidden; accent → blue |
+| G-code split → full | Viewer fades (`--view-dur`); panel width → `calc(100% - 1.5rem)`; mid-row Rotation\|Part size |
+| G-code full → split | Viewer fades in; panel back to last gcode width (default 620) on the right |
 
-**Motion:** `0.72s cubic-bezier(0.34, 1.45, 0.64, 1)` on sheet left/right/**width** and stage padding together. Do not use `width: auto`.
+**Motion (tip):** sheet left/right/**width** and stage padding share **`--sheet-dur` (`0.71s`) + `--sheet-ease`**. Do not use `width: auto`. Stage pad ≈ `sheetWidth + 24` (calc) or `sheetWidth + 28` (gcode); closed/full-bleed **16px**.
+
+**Option B:** These transitions already run in the exact HTML. Bridge must bind data/events only — **no second animation system** fighting the shell.
 
 ## Collapse semantics
 
@@ -50,18 +54,20 @@ Product reference: PR #40 (`Fill calculator part size from G-code bounds`).
 | G-code split | Left-edge of panel, arrow **←** | Expand panel full; hide viewer |
 | G-code full | Same control, arrow **→** | Restore split |
 
+Section open/close uses tip **`--collapse-dur` (`0.41s`)** with `--spring` on open / `--smooth` on close (as in shell CSS).
+
 ## Collapsible sections (Calculator)
 
-- Bounce open/close  
+- Bounce open/close (shell)  
 - Optional cascade settle on siblings  
 - Collapsed: show compact value badge in header  
 - Presets open: Save + Manage appear in **section header** (not body)
 
 ## Calculator numpad (optional chrome)
 
-Prototype includes a mini pad with backspace + quick values (`.060` … `.5`). Wire to focused numeric field if product keeps a pad; otherwise omit without affecting layout of XY rows.
+Prototype includes a mini pad with backspace + quick values (`.060` … `.5`). Wire to focused numeric field if product keeps a pad; otherwise omit without inventing a different primary chrome.
 
 ## Clerk / PWA
 
-- AuthControls stay in header; restyle only  
-- Do not change Clerk routes, middleware, or Serwist cache behavior in this wave  
+- AuthControls (or equivalent) stay in header; bind into shell auth chrome  
+- Do not change Clerk routes, middleware, or Serwist cache behavior in a UI wire wave  

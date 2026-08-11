@@ -1,40 +1,50 @@
 # Component Map — NestCalc UI Redesign
 
-## Shell (shared)
+**Option B:** Host **exact** `REFERENCE-PROTOTYPE-v2.html` as product UI chrome. Bridge real engines into its DOM. Do **not** restyle `NestCalcApp` to “look like” the prototype as the primary UI path.
+
+## Shell (shared) — exact prototype
 
 ```
-┌─ App header ─────────────────────────────────────────────────┐
-│ [logo NestCalc] [Calculator|G-code tabs]  [IN|MM] [theme] [auth] │
-├─ Stage ──────────────────────────┬─ Sheet (side panel) ──────┤
-│ Viewer (nest grid OR bounds)     │ Mode-specific inputs      │
-│                                  │ Collapsible sections      │
-└──────────────────────────────────┴───────────────────────────┘
+┌─ App header ──────────────────────────────────────────────────────┐
+│ [h ? wMany]  [Calculator|G-code tabs]  [IN|MM] [theme] [auth]     │
+├─ Stage ───────────────────────────┬─ Sheet (side panel) ──────────┤
+│ Viewer (nest grid OR bounds)      │ Mode-specific inputs          │
+│                                   │ Collapsible sections          │
+└───────────────────────────────────┴───────────────────────────────┘
 ```
 
-### Mode layouts
+### Header wordmark (locked)
+
+| Control | Spec |
+|---------|------|
+| Wordmark | Free-standing **h** + Lucide **CircleQuestionMark** + **wMany** (**HowMany**) — no pill/box/outline; **not** Nest+Calc two-tone |
+
+### Mode layouts (tip geometry)
 
 | Mode | Sheet side | Sheet width | Viewer |
 |------|------------|-------------|--------|
-| Calculator | **Left** | 300px | Nest grid (right) |
-| G-code split | **Right** | 420px | Single-part bounds (left) |
+| Calculator | **Left** | Default **500px** (min **300** / max **500**, resizable) | Nest grid (right) |
+| G-code split | **Right** | Default **620px** (min **420** / max **620**, resizable) | Single-part bounds (left) |
 | G-code full | Full width | `calc(100% - 1.5rem)` | Hidden (fade out) |
 
-### Header chrome (stubs → product)
+Stage padding tracks live sheet width + edge gap (tip: calc open ≈ `width + 24`; gcode split ≈ `width + 28`; closed full-bleed `16px`).
 
-| Control | Prototype | Product seam |
-|---------|-----------|--------------|
-| Wordmark Nest+Calc | Two-tone | `layout` / app chrome |
-| Calculator \| G-code tabs | Mode switch | Route or in-app mode in `NestCalcApp` |
-| IN \| MM switch | Mode-accent colored | Global units; already exists — restyle |
-| Theme / settings | Stub buttons | Existing settings surface |
-| Auth avatar | Stub `RT` | `AuthControls.tsx` + Clerk |
+### Header chrome → product seams (wire into exact shell)
+
+| Control | Prototype | Wire target (existing) |
+|---------|-----------|------------------------|
+| Wordmark h[?]wMany | Exact HTML | Keep prototype mark; host only |
+| Calculator \| G-code tabs | Mode switch in shell | Bridge mode state; engines stay in `src/lib` |
+| IN \| MM switch | Mode-accent colored | Global units seam already in app |
+| Theme / settings | Stub buttons | Existing settings surface when GOAL allows |
+| Auth avatar | Stub `RT` | `AuthControls.tsx` + Clerk (policy unchanged) |
 
 ## Calculator mode — panel sections (top → bottom)
 
-| Section | Collapsible | Contents | Product seam |
-|---------|-------------|----------|--------------|
-| Presets | Yes | Chips, Save/Manage in header when open | `PresetControls.tsx` |
-| Part | Yes (default open) | Part #, X/Y, swap\|link group | `NestCalcApp` + `NumberInput` |
+| Section | Collapsible | Contents | Wire target |
+|---------|-------------|----------|-------------|
+| Presets | Yes | Chips, Save/Manage in header when open | `PresetControls` / preset storage seams |
+| Part | Yes (default open) | Part #, X/Y, swap\|link group | Calculator inputs → `calculateNest` / field state |
 | Rem | Yes | X/Y, swap\|link | blank/rem fields |
 | Gap | Yes | X/Y, swap\|link | gap fields |
 | Margins | Yes | L · R · B · T single row | four margin fields |
@@ -47,24 +57,26 @@
 - AutoNest \| Manual  
 - Collapsed badges on closed sections (e.g. `600 × 400`)
 
-### XY control pattern
+Wire targets: nest placement / AutoNest engines and preview data — **into** the shell’s stage, not a parallel React chrome tree.
+
+### XY control pattern (as in tip)
 
 ```
 [ X input ] [ Y input ] | [ Swap ] [ Link ]
 ```
 
-- Horizontal button group, same height as inputs (`h-9`)  
+- Horizontal button group, same height as inputs  
 - Vertical separator between fields and buttons  
 - Link active = mode accent fill  
 
 ## G-code mode — panel sections
 
-| Section | Notes | Product seam |
-|---------|-------|--------------|
-| **Source** | Textarea + IN\|MM (program units) | `GCodeRotation.tsx` source |
-| **Rotation** | 0 / 90 / −90 / 180 chips + Generate | angle + `handleGenerate` |
-| **Part size** | X/Y readonly hydrate + independent IN\|MM + Fill → Calculator | PR #40 fill bridge |
-| **Output** | Collapsible; auto-open on Generate; Copy/Download **icons** in header | generated output |
+| Section | Notes | Wire target |
+|---------|-------|-------------|
+| **Source** | Textarea + IN\|MM (program units) | G-code source state |
+| **Rotation** | 0 / 90 / −90 / 180 chips + Generate | angle + `generateRotatedGCode` / analyze |
+| **Part size** | X/Y hydrate + independent IN\|MM + Fill → Calculator | PR #40 fill bridge semantics |
+| **Output** | Collapsible; auto-open on Generate; Copy/Download icons in header | generated output |
 
 ### Expanded full-panel layout
 
@@ -82,26 +94,28 @@ Output (full width)
 - Label `X × Y` + angle  
 - Hidden when panel full  
 
-## Product file map (plug-in points)
+## Engine / product seam table (wire into exact shell)
 
-| Prototype surface | Primary files |
-|-------------------|---------------|
-| App shell / mode | `src/components/NestCalcApp.tsx`, `src/app/page.tsx`, `src/app/layout.tsx` |
-| Globals / tokens | `src/app/globals.css` |
-| Presets | `src/components/PresetControls.tsx` |
-| Nest preview | `src/components/NestGrid.tsx`, `src/components/AutoNestPreview.tsx` |
-| G-code | `src/components/GCodeRotation.tsx`, `src/lib/gcodeRotation*` |
-| Numbers | `src/components/NumberInput.tsx`, `src/components/QuickValuesBar.tsx` |
-| Auth | `src/components/AuthControls.tsx` |
+| Prototype surface | Primary wire targets (existing) |
+|-------------------|----------------------------------|
+| Host / entry | Thin host page (or route) that mounts exact shell HTML — **finalize at GOAL freeze** |
+| Calculator math | `src/lib/nestcalc.ts` / `calculateNest` (and related) — call only, no algorithm change |
+| AutoNest | AutoNest engine modules — packing/ranking/counts **untouched** |
+| Presets | Preset storage + chip UX already in app family |
+| Nest preview data | Feed shell stage from placement results (`NestGrid` / `AutoNestPreview` as data sources or replaceable renderers) |
+| G-code | `src/lib/gcodeRotation*` — `analyzeGCode`, `generateRotatedGCode`, bounds |
+| Numbers / quick values | Numeric field + pad behavior; product pad optional |
+| Auth | `AuthControls.tsx` + Clerk — policy and routes **unchanged** |
 | PWA | `SerwistRegistration.tsx`, `src/app/sw.ts` — **do not expand** |
 
-## Implementation shape (recommended)
+Legacy React chrome (`NestCalcApp.tsx`, restyled panels, etc.) is **not** the Option B product UI. It may remain as temporary bridge helpers only if a frozen GOAL names that path; the **visible product shell is the exact prototype**.
 
-1. Token layer in `globals.css` (mode CSS variables)  
-2. Shell layout (sheet + stage) with mode classes  
-3. Restyle Calculator sections without changing field math  
-4. Restyle G-code to match section order + Fill bridge (already on main)  
-5. Motion: shared spring on sheet + stage padding  
-6. Browser proof Calculator + G-code + Fill morph  
+## Implementation shape (Option B)
 
-Prefer composition over rewriting engine modules.
+1. **Host** the exact `REFERENCE-PROTOTYPE-v2.html` shell (bytes authority — do not redesign).  
+2. Add a **thin bridge layer** that binds existing `src/lib` engines (nest, AutoNest, gcode, presets, units, Clerk) to shell controls and stage.  
+3. Preserve shell motion, resize, mode morph, and chrome already in the HTML.  
+4. Do **not** restyle `NestCalcApp` to approximate the prototype as the primary UI.  
+5. Browser proof: same click-through feel as prototype + real engine numbers.  
+
+Prefer binding engines over rewriting chrome or engines.

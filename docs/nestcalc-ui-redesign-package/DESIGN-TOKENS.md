@@ -1,6 +1,7 @@
 # Design Tokens — NestCalc UI Redesign
 
-Visual authority: `REFERENCE-PROTOTYPE-v2.html`
+Visual authority: `REFERENCE-PROTOTYPE-v2.html` (exact tip bytes).  
+**Option B:** Tokens document what the locked shell already implements; product work hosts that shell rather than re-deriving a parallel token system in React.
 
 ## Mode accent rule (strict)
 
@@ -36,15 +37,15 @@ Visual authority: `REFERENCE-PROTOTYPE-v2.html`
 | Calc section headers | `rgba(83,139,236,0.75)` fill, white label |
 | G-code section headers | solid `#D97830`, white label |
 
-## Spacing & geometry
+## Spacing & geometry (tip)
 
 | Token | Value |
 |-------|--------|
-| Panel width (calc) | `300px` |
-| Panel width (gcode split) | `420px` |
-| Panel full | `width: calc(100% - 1.5rem); left: 0.75rem` |
-| Stage pad (calc open) | `padding-left: 324px` |
-| Stage pad (gcode split) | `padding-right: 448px` |
+| Panel width (calc) | Default **`500px`** via `--calc-sheet-w`; **min 300** / **max 500** (free-edge resize) |
+| Panel width (gcode split) | Default **`620px`** via `--gcode-sheet-w`; **min 420** / **max 620** |
+| Panel full (gcode) | `width: calc(100% - 1.5rem); left: 0.75rem` |
+| Stage pad (calc open) | `padding-left: sheetWidth + 24` (default **524px** at 500); closed / full-bleed **16px** |
+| Stage pad (gcode split) | `padding-right: sheetWidth + 28` (default **648px** at 620); closed / full-bleed **16px** |
 | Section header height | **36px** locked |
 | Input / primary button height | **36px** (`h-9`) |
 | Angle chips | **36px** (match inputs) |
@@ -53,16 +54,22 @@ Visual authority: `REFERENCE-PROTOTYPE-v2.html`
 | Mid-row gap (expanded) | `0.75rem` |
 | Shell min-width | `900px` (page horizontal scroll instead of overlap) |
 
-## Motion
+## Motion (tip CSS variables)
 
-| Token | Value |
-|-------|--------|
-| Expand spring | `0.72s cubic-bezier(0.34, 1.45, 0.64, 1)` |
-| Collapsible bounce | `--spring: cubic-bezier(0.34, 1.56, 0.64, 1)` |
-| Smooth | `--smooth: cubic-bezier(0.22, 1, 0.36, 1)` |
-| Mode morph | ~180–280ms opacity + slight translate |
+| Token | Tip value |
+|-------|-----------|
+| `--spring` | `cubic-bezier(0.25, 1.08, 0.35, 1)` (slight open bounce) |
+| `--smooth` | `cubic-bezier(0.33, 0.1, 0.25, 1)` |
+| `--sheet-ease` | `cubic-bezier(0.4, 0, 0.2, 1)` |
+| `--sheet-dur` | **`0.71s`** — sheet transform / left / right / **width** + stage padding |
+| `--collapse-dur` | **`0.41s`** — section collapse open/close |
+| `--view-dur` | **`0.68s`** — viewer fade |
+| `--morph-dur` | **`0.3s`** — mode chrome morph |
+| Sheet opacity fade | `0.34s var(--smooth)` |
 
-**Rule:** Sheet width/left/right and stage padding use the **same** duration and curve. Never `width: auto` for expanding panels (does not interpolate).
+**Rule:** Sheet width/left/right and stage padding use **`--sheet-dur` + `--sheet-ease`** together. Never `width: auto` for expanding panels (does not interpolate).
+
+**Option B note:** These transitions already live in the exact HTML. Bridge code must **not** reimplement competing sheet/stage transitions.
 
 ## Typography
 
