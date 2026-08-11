@@ -11,8 +11,8 @@
   "branch_intent": "codex/quiet-goal-post-pr49",
   "execution_route": "codex-cli",
   "flow_id": "NC-20260811-dd50b81d",
-  "goal_memory_commit": "026285cebb431d6fde75292d60f120f5125d2381",
-  "goal_sha256": "sha256:4cca298e0da788768c335150be542d301414b99852035ea51d4c1c28295e4189",
+  "goal_memory_commit": "92765384408e9d55c68053b9d1c7610a8b40f85c",
+  "goal_sha256": "sha256:905de1dca543c9a39451bb6784836e553cabdcac1ca8b3121e5d446532abdf32",
   "protected_surfaces": [
     "HowMany product identity, locked header wordmark, and docs/ui-shell authority lineage (durable standing authority in AGENTS.md)",
     "all product implementation, calculator math, nest-session transforms, AutoNest behavior, G-code behavior, Clerk, PWA, secrets, deployment, and docs/governance/MODE"
