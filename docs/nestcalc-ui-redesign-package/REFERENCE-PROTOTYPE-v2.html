@@ -413,7 +413,7 @@
     }
     .press:active { transform: scale(0.96); }
 
-    /* Frosted light-gray glass pad — readable separation from dark stage */
+    /* Frosted light-gray glass pad — soft depth (subtle pop, not heavy) */
     .numpad {
       position: fixed;
       z-index: 40;
@@ -421,14 +421,17 @@
       transition: opacity 0.22s ease, transform 0.4s var(--spring), width 0.28s var(--smooth);
       user-select: none;
       width: 230px;
-      background: rgba(228, 230, 236, 0.78);
+      background: rgba(232, 234, 240, 0.82);
       backdrop-filter: blur(22px) saturate(1.25);
       -webkit-backdrop-filter: blur(22px) saturate(1.25);
-      border: 1px solid rgba(255, 255, 255, 0.55);
+      /* soft outer edge + thin dark hairline for stage separation */
+      border: 1px solid rgba(255, 255, 255, 0.72);
       box-shadow:
-        0 0 0 1px rgba(0, 0, 0, 0.08),
-        0 14px 40px -10px rgba(0, 0, 0, 0.55),
-        inset 0 1px 0 rgba(255, 255, 255, 0.65);
+        0 0 0 1px rgba(0, 0, 0, 0.14),
+        0 2px 4px rgba(0, 0, 0, 0.12),
+        0 12px 28px -8px rgba(0, 0, 0, 0.42),
+        inset 0 1px 0 rgba(255, 255, 255, 0.78),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.04);
       color: #1a1a24;
     }
     .numpad.numpad--calc {
@@ -577,38 +580,44 @@
       filter: brightness(0.92);
     }
 
-    /* Presets carousel: at most 4 chips in the visible window */
+    /* Presets carousel: at most 4 chips centered in visible window */
     .presets-carousel {
       display: flex;
       align-items: center;
-      gap: 6px;
+      justify-content: center;
+      gap: 8px;
       width: 100%;
     }
     .presets-carousel__btn {
       flex-shrink: 0;
-      width: 28px;
-      height: 28px;
+      width: 30px;
+      height: 32px;
       border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
       background: var(--raised);
-      border: 1px solid rgba(83, 139, 236, 0.35);
-      color: #C8CDD8;
+      border: 1px solid rgba(83, 139, 236, 0.45);
+      color: #E8ECF4;
       cursor: pointer;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
     }
     .presets-carousel__btn:hover:not(:disabled) {
       color: #fff;
-      border-color: rgba(83, 139, 236, 0.55);
+      border-color: rgba(83, 139, 236, 0.75);
+      background: rgba(83, 139, 236, 0.22);
     }
     .presets-carousel__btn:disabled {
-      opacity: 0.35;
+      opacity: 0.32;
       cursor: default;
+      box-shadow: none;
     }
     .presets-carousel__viewport {
       flex: 1 1 auto;
       min-width: 0;
+      max-width: 100%;
       overflow: hidden;
+      /* fixed 4-chip window; track slides underneath */
       container-type: inline-size;
       container-name: presets-viewport;
     }
@@ -632,29 +641,60 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      transition: transform 0.15s var(--spring), background 0.15s ease;
+      transition: transform 0.15s var(--spring), background 0.15s ease, border-color 0.15s ease;
+      cursor: pointer;
     }
-    .presets-add-row {
+    .presets-manage {
       display: flex;
       align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
       gap: 6px;
-      margin-top: 8px;
+      margin-top: 10px;
     }
-    .presets-add-btn {
+    .presets-manage__btn {
       height: 28px;
       padding: 0 10px;
       border-radius: 8px;
       font-size: 11px;
       font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
       background: var(--raised);
-      border: 1px dashed rgba(83, 139, 236, 0.45);
+      border: 1px solid rgba(83, 139, 236, 0.4);
       color: #C8CDD8;
       cursor: pointer;
     }
-    .presets-add-btn:hover {
+    .presets-manage__btn:hover:not(:disabled) {
       color: #fff;
       border-color: rgba(83, 139, 236, 0.7);
-      background: rgba(83, 139, 236, 0.15);
+      background: rgba(83, 139, 236, 0.18);
+    }
+    .presets-manage__btn--add {
+      border-style: dashed;
+      border-color: rgba(83, 139, 236, 0.55);
+    }
+    .presets-manage__btn--delete {
+      border-color: rgba(236, 90, 90, 0.45);
+      color: #E8B4B4;
+    }
+    .presets-manage__btn--delete:hover:not(:disabled) {
+      background: rgba(220, 70, 70, 0.18);
+      border-color: rgba(236, 90, 90, 0.7);
+      color: #ffd0d0;
+    }
+    .presets-manage__btn:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+    .presets-status {
+      width: 100%;
+      text-align: center;
+      font-size: 10px;
+      color: #8A90A0;
+      min-height: 14px;
+      margin-top: 2px;
     }
 
     .value-badge {
@@ -939,40 +979,54 @@
       letter-spacing: 0.02em;
     }
 
-    /* Calculator keys matching reference */
+    /* Calculator keys — micro elevation so keys read as buttons */
     .key-num {
-      background: #2A2A38;
+      background: linear-gradient(180deg, #323244 0%, #2A2A38 100%);
       color: #F0EEF6;
-      border: 1px solid rgba(255,255,255,0.1);
+      border: 1px solid rgba(0, 0, 0, 0.28);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.1) inset,
+        0 1px 2px rgba(0, 0, 0, 0.22);
     }
-    .key-num:hover { background: #363648; }
+    .key-num:hover { background: linear-gradient(180deg, #3C3C50 0%, #323244 100%); }
     /* Solid orange ops column (#EE8C3C family) — calculator mode */
     .key-op {
-      background: #EE8C3C;
+      background: linear-gradient(180deg, #F29A4E 0%, #EE8C3C 100%);
       color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
+      border: 1px solid rgba(120, 60, 10, 0.35);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.22) inset,
+        0 1px 2px rgba(0, 0, 0, 0.2);
     }
-    .key-op:hover { filter: brightness(1.08); background: #F09A4E; }
+    .key-op:hover { filter: brightness(1.06); background: linear-gradient(180deg, #F5A85C 0%, #F09A4E 100%); }
     .key-eq {
-      background: #538BEC;
+      background: linear-gradient(180deg, #6A9FF0 0%, #538BEC 100%);
       color: #fff;
-      border: 1px solid rgba(255,255,255,0.14);
+      border: 1px solid rgba(30, 70, 140, 0.4);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.22) inset,
+        0 1px 2px rgba(0, 0, 0, 0.2);
     }
-    .key-eq:hover { filter: brightness(1.08); }
+    .key-eq:hover { filter: brightness(1.06); }
     .key-util {
-      background: #3A3448;
+      background: linear-gradient(180deg, #464054 0%, #3A3448 100%);
       color: #E0DCE8;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(0, 0, 0, 0.28);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.08) inset,
+        0 1px 2px rgba(0, 0, 0, 0.2);
     }
-    .key-util:hover { background: #4A4458; color: #fff; }
+    .key-util:hover { background: linear-gradient(180deg, #524C60 0%, #464054 100%); color: #fff; }
     #numpad .key-util[data-quick] {
-      background: rgba(255, 255, 255, 0.55);
+      background: linear-gradient(180deg, rgba(255,255,255,0.72) 0%, rgba(255,255,255,0.55) 100%);
       color: #2a2a36;
-      border: 1px solid rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(0, 0, 0, 0.14);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.85) inset,
+        0 1px 1px rgba(0, 0, 0, 0.1);
     }
     #numpad .key-util[data-quick]:hover {
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.92);
       color: #111;
     }
     .section-label {
@@ -1115,9 +1169,8 @@
             <button class="section-trigger flex items-center gap-2 min-w-0 flex-1 text-left hover:opacity-90 transition" data-target="presets-body">
               <span class="text-[11px] font-semibold uppercase tracking-wide section-label">Presets</span>
             </button>
-            <div id="presets-header-actions" class="flex items-center gap-1.5" style="display:none">
-              <button class="h-6 px-2 rounded-md text-[10px] font-semibold transition press save-btn" style="background: var(--raised); border: 1px solid rgba(83,139,236,0.35); color: #C8CDD8;">Save</button>
-              <button class="h-6 px-2 rounded-md text-[10px] font-medium transition press" style="background: var(--raised); border: 1px solid rgba(83,139,236,0.3); color: #C8CDD8;">Manage</button>
+            <div id="presets-header-actions" class="flex items-center gap-1.5" style="display:none" aria-hidden="true">
+              <!-- manage lives in body (Add / Edit / Delete); header slot kept for open-state layout -->
             </div>
             <button class="section-trigger h-6 w-6 flex items-center justify-center shrink-0" data-target="presets-body" aria-label="Toggle presets">
               <svg class="chevron rotated w-3 h-3" style="color: #C8CDD8;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
@@ -1125,30 +1178,42 @@
           </div>
           <div id="presets-body" class="section-body closed">
             <div class="px-3 py-3">
+              <!-- Carousel: max 4 chips visible, arrows for additional -->
               <div class="presets-carousel" id="presets-carousel">
-                <button type="button" class="presets-carousel__btn press" id="presets-prev" aria-label="Previous presets" title="Previous">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>
+                <button type="button" class="presets-carousel__btn press" id="presets-prev" aria-label="Previous presets" title="Previous presets">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
                 </button>
                 <div class="presets-carousel__viewport" id="presets-viewport">
                   <div class="presets-carousel__track" id="presets-track" role="list">
-                    <button type="button" class="preset-chip press" role="listitem" data-preset="Default" style="background: #538BEC; border: 1px solid #538BEC; color: #fff;">Default</button>
-                    <button type="button" class="preset-chip press" role="listitem" data-preset="4×8" style="background: #538BEC; border: 1px solid #538BEC; color: #fff;">4×8</button>
-                    <button type="button" class="preset-chip press" role="listitem" data-preset="5×10" style="background: var(--raised); border: 1px solid rgba(83,139,236,0.35); color: #C8CDD8;">5×10</button>
-                    <button type="button" class="preset-chip press" role="listitem" data-preset="Scrap A" style="background: var(--raised); border: 1px solid rgba(83,139,236,0.35); color: #C8CDD8;">Scrap A</button>
-                    <button type="button" class="preset-chip press" role="listitem" data-preset="Remnant" style="background: var(--raised); border: 1px solid rgba(83,139,236,0.35); color: #C8CDD8;">Remnant</button>
-                    <button type="button" class="preset-chip press" role="listitem" data-preset="Custom" style="background: var(--raised); border: 1px solid rgba(83,139,236,0.35); color: #C8CDD8;">Custom</button>
+                    <!-- Seed list 6+ items so page 2 proves horizontal scroll; only Default selected -->
+                    <button type="button" class="preset-chip press" role="listitem" data-preset="Default">Default</button>
+                    <button type="button" class="preset-chip press" role="listitem" data-preset="4×8">4×8</button>
+                    <button type="button" class="preset-chip press" role="listitem" data-preset="5×10">5×10</button>
+                    <button type="button" class="preset-chip press" role="listitem" data-preset="Scrap A">Scrap A</button>
+                    <button type="button" class="preset-chip press" role="listitem" data-preset="Remnant">Remnant</button>
+                    <button type="button" class="preset-chip press" role="listitem" data-preset="Custom">Custom</button>
+                    <button type="button" class="preset-chip press" role="listitem" data-preset="Drop-in">Drop-in</button>
                   </div>
                 </div>
-                <button type="button" class="presets-carousel__btn press" id="presets-next" aria-label="Next presets" title="Next">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 18l6-6-6-6"/></svg>
+                <button type="button" class="presets-carousel__btn press" id="presets-next" aria-label="Next presets" title="Next presets">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
                 </button>
               </div>
-              <div class="presets-add-row">
-                <button type="button" class="presets-add-btn press" id="presets-add" title="Add preset (UI shell stub)">+ Add preset</button>
-                <button type="button" class="presets-add-btn press" id="presets-edit" title="Edit preset (UI shell stub)" style="border-style: solid; padding: 0 8px;" aria-label="Edit selected preset">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+              <!-- Management: Add / Edit / Delete (in-memory shell stubs) -->
+              <div class="presets-manage" id="presets-manage" role="toolbar" aria-label="Preset management">
+                <button type="button" class="presets-manage__btn presets-manage__btn--add press" id="presets-add" title="Add preset">
+                  <span aria-hidden="true">+</span> Add
+                </button>
+                <button type="button" class="presets-manage__btn press" id="presets-edit" title="Edit selected preset">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                  Edit
+                </button>
+                <button type="button" class="presets-manage__btn presets-manage__btn--delete press" id="presets-delete" title="Delete selected preset">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>
+                  Delete
                 </button>
               </div>
+              <div class="presets-status" id="presets-status" aria-live="polite"></div>
             </div>
           </div>
         </section>
@@ -1724,7 +1789,14 @@
       body.style.maxHeight = h + 'px';
       if (chev) chev.classList.add('rotated');
       if (badge) badge.classList.add('hidden');
-      if (body.id === 'presets-body') syncPresetsActions(true);
+      if (body.id === 'presets-body') {
+        syncPresetsActions(true);
+        /* remeasure carousel after open so 4-up + arrows use real width */
+        if (typeof window.__nestPresetsSync === 'function') window.__nestPresetsSync();
+        setTimeout(function () {
+          if (typeof window.__nestPresetsSync === 'function') window.__nestPresetsSync();
+        }, 280);
+      }
     }
     function closeSection(body, chev, badge) {
       body.style.maxHeight = body.scrollHeight + 'px';
@@ -2446,7 +2518,8 @@
 
     setPadMode('entry');
 
-    /* ---- Presets carousel: max 4 visible, arrows, add stub ---- */
+    /* ---- Presets carousel: max 4 visible, arrows, add/edit/delete (in-memory) ---- */
+    window.__nestPresetsSync = null;
     (function initPresetsCarousel() {
       const track = document.getElementById('presets-track');
       const viewport = document.getElementById('presets-viewport');
@@ -2454,11 +2527,19 @@
       const nextBtn = document.getElementById('presets-next');
       const addBtn = document.getElementById('presets-add');
       const editBtn = document.getElementById('presets-edit');
+      const deleteBtn = document.getElementById('presets-delete');
+      const statusEl = document.getElementById('presets-status');
       if (!track || !viewport) return;
 
       const VISIBLE = 4;
+      const GAP = 6;
       let page = 0;
       let selectedPreset = 'Default';
+      let seed = 0;
+
+      function setStatus(msg) {
+        if (statusEl) statusEl.textContent = msg || '';
+      }
 
       function chips() {
         return Array.from(track.querySelectorAll('.preset-chip'));
@@ -2470,8 +2551,19 @@
       function chipStep() {
         const list = chips();
         if (!list.length) return 0;
-        const gap = 6;
-        return list[0].offsetWidth + gap;
+        /* Prefer measured width; fall back to viewport/4 when closed (0-width) */
+        const w = list[0].offsetWidth;
+        if (w > 0) return w + GAP;
+        const vw = viewport.clientWidth;
+        if (vw > 0) return (vw - GAP * (VISIBLE - 1)) / VISIBLE + GAP;
+        return 0;
+      }
+      function remountOpenHeight() {
+        const body = document.getElementById('presets-body');
+        if (body && !body.classList.contains('closed')) {
+          body.style.maxHeight = 'none';
+          body.style.maxHeight = body.scrollHeight + 'px';
+        }
       }
       function syncCarousel() {
         const list = chips();
@@ -2479,71 +2571,133 @@
         if (page > mp) page = mp;
         if (page < 0) page = 0;
         const step = chipStep() * VISIBLE;
-        track.style.transform = 'translateX(' + (-page * step) + 'px)';
+        if (step > 0) {
+          track.style.transform = 'translateX(' + (-page * step) + 'px)';
+        } else {
+          track.style.transform = 'translateX(0px)';
+        }
         if (prevBtn) prevBtn.disabled = page <= 0;
         if (nextBtn) nextBtn.disabled = page >= mp || list.length <= VISIBLE;
+        if (deleteBtn) {
+          const canDelete = list.length > 1 && !!selectedPreset;
+          deleteBtn.disabled = !canDelete;
+        }
+        if (editBtn) editBtn.disabled = !selectedPreset || list.length === 0;
         list.forEach(chip => {
           const on = chip.dataset.preset === selectedPreset;
           if (on) {
             chip.style.background = '#538BEC';
             chip.style.border = '1px solid #538BEC';
             chip.style.color = '#fff';
+            chip.setAttribute('aria-pressed', 'true');
           } else {
             chip.style.background = 'var(--raised)';
             chip.style.border = '1px solid rgba(83,139,236,0.35)';
             chip.style.color = '#C8CDD8';
+            chip.setAttribute('aria-pressed', 'false');
           }
         });
       }
       function bindChip(chip) {
         chip.addEventListener('click', () => {
           selectedPreset = chip.dataset.preset || chip.textContent.trim();
+          setStatus('Selected: ' + selectedPreset);
           syncCarousel();
         });
       }
       chips().forEach(bindChip);
 
-      if (prevBtn) prevBtn.addEventListener('click', () => { page -= 1; syncCarousel(); });
-      if (nextBtn) nextBtn.addEventListener('click', () => { page += 1; syncCarousel(); });
+      if (prevBtn) prevBtn.addEventListener('click', () => {
+        page -= 1;
+        syncCarousel();
+      });
+      if (nextBtn) nextBtn.addEventListener('click', () => {
+        page += 1;
+        syncCarousel();
+      });
 
       if (addBtn) {
         addBtn.addEventListener('click', () => {
-          const n = chips().length + 1;
-          const name = 'Preset ' + n;
+          seed += 1;
+          const name = 'Preset ' + (chips().length + 1);
           const btn = document.createElement('button');
           btn.type = 'button';
           btn.className = 'preset-chip press';
           btn.setAttribute('role', 'listitem');
           btn.dataset.preset = name;
           btn.textContent = name;
-          btn.style.background = 'var(--raised)';
-          btn.style.border = '1px solid rgba(83,139,236,0.35)';
-          btn.style.color = '#C8CDD8';
           track.appendChild(btn);
           bindChip(btn);
           selectedPreset = name;
           page = maxPage();
+          setStatus('Added "' + name + '" (in-memory)');
           syncCarousel();
-          /* remeasure open section height after add */
-          const body = document.getElementById('presets-body');
-          if (body && !body.classList.contains('closed')) {
-            body.style.maxHeight = body.scrollHeight + 'px';
-          }
-        });
-      }
-      if (editBtn) {
-        editBtn.addEventListener('click', () => {
-          /* UI shell stub — no backend */
-          const label = selectedPreset || 'preset';
-          editBtn.title = 'Edit "' + label + '" (stub)';
+          remountOpenHeight();
         });
       }
 
+      if (editBtn) {
+        editBtn.addEventListener('click', () => {
+          if (!selectedPreset) return;
+          const chip = chips().find(c => c.dataset.preset === selectedPreset);
+          if (!chip) return;
+          const next = window.prompt('Rename preset', selectedPreset);
+          if (next == null) return;
+          const name = String(next).trim();
+          if (!name) {
+            setStatus('Edit cancelled — empty name');
+            return;
+          }
+          if (chips().some(c => c !== chip && c.dataset.preset === name)) {
+            setStatus('Name already exists');
+            return;
+          }
+          const prev = selectedPreset;
+          chip.dataset.preset = name;
+          chip.textContent = name;
+          selectedPreset = name;
+          setStatus('Renamed "' + prev + '" → "' + name + '"');
+          syncCarousel();
+        });
+      }
+
+      if (deleteBtn) {
+        deleteBtn.addEventListener('click', () => {
+          const list = chips();
+          if (list.length <= 1) {
+            setStatus('Keep at least one preset');
+            return;
+          }
+          const chip = list.find(c => c.dataset.preset === selectedPreset);
+          if (!chip) return;
+          const removed = selectedPreset;
+          const idx = list.indexOf(chip);
+          chip.remove();
+          const remaining = chips();
+          const pick = remaining[Math.max(0, Math.min(idx, remaining.length - 1))];
+          selectedPreset = pick ? (pick.dataset.preset || pick.textContent.trim()) : '';
+          if (page > maxPage()) page = maxPage();
+          setStatus('Deleted "' + removed + '"');
+          syncCarousel();
+          remountOpenHeight();
+        });
+      }
+
+      window.__nestPresetsSync = function () {
+        requestAnimationFrame(function () {
+          syncCarousel();
+          remountOpenHeight();
+        });
+      };
+
       if (typeof ResizeObserver !== 'undefined') {
-        new ResizeObserver(syncCarousel).observe(viewport);
+        new ResizeObserver(function () { syncCarousel(); }).observe(viewport);
       }
       window.addEventListener('resize', syncCarousel);
-      requestAnimationFrame(syncCarousel);
+      requestAnimationFrame(function () {
+        syncCarousel();
+        setStatus(chips().length + ' presets · max 4 visible');
+      });
     })();
   </script>
 </body>
