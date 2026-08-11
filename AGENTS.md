@@ -221,7 +221,8 @@ Do not touch these unless the active goal explicitly includes them:
 - PWA service-worker/runtime cache behavior
 - repository governance files outside the requested workflow scope
 - HowMany product identity, locked header wordmark, and `docs/ui-shell`
-  visual/structure authority lineage
+  visual/structure authority lineage; changing these requires a new human
+  decision, not merely an active goal that names them
 - active product `GOAL.md` content during governance-only waves
 - `docs/governance/MODE` outside a dedicated promotion goal
 - native iOS companion app planning or implementation

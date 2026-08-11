@@ -11,8 +11,8 @@
   "branch_intent": "codex/howmany-authority-lock",
   "execution_route": "codex-cli",
   "flow_id": "NC-20260810-6c4a91d8",
-  "goal_memory_commit": "5cd03c7e6242e6ae5df2a2688fcab34c1b4d24c1",
-  "goal_sha256": "sha256:939520706037f55b1b38e24ea3c518cdf47e89f7cd1af944e927030fc1040353",
+  "goal_memory_commit": "5cd03c7052ed377f76e1ff93a947e234c0ef59bd",
+  "goal_sha256": "sha256:2417e82a83a6935668391f8a8943dcffafa41a09b496963d1b8d98798b419a2a",
   "protected_surfaces": [
     "HowMany product name, full brand line, and locked header wordmark",
     "docs/ui-shell lineage and its accepted reference prototype",
@@ -65,6 +65,11 @@ commit `ff8b7d61d74673f4404456cf69b8f0c63f49cdfb` and its canonical source
 visual and structural authority for future product wiring. Treat that shell as
 protected: no casual overwrite, replacement, or reinterpretation is allowed
 without a new human decision.
+
+The UI shell is not being redesigned. The old V1 shell is deprecated and must
+not be touched. This accepted shell exists only as the frozen visual and
+structural authority to plug future product wiring into; its appearance is not
+open for change in this wave.
 
 ### Scope / Allowed Files
 
