@@ -11,10 +11,22 @@ notices.
 
 ## Project Overview
 
-NestCalc is a Next.js 16 web PWA for fast rectangular nesting on shop-floor
-scraps and remnants. It uses Clerk authentication, Serwist/PWA infrastructure,
-and Vercel deployment patterns. Keep it web/PWA first for now; future iOS work
-is out of scope unless a goal explicitly names it.
+HowMany is the product name for this Next.js 16 web PWA for fast rectangular
+nesting on shop-floor scraps and remnants. **NestCalc remains the repository
+name.** The full locked brand line is **HowMany by wReckless Toddler LLC**. It
+uses Clerk authentication, Serwist/PWA infrastructure, and Vercel deployment
+patterns. Keep it web/PWA first for now; future iOS work is out of scope unless
+a goal explicitly names it.
+
+The product name, full brand line, and header wordmark are locked authority:
+the header is the left gradient square with its icon plus free-standing
+lowercase `h`, Lucide `CircleQuestionMark`, and `wMany`, with no surrounding
+pill, box, outline, or grouped text container. Do not change its icon, letter
+case, spacing, or structure without a new human decision. The accepted
+`docs/ui-shell` lineage (canonical source:
+`docs/nestcalc-ui-redesign-package/REFERENCE-PROTOTYPE-v2.html`) is the locked
+visual/structure authority for future wiring. It is protected from casual
+overwrite, replacement, or reinterpretation without a new human decision.
 
 ## Core Authority And Reading Order
 
@@ -173,6 +185,8 @@ Out of scope by default (hard wall unless the active goal names them):
   guards, and search budget unless the active goal explicitly changes them.
 - Preserve current Clerk auth policy, request-access policy, and route shape
   unless the active goal explicitly changes them.
+- Preserve the locked HowMany identity, header wordmark, and `docs/ui-shell`
+  authority lineage unless a new human decision explicitly changes them.
 - Keep real secrets and production auth values out of committed files.
 - Keep PWA/service-worker changes narrow and verified with browser/PWA proof.
 - Keep the app small, fast, and shop-floor focused.
@@ -206,6 +220,8 @@ Do not touch these unless the active goal explicitly includes them:
 - secrets, `.env*`, deployment credentials, or Vercel project settings
 - PWA service-worker/runtime cache behavior
 - repository governance files outside the requested workflow scope
+- HowMany product identity, locked header wordmark, and `docs/ui-shell`
+  visual/structure authority lineage
 - active product `GOAL.md` content during governance-only waves
 - `docs/governance/MODE` outside a dedicated promotion goal
 - native iOS companion app planning or implementation
