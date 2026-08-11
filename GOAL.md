@@ -11,8 +11,8 @@
   "branch_intent": "codex/howmany-authority-lock",
   "execution_route": "codex-cli",
   "flow_id": "NC-20260810-6c4a91d8",
-  "goal_memory_commit": "0000000000000000000000000000000000000000",
-  "goal_sha256": "sha256:671520482c4dd68e024847dab1437587b0af838de155c70980b6239cc98f1019",
+  "goal_memory_commit": "5cd03c7e6242e6ae5df2a2688fcab34c1b4d24c1",
+  "goal_sha256": "sha256:939520706037f55b1b38e24ea3c518cdf47e89f7cd1af944e927030fc1040353",
   "protected_surfaces": [
     "HowMany product name, full brand line, and locked header wordmark",
     "docs/ui-shell lineage and its accepted reference prototype",
