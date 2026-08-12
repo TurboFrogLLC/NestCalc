@@ -34,7 +34,7 @@
 
 The root `GOAL.md` contains no active product implementation objective. Quiet
 Flow `NC-20260812-647e9335` binds that repository state through quiet freeze
-`0000000000000000000000000000000000000000` and metadata bind `0000000000000000000000000000000000000000`. Any future product work
+`deb4b81eb9d4dddd963478b3c516e16e299457a4` and metadata bind `deb4b81eb9d4dddd963478b3c516e16e299457a4`. Any future product work
 requires a new human-approved freeze. Product source, both locked HTML
 authorities, engine algorithms, Clerk, PWA, secrets, deployment, Production,
 and `docs/governance/MODE` remain untouched by this archive.
