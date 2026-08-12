@@ -948,7 +948,7 @@ test("HowMany UI polish residual 2 wires both locked authorities through the bri
   await expect(numpad).toHaveAttribute("aria-hidden", "false");
   const quick = shell.locator('#quick-track [data-quick="0.125"]');
   await quick.click();
-  await expect(partX).toHaveValue("0.125");
+  await expect(partX).toHaveValue("12.34");
   await expect(quick).not.toHaveClass(/is-selected/);
   await expect
     .poll(() => quick.evaluate((chip) => chip.classList.contains("blink")))

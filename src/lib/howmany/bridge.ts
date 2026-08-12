@@ -58,10 +58,25 @@ export function sanitizeShellNumericDraft(value: string): string {
 }
 
 export function quickValueDraft(
-  _currentValue: string,
+  currentValue: string,
   quickValue: string,
 ): string {
-  return sanitizeShellNumericDraft(quickValue);
+  if (currentValue.includes(".")) return currentValue;
+
+  const current = sanitizeShellNumericDraft(currentValue);
+  const quick = sanitizeShellNumericDraft(quickValue);
+  if (current !== currentValue || !/^\d*$/.test(current)) return currentValue;
+  if (!/^\d*\.\d+$/.test(quick) || !Number.isFinite(Number(quick))) {
+    return currentValue;
+  }
+
+  const fraction = quick.slice(quick.indexOf("."));
+  return `${current}${fraction}`;
+}
+
+export function committedShellNumericValue(value: string): number | null {
+  const parsed = parseNumericInput(value);
+  return parsed !== null && Number.isFinite(parsed) ? parsed : null;
 }
 
 export function normalizeShellDialogName(value: string): string {

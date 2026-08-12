@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  committedShellNumericValue,
   derivePresetCarousel,
   displayGCodeSize,
   fieldBindingForId,
@@ -51,6 +52,10 @@ describe("HowMany shell bridge helpers", () => {
       caret: 2,
     });
     expect(insertShellDecimal("1.2", 3, 3, false)).toBeNull();
+
+    const wholeNumber = insertShellDecimal("1", 1, 1, false);
+    expect(wholeNumber).toEqual({ value: "1.", caret: 2 });
+    expect(`${wholeNumber?.value}2`).toBe("1.2");
   });
 
   it("keeps preset pages truthful for selection and an empty carousel", () => {
@@ -98,9 +103,25 @@ describe("HowMany shell bridge helpers", () => {
     expect(sanitizeShellNumericDraft("abc")).toBe("");
   });
 
-  it("replaces a focused draft with a quick value instead of appending", () => {
-    expect(quickValueDraft("10", "0.125")).toBe("0.125");
-    expect(quickValueDraft("", "1.000")).toBe("1.000");
+  it("hydrates empty and whole-number drafts with quick fractions", () => {
+    expect(quickValueDraft("5", "0.375")).toBe("5.375");
+    expect(quickValueDraft("", "0.375")).toBe(".375");
+  });
+
+  it("leaves decimal drafts unchanged when a quick value is clicked", () => {
+    expect(quickValueDraft("5.", "0.375")).toBe("5.");
+    expect(quickValueDraft("5.25", "0.375")).toBe("5.25");
+  });
+
+  it("rejects invalid quick drafts without producing NaN or a lone decimal", () => {
+    expect(quickValueDraft("5", "not-a-number")).toBe("5");
+    expect(quickValueDraft("", ".")).toBe("");
+    expect(Number.isNaN(Number(quickValueDraft("5", "not-a-number")))).toBe(
+      false,
+    );
+    expect(committedShellNumericValue(".")).toBeNull();
+    expect(committedShellNumericValue("NaN")).toBeNull();
+    expect(committedShellNumericValue("1.2")).toBe(1.2);
   });
 
   it("keeps multi-character dialog names while enforcing the authority limit", () => {

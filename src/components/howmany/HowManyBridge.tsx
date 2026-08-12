@@ -15,6 +15,7 @@ import {
   type GCodeDiagnostic,
 } from "@/lib/gcodeRotation";
 import {
+  committedShellNumericValue,
   derivePresetCarousel,
   displayGCodeSize,
   fieldBindingForId,
@@ -29,6 +30,7 @@ import {
 } from "@/lib/howmany/bridge";
 import {
   applyPartSizeToNestSession,
+  calculateManualNest,
   clearManualInputs,
   createNestSession,
   rotateManualPart,
@@ -41,7 +43,6 @@ import {
   updateManualField,
   updateNestSessionMargin,
 } from "@/lib/nestSession";
-import { parseNumericInput } from "@/lib/numericInput";
 import type {
   AutoNestTwoGroupResult,
   NestAppState,
@@ -325,6 +326,7 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
   const presetPageRef = useRef(0);
   const syncPresetCarouselRef = useRef<(() => void) | null>(null);
   const activeNumericFieldRef = useRef<HTMLInputElement | null>(null);
+  const remnantLinkedRef = useRef(true);
   const selectedQuickValueRef = useRef<string | null>(null);
   const activeDialogCleanupRef = useRef<(() => void) | null>(null);
 
@@ -411,10 +413,19 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
       [data-howmany-bridge="stage"] .howmany-autonest-preview {
         width: min(78%,440px) !important;
         min-height: 0;
-        flex: 1;
+        flex: 0 1 auto;
         border: 0 !important;
         border-radius: 6px;
         background: rgba(11,8,20,.45) !important;
+      }
+      [data-howmany-bridge="stage"] .howmany-autonest-fallback {
+        width: min(78%,440px);
+        max-height: 100%;
+        aspect-ratio: 4 / 3;
+      }
+      [data-howmany-bridge="stage"] .howmany-autonest-fallback.is-rotated {
+        --part-fill: rgba(238,140,60,.32);
+        --part-stroke: #EE8C3C;
       }
       [data-howmany-bridge="stage"] .autonest-preview-group-zero {
         fill: var(--autonest-zero-fill);
@@ -625,6 +636,7 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
         inset: 0;
         display: flex !important;
         flex-direction: column;
+        align-items: stretch;
         gap: 6px;
         width: auto;
         margin: 0;
@@ -633,12 +645,15 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
         transition: opacity .22s ease;
       }
       #numpad.numpad--calc .numpad-quick { display: flex !important; opacity: 0; pointer-events: none; }
-      #numpad .howmany-arrow-strip { display: flex; gap: 4px; }
+      #numpad .howmany-arrow-strip { display: flex; width: 100%; gap: 4px; }
       #numpad .howmany-arrow-strip .quick-carousel__btn {
         display: inline-flex !important;
         width: auto;
         height: 28px;
         flex: 1;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
         border: 0;
         border-radius: 8px;
         background: rgba(255,255,255,.55);
@@ -646,8 +661,9 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
         opacity: 1;
         cursor: pointer;
       }
+      #numpad .howmany-arrow-strip svg { width: 14px; height: 14px; }
       #numpad .howmany-arrow-strip .quick-carousel__btn:hover { background: rgba(255,255,255,.85); }
-      #numpad .howmany-chips-scroll { min-height: 0; flex: 1; overflow-x: auto; overflow-y: hidden; scrollbar-width: thin; scrollbar-color: rgba(83,139,236,.45) transparent; }
+      #numpad .howmany-chips-scroll { width: 100%; min-height: 0; flex: 1 1 auto; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: rgba(83,139,236,.45) transparent; }
       #numpad .quick-carousel__viewport { width: max-content; overflow: visible; container-type: normal; }
       #numpad .quick-carousel__track { display: flex; width: max-content; height: 100%; align-items: center; gap: 4px; transform: none !important; transition: none; }
       #numpad .quick-carousel__track .quick-chip {
@@ -817,8 +833,10 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
         arrows.setAttribute("aria-label", "Field focus");
         previous.setAttribute("aria-label", "Previous field");
         previous.setAttribute("title", "Previous field");
+        previous.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>`;
         next.setAttribute("aria-label", "Next field");
         next.setAttribute("title", "Next field");
+        next.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>`;
         arrows.append(previous, next);
         const chips = shellDocument.createElement("div");
         chips.className = "howmany-chips-scroll";
@@ -947,13 +965,18 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
       marginsBadgeText(inputs.margins),
     );
 
-    syncSegment(shellDocument, "unit-switch", inputs.unit === "in" ? "unit-in" : "unit-mm", "#538BEC", "data-value", inputs.unit);
+    const headerUnitAccent = shellDocument.body.classList.contains("mode-gcode")
+      ? "#EE8C3C"
+      : "#538BEC";
+    syncSegment(shellDocument, "unit-switch", inputs.unit === "in" ? "unit-in" : "unit-mm", headerUnitAccent, "data-value", inputs.unit);
     exposeCalculatorUnit(shellDocument, inputs.unit);
     syncSegment(shellDocument, "autonest-switch", state.mode === "autonest" ? "mode-autonest" : "mode-manual", "#538BEC", "data-mode", state.mode);
 
     const partLink = select<HTMLElement>(shellDocument, '[data-link="part"]');
+    const remnantLink = select<HTMLElement>(shellDocument, '[data-link="rem"]');
     const gapLink = select<HTMLElement>(shellDocument, '[data-link="gap"]');
     partLink?.classList.toggle("active", inputs.partLinked);
+    remnantLink?.classList.toggle("active", remnantLinkedRef.current);
     gapLink?.classList.toggle("active", inputs.gapLinked);
 
     const manualTotal = session.manual.result.totalParts;
@@ -1220,9 +1243,21 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
       }
       fieldDraftsRef.current.set(target.id, target.value);
       typingFreshFieldRef.current = null;
-      const value = parseNumericInput(target.value);
+      const value = committedShellNumericValue(target.value);
       if (binding.kind === "input") {
-        updateInputs((current) => updateManualField(current, binding.key, value));
+        updateInputs((current) => {
+          if (
+            remnantLinkedRef.current &&
+            (binding.key === "remnantWidth" || binding.key === "remnantHeight")
+          ) {
+            return {
+              ...current,
+              remnantWidth: value,
+              remnantHeight: value,
+            };
+          }
+          return updateManualField(current, binding.key, value);
+        });
       } else {
         setState((current) => updateNestSessionMargin(current, binding.key, value));
       }
@@ -1243,7 +1278,7 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
       if (typingFreshFieldRef.current === target.id) {
         typingFreshFieldRef.current = null;
       }
-      target.value = formatShellNumber(parseNumericInput(target.value));
+      target.value = formatShellNumber(committedShellNumericValue(target.value));
     };
 
     const handleFocusIn = (event: FocusEvent) => {
@@ -1394,6 +1429,26 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
         return;
       }
 
+      if (button.dataset.key === "." && !button.closest("#numpad.numpad--calc")) {
+        stop(event);
+        const active = activeNumericFieldRef.current;
+        if (!active || active.closest(".section-body.closed")) return;
+        const edit = insertShellDecimal(
+          active.value,
+          active.selectionStart,
+          active.selectionEnd,
+          typingFreshFieldRef.current === active.id,
+        );
+        if (!edit) return;
+        typingFreshFieldRef.current = null;
+        active.value = edit.value;
+        active.setSelectionRange(edit.caret, edit.caret);
+        active.dispatchEvent(
+          new shellDocument.defaultView!.Event("input", { bubbles: true }),
+        );
+        return;
+      }
+
       if (button.id === "quick-prev" || button.id === "quick-next") {
         stop(event);
         const fields = visibleNumericFields();
@@ -1416,11 +1471,13 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
         if (!active || active.closest(".section-body.closed")) return;
         const quick = button.dataset.quick;
         const replacement = quickValueDraft(active.value, quick);
-        active.value = replacement;
-        active.setSelectionRange(replacement.length, replacement.length);
-        active.dispatchEvent(
-          new shellDocument.defaultView!.Event("input", { bubbles: true }),
-        );
+        if (replacement !== active.value) {
+          active.value = replacement;
+          active.setSelectionRange(replacement.length, replacement.length);
+          active.dispatchEvent(
+            new shellDocument.defaultView!.Event("input", { bubbles: true }),
+          );
+        }
         selectedQuickValueRef.current = quick;
         shellDocument
           .querySelectorAll("#quick-track .is-selected")
@@ -1449,7 +1506,7 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
           allowDelete: true,
           onConfirm: (draft) => {
             const next = sanitizeShellNumericDraft(draft);
-            if (!next) return;
+            if (!next || committedShellNumericValue(next) === null) return;
             const duplicate = Array.from(
               shellDocument.querySelectorAll<HTMLButtonElement>(
                 "#quick-track button[data-quick]",
@@ -1639,6 +1696,22 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
       if (button.dataset.link) {
         stop(event);
         if (button.dataset.link === "part") updateInputs(toggleManualPartLink);
+        if (button.dataset.link === "rem") {
+          const linked = !remnantLinkedRef.current;
+          remnantLinkedRef.current = linked;
+          button.classList.toggle("active", linked);
+          button.setAttribute("aria-pressed", linked ? "true" : "false");
+          if (linked) {
+            updateInputs((current) => {
+              const linkedValue = current.remnantWidth ?? current.remnantHeight;
+              return {
+                ...current,
+                remnantWidth: linkedValue,
+                remnantHeight: linkedValue,
+              };
+            });
+          }
+        }
         if (button.dataset.link === "gap") updateInputs(toggleManualGapLink);
         return;
       }
@@ -1661,6 +1734,20 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
     ? effectiveAutoNestMargins(state.autoNestSettings)
     : state.manualInputs.margins;
   const fallback = previewResult(state, session.manual.result);
+  const zeroDegreeAutoResult = calculateManualNest({
+    ...state.manualInputs,
+    margins: activeMargins,
+  });
+  const fallbackIsRotated =
+    state.mode === "autonest" &&
+    auto?.status !== "computed" &&
+    fallback.totalParts > zeroDegreeAutoResult.totalParts;
+  const fallbackPartWidth = fallbackIsRotated
+    ? state.manualInputs.partHeight
+    : state.manualInputs.partWidth;
+  const fallbackPartHeight = fallbackIsRotated
+    ? state.manualInputs.partWidth
+    : state.manualInputs.partHeight;
 
   return (
     <>
@@ -1674,18 +1761,22 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
                 unit={unitLabel(state.manualInputs.unit)}
               />
             ) : (
-              <NestGrid
-                remnantWidth={state.manualInputs.remnantWidth}
-                remnantHeight={state.manualInputs.remnantHeight}
-                partWidth={state.manualInputs.partWidth}
-                partHeight={state.manualInputs.partHeight}
-                margins={activeMargins}
-                gapX={state.manualInputs.gapX}
-                gapY={state.manualInputs.gapY}
-                result={fallback}
-                unitLabel={unitLabel(state.manualInputs.unit)}
-                className="h-full border-0 bg-transparent"
-              />
+              <div
+                className={`howmany-autonest-fallback ${fallbackIsRotated ? "is-rotated" : ""}`}
+              >
+                <NestGrid
+                  remnantWidth={state.manualInputs.remnantWidth}
+                  remnantHeight={state.manualInputs.remnantHeight}
+                  partWidth={fallbackPartWidth}
+                  partHeight={fallbackPartHeight}
+                  margins={activeMargins}
+                  gapX={state.manualInputs.gapX}
+                  gapY={state.manualInputs.gapY}
+                  result={fallback}
+                  unitLabel={unitLabel(state.manualInputs.unit)}
+                  className="h-full border-0 bg-transparent"
+                />
+              </div>
             ),
             stageTarget,
           )
