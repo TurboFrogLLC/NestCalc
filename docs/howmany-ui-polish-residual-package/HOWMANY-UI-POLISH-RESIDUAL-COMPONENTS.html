@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HowMany — UI Polish Residual Components (Authority)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --smooth: cubic-bezier(0.22, 1, 0.36, 1);
+      --bg: #08060D;
+      --panel: #0E0C14;
+      --surface: #16121F;
+      --raised: #1E1A2A;
+      --muted: #2A2438;
+      --text: #F5F3FF;
+      --text-muted: #C8CDD8;
+      --blue: #538BEC;
+      --orange: #EE8C3C;
+      --orange-dark: #D97830;
+      --border-soft: rgba(200, 205, 216, 0.22);
+      --part-0-stroke: #538BEC;
+      --part-0-fill: rgba(83, 139, 236, 0.28);
+      --part-90-stroke: #EE8C3C;
+      --part-90-fill: rgba(238, 140, 60, 0.32);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "SF Pro Text", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 20px 80px;
+    }
+    h1 {
+      font-size: 20px;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+      margin: 0 0 6px;
+    }
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 13px;
+      line-height: 1.45;
+      margin-bottom: 28px;
+      max-width: 720px;
+    }
+    .component-block { margin-bottom: 40px; }
+    .component-label {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .component-label .tag {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--blue);
+      background: rgba(83, 139, 236, 0.12);
+      border: 1px solid rgba(83, 139, 236, 0.35);
+      border-radius: 999px;
+      padding: 3px 8px;
+    }
+    .component-label h2 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .component-label .rule {
+      margin-left: auto;
+      font-size: 11px;
+      color: var(--text-muted);
+      max-width: 420px;
+      text-align: right;
+      line-height: 1.35;
+    }
+    .stage-card {
+      background: var(--panel);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.1),
+        0 0 0 1px rgba(83, 139, 236, 0.18),
+        0 12px 32px -14px rgba(0, 0, 0, 0.75);
+    }
+
+    /* ── 1. AutoNest result card ───────────────────────────── */
+    .autonest-card {
+      display: flex;
+      flex-direction: column;
+      min-height: 420px;
+    }
+    .autonest-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      background: rgba(11, 8, 20, 0.55);
+    }
+    .autonest-header .title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .autonest-header .count {
+      font-size: 12px;
+      font-weight: 650;
+      color: #fff;
+      font-variant-numeric: tabular-nums;
+    }
+    .autonest-header .count strong {
+      font-size: 15px;
+      margin-left: 4px;
+    }
+    .autonest-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 20px 14px;
+      background: linear-gradient(160deg, rgba(11, 8, 20, 0.92), rgba(34, 26, 50, 0.35));
+      position: relative;
+    }
+    /* Packed blank — parts fill the usable area (gap-aware packing demo) */
+    .blank {
+      position: relative;
+      width: min(78%, 440px);
+      aspect-ratio: 12 / 8;
+      border: 1px dashed rgba(255, 255, 255, 0.28);
+      border-radius: 6px;
+      background: rgba(11, 8, 20, 0.45);
+    }
+    .part {
+      position: absolute;
+      border-radius: 2px;
+      border-width: 1.5px;
+      border-style: solid;
+    }
+    .part-0 {
+      border-color: var(--part-0-stroke);
+      background: var(--part-0-fill);
+    }
+    .part-90 {
+      border-color: var(--part-90-stroke);
+      background: var(--part-90-fill);
+    }
+    /*
+      Dense pack demo: 12×8 blank, 2×1.5 parts @ 0° + 1.5×2 @ 90°.
+      Row of 5 × 0° (cols), 3 rows = 15 @ 0°. Remaining strip fits 6 @ 90°.
+      Parts edge-to-edge with small gap only — no big empty region.
+    */
+    .p1  { left: 1.5%;  top: 1.5%;  width: 18.5%; height: 22.5%; }
+    .p2  { left: 21%;   top: 1.5%;  width: 18.5%; height: 22.5%; }
+    .p3  { left: 40.5%; top: 1.5%;  width: 18.5%; height: 22.5%; }
+    .p4  { left: 60%;   top: 1.5%;  width: 18.5%; height: 22.5%; }
+    .p5  { left: 79.5%; top: 1.5%;  width: 18.5%; height: 22.5%; }
+    .p6  { left: 1.5%;  top: 25.5%; width: 18.5%; height: 22.5%; }
+    .p7  { left: 21%;   top: 25.5%; width: 18.5%; height: 22.5%; }
+    .p8  { left: 40.5%; top: 25.5%; width: 18.5%; height: 22.5%; }
+    .p9  { left: 60%;   top: 25.5%; width: 18.5%; height: 22.5%; }
+    .p10 { left: 79.5%; top: 25.5%; width: 18.5%; height: 22.5%; }
+    .p11 { left: 1.5%;  top: 49.5%; width: 18.5%; height: 22.5%; }
+    .p12 { left: 21%;   top: 49.5%; width: 18.5%; height: 22.5%; }
+    .p13 { left: 40.5%; top: 49.5%; width: 18.5%; height: 22.5%; }
+    .p14 { left: 60%;   top: 49.5%; width: 18.5%; height: 22.5%; }
+    .p15 { left: 79.5%; top: 49.5%; width: 18.5%; height: 22.5%; }
+    /* 90° strip along bottom — fills remaining height */
+    .p16 { left: 1.5%;  top: 73.5%; width: 15%; height: 25%; }
+    .p17 { left: 17.5%; top: 73.5%; width: 15%; height: 25%; }
+    .p18 { left: 33.5%; top: 73.5%; width: 15%; height: 25%; }
+    .p19 { left: 49.5%; top: 73.5%; width: 15%; height: 25%; }
+    .p20 { left: 65.5%; top: 73.5%; width: 15%; height: 25%; }
+    .p21 { left: 81.5%; top: 73.5%; width: 15%; height: 25%; }
+
+    .blank-label {
+      position: absolute;
+      left: 50%;
+      bottom: -22px;
+      transform: translateX(-50%);
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    /* Segmented meta: frost orientation + dark trim, connected button-group */
+    .autonest-meta {
+      width: fit-content;
+      max-width: 100%;
+      margin-top: 34px;
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 0 0 1px rgba(83, 139, 236, 0.12);
+    }
+    .meta-col {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding: 10px 14px;
+    }
+    /* Orientation = dark (regular); Trim = frost — flipped */
+    .meta-col.orient {
+      background: rgba(22, 18, 31, 0.92);
+    }
+    .meta-col.orient .meta-k { color: var(--text-muted); }
+    .meta-col.orient .meta-line { color: #fff; }
+    .meta-col.orient .meta-line .muted { color: var(--text-muted); font-weight: 500; }
+    .meta-col.trim {
+      background: rgba(245, 243, 255, 0.94);
+    }
+    .meta-col.trim .meta-k { color: #5B5670; }
+    .meta-col.trim .meta-line { color: #1A1428; }
+    .meta-sep {
+      width: 1px;
+      align-self: stretch;
+      background: rgba(255, 255, 255, 0.16);
+      flex-shrink: 0;
+    }
+    .meta-k {
+      font-size: 9px;
+      font-weight: 650;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+    .meta-line {
+      font-size: 13px;
+      font-weight: 550;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.25;
+    }
+    .meta-line .deg0 { color: var(--blue); }
+    .meta-line .deg90 { color: var(--orange); }
+
+    /* ── Footer counts ─────────────────────────────────────── */
+    .footer-strip {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      padding: 10px 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      background: rgba(11, 8, 20, 0.45);
+    }
+    .footer-item .k {
+      font-size: 9px;
+      font-weight: 650;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .footer-item .v {
+      font-size: 18px;
+      font-weight: 650;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.15;
+    }
+    .footer-item .v.muted { color: var(--text-muted); font-size: 16px; font-weight: 550; }
+    .footer-item .v.auto { color: var(--blue); }
+    .footer-div {
+      width: 1px;
+      height: 28px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .mode-badge {
+      margin-left: auto;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(83, 139, 236, 0.35);
+      color: var(--text-muted);
+      background: var(--raised);
+    }
+    .mode-badge.on-auto {
+      color: #fff;
+      background: rgba(83, 139, 236, 0.35);
+      border-color: rgba(83, 139, 236, 0.55);
+    }
+
+    /* ── 2. SOURCE header (V2-matched) ─────────────────────── */
+    .gcode-panel {
+      width: 100%;
+      max-width: 480px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--panel);
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.08),
+        0 0 0 1px rgba(238, 140, 60, 0.2),
+        0 10px 28px -12px rgba(0, 0, 0, 0.7);
+    }
+    .section-header-gcode {
+      height: 36px;
+      min-height: 36px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 10px 0 12px;
+      background: #D97830;
+      color: #fff;
+      box-sizing: border-box;
+    }
+    .section-header-gcode .label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      flex: 1;
+      min-width: 0;
+      color: #fff;
+    }
+    .icon-btn {
+      height: 26px;
+      width: 26px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: rgba(0, 0, 0, 0.18);
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+      flex-shrink: 0;
+      padding: 0;
+    }
+    .icon-btn:hover {
+      background: rgba(0, 0, 0, 0.32);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+    /* V2 unit switch: track rgba(0,0,0,0.2), active orange fill */
+    .unit-switch-v2 {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 2px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.2);
+      flex-shrink: 0;
+    }
+    .unit-switch-v2 button {
+      height: 24px;
+      padding: 0 8px;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .unit-switch-v2 button.active {
+      background: #EE8C3C;
+      color: #fff;
+    }
+    .section-body {
+      padding: 12px;
+      background: var(--surface);
+    }
+    .source-area {
+      width: 100%;
+      min-height: 120px;
+      border-radius: 8px;
+      border: 1px solid var(--border-soft);
+      background: var(--raised);
+      color: #fff;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 11px;
+      line-height: 1.45;
+      padding: 10px 12px;
+      white-space: pre;
+      overflow: auto;
+      resize: vertical;
+    }
+    .source-area:focus {
+      outline: none;
+      border-color: rgba(238, 140, 60, 0.65);
+      box-shadow: 0 0 0 2px rgba(238, 140, 60, 0.35);
+    }
+    .source-area::placeholder { color: rgba(255, 255, 255, 0.45); }
+
+    /* ── 3. Compact custom dialogs ─────────────────────────── */
+    .dialog-stage {
+      position: relative;
+      min-height: 220px;
+      border-radius: 16px;
+      background:
+        linear-gradient(160deg, rgba(11, 8, 20, 0.95), rgba(34, 26, 50, 0.5)),
+        var(--bg);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      overflow: hidden;
+    }
+    .dialog-stage::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      pointer-events: none;
+    }
+    .dialog-card {
+      position: relative;
+      z-index: 1;
+      width: 168px;
+      border-radius: 12px;
+      /* frost white — contrasts dark stage, aligns with keypad glass feel */
+      background: rgba(245, 243, 255, 0.94);
+      color: #1A1428;
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.55),
+        0 0 0 1px rgba(83, 139, 236, 0.28),
+        0 18px 40px -12px rgba(0, 0, 0, 0.85);
+      overflow: hidden;
+    }
+    .dialog-header {
+      padding: 10px 10px 0;
+    }
+    .dialog-header h3 {
+      margin: 0;
+      font-size: 12px;
+      font-weight: 650;
+      letter-spacing: -0.01em;
+      color: #1A1428;
+    }
+    .dialog-body {
+      padding: 8px 10px 2px;
+    }
+    .dialog-body label {
+      display: block;
+      font-size: 9px;
+      font-weight: 650;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #5B5670;
+      margin-bottom: 4px;
+    }
+    .dialog-input {
+      width: 100%;
+      height: 28px;
+      border-radius: 7px;
+      border: 1px solid rgba(30, 26, 42, 0.18);
+      background: var(--raised);
+      color: #fff;
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+      padding: 0 8px;
+    }
+    .dialog-input:focus {
+      outline: none;
+      border-color: rgba(83, 139, 236, 0.65);
+      box-shadow: 0 0 0 2px rgba(83, 139, 236, 0.35);
+    }
+    .dialog-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 10px 10px;
+    }
+    .dialog-actions .spacer { flex: 1; }
+    .dlg-icon-btn {
+      height: 28px;
+      width: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 7px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+      padding: 0;
+      flex-shrink: 0;
+    }
+    .dlg-icon-btn.cancel {
+      background: transparent;
+      border-color: rgba(30, 26, 42, 0.18);
+      color: #7A748C;
+    }
+    .dlg-icon-btn.cancel:hover {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.35);
+      color: #DC2626;
+    }
+    .dlg-icon-btn.ok {
+      background: var(--blue);
+      border-color: rgba(83, 139, 236, 0.85);
+      color: #fff;
+    }
+    .dlg-icon-btn.ok:hover { filter: brightness(1.08); }
+    .dlg-icon-btn.danger {
+      background: rgba(239, 68, 68, 0.12);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #DC2626;
+    }
+    .dlg-icon-btn.danger:hover {
+      background: rgba(239, 68, 68, 0.22);
+      color: #B91C1C;
+    }
+
+    .dialog-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    @media (min-width: 720px) {
+      .dialog-grid { grid-template-columns: 1fr 1fr 1fr; }
+    }
+
+    /* ── 4. Keypad / Calculator — frost shell, numbers fixed ─ */
+    .keypad {
+      --key-h: 44px;
+      --key-gap: 6px;
+      --op-w: 52px;
+      width: 230px;
+      border-radius: 16px;
+      padding: 12px;
+      background: #D8D6E2;
+      color: #1A1428;
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.55),
+        0 0 0 1px rgba(83, 139, 236, 0.22),
+        0 14px 32px -10px rgba(0, 0, 0, 0.75);
+      transition: width 0.45s var(--smooth);
+    }
+    .keypad.calc-mode {
+      width: calc(230px + var(--op-w) + var(--key-gap));
+    }
+    .press {
+      transition: transform 0.15s var(--spring), background 0.12s, border-color 0.12s, color 0.12s, filter 0.12s, box-shadow 0.12s;
+    }
+    .press:active { transform: scale(0.94); }
+
+    .keypad-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+    .keypad-toolbar .tool {
+      height: 26px;
+      width: 26px;
+      border-radius: 8px;
+      border: none;
+      background: rgba(255, 255, 255, 0.55);
+      color: #5B6A9A;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+    }
+    .keypad-toolbar .tool:hover {
+      background: rgba(255, 255, 255, 0.85);
+      color: #1A1428;
+    }
+    .keypad-toolbar .tool.active-calc {
+      background: rgba(83, 139, 236, 0.28);
+      color: #1E3A8A;
+    }
+    .keypad-toolbar .drag {
+      flex: 1;
+      height: 26px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.4);
+      cursor: grab;
+    }
+
+    /*
+     * Fixed mid-chrome height — keypad shows arrows+chips;
+     * calc mode swaps that slot for a tall LCD.
+     * Overall pad height does NOT change between modes.
+     */
+    .mid-chrome {
+      /* Full slot for arrows + chips (unsquashed). LCD is shorter inside this same slot. */
+      height: 68px;
+      margin-bottom: 10px;
+      position: relative;
+    }
+    .keypad-mid {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      opacity: 1;
+      pointer-events: auto;
+      transition: opacity 0.22s ease;
+    }
+    .keypad.calc-mode .keypad-mid {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .arrow-strip {
+      display: flex;
+      gap: 4px;
+      flex: 0 0 auto;
+    }
+    .arrow-strip button {
+      flex: 1;
+      height: 28px;
+      border-radius: 8px;
+      border: none;
+      background: rgba(255, 255, 255, 0.55);
+      color: #1A1428;
+      font-size: 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+    .arrow-strip button:hover { background: rgba(255, 255, 255, 0.85); }
+    .chips-scroll {
+      flex: 1 1 auto;
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(83, 139, 236, 0.45) transparent;
+      min-height: 0;
+    }
+    .chips-scroll::-webkit-scrollbar { height: 4px; }
+    .chips-scroll::-webkit-scrollbar-thumb {
+      background: rgba(83, 139, 236, 0.45);
+      border-radius: 999px;
+    }
+    .chips {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 4px;
+      width: max-content;
+      height: 100%;
+      align-items: center;
+    }
+    .chip {
+      height: 24px;
+      padding: 0 7px;
+      border-radius: 6px;
+      border: none;
+      background: rgba(255, 255, 255, 0.55);
+      color: #5B5670;
+      font-size: 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-weight: 550;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .chip:hover { background: rgba(255, 255, 255, 0.85); color: #1A1428; }
+    .chip.blink {
+      background: rgba(83, 139, 236, 0.35);
+      color: #1A1428;
+    }
+    /*
+     * LCD is shorter than the mid slot — centered with equal air
+     * above and below inside mid-chrome. Quick chips stay full-slot height.
+     */
+    .lcd {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      height: 50px;
+      margin-top: -25px; /* center 50px in 68px slot → equal 9px air each side */
+      border-radius: 12px;
+      background: #1C1A28;
+      color: #F5F3FF;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 20px;
+      font-weight: 550;
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s ease;
+    }
+    .keypad.calc-mode .lcd {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Numbers FIXED left; ops SLIDE in from right — numbers never move/resize */
+    .keys-row {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+    }
+    .keys-num {
+      flex: 0 0 calc(230px - 24px); /* fixed: shell pad width minus padding */
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--key-gap);
+      min-width: 0;
+    }
+    .ops-slide {
+      flex: 0 0 0;
+      width: 0;
+      overflow: hidden;
+      transition: flex-basis 0.45s var(--smooth), width 0.45s var(--smooth), margin 0.45s var(--smooth);
+      margin-left: 0;
+    }
+    .keypad.calc-mode .ops-slide {
+      flex-basis: var(--op-w);
+      width: var(--op-w);
+      margin-left: var(--key-gap);
+    }
+    .ops-inner {
+      width: var(--op-w);
+      display: flex;
+      flex-direction: column;
+      gap: var(--key-gap);
+      height: 100%;
+    }
+    .ops-inner .key {
+      flex: 1;
+      min-height: var(--key-h);
+    }
+
+    .key {
+      height: var(--key-h);
+      border-radius: 12px;
+      border: none;
+      background: #2A2A38;
+      color: #E8E4F0;
+      font-size: 15px;
+      font-weight: 550;
+      cursor: pointer;
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.08) inset,
+        0 2px 4px rgba(0, 0, 0, 0.25);
+    }
+    .key:hover { background: #343446; }
+    .key.util {
+      color: #C8CDD8;
+      background: #2A2A38;
+    }
+    .key.op {
+      background: #EE9A3C;
+      color: #fff;
+      font-weight: 650;
+      font-size: 18px;
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.25) inset,
+        0 2px 4px rgba(180, 90, 20, 0.35);
+    }
+    .key.op:hover { filter: brightness(1.06); background: #EE9A3C; }
+    .key.enter {
+      width: 100%;
+      margin-top: var(--key-gap);
+      height: 44px;
+      border-radius: 14px;
+      background: #7BA3F0;
+      color: #fff;
+      font-weight: 650;
+      font-size: 15px;
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.3) inset,
+        0 2px 6px rgba(50, 90, 180, 0.35);
+    }
+    .key.enter:hover { filter: brightness(1.06); }
+
+    .pair {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 720px) {
+      .pair { grid-template-columns: 1fr; }
+      .component-label .rule { margin-left: 0; text-align: left; max-width: none; }
+    }
+
+    .note {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+    .note strong { color: #E2E0F0; font-weight: 600; }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .swatch {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      border: 1.5px solid;
+    }
+    .swatch.d0 { border-color: var(--part-0-stroke); background: var(--part-0-fill); }
+    .swatch.d90 { border-color: var(--part-90-stroke); background: var(--part-90-fill); }
+
+    .authority-banner {
+      margin-bottom: 28px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(83, 139, 236, 0.35);
+      background: rgba(83, 139, 236, 0.08);
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--text-muted);
+    }
+    .authority-banner strong { color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1>HowMany — UI polish residual components</h1>
+    <p class="subtitle">
+      Visual + structure authority for the residual wave after PR #60.
+      Same Option B contract: these HTML pieces are locked chrome targets.
+      React stays thin host + bridge. Original <code>REFERENCE-PROTOTYPE-v2.html</code> is not mutated.
+    </p>
+
+    <div class="authority-banner">
+      <strong>Locked decisions in this package</strong><br />
+      AutoNest trim = <strong>text only inside card body</strong> (no external dimension lines). Nest demo is densely packed.<br />
+      Footer: Manual mode shows TOTAL + MANUAL only; AutoNest mode adds AUTO so the diff is visible.<br />
+      SOURCE header L→R: Source · File · Eraser · IN|MM · Chevron. Unit switch matches v2 track style.<br />
+      Dialogs: compact frost cards, title only, Lucide Check / X / Trash. No browser prompt chrome.<br />
+      Keypad vs Calculator: numbers stay fixed; right side slides open for orange + − × ÷; LCD + full-width Enter. Lucide icons.<br />
+      Complex G-code bounds / engine dial-in = separate SuperBrain fixture cycle (out of this residual).
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════
+         1. AutoNest result card — dense pack
+         ═══════════════════════════════════════════════════════ -->
+    <section class="component-block" id="autonest-result-card">
+      <div class="component-label">
+        <span class="tag">Component 1</span>
+        <h2>AutoNest result card</h2>
+        <div class="rule">Dense pack fills the blank · header + body · 0° blue / 90° orange · trim &amp; offset as text only</div>
+      </div>
+
+      <div class="stage-card autonest-card">
+        <div class="autonest-header">
+          <div class="title">AutoNest result</div>
+          <div class="count">21<strong> parts</strong></div>
+        </div>
+
+        <div class="autonest-body">
+          <div class="blank" aria-label="Nested blank 12 × 8 in">
+            <!-- 0° — 15 parts, 5×3 grid packing the upper area -->
+            <div class="part part-0 p1"></div>
+            <div class="part part-0 p2"></div>
+            <div class="part part-0 p3"></div>
+            <div class="part part-0 p4"></div>
+            <div class="part part-0 p5"></div>
+            <div class="part part-0 p6"></div>
+            <div class="part part-0 p7"></div>
+            <div class="part part-0 p8"></div>
+            <div class="part part-0 p9"></div>
+            <div class="part part-0 p10"></div>
+            <div class="part part-0 p11"></div>
+            <div class="part part-0 p12"></div>
+            <div class="part part-0 p13"></div>
+            <div class="part part-0 p14"></div>
+            <div class="part part-0 p15"></div>
+            <!-- 90° — 6 parts fill the remaining bottom strip -->
+            <div class="part part-90 p16"></div>
+            <div class="part part-90 p17"></div>
+            <div class="part part-90 p18"></div>
+            <div class="part part-90 p19"></div>
+            <div class="part part-90 p20"></div>
+            <div class="part part-90 p21"></div>
+            <div class="blank-label">12 × 8 in</div>
+          </div>
+
+          <div class="autonest-meta" role="group" aria-label="Nest result summary">
+            <div class="meta-col orient">
+              <span class="meta-k">Orientation</span>
+              <span class="meta-line"><span class="deg0">0°</span> · 15 <span class="muted">parts</span></span>
+              <span class="meta-line"><span class="deg90">90°</span> · 6 <span class="muted">parts</span></span>
+            </div>
+            <div class="meta-sep" aria-hidden="true"></div>
+            <div class="meta-col trim">
+              <span class="meta-k">Trim / offset approx</span>
+              <span class="meta-line">Horizontal @ 5.28 in</span>
+              <span class="meta-line">X 0 · Y 5.28</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-strip" data-mode="autonest">
+          <div class="footer-item">
+            <div class="k">Total</div>
+            <div class="v">21</div>
+          </div>
+          <div class="footer-div"></div>
+          <div class="footer-item">
+            <div class="k">Manual</div>
+            <div class="v muted">20</div>
+          </div>
+          <div class="footer-item">
+            <div class="k">Auto</div>
+            <div class="v auto">21</div>
+          </div>
+          <div class="mode-badge on-auto">AutoNest</div>
+        </div>
+      </div>
+
+      <div class="legend">
+        <span><i class="swatch d0"></i> 0° stroke + fill @ opacity</span>
+        <span><i class="swatch d90"></i> 90° stroke + fill @ opacity</span>
+        <span>No external dimension lines</span>
+        <span>Parts pack the blank — no large empty region</span>
+      </div>
+    </section>
+
+    <!-- Manual footer -->
+    <section class="component-block" id="footer-manual">
+      <div class="component-label">
+        <span class="tag">Component 1b</span>
+        <h2>Footer counts — Manual mode</h2>
+        <div class="rule">Hide AUTO while in Manual. Keep TOTAL + MANUAL.</div>
+      </div>
+      <div class="stage-card">
+        <div class="footer-strip" data-mode="manual">
+          <div class="footer-item">
+            <div class="k">Total</div>
+            <div class="v">20</div>
+          </div>
+          <div class="footer-div"></div>
+          <div class="footer-item">
+            <div class="k">Manual</div>
+            <div class="v muted">20</div>
+          </div>
+          <div class="mode-badge">Manual</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════
+         2. SOURCE header — File · Eraser · IN|MM · Chevron
+         ═══════════════════════════════════════════════════════ -->
+    <section class="component-block" id="source-header">
+      <div class="component-label">
+        <span class="tag">Component 2</span>
+        <h2>SOURCE header strip</h2>
+        <div class="rule">L→R: Source · File · Eraser · IN|MM · Chevron. Unit switch matches v2.</div>
+      </div>
+
+      <div class="gcode-panel">
+        <div class="section-header-gcode">
+          <div class="label">Source</div>
+
+          <!-- Lucide File — open local .nc / .cnc / text -->
+          <button type="button" class="icon-btn" title="Open file" aria-label="Open file">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
+              <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
+            </svg>
+          </button>
+
+          <!-- Lucide Eraser — clear source -->
+          <button type="button" class="icon-btn" title="Clear source" aria-label="Clear source">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/>
+              <path d="M22 21H7"/>
+              <path d="m5 11 9 9"/>
+            </svg>
+          </button>
+
+          <!-- V2-style unit switch -->
+          <div class="unit-switch-v2" role="group" aria-label="Source units">
+            <button type="button" class="active" aria-pressed="true">IN</button>
+            <button type="button" aria-pressed="false">MM</button>
+          </div>
+
+          <!-- Chevron collapse -->
+          <button type="button" class="icon-btn" title="Collapse" aria-label="Collapse source">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m18 15-6-6-6 6"/>
+            </svg>
+          </button>
+        </div>
+        <div class="section-body">
+          <textarea class="source-area" spellcheck="false" placeholder="Paste G-code here">G0 X0 Y0
+G1 X120 Y0 F600
+G1 X120 Y60
+G1 X0 Y60
+G1 X0 Y0
+M5
+M2</textarea>
+        </div>
+      </div>
+      <p class="note">
+        <strong>Unit rule:</strong> SOURCE IN/MM = unit of the numbers in the textarea.
+        Bounding box + PART SIZE follow the active unit and convert on toggle.
+        Header unit chips in G-code mode stay on the orange accent.
+      </p>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════
+         3. Compact custom dialogs — Lucide actions
+         ═══════════════════════════════════════════════════════ -->
+    <section class="component-block" id="custom-dialogs">
+      <div class="component-label">
+        <span class="tag">Component 3</span>
+        <h2>Custom dialog cards</h2>
+        <div class="rule">Compact frost cards · title only · Check / X / Trash · short names</div>
+      </div>
+
+      <div class="dialog-grid">
+        <!-- Save preset -->
+        <div class="dialog-stage">
+          <div class="dialog-card" role="dialog" aria-labelledby="dlg-save-title">
+            <div class="dialog-header">
+              <h3 id="dlg-save-title">Save preset</h3>
+            </div>
+            <div class="dialog-body">
+              <label for="preset-name">Name</label>
+              <input id="preset-name" class="dialog-input" type="text" value="O25SS" maxlength="24" />
+            </div>
+            <div class="dialog-actions">
+              <!-- Lucide X = Cancel -->
+              <button type="button" class="dlg-icon-btn cancel" title="Cancel" aria-label="Cancel">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+                </svg>
+              </button>
+              <div class="spacer"></div>
+              <!-- Check = OK -->
+              <button type="button" class="dlg-icon-btn ok" title="OK" aria-label="OK">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 6 9 17l-5-5"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Edit quick-value -->
+        <div class="dialog-stage">
+          <div class="dialog-card" role="dialog" aria-labelledby="dlg-qv-title">
+            <div class="dialog-header">
+              <h3 id="dlg-qv-title">Edit quick value</h3>
+            </div>
+            <div class="dialog-body">
+              <label for="qv-value">Value</label>
+              <input id="qv-value" class="dialog-input" type="text" inputmode="decimal" value="0.125" />
+            </div>
+            <div class="dialog-actions">
+              <!-- Trash = Delete -->
+              <button type="button" class="dlg-icon-btn danger" title="Delete" aria-label="Delete">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                </svg>
+              </button>
+              <div class="spacer"></div>
+              <button type="button" class="dlg-icon-btn cancel" title="Cancel" aria-label="Cancel">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+                </svg>
+              </button>
+              <button type="button" class="dlg-icon-btn ok" title="OK" aria-label="OK">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 6 9 17l-5-5"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rename preset -->
+        <div class="dialog-stage">
+          <div class="dialog-card" role="dialog" aria-labelledby="dlg-rename-title">
+            <div class="dialog-header">
+              <h3 id="dlg-rename-title">Rename preset</h3>
+            </div>
+            <div class="dialog-body">
+              <label for="rename-value">Name</label>
+              <input id="rename-value" class="dialog-input" type="text" value="stainless" maxlength="24" />
+            </div>
+            <div class="dialog-actions">
+              <button type="button" class="dlg-icon-btn cancel" title="Cancel" aria-label="Cancel">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+                </svg>
+              </button>
+              <div class="spacer"></div>
+              <button type="button" class="dlg-icon-btn ok" title="OK" aria-label="OK">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 6 9 17l-5-5"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="note">
+        <strong>Shared shell:</strong> no <code>window.prompt</code>, no origin title bar, Escape = Cancel,
+        focus enters the field on open. Multi-character names allowed on rename/save.
+      </p>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════
+         4. Keypad — persistent arrows, chip scroll, Lucide edit
+         ═══════════════════════════════════════════════════════ -->
+    <section class="component-block" id="keypad-chrome">
+      <div class="component-label">
+        <span class="tag">Component 4</span>
+        <h2>Keypad chrome</h2>
+        <div class="rule">Persistent ← → · horizontal chip scroll · Lucide edit · blink-only chips</div>
+      </div>
+
+      <div class="pair">
+        <div>
+          <div class="keypad" id="keypad-demo">
+            <div class="keypad-toolbar">
+              <!-- Lucide Calculator -->
+              <button type="button" class="tool press" id="calc-toggle" title="Calculator mode" aria-label="Calculator mode" aria-pressed="false">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                  <rect width="16" height="20" x="4" y="2" rx="2"/>
+                  <line x1="8" x2="16" y1="6" y2="6"/>
+                  <line x1="16" x2="16" y1="14" y2="18"/>
+                  <path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/>
+                  <path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/>
+                </svg>
+              </button>
+              <!-- Lucide Delete / Backspace -->
+              <button type="button" class="tool press" title="Backspace" aria-label="Backspace">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 5H9l-7 7 7 7h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Z"/>
+                  <path d="m12 9 6 6"/><path d="m18 9-6 6"/>
+                </svg>
+              </button>
+              <!-- Lucide Pencil -->
+              <button type="button" class="tool press" title="Edit quick values" aria-label="Edit quick values">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
+                  <path d="m15 5 4 4"/>
+                </svg>
+              </button>
+              <div class="drag" title="Drag keypad" aria-label="Drag keypad"></div>
+              <button type="button" class="tool press" title="Close" aria-label="Close keypad">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Fixed mid-chrome: keypad = arrows+chips; calc = tall LCD. Same height either way. -->
+            <div class="mid-chrome">
+              <div class="keypad-mid">
+                <div class="arrow-strip" aria-label="Field focus">
+                  <button type="button" class="press" aria-label="Previous field">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="m15 18-6-6 6-6"/>
+                    </svg>
+                  </button>
+                  <button type="button" class="press" aria-label="Next field">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="m9 18 6-6-6-6"/>
+                    </svg>
+                  </button>
+                </div>
+                <div class="chips-scroll">
+                  <div class="chips" aria-label="Quick values">
+                    <button type="button" class="chip press" data-quick="0.060">.060</button>
+                    <button type="button" class="chip press" data-quick="0.125">.125</button>
+                    <button type="button" class="chip press" data-quick="0.250">.250</button>
+                    <button type="button" class="chip press" data-quick="0.375">.375</button>
+                    <button type="button" class="chip press" data-quick="0.500">.500</button>
+                    <button type="button" class="chip press" data-quick="0.750">.750</button>
+                    <button type="button" class="chip press" data-quick="1.000">1.000</button>
+                  </div>
+                </div>
+              </div>
+              <div class="lcd" id="calc-lcd" aria-label="Calculator display">0</div>
+            </div>
+
+            <!-- Numbers FIXED left; ops SLIDE in from the right -->
+            <div class="keys-row">
+              <div class="keys-num" aria-label="Number pad">
+                <button type="button" class="key press">7</button>
+                <button type="button" class="key press">8</button>
+                <button type="button" class="key press">9</button>
+                <button type="button" class="key press">4</button>
+                <button type="button" class="key press">5</button>
+                <button type="button" class="key press">6</button>
+                <button type="button" class="key press">1</button>
+                <button type="button" class="key press">2</button>
+                <button type="button" class="key press">3</button>
+                <button type="button" class="key press">.</button>
+                <button type="button" class="key press">0</button>
+                <button type="button" class="key util press" title="Backspace">⌫</button>
+              </div>
+              <div class="ops-slide" aria-hidden="true">
+                <div class="ops-inner" aria-label="Calculator operators">
+                  <!-- Order matches product screenshot: + − × ÷ top→bottom -->
+                  <button type="button" class="key op press" title="Add">+</button>
+                  <button type="button" class="key op press" title="Subtract">−</button>
+                  <button type="button" class="key op press" title="Multiply">×</button>
+                  <button type="button" class="key op press" title="Divide">÷</button>
+                </div>
+              </div>
+            </div>
+
+            <button type="button" class="key enter press">↵ Enter</button>
+          </div>
+        </div>
+
+        <div class="note" style="margin-top: 0;">
+          <strong>Behavior contract</strong><br /><br />
+          • Quick chips: transient blink on press only — never sticky.<br />
+          • Chip sets the focused field value (replace, not append).<br />
+          • Chips row scrolls horizontally when there are more values.<br />
+          • ← → always visible; move focus between numeric fields without changing values.<br />
+          • <strong>Lucide Calculator</strong> expands shell right only; number keys stay fixed; orange + − × ÷ slide in.<br />
+          • Overall pad height is constant — mid slot swaps arrows/chips ↔ tall LCD.<br />
+          • Enter always full-width under the pad.<br />
+          • Toolbar: Lucide Calculator · Backspace · Pencil · drag · Close (no arrows in toolbar).<br />
+          • Keypad mode: ← → strip + quick chips under toolbar.<br />
+          • When relevant collapsibles are closed, keypad is inert for those fields.<br />
+          • Site-wide: numeric-only inputs reject letters.
+        </div>
+      </div>
+    </section>
+
+    <section class="component-block">
+      <div class="component-label">
+        <span class="tag">Authority</span>
+        <h2>How Codex should read this file</h2>
+      </div>
+      <p class="note" style="margin: 0;">
+        Treat this HTML the same way Option B treats <code>REFERENCE-PROTOTYPE-v2.html</code>:
+        visual + structure authority for the residual components listed above.
+        Prefer bridge / portal presentation to match these targets.
+        Do not mutate the locked v2 prototype.
+        Complex G-code parser / engine work is out of scope for this residual package.
+      </p>
+    </section>
+  </div>
+
+  <script>
+    document.querySelectorAll('.chip').forEach((chip) => {
+      chip.addEventListener('click', () => {
+        chip.classList.add('blink');
+        window.setTimeout(() => chip.classList.remove('blink'), 140);
+      });
+    });
+
+    document.querySelectorAll('.unit-switch-v2').forEach((group) => {
+      group.querySelectorAll('button').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          group.querySelectorAll('button').forEach((b) => {
+            b.classList.remove('active');
+            b.setAttribute('aria-pressed', 'false');
+          });
+          btn.classList.add('active');
+          btn.setAttribute('aria-pressed', 'true');
+        });
+      });
+    });
+
+    // Calculator mode: hide arrows + chips; show right ops column (÷ × − +)
+    const calcToggle = document.getElementById('calc-toggle');
+    const keypad = document.getElementById('keypad-demo');
+    if (calcToggle && keypad) {
+      calcToggle.addEventListener('click', () => {
+        const on = keypad.classList.toggle('calc-mode');
+        calcToggle.classList.toggle('active-calc', on);
+        calcToggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+    }
+  </script>
+</body>
+</html>
