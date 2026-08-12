@@ -39,6 +39,24 @@ export function formatShellNumber(value: number | null): string {
   return `${round3(value)}`;
 }
 
+export function formatMarginBadge(margins: Margins): string {
+  return [
+    `L${formatShellNumber(margins.left)}`,
+    `R${formatShellNumber(margins.right)}`,
+    `B${formatShellNumber(margins.bottom)}`,
+    `T${formatShellNumber(margins.top)}`,
+  ].join(" ");
+}
+
+export function normalizeQuickValue(raw: string): string | null {
+  const value = raw.trim();
+  if (!/^(?:\d+|\d*\.\d{0,3})$/.test(value) || value === ".") return null;
+
+  const [integer, fraction] = value.split(".");
+  if (fraction === undefined || fraction === "") return `${Number(integer)}`;
+  return `${integer === "" ? "0" : Number(integer)}.${fraction}`;
+}
+
 export function shouldPreserveNumericDraft(
   draft: string,
   persistedValue: number | null,
@@ -98,6 +116,16 @@ export function derivePresetCarousel({
     canGoPrevious: page > 0,
     canGoNext: page < maxPage,
   };
+}
+
+export function nextPresetIndex(
+  currentIndex: number,
+  count: number,
+  direction: -1 | 1,
+): number {
+  if (count <= 0) return -1;
+  const startingIndex = currentIndex >= 0 ? currentIndex : direction === 1 ? -1 : 0;
+  return (startingIndex + direction + count) % count;
 }
 
 export interface PartSize {

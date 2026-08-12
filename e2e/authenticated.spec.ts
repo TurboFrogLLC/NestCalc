@@ -707,8 +707,11 @@ test("HowMany residual polish keeps bridge state, presets, previews, and G-code 
     if (!raw) throw new Error("Missing v3 state before residual preset save.");
     return JSON.parse(raw) as unknown;
   });
-  page.once("dialog", (dialog) => dialog.accept(presetName));
   await shell.locator("#presets-add").click();
+  const saveDialog = shell.getByRole("dialog", { name: "Save preset" });
+  await expect(saveDialog).toBeVisible();
+  await saveDialog.getByLabel("Preset name").fill(presetName);
+  await saveDialog.getByRole("button", { name: "OK" }).click();
   const shellPreset = shell.getByRole("listitem", {
     name: `Load preset ${presetName}`,
   });
@@ -809,7 +812,7 @@ test("HowMany residual polish keeps bridge state, presets, previews, and G-code 
           stroke: getComputedStyle(element).stroke,
         })),
     )
-    .toEqual({ fill: "rgba(34, 211, 238, 0.22)", stroke: "rgb(34, 211, 238)" });
+    .toEqual({ fill: "rgba(83, 139, 236, 0.24)", stroke: "rgb(83, 139, 236)" });
   await expect(
     hostedAutoNest.locator('[data-testid="autonest-preview-trim-summary"]'),
   ).toContainText("Trim");
@@ -828,6 +831,313 @@ test("HowMany residual polish keeps bridge state, presets, previews, and G-code 
   );
   await expect(partX).toHaveValue("4");
   await expect(shell.locator("#part-y")).toHaveValue("2");
+});
+
+test("HowMany UI polish residual proves AutoNest, G-code, controls, and dialogs", async ({
+  page,
+}, testInfo) => {
+  test.setTimeout(120_000);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const shell = howManyShell(page);
+  await expect(shell.locator("#presets-track")).toHaveAttribute(
+    "aria-busy",
+    "false",
+    { timeout: 15_000 },
+  );
+  await deletePresetDatabase(page);
+  await page.evaluate(seedComputedAutoNestState);
+  await page.reload();
+  await expect(shell.locator("#presets-track")).toHaveAttribute(
+    "aria-busy",
+    "false",
+    { timeout: 15_000 },
+  );
+
+  const autoCard = shell.locator('[data-howmany-autonest-card="true"]');
+  await expect(autoCard).toBeVisible();
+  await expect(autoCard.locator("[data-howmany-autonest-header]")).toContainText(
+    "AutoNest result",
+  );
+  await expect(autoCard.locator('[data-howmany-trim-dimension="vertical"]')).toBeVisible();
+  await expect(autoCard.locator("[data-howmany-autonest-truth]")).toContainText(
+    /Trim vertical @ \d/,
+  );
+  await expect(autoCard.locator("[data-howmany-autonest-truth]")).toContainText(
+    /Offset X \d/,
+  );
+  await expect(
+    autoCard.locator('[data-testid="autonest-preview-trim-summary"]'),
+  ).toBeAttached();
+  await expect
+    .poll(() =>
+      autoCard
+        .locator(".autonest-preview-summary")
+        .evaluate((element) => getComputedStyle(element).clip),
+    )
+    .not.toBe("auto");
+  await expect
+    .poll(() =>
+      autoCard
+        .locator('[data-testid="autonest-part-0deg"]')
+        .first()
+        .evaluate((element) => ({
+          fill: getComputedStyle(element).fill,
+          stroke: getComputedStyle(element).stroke,
+        })),
+    )
+    .toEqual({ fill: "rgba(83, 139, 236, 0.24)", stroke: "rgb(83, 139, 236)" });
+  await expect
+    .poll(() =>
+      autoCard
+        .locator('[data-testid="autonest-part-90deg"]')
+        .first()
+        .evaluate((element) => ({
+          fill: getComputedStyle(element).fill,
+          stroke: getComputedStyle(element).stroke,
+        })),
+    )
+    .toEqual({ fill: "rgba(238, 140, 60, 0.24)", stroke: "rgb(238, 140, 60)" });
+  await page.screenshot({
+    path: testInfo.outputPath("howmany-ui-polish-autonest-desktop.png"),
+    animations: "disabled",
+    fullPage: true,
+  });
+
+  await shell.locator("#mode-manual").click();
+  await shell.locator('[data-target="margins-body"]').click();
+  await expect(shell.locator("#margins-badge")).toHaveText("L0 R0 B0 T0");
+  await shell.locator("#m-left").fill("1");
+  await shell.locator("#m-right").fill("2");
+  await shell.locator("#m-bottom").fill("3");
+  await shell.locator("#m-top").fill("4");
+  await expect(shell.locator("#margins-badge")).toHaveText("L1 R2 B3 T4");
+  await shell.locator("#unit-mm").click();
+  await expect(shell.locator("#margins-badge")).toHaveText(
+    "L25.4 R50.8 B76.2 T101.6",
+  );
+  await shell.locator("#unit-in").click();
+  const moveMargins = shell.locator(
+    '[data-section="margins"] input[type="checkbox"]',
+  );
+  await moveMargins.check();
+  await shell.locator("#btn-rem-90").click();
+  await expect(shell.locator("#margins-badge")).toHaveText("L3 R4 B2 T1");
+  await shell
+    .locator("#m-left")
+    .locator("xpath=..")
+    .getByRole("button", { name: "Clear" })
+    .click();
+  await expect(shell.locator("#margins-badge")).toHaveText("L R4 B2 T1");
+
+  const partX = shell.locator("#part-x");
+  const partY = shell.locator("#part-y");
+  await partX.focus();
+  await shell.locator('[data-quick="0.125"]').click();
+  await expect(partX).toHaveValue("0.125");
+  await expect(shell.locator('[data-quick="0.125"]')).not.toHaveClass(
+    /is-selected/,
+  );
+  await expect(shell.locator('[data-quick="0.125"]')).toHaveAttribute(
+    "aria-pressed",
+    "false",
+  );
+
+  await shell.locator("#howmany-focus-nav-toggle").click();
+  const beforeNavigation = await partY.inputValue();
+  const nextField = shell.locator('[data-howmany-focus-direction="next"]');
+  await expect(nextField).toBeVisible();
+  await expect(nextField).toHaveAttribute("aria-label", "Next calculator field");
+  await nextField.click();
+  await expect
+    .poll(() =>
+      partY.evaluate((element) => element.ownerDocument.activeElement === element),
+    )
+    .toBe(true);
+  await expect(partY).toHaveValue(beforeNavigation);
+  const previousField = shell.locator(
+    '[data-howmany-focus-direction="previous"]',
+  );
+  await expect(previousField).toBeVisible();
+  await expect(previousField).toHaveAttribute(
+    "aria-label",
+    "Previous calculator field",
+  );
+  await previousField.click();
+  await expect
+    .poll(() =>
+      partX.evaluate((element) => element.ownerDocument.activeElement === element),
+    )
+    .toBe(true);
+
+  await shell.locator("#howmany-quick-edit").click();
+  const quickDialog = shell.getByRole("dialog", { name: "Edit quick value" });
+  await expect(quickDialog).toBeVisible();
+  await quickDialog.getByLabel("Value").fill("1.2345");
+  await expect(quickDialog.getByRole("alert")).toContainText(
+    "up to three decimal places",
+  );
+  await expect(quickDialog.getByRole("button", { name: "OK" })).toBeDisabled();
+  await quickDialog.getByLabel("Value").fill("0.375");
+  await page.screenshot({
+    path: testInfo.outputPath("howmany-ui-polish-quick-dialog.png"),
+    animations: "disabled",
+    fullPage: true,
+  });
+  await quickDialog.getByRole("button", { name: "OK" }).click();
+  await expect(shell.locator('[data-quick="0.375"]')).toHaveCount(2);
+  await shell.locator('[data-quick="0.375"]').last().click();
+  await shell.locator("#howmany-quick-edit").click();
+  await shell
+    .getByRole("dialog", { name: "Edit quick value" })
+    .getByRole("button", { name: "Delete" })
+    .click();
+  await expect(shell.locator('[data-howmany-dialog-backdrop="true"]')).toHaveCount(0);
+
+  await shell.locator('[data-target="presets-body"]').click();
+  const presetCountBeforeCancel = await shell
+    .locator("#presets-track [data-preset-id]")
+    .count();
+  await shell.locator("#presets-add").click();
+  const savePresetDialog = shell.getByRole("dialog", { name: "Save preset" });
+  await expect(savePresetDialog).toBeVisible();
+  await savePresetDialog.getByLabel("Preset name").fill("Cancelled preset");
+  await page.screenshot({
+    path: testInfo.outputPath("howmany-ui-polish-save-preset-dialog.png"),
+    animations: "disabled",
+    fullPage: true,
+  });
+  await savePresetDialog.getByRole("button", { name: "Cancel" }).click();
+  await expect(shell.locator("#presets-track [data-preset-id]")).toHaveCount(
+    presetCountBeforeCancel,
+  );
+
+  for (const name of ["Residual one", "Residual two"]) {
+    await shell.locator("#presets-add").click();
+    const dialog = shell.getByRole("dialog", { name: "Save preset" });
+    await dialog.getByLabel("Preset name").fill(name);
+    await dialog.getByRole("button", { name: "OK" }).click();
+    await expect(shell.getByRole("listitem", { name: `Load preset ${name}` })).toBeVisible();
+  }
+  const firstPreset = shell.getByRole("listitem", {
+    name: "Load preset Residual one",
+  });
+  const secondPreset = shell.getByRole("listitem", {
+    name: "Load preset Residual two",
+  });
+  await firstPreset.focus();
+  await firstPreset.press("ArrowRight");
+  await expect(secondPreset).toHaveAttribute("aria-pressed", "true");
+  await expect
+    .poll(() =>
+      secondPreset.evaluate(
+        (element) => element.ownerDocument.activeElement === element,
+      ),
+    )
+    .toBe(true);
+  await expect(shell.locator("#margins-badge")).toHaveText("L R4 B2 T1");
+
+  await page.reload();
+  await expect(shell.locator("#presets-track")).toHaveAttribute(
+    "aria-busy",
+    "false",
+    { timeout: 15_000 },
+  );
+  await expect(shell.locator("#margins-badge")).toHaveText("L R4 B2 T1");
+  await page.screenshot({
+    path: testInfo.outputPath("howmany-ui-polish-calculator-desktop.png"),
+    animations: "disabled",
+    fullPage: true,
+  });
+
+  await shell.locator("#tab-gcode").click();
+  await expect(shell.getByText("Bounding box", { exact: true })).toBeVisible();
+  const sourceInput = shell.locator("#gcode-input");
+  const fileInput = shell.locator("#howmany-file-input");
+  const square = "G90 G20\nG0 X0 Y0\nG1 X1.493 Y0\nG1 X1.493 Y1.493\nG1 X0 Y1.493";
+  await fileInput.setInputFiles({
+    name: "square.nc",
+    mimeType: "text/plain",
+    buffer: Buffer.from(square),
+  });
+  await expect(sourceInput).toHaveValue(square);
+  await expect(shell.locator("[data-howmany-gcode-atmosphere]")).toContainText(
+    "X1.493",
+  );
+  await shell.locator("#gcode-generate").click();
+  await expect(shell.locator("#gcode-part-x")).toHaveValue("1.493");
+  await expect(shell.locator("#gcode-part-y")).toHaveValue("1.493");
+
+  const rectangle = "G90 G20\nG0 X0 Y0\nG1 X1.493 Y0\nG1 X1.493 Y1.62\nG1 X0 Y1.62";
+  await fileInput.setInputFiles({
+    name: "rectangle.cnc",
+    mimeType: "text/plain",
+    buffer: Buffer.from(rectangle),
+  });
+  await shell.locator("#gcode-generate").click();
+  await expect(shell.locator("#gcode-part-x")).toHaveValue("1.493");
+  await expect(shell.locator("#gcode-part-y")).toHaveValue("1.62");
+
+  await fileInput.setInputFiles({
+    name: "unsupported.bin",
+    mimeType: "application/octet-stream",
+    buffer: Buffer.from("not g-code"),
+  });
+  await expect(sourceInput).toHaveValue(rectangle);
+  await fileInput.setInputFiles([]);
+  await expect(sourceInput).toHaveValue(rectangle);
+  await fileInput.setInputFiles({
+    name: "source.txt",
+    mimeType: "text/plain",
+    buffer: Buffer.from(rectangle),
+  });
+  await expect(sourceInput).toHaveValue(rectangle);
+  await page.screenshot({
+    path: testInfo.outputPath("howmany-ui-polish-gcode-split-desktop.png"),
+    animations: "disabled",
+    fullPage: true,
+  });
+
+  await shell.locator("#sheet-close").click();
+  await expect(shell.locator("#sheet")).toHaveClass(/panel-full/);
+  await expect(shell.locator("#stage")).toHaveClass(/viewer-collapsed/);
+  await expect(shell.locator("#gcode-view")).toHaveCSS("visibility", "hidden");
+  await expect
+    .poll(() =>
+      shell.locator("#sheet").evaluate((element) => {
+        const rect = element.getBoundingClientRect();
+        return {
+          left: Math.round(rect.left),
+          right: Math.round(element.ownerDocument.defaultView!.innerWidth - rect.right),
+        };
+      }),
+    )
+    .toEqual({ left: 12, right: 12 });
+  await page.screenshot({
+    path: testInfo.outputPath("howmany-ui-polish-gcode-full-desktop.png"),
+    animations: "disabled",
+    fullPage: true,
+  });
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(shell.locator("#sheet")).toHaveClass(/panel-full/);
+  const mobileRects = await shell.locator("#sheet").evaluate(async (element) => {
+    const sample = () => {
+      const rect = element.getBoundingClientRect();
+      return [Math.round(rect.left), Math.round(rect.right), Math.round(rect.width)];
+    };
+    const first = sample();
+    await new Promise<void>((resolve) =>
+      element.ownerDocument.defaultView!.requestAnimationFrame(() => resolve()),
+    );
+    return { first, second: sample() };
+  });
+  expect(mobileRects.second).toEqual(mobileRects.first);
+  await page.screenshot({
+    path: testInfo.outputPath("howmany-ui-polish-gcode-full-mobile.png"),
+    animations: "disabled",
+    fullPage: true,
+  });
 });
 
 test("authenticated user reaches the NestCalc calculator shell", async ({

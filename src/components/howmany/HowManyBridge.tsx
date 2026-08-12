@@ -19,9 +19,12 @@ import {
   derivePresetCarousel,
   displayGCodeSize,
   fieldBindingForId,
+  formatMarginBadge,
   formatShellNumber,
   generationIsFresh,
   insertShellDecimal,
+  nextPresetIndex,
+  normalizeQuickValue,
   shouldPreserveNumericDraft,
 } from "@/lib/howmany/bridge";
 import {
@@ -52,6 +55,13 @@ interface FreshGeneration {
   output: string;
   size: { width: number; height: number };
   unit: GCodeUnit;
+}
+
+interface HostedDialogState {
+  kind: "quick-add" | "quick-edit" | "preset-save";
+  value: string;
+  quickButtonId?: string;
+  returnFocus: HTMLElement | null;
 }
 
 type ManualUpdater = (inputs: NestInputs) => NestInputs;
@@ -113,6 +123,8 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
   const session = useMemo(() => createNestSession(state), [state]);
   const [stageTarget, setStageTarget] = useState<HTMLElement | null>(null);
   const [authTarget, setAuthTarget] = useState<HTMLElement | null>(null);
+  const [dialogTarget, setDialogTarget] = useState<HTMLElement | null>(null);
+  const [hostedDialog, setHostedDialog] = useState<HostedDialogState | null>(null);
   const [source, setSource] = useState("");
   const [angle, setAngle] = useState(0);
   const [programUnit, setProgramUnit] = useState<Unit>("in");
@@ -122,6 +134,9 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
   const typingFreshFieldRef = useRef<string | null>(null);
   const presetPageRef = useRef(0);
   const syncPresetCarouselRef = useRef<(() => void) | null>(null);
+  const lastNumericFieldRef = useRef<HTMLInputElement | null>(null);
+  const lastQuickButtonRef = useRef<HTMLButtonElement | null>(null);
+  const quickButtonIdRef = useRef(0);
 
   const fresh = generationIsFresh(generation, source, angle);
   const generatedUnit =
@@ -141,6 +156,30 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
     [setState],
   );
 
+  const closeHostedDialog = useCallback(() => {
+    const returnFocus = hostedDialog?.returnFocus;
+    setHostedDialog(null);
+    shellDocument.defaultView?.requestAnimationFrame(() => returnFocus?.focus());
+  }, [hostedDialog, shellDocument]);
+
+  const cycleNumericFocus = useCallback(
+    (direction: -1 | 1) => {
+      const fields = Array.from(
+        shellDocument.querySelectorAll<HTMLInputElement>("input[data-field]"),
+      ).filter((field) => fieldBindingForId(field.id) !== null && !field.disabled);
+      if (fields.length === 0) return;
+      const active = shellDocument.activeElement;
+      const current = fields.findIndex(
+        (field) => field === active || field === lastNumericFieldRef.current,
+      );
+      const index = (Math.max(0, current) + direction + fields.length) % fields.length;
+      fields[index].focus();
+      fields[index].select();
+      lastNumericFieldRef.current = fields[index];
+    },
+    [shellDocument],
+  );
+
   useEffect(() => {
     const calcView = shellDocument.getElementById("calc-view");
     const stub = select<HTMLElement>(shellDocument, '[title="Clerk (stub)"]');
@@ -152,7 +191,7 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
     const stage = shellDocument.createElement("div");
     stage.dataset.howmanyBridge = "stage";
     stage.style.cssText =
-      "display:flex;align-items:center;justify-content:center;width:min(56vw,560px);height:min(66vh,520px);min-width:0;min-height:0;--card:rgba(11,8,20,.72);--foreground:#fff;--card-border:rgba(83,139,236,.35);--preview-bg:rgba(11,8,20,.5);--rem-fill:transparent;--rem-stroke:#fff;--margin-fill:rgba(83,139,236,.08);--usable-stroke:rgba(83,139,236,.5);--part-fill:rgba(83,139,236,.2);--part-stroke:#538bec;--origin-stroke:#c8cdd8;--muted:#c8cdd8;--autonest-zero-fill:rgba(34,211,238,.22);--autonest-zero-stroke:#22d3ee;--autonest-ninety-fill:rgba(16,185,129,.22);--autonest-ninety-stroke:#10b981;--autonest-blank-stroke:rgba(238,140,60,.55);--autonest-trim-stroke:#fb7185;";
+      "display:flex;align-items:center;justify-content:center;width:min(56vw,560px);height:min(66vh,520px);min-width:0;min-height:0;--card:rgba(11,8,20,.72);--foreground:#fff;--card-border:rgba(83,139,236,.35);--preview-bg:rgba(11,8,20,.5);--rem-fill:transparent;--rem-stroke:#fff;--margin-fill:rgba(83,139,236,.08);--usable-stroke:rgba(83,139,236,.5);--part-fill:rgba(83,139,236,.2);--part-stroke:#538bec;--origin-stroke:#c8cdd8;--muted:#c8cdd8;--autonest-zero-fill:rgba(83,139,236,.24);--autonest-zero-stroke:#538bec;--autonest-ninety-fill:rgba(238,140,60,.24);--autonest-ninety-stroke:#ee8c3c;--autonest-blank-stroke:rgba(238,140,60,.55);--autonest-trim-stroke:#fb7185;";
     calcView.append(stage);
 
     const stageStyle = shellDocument.createElement("style");
@@ -177,10 +216,262 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
         stroke: var(--autonest-blank-stroke);
       }
       [data-howmany-bridge="stage"] .autonest-preview-summary {
-        grid-template-columns: minmax(0, 1fr);
+        position: absolute !important;
+        width: 1px !important;
+        height: 1px !important;
+        padding: 0 !important;
+        margin: -1px !important;
+        overflow: hidden !important;
+        clip: rect(0 0 0 0) !important;
+        white-space: nowrap !important;
+        border: 0 !important;
+      }
+      [data-howmany-autonest-card] {
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr);
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        border: 1px solid rgba(83,139,236,.38);
+        border-radius: 16px;
+        background: rgba(11,8,20,.74);
+        box-shadow: 0 16px 42px rgba(0,0,0,.24);
+      }
+      [data-howmany-autonest-header] {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 14px;
+        border-bottom: 1px solid rgba(83,139,236,.24);
+        background: rgba(83,139,236,.08);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+      }
+      [data-howmany-autonest-body] {
+        display: grid;
+        grid-template-rows: minmax(0, 1fr) auto;
+        min-height: 0;
+        padding: 12px 14px 10px;
+      }
+      [data-howmany-autonest-drawing] {
+        position: relative;
+        min-height: 0;
+        padding: 25px 0 0 32px;
+      }
+      [data-howmany-autonest-drawing] > .h-full { height: 100%; }
+      [data-howmany-autonest-card] svg text:last-of-type { opacity: 0; }
+      [data-howmany-trim-dimension] {
+        position: absolute;
+        z-index: 2;
+        color: #fb7185;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: .02em;
+        pointer-events: none;
+      }
+      [data-howmany-trim-dimension="vertical"] {
+        top: 2px;
+        left: 32px;
+        right: 0;
+        border-top: 1px solid #fb7185;
+        text-align: center;
+      }
+      [data-howmany-trim-dimension="horizontal"] {
+        top: 25px;
+        bottom: 0;
+        left: 5px;
+        border-left: 1px solid #fb7185;
+        writing-mode: vertical-rl;
+        transform: rotate(180deg);
+        text-align: center;
+      }
+      [data-howmany-autonest-truth] {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 14px;
+        padding-top: 8px;
+        color: #c8cdd8;
+        font-size: 11px;
+      }
+      [data-howmany-autonest-truth] strong { color: #fff; }
+      [data-howmany-gcode-atmosphere] {
+        position: absolute;
+        inset: 9px;
+        z-index: 0;
+        overflow: hidden;
+        color: rgba(238,140,60,.12);
+        font: 700 9px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace;
+        white-space: pre-wrap;
+        pointer-events: none;
+        user-select: none;
+      }
+      #gcode-part-preview > :not([data-howmany-gcode-atmosphere]) {
+        position: relative;
+        z-index: 1;
+      }
+      [data-howmany-source-actions] {
+        display: flex;
+        justify-content: flex-end;
+        margin: 0 0 7px;
+      }
+      #howmany-open-file {
+        min-height: 30px;
+        padding: 0 11px;
+        border: 1px solid rgba(238,140,60,.42);
+        border-radius: 9px;
+        background: rgba(238,140,60,.08);
+        color: #fff;
+        font-size: 11px;
+        font-weight: 800;
+      }
+      [data-howmany-focus-nav-host] {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        margin-left: 7px;
+      }
+      [data-howmany-focus-nav-host] button {
+        min-width: 30px;
+        min-height: 28px;
+        border: 1px solid rgba(83,139,236,.38);
+        border-radius: 8px;
+        background: rgba(83,139,236,.10);
+        color: #fff;
+        font-weight: 900;
+      }
+      .quick-chip.is-blinking { animation: howmany-quick-blink 180ms ease-out; }
+      @keyframes howmany-quick-blink {
+        45% { background: rgba(83,139,236,.34); transform: scale(.96); }
+        100% { background: initial; transform: scale(1); }
+      }
+      #sheet.side-right { right: 0 !important; left: auto !important; }
+      #sheet.panel-full {
+        right: .75rem !important;
+        left: .75rem !important;
+        width: calc(100% - 1.5rem) !important;
+        max-width: none !important;
+        transform: none !important;
+      }
+      .stage.viewer-collapsed #gcode-view {
+        height: 0 !important;
+        min-height: 0 !important;
+        overflow: hidden !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
       }
     `;
     shellDocument.head.append(stageStyle);
+
+    const dialog = shellDocument.createElement("div");
+    dialog.dataset.howmanyBridge = "dialog";
+    shellDocument.body.append(dialog);
+
+    const numpadChrome = select<HTMLElement>(shellDocument, ".numpad-chrome");
+    const focusNav = shellDocument.createElement("span");
+    focusNav.dataset.howmanyFocusNavHost = "true";
+    const focusNavToggle = shellDocument.createElement("button");
+    focusNavToggle.id = "howmany-focus-nav-toggle";
+    focusNavToggle.type = "button";
+    focusNavToggle.setAttribute("aria-label", "Toggle calculator field navigation");
+    focusNavToggle.setAttribute("aria-expanded", "false");
+    focusNavToggle.title = "Calculator field navigation";
+    focusNavToggle.textContent = "↔";
+    const focusNavStrip = shellDocument.createElement("span");
+    focusNavStrip.setAttribute("role", "group");
+    focusNavStrip.setAttribute("aria-label", "Calculator field navigation");
+    focusNavStrip.hidden = true;
+    for (const [direction, label, glyph] of [
+      ["previous", "Previous calculator field", "←"],
+      ["next", "Next calculator field", "→"],
+    ] as const) {
+      const button = shellDocument.createElement("button");
+      button.type = "button";
+      button.dataset.howmanyFocusDirection = direction;
+      button.setAttribute("aria-label", label);
+      button.textContent = glyph;
+      focusNavStrip.append(button);
+    }
+    focusNav.append(focusNavToggle, focusNavStrip);
+    numpadChrome?.insertBefore(focusNav, select(shellDocument, "#numpad-close"));
+    const handleFocusNavToggle = (event: Event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      focusNavStrip.hidden = !focusNavStrip.hidden;
+      focusNav.closest("#numpad")?.setAttribute("aria-hidden", "false");
+      focusNavToggle.setAttribute(
+        "aria-expanded",
+        focusNavStrip.hidden ? "false" : "true",
+      );
+    };
+    focusNavToggle.addEventListener("click", handleFocusNavToggle);
+
+    const ownerQuickEdit = shellDocument.getElementById(
+      "quick-edit",
+    ) as HTMLButtonElement | null;
+    const hostedQuickEdit = shellDocument.createElement("button");
+    hostedQuickEdit.id = "howmany-quick-edit";
+    hostedQuickEdit.type = "button";
+    hostedQuickEdit.className = "press";
+    hostedQuickEdit.setAttribute("aria-label", "Edit quick value");
+    hostedQuickEdit.title = "Edit quick value";
+    hostedQuickEdit.textContent = "✎";
+    focusNav.prepend(hostedQuickEdit);
+    if (ownerQuickEdit) ownerQuickEdit.style.display = "none";
+
+    const sourceInput = shellDocument.getElementById("gcode-input");
+    const sourceActions = shellDocument.createElement("div");
+    sourceActions.dataset.howmanySourceActions = "true";
+    const openFile = shellDocument.createElement("button");
+    openFile.id = "howmany-open-file";
+    openFile.type = "button";
+    openFile.textContent = "Open file";
+    const fileInput = shellDocument.createElement("input");
+    fileInput.id = "howmany-file-input";
+    fileInput.type = "file";
+    fileInput.accept = ".nc,.cnc,.txt,text/plain";
+    fileInput.hidden = true;
+    sourceActions.append(openFile, fileInput);
+    sourceInput?.parentElement?.insertBefore(sourceActions, sourceInput);
+
+    const bounds = shellDocument.getElementById("gcode-part-preview");
+    if (bounds) bounds.style.position = "relative";
+    const atmosphere = shellDocument.createElement("div");
+    atmosphere.dataset.howmanyGcodeAtmosphere = "true";
+    atmosphere.setAttribute("aria-hidden", "true");
+    bounds?.prepend(atmosphere);
+    const boundsLabel = bounds?.previousElementSibling;
+    if (boundsLabel) boundsLabel.textContent = "Bounding box";
+
+    const handleFile = async () => {
+      const file = fileInput.files?.[0];
+      fileInput.value = "";
+      if (!file) return;
+      const extension = file.name.toLowerCase().match(/\.[^.]+$/)?.[0];
+      const supported =
+        extension === ".nc" ||
+        extension === ".cnc" ||
+        extension === ".txt" ||
+        file.type.startsWith("text/");
+      if (!supported) return;
+      try {
+        const value = await file.text();
+        const textarea = shellDocument.getElementById(
+          "gcode-input",
+        ) as HTMLTextAreaElement | null;
+        if (!textarea) return;
+        textarea.value = value;
+        textarea.dispatchEvent(
+          new shellDocument.defaultView!.Event("input", { bubbles: true }),
+        );
+      } catch {
+        // Browser-local read failures intentionally leave the current source intact.
+      }
+    };
+    fileInput.addEventListener("change", handleFile);
 
     const auth = shellDocument.createElement("div");
     auth.dataset.howmanyBridge = "auth";
@@ -193,12 +484,21 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
       if (cancelled) return;
       setStageTarget(stage);
       setAuthTarget(auth);
+      setDialogTarget(dialog);
     });
 
     return () => {
       cancelled = true;
       stage.remove();
       stageStyle.remove();
+      fileInput.removeEventListener("change", handleFile);
+      sourceActions.remove();
+      atmosphere.remove();
+      focusNavToggle.removeEventListener("click", handleFocusNavToggle);
+      focusNav.remove();
+      hostedQuickEdit?.remove();
+      if (ownerQuickEdit) ownerQuickEdit.style.display = "";
+      dialog.remove();
       auth.remove();
       stub.style.display = "";
     };
@@ -234,6 +534,7 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
     setText(shellDocument.getElementById("part-badge"), `${formatShellNumber(inputs.partWidth)} × ${formatShellNumber(inputs.partHeight)}`);
     setText(shellDocument.getElementById("rem-badge"), `${formatShellNumber(inputs.remnantWidth)} × ${formatShellNumber(inputs.remnantHeight)}`);
     setText(shellDocument.getElementById("gap-badge"), `${formatShellNumber(inputs.gapX)} × ${formatShellNumber(inputs.gapY)}`);
+    setText(shellDocument.getElementById("margins-badge"), formatMarginBadge(inputs.margins));
 
     syncSegment(shellDocument, "unit-switch", inputs.unit === "in" ? "unit-in" : "unit-mm", "#538BEC", "data-value", inputs.unit);
     exposeCalculatorUnit(shellDocument, inputs.unit);
@@ -256,6 +557,19 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
     setText(footerValues[1] ?? null, manualTotal);
     setText(footerValues[2] ?? null, autoTotal);
   }, [session, shellDocument, state]);
+
+  useEffect(() => {
+    const atmosphere = select<HTMLElement>(
+      shellDocument,
+      "[data-howmany-gcode-atmosphere]",
+    );
+    if (!atmosphere) return;
+    const staticTexture = "G00 X0.000 Y0.000\nG01 X1.000 Y0.000\nG01 X1.000 Y1.000\nG01 X0.000 Y1.000";
+    atmosphere.textContent = (source.trim() || staticTexture)
+      .split(/\r?\n/)
+      .slice(0, 14)
+      .join("\n");
+  }, [shellDocument, source]);
 
   useEffect(() => {
     if (!authTarget) return;
@@ -520,10 +834,59 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
     const handleFocusIn = (event: FocusEvent) => {
       const target = event.target;
       if (!(target instanceof shellDocument.defaultView!.HTMLInputElement)) return;
-      if (fieldBindingForId(target.id)) typingFreshFieldRef.current = target.id;
+      if (fieldBindingForId(target.id)) {
+        typingFreshFieldRef.current = target.id;
+        lastNumericFieldRef.current = target;
+      }
     };
 
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+        const raw = event.target;
+        if (raw instanceof shellDocument.defaultView!.Element) {
+          const presetControl = raw.closest(
+            "#presets-carousel, #presets-prev, #presets-next, #presets-add, #presets-edit, #presets-delete",
+          );
+          if (presetControl) {
+            const chips = Array.from(
+              shellDocument.querySelectorAll<HTMLButtonElement>(
+                "#presets-track button[data-preset-id]",
+              ),
+            );
+            const focusedChip = raw.closest<HTMLButtonElement>("[data-preset-id]");
+            const selectedIndex = chips.findIndex(
+              (chip) =>
+                chip === focusedChip ||
+                chip.dataset.presetId === presets.selectedPresetId,
+            );
+            const index = nextPresetIndex(
+              selectedIndex,
+              chips.length,
+              event.key === "ArrowRight" ? 1 : -1,
+            );
+            if (index >= 0) {
+              event.preventDefault();
+              event.stopImmediatePropagation();
+              const chip = chips[index];
+              const presetId = chip.dataset.presetId;
+              chip.focus();
+              if (presetId) {
+                void presets.loadPreset(presetId).then(() => {
+                  shellDocument.defaultView?.requestAnimationFrame(() => {
+                    shellDocument.defaultView?.requestAnimationFrame(() => {
+                      select<HTMLButtonElement>(
+                        shellDocument,
+                        `[data-preset-id="${presetId}"]`,
+                      )?.focus();
+                    });
+                  });
+                });
+              }
+            }
+            return;
+          }
+        }
+      }
       if (event.key !== "." && event.key !== "Decimal") return;
       const target = event.target;
       if (!(target instanceof shellDocument.defaultView!.HTMLInputElement)) return;
@@ -557,10 +920,24 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
       shellDocument.removeEventListener("focusin", handleFocusIn);
       shellDocument.removeEventListener("keydown", handleKeyDown, true);
     };
-  }, [setState, shellDocument, updateInputs]);
+  }, [presets, setState, shellDocument, updateInputs]);
 
   useEffect(() => {
     const stop = (event: Event) => {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    };
+
+    const preserveNumericFocus = (event: Event) => {
+      const raw = event.target;
+      if (!(raw instanceof shellDocument.defaultView!.Element)) return;
+      if (
+        !raw.closest(
+          "[data-quick], #quick-add, #quick-edit, #howmany-quick-edit, #howmany-focus-nav-toggle, [data-howmany-focus-direction]",
+        )
+      ) {
+        return;
+      }
       event.preventDefault();
       event.stopImmediatePropagation();
     };
@@ -570,6 +947,72 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
       if (!(raw instanceof shellDocument.defaultView!.Element)) return;
       const button = raw.closest<HTMLButtonElement>("button");
       if (!button) return;
+
+      if (button.id === "howmany-open-file") {
+        stop(event);
+        (shellDocument.getElementById("howmany-file-input") as HTMLInputElement | null)?.click();
+        return;
+      }
+      if (button.dataset.howmanyFocusDirection) {
+        stop(event);
+        cycleNumericFocus(button.dataset.howmanyFocusDirection === "next" ? 1 : -1);
+        return;
+      }
+      if (button.id === "quick-add") {
+        stop(event);
+        setHostedDialog({
+          kind: "quick-add",
+          value: "",
+          returnFocus: button,
+        });
+        return;
+      }
+      if (button.id === "quick-edit" || button.id === "howmany-quick-edit") {
+        stop(event);
+        const quickButton =
+          lastQuickButtonRef.current?.isConnected
+            ? lastQuickButtonRef.current
+            : select<HTMLButtonElement>(shellDocument, "#quick-track [data-quick]");
+        if (!quickButton) return;
+        const quickButtonId =
+          quickButton.dataset.howmanyQuickId ?? `quick-${quickButtonIdRef.current++}`;
+        quickButton.dataset.howmanyQuickId = quickButtonId;
+        setHostedDialog({
+          kind: "quick-edit",
+          value: quickButton.dataset.quick ?? quickButton.textContent ?? "",
+          quickButtonId,
+          returnFocus: button,
+        });
+        return;
+      }
+      if (button.dataset.quick !== undefined) {
+        stop(event);
+        const value = normalizeQuickValue(button.dataset.quick);
+        const input =
+          lastNumericFieldRef.current?.isConnected &&
+          fieldBindingForId(lastNumericFieldRef.current.id)
+            ? lastNumericFieldRef.current
+            : shellDocument.activeElement instanceof shellDocument.defaultView!.HTMLInputElement &&
+                fieldBindingForId(shellDocument.activeElement.id)
+              ? shellDocument.activeElement
+              : null;
+        if (!value || !input) return;
+        lastQuickButtonRef.current = button;
+        input.value = value;
+        input.dispatchEvent(
+          new shellDocument.defaultView!.Event("input", { bubbles: true }),
+        );
+        input.focus();
+        input.select();
+        button.classList.remove("is-selected");
+        button.setAttribute("aria-pressed", "false");
+        button.classList.add("is-blinking");
+        shellDocument.defaultView?.setTimeout(
+          () => button.classList.remove("is-blinking"),
+          180,
+        );
+        return;
+      }
 
       if (button.id === "unit-in" || button.id === "unit-mm") {
         stop(event);
@@ -662,8 +1105,11 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
 
       if (button.id === "presets-add") {
         stop(event);
-        const name = shellDocument.defaultView?.prompt("Preset name");
-        if (name) void presets.savePreset(name);
+        setHostedDialog({
+          kind: "preset-save",
+          value: "",
+          returnFocus: button,
+        });
         return;
       }
       if (button.id === "presets-prev" || button.id === "presets-next") {
@@ -729,28 +1175,139 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
       }
     };
 
+    shellDocument.addEventListener("mousedown", preserveNumericFocus, true);
+    shellDocument.addEventListener("touchstart", preserveNumericFocus, {
+      capture: true,
+      passive: false,
+    });
     shellDocument.addEventListener("click", handleClick, true);
-    return () => shellDocument.removeEventListener("click", handleClick, true);
-  }, [angle, displayedSize, fresh, generation, partUnit, presets, programUnit, setState, shellDocument, source, state.manualInputs.unit, state.mode, updateInputs]);
+    return () => {
+      shellDocument.removeEventListener("mousedown", preserveNumericFocus, true);
+      shellDocument.removeEventListener("touchstart", preserveNumericFocus, true);
+      shellDocument.removeEventListener("click", handleClick, true);
+    };
+  }, [angle, cycleNumericFocus, displayedSize, fresh, generation, partUnit, presets, programUnit, setState, shellDocument, source, state.manualInputs.unit, state.mode, updateInputs]);
+
+  useEffect(() => {
+    if (!hostedDialog || !dialogTarget) return;
+    const frame = shellDocument.defaultView?.requestAnimationFrame(() => {
+      const input = select<HTMLInputElement>(
+        dialogTarget.ownerDocument,
+        "[data-howmany-dialog-input]",
+      );
+      input?.focus();
+      input?.select();
+    });
+    return () => {
+      if (frame !== undefined) shellDocument.defaultView?.cancelAnimationFrame(frame);
+    };
+  }, [dialogTarget, hostedDialog, shellDocument]);
+
+  const commitHostedDialog = useCallback(() => {
+    if (!hostedDialog) return;
+    if (hostedDialog.kind === "preset-save") {
+      const name = hostedDialog.value.trim();
+      if (!name) return;
+      void presets.savePreset(name);
+      closeHostedDialog();
+      return;
+    }
+
+    const value = normalizeQuickValue(hostedDialog.value);
+    if (!value) return;
+    const editedButton = hostedDialog.quickButtonId
+      ? select<HTMLButtonElement>(
+          shellDocument,
+          `[data-howmany-quick-id="${hostedDialog.quickButtonId}"]`,
+        )
+      : null;
+    if (hostedDialog.kind === "quick-edit" && editedButton) {
+      editedButton.dataset.quick = value;
+      editedButton.title = value;
+      editedButton.textContent = value;
+      lastQuickButtonRef.current = editedButton;
+    } else {
+      const track = shellDocument.getElementById("quick-track");
+      if (!track) return;
+      const button = shellDocument.createElement("button");
+      button.type = "button";
+      button.className = "quick-chip press";
+      button.setAttribute("role", "listitem");
+      button.setAttribute("aria-pressed", "false");
+      button.dataset.quick = value;
+      button.title = value;
+      button.textContent = value;
+      track.append(button);
+      lastQuickButtonRef.current = button;
+    }
+    closeHostedDialog();
+  }, [closeHostedDialog, hostedDialog, presets, shellDocument]);
+
+  const deleteHostedQuickValue = useCallback(() => {
+    if (hostedDialog?.kind !== "quick-edit") return;
+    if (hostedDialog.quickButtonId) {
+      select<HTMLElement>(
+        shellDocument,
+        `[data-howmany-quick-id="${hostedDialog.quickButtonId}"]`,
+      )?.remove();
+    }
+    lastQuickButtonRef.current = null;
+    closeHostedDialog();
+  }, [closeHostedDialog, hostedDialog, shellDocument]);
 
   const auto = session.result.mode === "autonest" ? session.result.autoNest : null;
   const activeMargins = state.mode === "autonest"
     ? effectiveAutoNestMargins(state.autoNestSettings)
     : state.manualInputs.margins;
   const fallback = previewResult(state, session.manual.result);
+  const trimLine = auto?.status === "computed" ? auto.twoGroup.trimLine : null;
+  const zeroGroup = auto?.status === "computed"
+    ? auto.twoGroup.blanks.find(({ group }) => group.orientation === "0deg")?.group
+    : null;
+  const ninetyGroup = auto?.status === "computed"
+    ? auto.twoGroup.blanks.find(({ group }) => group.orientation === "90deg")?.group
+    : null;
+  const dialogQuickValue = hostedDialog?.kind === "preset-save"
+    ? null
+    : normalizeQuickValue(hostedDialog?.value ?? "");
+  const dialogValid = hostedDialog?.kind === "preset-save"
+    ? hostedDialog.value.trim().length > 0
+    : dialogQuickValue !== null;
 
   return (
     <>
       {stageTarget
         ? createPortal(
             auto?.status === "computed" ? (
-              <AutoNestPreview
-                twoGroup={auto.twoGroup}
-                remnantWidth={state.manualInputs.remnantWidth}
-                remnantHeight={state.manualInputs.remnantHeight}
-                unitLabel={unitLabel(state.manualInputs.unit)}
-                className="h-full border-0 bg-transparent"
-              />
+              <section data-howmany-autonest-card="true" aria-label="AutoNest result">
+                <header data-howmany-autonest-header="true">
+                  <span>AutoNest result</span>
+                  <span>{auto.twoGroup.totalParts} parts</span>
+                </header>
+                <div data-howmany-autonest-body="true">
+                  <div data-howmany-autonest-drawing="true">
+                    {trimLine ? (
+                      <div data-howmany-trim-dimension={trimLine.orientation}>
+                        {trimLine.orientation === "vertical" ? "Vertical" : "Horizontal"}{" "}
+                        trim {formatShellNumber(trimLine.position)} {unitLabel(state.manualInputs.unit)}
+                      </div>
+                    ) : null}
+                    <AutoNestPreview
+                      twoGroup={auto.twoGroup}
+                      remnantWidth={state.manualInputs.remnantWidth}
+                      remnantHeight={state.manualInputs.remnantHeight}
+                      unitLabel={unitLabel(state.manualInputs.unit)}
+                      className="h-full border-0 bg-transparent"
+                    />
+                  </div>
+                  <div data-howmany-autonest-truth="true">
+                    <span><strong>0°</strong> {zeroGroup?.count ?? 0} parts</span>
+                    <span><strong>90°</strong> {ninetyGroup?.count ?? 0} parts</span>
+                    <span><strong>Trim</strong> {trimLine?.orientation} @ {formatShellNumber(trimLine?.position ?? null)} {unitLabel(state.manualInputs.unit)}</span>
+                    <span><strong>Offset</strong> X {formatShellNumber(auto.twoGroup.suggestedOriginOffset.x)} · Y {formatShellNumber(auto.twoGroup.suggestedOriginOffset.y)}</span>
+                  </div>
+                </div>
+              </section>
             ) : (
               <NestGrid
                 remnantWidth={state.manualInputs.remnantWidth}
@@ -769,6 +1326,129 @@ export function HowManyBridge({ shellDocument }: HowManyBridgeProps) {
           )
         : null}
       {authTarget ? createPortal(<AuthControls />, authTarget) : null}
+      {dialogTarget && hostedDialog
+        ? createPortal(
+            <div
+              data-howmany-dialog-backdrop="true"
+              style={{
+                position: "fixed",
+                inset: 0,
+                zIndex: 10000,
+                display: "grid",
+                placeItems: "center",
+                padding: 18,
+                background: "rgba(5,4,12,.72)",
+                backdropFilter: "blur(7px)",
+              }}
+              onMouseDown={(event) => {
+                if (event.target === event.currentTarget) closeHostedDialog();
+              }}
+            >
+              <section
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="howmany-dialog-title"
+                style={{
+                  width: "min(360px, 100%)",
+                  padding: 16,
+                  border: "1px solid rgba(83,139,236,.42)",
+                  borderRadius: 16,
+                  background: "#100c1c",
+                  boxShadow: "0 22px 70px rgba(0,0,0,.48)",
+                  color: "#fff",
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === "Escape") {
+                    event.preventDefault();
+                    closeHostedDialog();
+                    return;
+                  }
+                  if (event.key !== "Tab") return;
+                  const controls = Array.from(
+                    event.currentTarget.querySelectorAll<HTMLElement>(
+                      "input, button:not([disabled])",
+                    ),
+                  );
+                  const first = controls[0];
+                  const last = controls.at(-1);
+                  if (event.shiftKey && shellDocument.activeElement === first) {
+                    event.preventDefault();
+                    last?.focus();
+                  } else if (!event.shiftKey && shellDocument.activeElement === last) {
+                    event.preventDefault();
+                    first?.focus();
+                  }
+                }}
+              >
+                <h2 id="howmany-dialog-title" style={{ margin: "0 0 12px", fontSize: 17 }}>
+                  {hostedDialog.kind === "preset-save"
+                    ? "Save preset"
+                    : hostedDialog.kind === "quick-edit"
+                      ? "Edit quick value"
+                      : "Add quick value"}
+                </h2>
+                <label style={{ display: "grid", gap: 6, color: "#c8cdd8", fontSize: 12 }}>
+                  {hostedDialog.kind === "preset-save" ? "Preset name" : "Value"}
+                  <input
+                    data-howmany-dialog-input="true"
+                    inputMode={hostedDialog.kind === "preset-save" ? "text" : "decimal"}
+                    value={hostedDialog.value}
+                    onChange={(event) =>
+                      setHostedDialog((current) =>
+                        current ? { ...current, value: event.target.value } : current,
+                      )
+                    }
+                    style={{
+                      minHeight: 42,
+                      padding: "0 11px",
+                      border: `1px solid ${dialogValid ? "rgba(83,139,236,.5)" : "#fb7185"}`,
+                      borderRadius: 10,
+                      outline: "none",
+                      background: "rgba(255,255,255,.06)",
+                      color: "#fff",
+                      fontSize: 16,
+                    }}
+                  />
+                </label>
+                {!dialogValid && hostedDialog.value ? (
+                  <p role="alert" style={{ margin: "7px 0 0", color: "#fb7185", fontSize: 11 }}>
+                    {hostedDialog.kind === "preset-save"
+                      ? "Enter a preset name."
+                      : "Use a nonnegative value with up to three decimal places."}
+                  </p>
+                ) : null}
+                <footer style={{ display: "flex", gap: 8, marginTop: 16 }}>
+                  {hostedDialog.kind === "quick-edit" ? (
+                    <button
+                      type="button"
+                      onClick={deleteHostedQuickValue}
+                      style={{ minHeight: 36, padding: "0 12px", border: "1px solid #fb7185", borderRadius: 10, background: "transparent", color: "#fb7185", fontWeight: 800 }}
+                    >
+                      Delete
+                    </button>
+                  ) : null}
+                  <span style={{ flex: 1 }} />
+                  <button
+                    type="button"
+                    onClick={closeHostedDialog}
+                    style={{ minHeight: 36, padding: "0 14px", border: "1px solid rgba(200,205,216,.3)", borderRadius: 10, background: "transparent", color: "#fff", fontWeight: 800 }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    disabled={!dialogValid}
+                    onClick={commitHostedDialog}
+                    style={{ minHeight: 36, padding: "0 16px", border: 0, borderRadius: 10, background: "#538bec", color: "#fff", fontWeight: 900, opacity: dialogValid ? 1 : .45 }}
+                  >
+                    OK
+                  </button>
+                </footer>
+              </section>
+            </div>,
+            dialogTarget,
+          )
+        : null}
     </>
   );
 }
