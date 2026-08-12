@@ -39,6 +39,43 @@ export function formatShellNumber(value: number | null): string {
   return `${round3(value)}`;
 }
 
+export function sanitizeShellNumericDraft(value: string): string {
+  let sanitized = "";
+  let hasDecimal = false;
+
+  for (const character of value) {
+    if (character >= "0" && character <= "9") {
+      sanitized += character;
+      continue;
+    }
+    if (character === "." && !hasDecimal) {
+      sanitized += character;
+      hasDecimal = true;
+    }
+  }
+
+  return sanitized;
+}
+
+export function quickValueDraft(
+  _currentValue: string,
+  quickValue: string,
+): string {
+  return sanitizeShellNumericDraft(quickValue);
+}
+
+export function normalizeShellDialogName(value: string): string {
+  return value.trim().slice(0, 24);
+}
+
+export function marginsBadgeText(margins: Margins): string {
+  const display = (value: number | null) =>
+    value === null ? "—" : formatShellNumber(value);
+  return `L${display(margins.left)} R${display(margins.right)} B${display(
+    margins.bottom,
+  )} T${display(margins.top)}`;
+}
+
 export function shouldPreserveNumericDraft(
   draft: string,
   persistedValue: number | null,

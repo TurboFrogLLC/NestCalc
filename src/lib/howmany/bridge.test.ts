@@ -6,6 +6,10 @@ import {
   formatShellNumber,
   generationIsFresh,
   insertShellDecimal,
+  marginsBadgeText,
+  normalizeShellDialogName,
+  quickValueDraft,
+  sanitizeShellNumericDraft,
   shouldPreserveNumericDraft,
 } from "./bridge";
 
@@ -86,5 +90,29 @@ describe("HowMany shell bridge helpers", () => {
     expect(generationIsFresh(generation, "G0 X2 Y1", 90)).toBe(false);
     expect(generationIsFresh(generation, "G0 X1 Y1", 180)).toBe(false);
     expect(generationIsFresh(null, "G0 X1 Y1", 90)).toBe(false);
+  });
+
+  it("sanitizes hosted numeric drafts to digits and one decimal point", () => {
+    expect(sanitizeShellNumericDraft("12a.3b.4")).toBe("12.34");
+    expect(sanitizeShellNumericDraft(".625in")).toBe(".625");
+    expect(sanitizeShellNumericDraft("abc")).toBe("");
+  });
+
+  it("replaces a focused draft with a quick value instead of appending", () => {
+    expect(quickValueDraft("10", "0.125")).toBe("0.125");
+    expect(quickValueDraft("", "1.000")).toBe("1.000");
+  });
+
+  it("keeps multi-character dialog names while enforcing the authority limit", () => {
+    expect(normalizeShellDialogName("  stainless  ")).toBe("stainless");
+    expect(normalizeShellDialogName("ABCDEFGHIJKLMNOPQRSTUVWXY")).toBe(
+      "ABCDEFGHIJKLMNOPQRSTUVWX",
+    );
+  });
+
+  it("formats the collapsed margins badge in left, right, bottom, top order", () => {
+    expect(
+      marginsBadgeText({ left: 0.125, right: null, bottom: 2, top: 0 }),
+    ).toBe("L0.125 R— B2 T0");
   });
 });

@@ -488,6 +488,15 @@ test("HowMany Option B hosts the canonical shell and bridges authenticated produ
 
   await shell.locator("#part-x").fill("2");
   await shell.locator("#part-y").fill("1");
+  for (const section of ["rem-body", "gap-body", "margins-body"]) {
+    if (
+      await shell
+        .locator(`#${section}`)
+        .evaluate((body) => body.classList.contains("closed"))
+    ) {
+      await shell.locator(`[data-target="${section}"]`).click();
+    }
+  }
   await shell.locator("#rem-x").fill("10");
   await shell.locator("#rem-y").fill("5");
   await shell.locator("#gap-x").fill("0");
@@ -542,25 +551,27 @@ test("HowMany Option B hosts the canonical shell and bridges authenticated produ
   await expect(shell.locator("#presets-track")).toHaveAttribute("aria-busy", "false", {
     timeout: 15_000,
   });
-  const suffix = `${testInfo.workerIndex}-${Date.now()}`;
-  const firstPreset = `Option B A ${suffix}`;
-  const secondPreset = `Option B B ${suffix}`;
-  const renamedPreset = `Option B real ${suffix}`;
+  const suffix = `${testInfo.workerIndex}-${`${Date.now()}`.slice(-6)}`;
+  const firstPreset = `OB-A-${suffix}`;
+  const secondPreset = `OB-B-${suffix}`;
+  const renamedPreset = `OB-real-${suffix}`;
   const firstPresetState = await page.evaluate(() => {
     const stored = localStorage.getItem("nestcalc-app-state-v3");
     if (!stored) throw new Error("Missing v3 state before preset save.");
     return JSON.parse(stored) as unknown;
   });
-  page.once("dialog", (dialog) => dialog.accept(firstPreset));
   await shell.locator("#presets-add").click();
+  await shell.getByRole("dialog", { name: "Save preset" }).getByLabel("Name").fill(firstPreset);
+  await shell.getByRole("dialog", { name: "Save preset" }).getByRole("button", { name: "OK" }).click();
   await expect(shell.getByRole("listitem", { name: `Load preset ${firstPreset}` })).toBeVisible();
-  page.once("dialog", (dialog) => dialog.accept(secondPreset));
   await shell.locator("#presets-add").click();
+  await shell.getByRole("dialog", { name: "Save preset" }).getByLabel("Name").fill(secondPreset);
+  await shell.getByRole("dialog", { name: "Save preset" }).getByRole("button", { name: "OK" }).click();
   await expect(shell.getByRole("listitem", { name: `Load preset ${secondPreset}` })).toBeVisible();
-  page.once("dialog", (dialog) => dialog.accept(renamedPreset));
   await shell.locator("#presets-edit").click();
+  await shell.getByRole("dialog", { name: "Rename preset" }).getByLabel("Name").fill(renamedPreset);
+  await shell.getByRole("dialog", { name: "Rename preset" }).getByRole("button", { name: "OK" }).click();
   await expect(shell.getByRole("listitem", { name: `Load preset ${renamedPreset}` })).toBeVisible();
-  page.once("dialog", (dialog) => dialog.accept());
   await shell.locator("#presets-delete").click();
   await expect(shell.getByRole("listitem", { name: `Load preset ${renamedPreset}` })).toHaveCount(0);
 
@@ -665,6 +676,15 @@ test("HowMany residual polish keeps bridge state, presets, previews, and G-code 
     "false",
     { timeout: 15_000 },
   );
+  for (const section of ["rem-body", "gap-body"]) {
+    if (
+      await shell
+        .locator(`#${section}`)
+        .evaluate((body) => body.classList.contains("closed"))
+    ) {
+      await shell.locator(`[data-target="${section}"]`).click();
+    }
+  }
 
   const partX = shell.locator("#part-x");
   await partX.focus();
@@ -707,8 +727,9 @@ test("HowMany residual polish keeps bridge state, presets, previews, and G-code 
     if (!raw) throw new Error("Missing v3 state before residual preset save.");
     return JSON.parse(raw) as unknown;
   });
-  page.once("dialog", (dialog) => dialog.accept(presetName));
   await shell.locator("#presets-add").click();
+  await shell.getByRole("dialog", { name: "Save preset" }).getByLabel("Name").fill(presetName);
+  await shell.getByRole("dialog", { name: "Save preset" }).getByRole("button", { name: "OK" }).click();
   const shellPreset = shell.getByRole("listitem", {
     name: `Load preset ${presetName}`,
   });
@@ -763,7 +784,6 @@ test("HowMany residual polish keeps bridge state, presets, previews, and G-code 
   );
   await expect(shellPreset).toHaveClass(/is-selected/);
 
-  page.once("dialog", (dialog) => dialog.accept());
   await shell.locator("#presets-delete").click();
   await expect(shellPreset).toHaveCount(0);
   await expect(shell.locator("[data-howmany-presets-empty]")).toHaveText(
@@ -779,6 +799,15 @@ test("HowMany residual polish keeps bridge state, presets, previews, and G-code 
     "false",
     { timeout: 15_000 },
   );
+  for (const section of ["rem-body", "gap-body", "margins-body"]) {
+    if (
+      await shell
+        .locator(`#${section}`)
+        .evaluate((body) => body.classList.contains("closed"))
+    ) {
+      await shell.locator(`[data-target="${section}"]`).click();
+    }
+  }
   await partX.fill("6");
   await shell.locator("#part-y").fill("4");
   await shell.locator("#rem-x").fill("10");
@@ -809,7 +838,7 @@ test("HowMany residual polish keeps bridge state, presets, previews, and G-code 
           stroke: getComputedStyle(element).stroke,
         })),
     )
-    .toEqual({ fill: "rgba(34, 211, 238, 0.22)", stroke: "rgb(34, 211, 238)" });
+    .toEqual({ fill: "rgba(83, 139, 236, 0.28)", stroke: "rgb(83, 139, 236)" });
   await expect(
     hostedAutoNest.locator('[data-testid="autonest-preview-trim-summary"]'),
   ).toContainText("Trim");
@@ -828,6 +857,295 @@ test("HowMany residual polish keeps bridge state, presets, previews, and G-code 
   );
   await expect(partX).toHaveValue("4");
   await expect(shell.locator("#part-y")).toHaveValue("2");
+});
+
+test("HowMany UI polish residual 2 wires both locked authorities through the bridge", async ({
+  page,
+}, testInfo) => {
+  test.setTimeout(60_000);
+  await page.addInitScript(seedComputedAutoNestState);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const shell = howManyShell(page);
+  await expect(shell.locator("#presets-track")).toHaveAttribute(
+    "aria-busy",
+    "false",
+    { timeout: 15_000 },
+  );
+  await deletePresetDatabase(page);
+  await page.reload();
+  await expect(shell.locator("#presets-track")).toHaveAttribute(
+    "aria-busy",
+    "false",
+    { timeout: 15_000 },
+  );
+
+  const autoCard = shell.locator("[data-howmany-autonest-card]");
+  await expect(autoCard).toBeVisible();
+  await expect(autoCard.locator(".howmany-autonest-header")).toContainText(
+    "AutoNest result",
+  );
+  await expect(autoCard.locator(".howmany-autonest-header")).toContainText(
+    "Total 3",
+  );
+  await expect(autoCard.locator(".howmany-autonest-meta .orient")).toContainText(
+    "0° · 2 parts",
+  );
+  await expect(autoCard.locator(".howmany-autonest-meta .orient")).toContainText(
+    "90° · 1 parts",
+  );
+  await expect(autoCard.locator(".howmany-autonest-meta .trim")).toContainText(
+    "Trim / offset approx",
+  );
+  await expect
+    .poll(() =>
+      autoCard.evaluate((card) => {
+        const zero = card.querySelector(
+          '[data-testid="autonest-part-0deg"]',
+        );
+        const ninety = card.querySelector(
+          '[data-testid="autonest-part-90deg"]',
+        );
+        const orientation = card.querySelector(".orient");
+        const trim = card.querySelector(".trim");
+        if (!zero || !ninety || !orientation || !trim) return null;
+        return {
+          zero: [getComputedStyle(zero).fill, getComputedStyle(zero).stroke],
+          ninety: [
+            getComputedStyle(ninety).fill,
+            getComputedStyle(ninety).stroke,
+          ],
+          orientation: getComputedStyle(orientation).backgroundColor,
+          trim: getComputedStyle(trim).backgroundColor,
+        };
+      }),
+    )
+    .toEqual({
+      zero: ["rgba(83, 139, 236, 0.28)", "rgb(83, 139, 236)"],
+      ninety: ["rgba(238, 140, 60, 0.32)", "rgb(238, 140, 60)"],
+      orientation: "rgba(22, 18, 31, 0.92)",
+      trim: "rgba(245, 243, 255, 0.94)",
+    });
+
+  const footer = shell.locator("#calc-footer");
+  await expect(footer.locator('[data-footer-kind="total"]')).toBeVisible();
+  await expect(footer.locator('[data-footer-kind="manual"]')).toBeVisible();
+  await expect(footer.locator('[data-footer-kind="auto"]')).toBeVisible();
+  await expect(footer.locator("[data-howmany-mode-badge]")).toHaveText(
+    "AutoNest",
+  );
+  await shell.locator("#mode-manual").click();
+  await expect(footer.locator('[data-footer-kind="auto"]')).toBeHidden();
+  await expect(footer.locator("[data-howmany-mode-badge]")).toHaveText(
+    "Manual",
+  );
+
+  const partX = shell.locator("#part-x");
+  await partX.fill("12a.3b.4");
+  await expect(partX).toHaveValue("12.34");
+  await partX.focus();
+  const numpad = shell.locator("#numpad");
+  await expect(numpad).toHaveAttribute("aria-hidden", "false");
+  const quick = shell.locator('#quick-track [data-quick="0.125"]');
+  await quick.click();
+  await expect(partX).toHaveValue("0.125");
+  await expect(quick).not.toHaveClass(/is-selected/);
+  await expect
+    .poll(() => quick.evaluate((chip) => chip.classList.contains("blink")))
+    .toBe(false);
+
+  const entryGeometry = await numpad.evaluate((pad) => {
+    const number = pad.querySelector('[data-key="7"]');
+    const mid = pad.querySelector(".howmany-mid-chrome");
+    const enter = pad.querySelector('[data-key="enter"]');
+    if (!number || !mid || !enter) throw new Error("Missing keypad authority chrome");
+    const padBox = pad.getBoundingClientRect();
+    const numberBox = number.getBoundingClientRect();
+    const midBox = mid.getBoundingClientRect();
+    const enterBox = enter.getBoundingClientRect();
+    return {
+      height: Math.round(padBox.height),
+      width: Math.round(padBox.width),
+      numberX: Math.round(numberBox.x),
+      midHeight: Math.round(midBox.height),
+      enterWidth: Math.round(enterBox.width),
+    };
+  });
+  expect(entryGeometry.width).toBe(230);
+  expect(entryGeometry.midHeight).toBe(68);
+  expect(entryGeometry.enterWidth).toBe(206);
+  await expect(numpad.locator(".numpad-chrome button")).toHaveCount(4);
+  expect(
+    await numpad
+      .locator(".numpad-chrome")
+      .evaluate((chrome) =>
+        Array.from(chrome.children).map(
+          (element) =>
+            element.getAttribute("aria-label") ?? element.getAttribute("title"),
+        ),
+      ),
+  ).toEqual([
+    "Calculator mode",
+    "Backspace",
+    "Edit quick values",
+    "Drag to move",
+    "Close pad",
+  ]);
+
+  await shell.locator("#numpad-mode-btn").click();
+  await expect(numpad).toHaveClass(/numpad--calc/);
+  await expect(numpad).toHaveCSS("width", "288px");
+  await expect(numpad.locator("#numpad-lcd")).toHaveCSS("height", "50px");
+  await expect(numpad.locator("#numpad-ops")).toHaveAttribute(
+    "aria-hidden",
+    "false",
+  );
+  expect(await numpad.locator("#numpad-ops button").allTextContents()).toEqual([
+    "+",
+    "−",
+    "×",
+    "÷",
+  ]);
+  await page.waitForTimeout(500);
+  const calcGeometry = await numpad.evaluate((pad) => {
+    const number = pad.querySelector('[data-key="7"]');
+    const enter = pad.querySelector('[data-key="enter"]');
+    if (!number || !enter) throw new Error("Missing calculator authority chrome");
+    const padBox = pad.getBoundingClientRect();
+    return {
+      height: Math.round(padBox.height),
+      width: Math.round(padBox.width),
+      numberX: Math.round(number.getBoundingClientRect().x),
+      enterWidth: Math.round(enter.getBoundingClientRect().width),
+    };
+  });
+  expect(calcGeometry).toEqual({
+    height: entryGeometry.height,
+    width: 288,
+    numberX: entryGeometry.numberX,
+    enterWidth: 264,
+  });
+  await shell.locator("#numpad-mode-btn").click();
+  await expect(numpad).not.toHaveClass(/numpad--calc/);
+
+  const marginsBody = shell.locator("#margins-body");
+  if (await marginsBody.evaluate((body) => body.classList.contains("closed"))) {
+    await shell.locator('[data-target="margins-body"]').click();
+  }
+  await shell.locator("#m-left").fill("0.125");
+  await shell.locator("#m-right").fill("0.25");
+  await shell.locator("#m-bottom").fill("0.5");
+  await shell.locator("#m-top").fill("0.75");
+  await shell.locator("#m-left").focus();
+  await expect(numpad).toHaveAttribute("aria-hidden", "false");
+  await shell.locator('[data-target="margins-body"]').click();
+  await expect(marginsBody).toHaveClass(/closed/);
+  await expect(marginsBody).toHaveAttribute("inert", "");
+  await expect(numpad).toHaveAttribute("aria-hidden", "true");
+  await expect(shell.locator("#margins-badge")).toHaveText(
+    "L0.125 R0.25 B0.5 T0.75",
+  );
+
+  await shell.locator('[data-target="presets-body"]').click();
+  const presetName = `Plate A ${testInfo.workerIndex}`;
+  await shell.locator("#presets-add").click();
+  const saveDialog = shell.getByRole("dialog", { name: "Save preset" });
+  await expect(saveDialog).toBeVisible();
+  await expect(saveDialog.getByLabel("Name")).toBeFocused();
+  await expect(saveDialog.getByLabel("Name")).toHaveCSS(
+    "background-color",
+    "rgb(30, 26, 42)",
+  );
+  await saveDialog.getByLabel("Name").fill(presetName);
+  await saveDialog.getByRole("button", { name: "OK" }).click();
+  const preset = shell.getByRole("listitem", {
+    name: `Load preset ${presetName}`,
+  });
+  await expect(preset).toBeVisible();
+  await shell.locator("#presets-edit").click();
+  const renameDialog = shell.getByRole("dialog", { name: "Rename preset" });
+  await renameDialog.getByLabel("Name").fill("Plate A renamed");
+  await renameDialog.getByRole("button", { name: "OK" }).click();
+  await expect(
+    shell.getByRole("listitem", { name: "Load preset Plate A renamed" }),
+  ).toBeVisible();
+
+  await partX.focus();
+  await quick.click();
+  await shell.locator("#quick-edit").click();
+  const quickDialog = shell.getByRole("dialog", { name: "Edit quick value" });
+  await quickDialog.getByLabel("Value").fill("0.333letters");
+  await expect(quickDialog.getByLabel("Value")).toHaveValue("0.333");
+  await quickDialog.getByRole("button", { name: "OK" }).click();
+  await expect(shell.locator('#quick-track [data-quick="0.333"]')).toHaveText(
+    ".333",
+  );
+  await shell.locator("#numpad-close").click();
+
+  await shell.locator("#tab-gcode").click();
+  const sourceHeader = shell.locator(
+    '[data-gsection="source"] > .section-header-gcode',
+  );
+  expect(
+    await sourceHeader.evaluate((header) => {
+      const trigger = header.children[0];
+      const actions = header.children[1];
+      return [
+        trigger?.textContent?.trim(),
+        ...Array.from(actions?.children ?? []).map(
+          (element) =>
+            element.id || element.getAttribute("aria-label") || element.textContent?.trim(),
+        ),
+      ];
+    }),
+  ).toEqual([
+    "Source",
+    "howmany-source-file",
+    "howmany-source-clear",
+    "prog-unit-switch",
+    "Toggle source",
+  ]);
+  expect(
+    await shell
+      .locator('style[data-howmany-bridge="stage-style"]')
+      .evaluate((style) => style.textContent?.includes("transform-origin: top right")),
+  ).toBe(true);
+  await expect(shell.locator("#source-body")).toHaveCSS("transform", "none");
+  await expect(shell.locator("#source-body")).toHaveCSS("animation-name", "none");
+  await sourceHeader.getByRole("button", { name: "Toggle source" }).click();
+  await expect(shell.locator("#source-body")).toHaveClass(/closed/);
+  await sourceHeader.getByRole("button", { name: "Toggle source" }).click();
+  await expect(shell.locator("#source-body")).not.toHaveClass(/closed/);
+
+  await shell.locator("#prog-unit-mm").click();
+  await shell.locator("#part-unit-mm").click();
+  await shell.locator("#gcode-input").fill("G90 G20\nG0 X0 Y0\nG1 X4 Y2");
+  await shell.locator("#gcode-generate").click();
+  await expect(shell.locator("#gcode-part-x")).toHaveValue("4");
+  await expect(shell.locator("#gcode-part-y")).toHaveValue("2");
+  await shell.locator("#prog-unit-in").click();
+  await expect(shell.locator("#gcode-part-x")).toHaveValue("101.6");
+  await expect(shell.locator("#gcode-part-y")).toHaveValue("50.8");
+  await shell.locator("#prog-unit-mm").click();
+  await expect(shell.locator("#gcode-part-x")).toHaveValue("4");
+  await shell.locator("#howmany-source-clear").click();
+  await expect(shell.locator("#gcode-input")).toHaveValue("");
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await shell.locator("#tab-calc").click();
+  await shell.locator("#mode-autonest").click();
+  await expect(footer.locator('[data-footer-kind="auto"]')).toBeVisible();
+  await shell.locator("#mode-manual").click();
+  await expect(footer.locator('[data-footer-kind="auto"]')).toBeHidden();
+  await partX.focus();
+  await expect(numpad).toHaveAttribute("aria-hidden", "false");
+  await expect(numpad.locator(".howmany-mid-chrome")).toHaveCSS(
+    "height",
+    "68px",
+  );
+  await shell.locator("#numpad-mode-btn").click();
+  await expect(numpad).toHaveCSS("width", "288px");
+  await expect(numpad.locator("#numpad-lcd")).toHaveCSS("height", "50px");
 });
 
 test("authenticated user reaches the NestCalc calculator shell", async ({
