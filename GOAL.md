@@ -30,8 +30,8 @@
   "branch_intent": "codex/howmany-ui-polish-residual-2",
   "execution_route": "codex-cli",
   "flow_id": "NC-20260811-6d6cb697",
-  "goal_memory_commit": "9a01ab0c50e712ea442d818291a3181f8d975a8e",
-  "goal_sha256": "sha256:7b631b269990c103f213b463d767572582dab415e24b653745613d6993f5c589",
+  "goal_memory_commit": "6eb71b2313ef8453f2f2cc328ee6ed27a74f36c0",
+  "goal_sha256": "sha256:b69b638acede34f4ce80c7094a1a97ca6108a0fa6503cb0beb547d2e226c9698",
   "protected_surfaces": [
     "exact bytes and checksums of both locked HTML authorities: the residual component package and REFERENCE-PROTOTYPE-v2.html",
     "HowMany product name, HowMany by wReckless Toddler LLC brand line, free-standing lowercase h plus Lucide CircleQuestionMark plus wMany wordmark, and docs/ui-shell lineage",
