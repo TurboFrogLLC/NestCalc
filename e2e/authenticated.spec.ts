@@ -1002,6 +1002,11 @@ test("HowMany UI polish residual proves AutoNest, G-code, controls, and dialogs"
   const savePresetDialog = shell.getByRole("dialog", { name: "Save preset" });
   await expect(savePresetDialog).toBeVisible();
   await savePresetDialog.getByLabel("Preset name").fill("Cancelled preset");
+  await page.screenshot({
+    path: testInfo.outputPath("howmany-ui-polish-save-preset-dialog.png"),
+    animations: "disabled",
+    fullPage: true,
+  });
   await savePresetDialog.getByRole("button", { name: "Cancel" }).click();
   await expect(shell.locator("#presets-track [data-preset-id]")).toHaveCount(
     presetCountBeforeCancel,
