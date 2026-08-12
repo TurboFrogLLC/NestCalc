@@ -30,8 +30,8 @@
   "branch_intent": "codex/howmany-ui-polish-residual",
   "execution_route": "codex-cli",
   "flow_id": "NC-20260811-59adccab",
-  "goal_memory_commit": "0000000000000000000000000000000000000000",
-  "goal_sha256": "sha256:cfc5b6baf2d7083534d069c037daeae338dfa8955c20e1a469b23c5d70468495",
+  "goal_memory_commit": "c82aa8c8959fb7dbdbd4a52cb9f5778986a59d20",
+  "goal_sha256": "sha256:fbfa9d2178afd7e607c03439f7530a5dcdea4aee44d8a0cbf5beb600227bd425",
   "protected_surfaces": [
     "exact bytes, structure, identity, free-standing header wordmark, and locked chrome authority of docs/nestcalc-ui-redesign-package/REFERENCE-PROTOTYPE-v2.html",
     "docs/ui-shell and the accepted Option B package lineage, except read-only consultation of the canonical prototype",
