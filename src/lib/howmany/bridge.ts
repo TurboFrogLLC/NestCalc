@@ -39,6 +39,58 @@ export function formatShellNumber(value: number | null): string {
   return `${round3(value)}`;
 }
 
+export function sanitizeShellNumericDraft(value: string): string {
+  let sanitized = "";
+  let hasDecimal = false;
+
+  for (const character of value) {
+    if (character >= "0" && character <= "9") {
+      sanitized += character;
+      continue;
+    }
+    if (character === "." && !hasDecimal) {
+      sanitized += character;
+      hasDecimal = true;
+    }
+  }
+
+  return sanitized;
+}
+
+export function quickValueDraft(
+  currentValue: string,
+  quickValue: string,
+): string {
+  if (currentValue.includes(".")) return currentValue;
+
+  const current = sanitizeShellNumericDraft(currentValue);
+  const quick = sanitizeShellNumericDraft(quickValue);
+  if (current !== currentValue || !/^\d*$/.test(current)) return currentValue;
+  if (!/^\d*\.\d+$/.test(quick) || !Number.isFinite(Number(quick))) {
+    return currentValue;
+  }
+
+  const fraction = quick.slice(quick.indexOf("."));
+  return `${current}${fraction}`;
+}
+
+export function committedShellNumericValue(value: string): number | null {
+  const parsed = parseNumericInput(value);
+  return parsed !== null && Number.isFinite(parsed) ? parsed : null;
+}
+
+export function normalizeShellDialogName(value: string): string {
+  return value.trim().slice(0, 24);
+}
+
+export function marginsBadgeText(margins: Margins): string {
+  const display = (value: number | null) =>
+    value === null ? "—" : formatShellNumber(value);
+  return `L${display(margins.left)} R${display(margins.right)} B${display(
+    margins.bottom,
+  )} T${display(margins.top)}`;
+}
+
 export function shouldPreserveNumericDraft(
   draft: string,
   persistedValue: number | null,

@@ -1,11 +1,16 @@
 import { describe, expect, it } from "vitest";
 import {
+  committedShellNumericValue,
   derivePresetCarousel,
   displayGCodeSize,
   fieldBindingForId,
   formatShellNumber,
   generationIsFresh,
   insertShellDecimal,
+  marginsBadgeText,
+  normalizeShellDialogName,
+  quickValueDraft,
+  sanitizeShellNumericDraft,
   shouldPreserveNumericDraft,
 } from "./bridge";
 
@@ -47,6 +52,10 @@ describe("HowMany shell bridge helpers", () => {
       caret: 2,
     });
     expect(insertShellDecimal("1.2", 3, 3, false)).toBeNull();
+
+    const wholeNumber = insertShellDecimal("1", 1, 1, false);
+    expect(wholeNumber).toEqual({ value: "1.", caret: 2 });
+    expect(`${wholeNumber?.value}2`).toBe("1.2");
   });
 
   it("keeps preset pages truthful for selection and an empty carousel", () => {
@@ -86,5 +95,45 @@ describe("HowMany shell bridge helpers", () => {
     expect(generationIsFresh(generation, "G0 X2 Y1", 90)).toBe(false);
     expect(generationIsFresh(generation, "G0 X1 Y1", 180)).toBe(false);
     expect(generationIsFresh(null, "G0 X1 Y1", 90)).toBe(false);
+  });
+
+  it("sanitizes hosted numeric drafts to digits and one decimal point", () => {
+    expect(sanitizeShellNumericDraft("12a.3b.4")).toBe("12.34");
+    expect(sanitizeShellNumericDraft(".625in")).toBe(".625");
+    expect(sanitizeShellNumericDraft("abc")).toBe("");
+  });
+
+  it("hydrates empty and whole-number drafts with quick fractions", () => {
+    expect(quickValueDraft("5", "0.375")).toBe("5.375");
+    expect(quickValueDraft("", "0.375")).toBe(".375");
+  });
+
+  it("leaves decimal drafts unchanged when a quick value is clicked", () => {
+    expect(quickValueDraft("5.", "0.375")).toBe("5.");
+    expect(quickValueDraft("5.25", "0.375")).toBe("5.25");
+  });
+
+  it("rejects invalid quick drafts without producing NaN or a lone decimal", () => {
+    expect(quickValueDraft("5", "not-a-number")).toBe("5");
+    expect(quickValueDraft("", ".")).toBe("");
+    expect(Number.isNaN(Number(quickValueDraft("5", "not-a-number")))).toBe(
+      false,
+    );
+    expect(committedShellNumericValue(".")).toBeNull();
+    expect(committedShellNumericValue("NaN")).toBeNull();
+    expect(committedShellNumericValue("1.2")).toBe(1.2);
+  });
+
+  it("keeps multi-character dialog names while enforcing the authority limit", () => {
+    expect(normalizeShellDialogName("  stainless  ")).toBe("stainless");
+    expect(normalizeShellDialogName("ABCDEFGHIJKLMNOPQRSTUVWXY")).toBe(
+      "ABCDEFGHIJKLMNOPQRSTUVWX",
+    );
+  });
+
+  it("formats the collapsed margins badge in left, right, bottom, top order", () => {
+    expect(
+      marginsBadgeText({ left: 0.125, right: null, bottom: 2, top: 0 }),
+    ).toBe("L0.125 R— B2 T0");
   });
 });
