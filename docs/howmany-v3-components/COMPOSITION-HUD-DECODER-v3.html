@@ -601,11 +601,17 @@
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
     }
 
-    /* de-coder resize handles — E / S / SE; min = natural, max width +150 */
+    /* de-coder resize handles — only when expanded (G-code mode); disabled when collapsed */
     .gcode-resize {
       position: absolute;
       z-index: 5;
       background: transparent;
+      display: none;
+      pointer-events: none;
+    }
+    .gcode.is-expanded .gcode-resize {
+      display: block;
+      pointer-events: auto;
     }
     .gcode-resize-e {
       top: 12px;
@@ -1172,33 +1178,33 @@
       background: #FFCE1B !important;
     }
 
-    /* ── Card-anchored toast (above header) ── */
-    /* Card toast — flat, no pointer; black + amber text ties to EDITING */
+    /* Centered in-panel toast — dark header color at ~50% opacity */
     .gcode-toast {
       position: absolute;
       left: 50%;
-      bottom: calc(100% + 8.8px);
-      transform: translateX(-50%) translateY(6.6px);
+      top: 50%;
+      bottom: auto;
+      transform: translate(-50%, -50%) scale(0.96);
       min-width: 132px;
       max-width: calc(100% - 17.6px);
-      padding: 8.8px 15.4px;
+      padding: 10px 18px;
       border-radius: 8.8px;
-      background: var(--ink);
+      background: rgba(26, 20, 40, 0.50);
       color: #FFCE1B;
-      font-size: 12.1px;
+      font-size: 13px;
       font-weight: 700;
       letter-spacing: 0.02em;
       text-align: center;
       white-space: nowrap;
       opacity: 0;
       pointer-events: none;
-      z-index: 30;
-      box-shadow: 0 11px 26.4px -10px rgba(0,0,0,0.50);
+      z-index: 40;
+      box-shadow: 0 11px 26.4px -10px rgba(0,0,0,0.40);
       transition: opacity 180ms var(--ease), transform 180ms var(--ease);
     }
     .gcode-toast.is-on {
       opacity: 1;
-      transform: translateX(-50%) translateY(0);
+      transform: translate(-50%, -50%) scale(1);
     }
 
     /* ── Header ── */
@@ -1483,13 +1489,13 @@
     .surface-editing-banner {
       display: none !important; /* retired takeover label */
     }
+    /* EDITING surface row: no yellow wash — just disabled look; outer ring carries the alert */
     .surface-row.is-editing-banner {
-      background: rgba(255, 206, 27, 0.38);
-      border-bottom-color: rgba(180, 130, 0, 0.35);
+      background: transparent;
+      border-bottom-color: var(--ink-15);
     }
-    /* Controls stay on top of the yellow wash — disabled look (no color, no click) */
     .surface-row.is-editing-banner > *:not(.surface-editing-banner) {
-      opacity: 0.7;
+      opacity: 0.55;
       filter: grayscale(1);
       pointer-events: none;
     }
@@ -1976,8 +1982,9 @@
 
     .edit-actions {
       position: absolute;
-      top: 6.6px;
-      right: 6.6px;
+      /* equal inset from top + right of the code shell; clear of scrollbar (~14px) */
+      top: 14px;
+      right: 14px;
       display: none;
       align-items: center;
       gap: 4.4px;
@@ -3108,12 +3115,20 @@
       const hudRect = hud.getBoundingClientRect();
       const openRow = document.querySelector('.param-row.is-open');
       const top = openRow ? openRow.getBoundingClientRect().top : hudRect.top;
+      const gap = 11;
+      const margin = 8;
       document.querySelectorAll('.param-popover').forEach((pop) => {
         pop.style.position = 'fixed';
         pop.style.top = top + 'px';
-        // fully outside on the RIGHT: 11px gap after HUD right edge (10 × 1.1)
-        pop.style.left = Math.round(hudRect.right + 11) + 'px';
         pop.style.right = 'auto';
+        /* Prefer right of HUD; flip to left if it would clip the viewport */
+        const popW = pop.offsetWidth || 280;
+        const rightLeft = hudRect.right + gap;
+        if (rightLeft + popW > window.innerWidth - margin) {
+          pop.style.left = Math.round(Math.max(margin, hudRect.left - gap - popW)) + 'px';
+        } else {
+          pop.style.left = Math.round(rightLeft) + 'px';
+        }
       });
     }
 
