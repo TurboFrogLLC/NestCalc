@@ -4,10 +4,10 @@
 **Composition HTML:** `COMPOSITION-HUD-DECODER-v3.html`  
 **Branch:** `docs/howmany-v3-decoder-lock`  
 **Repo:** `TurboFrogLLC/NestCalc`  
-**Branch tip:** `4438c2ac81b024e01a00879178e32b7376b0f890`  
-**HTML blob (tip):** `2e42cb42a9a963b3956d490c6f14b60baec1bd8a`  
+**Branch tip:** `ad530cad765b0de5b7c70677e1d2399867b48733`  
+**HTML blob (tip):** `e7c083fcbcf00317259734d5153dc5e332f79d1d`  
 **Content authority (R10c chrome):** `1a184ea67cf1bb4578422e22056d5e9a61c60784` / blob `3cc008ab5f5f4c55dd80e0a915c9d2781c0fe7b2`  
-**OPEN residuals:** R12 · R13 · R14 · R15  
+**OPEN residuals:** R13 · R14 · R15  
 **Class:** Exploratory composition only — not a product GOAL  
 
 ## Changelog
@@ -16,6 +16,7 @@
 |------|-----|-------|------------------------|
 | 2026-08-16 | 52b2d464 | docs-only land three SPECs | Index scaffold · links to HUD + flipIT |
 | 2026-08-16 | 4438c2ac | R11 PASS | Position memory · OPEN R12–R15 |
+| 2026-08-16 | ad530cad | R12 PASS | Popover select-all · OPEN R13–R15 |
 
 ---
 
@@ -35,6 +36,7 @@
 - flipIT **FLIP IT** (process) → Output + same green outer-ring flash 2200ms.
 - Part ticker posted state is independent of outer-ring flash duration.
 - **R11:** flipIT close saves left/top; next open restores (first open = top-right 16px).
+- **R12:** popover number fields always full-select on click; selection = black@60% · text `#FFCE1B`.
 
 ---
 
@@ -54,7 +56,7 @@
 | `--green` | `#00CF00` | status ready |
 | `--green-border` | `rgba(0, 140, 30, 0.70)` | READY/DONE chips |
 | `--green-glow` | `0 0 0 3px …70%, 0 0 0 6px …28%` | READY chip halo (not outer post flash) |
-| Edit amber | `#FFCE1B` | IT wordmark · yellow edit ring · toast text |
+| Edit amber | `#FFCE1B` | IT wordmark · yellow edit ring · toast text · selection text |
 | `--motion-collapse` | `600ms` | HUD body grid |
 
 ---
@@ -79,6 +81,7 @@ Full CSS/JS: see **Shell rings** in `FLIPIT-v3.SPEC.md`.
 | R9 | 475f2c4d · 108c9e30 · 3122e318 · a661716d · 82d08feb | Yellow outer ring only · grayscale disabled chrome · no EDITING takeover · no hat highlight |
 | R10 | 1a184ea6 | Green outer ring on **Post + FLIP IT** · 1px @ 90% · soft halo match yellow |
 | R11 | 4438c2ac | flipIT reopen remembers last left/top (AUTO-SIZE + FLiPIT) |
+| R12 | ad530cad | Popover select-all · black@60% · text #FFCE1B · mouseup race fixed |
 
 ---
 

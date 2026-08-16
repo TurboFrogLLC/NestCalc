@@ -5,8 +5,8 @@
 **Locked sibling (standalone):** `NUMERIC-HUD-v3-LOCKED.html`  
 **Branch:** `docs/howmany-v3-decoder-lock`  
 **Repo:** `TurboFrogLLC/NestCalc`  
-**Branch tip:** `4438c2ac81b024e01a00879178e32b7376b0f890`  
-**HTML blob (tip):** `2e42cb42a9a963b3956d490c6f14b60baec1bd8a`  
+**Branch tip:** `ad530cad765b0de5b7c70677e1d2399867b48733`  
+**HTML blob (tip):** `e7c083fcbcf00317259734d5153dc5e332f79d1d`  
 **Content authority (R10c):** `1a184ea67cf1bb4578422e22056d5e9a61c60784` / blob `3cc008ab5f5f4c55dd80e0a915c9d2781c0fe7b2`  
 **Class:** Exploratory composition only — not a product GOAL  
 
@@ -17,6 +17,7 @@
 | 2026-08-16 | 1a184ea6 | scaffold | Header stubs only — fill on next HUD residual PASS |
 | 2026-08-16 | 52b2d464 | docs-only land three SPECs | Tip header aligned to branch |
 | 2026-08-16 | 4438c2ac | R11 PASS (no HUD change) | Tip header aligned |
+| 2026-08-16 | ad530cad | R12 PASS | Popover select-all · selection paint |
 
 ---
 
@@ -31,6 +32,7 @@
 | `--chip-h` / `--icon-btn` | `28.6px` |
 | `--motion-collapse` | `600ms` |
 | Header height | `44px` |
+| Selection amber | `#FFCE1B` |
 
 ---
 
@@ -49,8 +51,6 @@
 - Drag from header (not from tool buttons)
 - Collapse via chevron — body grid `1fr` → `0fr`
 
-**CSS (authority from tip)** — fill on next PASS that touches shell
-
 ---
 
 ## Header tools
@@ -58,8 +58,6 @@
 ### Calculator toggle
 
 **Role:** Swaps HUD body ↔ classic calculator.
-
-**Visual / UX** — stubs; fill from tip on next residual PASS.
 
 ### Chevron (collapse)
 
@@ -69,9 +67,7 @@
 | Token | Value |
 |-------|--------|
 | Idle | solid white fill + ink icon |
-| Not | active-calc blue
-
-**CSS (authority from tip)** — `.keypad-header .tool.chevron-btn`
+| Not | active-calc blue |
 
 ---
 
@@ -79,7 +75,38 @@
 
 **Role:** Label + ticker; click ticker → smart popover.
 
-**Visual / UX / CSS / JS** — stubs; fill per-row on residual PASS that changes them.
+---
+
+## Popover input selection (R12 locked)
+
+**Role:** Click/focus any popover number field → **always** select entire value (type replaces). No mid-string caret after click.
+
+**Visual**
+
+| Token | Value |
+|-------|--------|
+| Field under selection | solid `#ffffff` on `.is-focused` half/field |
+| Selection background | `rgba(0, 0, 0, 0.60)` |
+| Selected text | `#FFCE1B` |
+| Scope | `.param-popover` inputs only (`user-select: text`) |
+
+```css
+.param-popover .pop-half input::selection,
+.param-popover .pop-m-field input::selection {
+  background: rgba(0, 0, 0, 0.60);
+  color: #FFCE1B;
+}
+.param-popover .pop-half.is-focused,
+.param-popover .pop-m-field.is-focused {
+  background: #ffffff;
+}
+```
+
+```js
+/* focus → setTimeout(selectAll, 0); mouseup → preventDefault + selectAll */
+inp.select();
+inp.setSelectionRange(0, len);
+```
 
 ---
 

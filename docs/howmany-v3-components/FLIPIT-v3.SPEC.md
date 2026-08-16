@@ -5,8 +5,8 @@
 **Surface name:** flipIT (wordmark case-sensitive: `FLiP` + `IT`)  
 **Branch:** `docs/howmany-v3-decoder-lock`  
 **Repo:** `TurboFrogLLC/NestCalc`  
-**Branch tip:** `4438c2ac81b024e01a00879178e32b7376b0f890`  
-**HTML blob (tip):** `2e42cb42a9a963b3956d490c6f14b60baec1bd8a`  
+**Branch tip:** `ad530cad765b0de5b7c70677e1d2399867b48733`  
+**HTML blob (tip):** `e7c083fcbcf00317259734d5153dc5e332f79d1d`  
 **Content authority (R10c rings):** `1a184ea67cf1bb4578422e22056d5e9a61c60784` / blob `3cc008ab5f5f4c55dd80e0a915c9d2781c0fe7b2`  
 **Class:** Exploratory composition only — not a product GOAL  
 
@@ -17,6 +17,7 @@
 | 2026-08-16 | 1a184ea6 | scaffold + R10c | Shell rings (green post flash) — numbers from tip |
 | 2026-08-16 | 52b2d464 | docs-only land three SPECs | Tip header aligned to branch |
 | 2026-08-16 | 4438c2ac | R11 PASS | Position memory on close/reopen |
+| 2026-08-16 | ad530cad | R12 PASS (no flipIT change) | Tip header aligned |
 
 ---
 
@@ -48,13 +49,6 @@
 | Border | `2px solid rgba(26, 20, 40, 0.22)` |
 | Halo | drop shadow only: `0 18px 40px -12px rgba(0, 0, 0, 0.38)` |
 
-```css
-.gcode::after {
-  border: 2px solid rgba(26, 20, 40, 0.22);
-  box-shadow: 0 18px 40px -12px rgba(0, 0, 0, 0.38);
-}
-```
-
 ### Yellow — edit mode (R9 locked)
 
 | Token | Value |
@@ -62,16 +56,6 @@
 | When | `:has(.surface-row.is-editing-banner)` |
 | Border | `1px solid #FFCE1B` |
 | Halo / glow | soft `0 0 2px 2px rgba(255, 206, 27, 0.55)` |
-
-```css
-.gcode:has(.surface-row.is-editing-banner)::after {
-  border-width: 1px;
-  border-color: #FFCE1B;
-  box-shadow:
-    0 0 2px 2px rgba(255, 206, 27, 0.55),
-    0 18px 40px -12px rgba(0, 0, 0, 0.38);
-}
-```
 
 ### Green — Post + FLIP IT flash (R10c locked)
 
@@ -81,24 +65,6 @@
 | Triggers | `btn-post` click · stage **FLIP IT** (`data-state="process"`) |
 | Border | `1px solid rgba(0, 180, 40, 0.90)` |
 | Halo / glow | soft `0 0 2px 2px rgba(0, 180, 40, 0.70)` (matched to yellow shape) |
-
-```css
-.gcode.is-post-flash::after {
-  border-width: 1px;
-  border-color: rgba(0, 180, 40, 0.90);
-  box-shadow:
-    0 0 2px 2px rgba(0, 180, 40, 0.70),
-    0 18px 40px -12px rgba(0, 0, 0, 0.38);
-}
-```
-
-```js
-function flashGreenRing() {
-  panel.classList.add('is-post-flash');
-  /* clear after 2200ms */
-}
-/* called from btn-post and stage FLIP IT process path */
-```
 
 ---
 
@@ -142,8 +108,6 @@ function closeGcode() {
 
 **Wordmark:** `FLiP` white · `IT` `#FFCE1B`.
 
-**Program field:** always white fill on dark header; open · download · clear X at end.
-
 ### Surface row
 
 **Role:** GC0DE expand · part group (detect · ticker · post).
@@ -157,19 +121,11 @@ function closeGcode() {
 | Posted | green fill + inset green edge when connected |
 | Edit mode | grayscale / muted; no residual hat highlight (R9) |
 
-**CSS stubs** — expand on residual PASS that touches part-group.
-
 ---
 
 ## § Expanded
 
 **Role:** Full pipeline — Source / Output, tool-strip, code shell, stage footer.
-
-### Source / Output tabs + tool-strip
-
-**Role:** Undo/redo, clear, units; output adds edit/copy/download.
-
-**Edit mode:** yellow outer ring; body grayscale-disabled; accept/cancel stay live.
 
 ### Stage footer
 
