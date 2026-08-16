@@ -294,9 +294,9 @@
       overflow: visible;
       pointer-events: none;
     }
-    /* Calc engaged: light-blue fill, still black icon */
+    /* Calc engaged: white base under blue tint (dark header would mud transparent blue alone) */
     .keypad-header .tool.active-calc {
-      background: rgba(83, 139, 236, 0.28);
+      background: linear-gradient(rgba(83, 139, 236, 0.28), rgba(83, 139, 236, 0.28)), #fff;
       border-color: rgba(83, 139, 236, 0.45);
       color: var(--ink);
     }
@@ -317,6 +317,10 @@
     }
     .keypad.collapsed .header-part-ticker {
       display: flex;
+      /* white base under blue tint — same fix as active-calc; transparent alone muds on dark header */
+      background: linear-gradient(rgba(83, 139, 236, 0.22), rgba(83, 139, 236, 0.22)), #fff;
+      border-color: rgba(83, 139, 236, 0.35);
+      color: var(--ink);
     }
 
     /* Collapse: same grid 0fr/1fr as de-coder; HUD-only 750ms for perceived parity */
