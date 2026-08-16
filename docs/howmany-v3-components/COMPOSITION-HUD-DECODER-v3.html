@@ -146,13 +146,16 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       background: rgba(255,255,255,0.82);
       border: 1.38px solid rgba(0,0,0,0.55);
       pointer-events: auto; /* host child-spec clicks only when table open area */
-      overflow: hidden;
+      overflow: visible; /* R26: allow child-spec to drag outside blank */
       box-sizing: border-box;
     }
-    /* R15: child-spec table inside faux-bed blank */
+    /* R15 + R26: child-spec table — free-draggable panel (non-production) */
     .child-spec {
-      width: 100%;
-      height: 100%;
+      position: absolute;
+      left: 52.8px;
+      bottom: 52.8px;
+      width: 280px;
+      height: 210px;
       display: flex;
       flex-direction: column;
       font-family: var(--font-mono, ui-monospace, Menlo, monospace);
@@ -162,6 +165,12 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       box-sizing: border-box;
       user-select: text;
       -webkit-user-select: text;
+      background: rgba(255, 255, 255, 0.94);
+      border: 1.1px solid rgba(26, 20, 40, 0.22);
+      border-radius: 8px;
+      box-shadow: 0 8px 22px -8px rgba(0, 0, 0, 0.28);
+      z-index: 25;
+      touch-action: none;
     }
     .child-spec .cs-head {
       display: flex;
@@ -171,7 +180,10 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       flex-shrink: 0;
       border-bottom: 1px solid rgba(26, 20, 40, 0.14);
       padding-bottom: 4px;
+      cursor: grab;
+      touch-action: none;
     }
+    .child-spec .cs-head:active { cursor: grabbing; }
     .child-spec .cs-title {
       font-family: var(--font);
       font-size: 10px;
@@ -211,7 +223,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       line-height: 1.35;
     }
     .child-spec th {
-      width: 34%;
+      width: 28%;
       font-weight: 650;
       color: rgba(26, 20, 40, 0.45);
       text-transform: uppercase;
@@ -229,6 +241,45 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       background: rgba(26, 20, 40, 0.06);
       padding: 0 3px;
       border-radius: 3px;
+    }
+    /* R26: copy column — far right of every row */
+    .child-spec td.cs-copy-cell {
+      width: 22px;
+      padding: 2px 0 2px 2px;
+      text-align: right;
+      vertical-align: middle;
+    }
+    .child-spec .cs-copy {
+      width: 18px;
+      height: 18px;
+      padding: 0;
+      margin: 0;
+      border: none;
+      border-radius: 3px;
+      background: transparent;
+      color: rgba(26, 20, 40, 0.40);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      line-height: 0;
+      flex-shrink: 0;
+    }
+    .child-spec .cs-copy:hover {
+      background: rgba(26, 20, 40, 0.08);
+      color: rgba(26, 20, 40, 0.85);
+    }
+    .child-spec .cs-copy:active {
+      transform: scale(0.92);
+    }
+    .child-spec .cs-copy svg {
+      display: block;
+      width: 12px;
+      height: 12px;
+      pointer-events: none;
+    }
+    .child-spec .cs-copy.is-copied {
+      color: #16A34A;
     }
     .child-spec .cs-empty {
       display: none;
@@ -5600,7 +5651,14 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     var html = '';
     KEYS.forEach(function (k) {
       var v = entry.tokens[k] || '—';
-      html += '<tr><th>' + k + '</th><td><code>' + String(v).replace(/</g, '&lt;') + '</code></td></tr>';
+      var safe = String(v).replace(/</g, '&lt;').replace(/"/g, '&quot;');
+      html += '<tr><th>' + k + '</th><td><code>' + safe + '</code></td>' +
+        '<td class="cs-copy-cell">' +
+        '<button type="button" class="cs-copy" data-key="' + k + '" data-val="' + safe + '" title="Copy row" aria-label="Copy ' + k + '">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">' +
+        '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>' +
+        '<path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>' +
+        '</svg></button></td></tr>';
     });
     rowsEl.innerHTML = html;
     document.querySelectorAll('.cs-armed').forEach(function (el) {
@@ -5685,6 +5743,82 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
   if (iso && !iso.getAttribute('data-child-spec')) {
     iso.setAttribute('data-child-spec', 'sandbox-iso');
   }
+
+  /* R26: reparent child-spec under bed-stage so absolute coords are stage-relative */
+  (function () {
+    var stage = document.querySelector('.bed-stage');
+    if (stage && panel.parentElement !== stage) {
+      stage.appendChild(panel);
+    }
+  })();
+
+  /* R26: copy row → "key: value" */
+  panel.addEventListener('click', function (e) {
+    var btn = e.target.closest && e.target.closest('.cs-copy');
+    if (!btn || !panel.contains(btn)) return;
+    e.preventDefault();
+    e.stopPropagation();
+    var key = btn.getAttribute('data-key') || '';
+    var val = btn.getAttribute('data-val') || '';
+    var text = key + ': ' + val;
+    function flash() {
+      btn.classList.add('is-copied');
+      setTimeout(function () { btn.classList.remove('is-copied'); }, 900);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(flash).catch(function () {
+        try {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          flash();
+        } catch (_) {}
+      });
+    }
+  });
+
+  /* R26: drag child-spec by its head (free move across stage) */
+  (function () {
+    var head = panel.querySelector('.cs-head');
+    if (!head) return;
+    var dragging = false, sx, sy, ol, ot, pid = null;
+    head.addEventListener('pointerdown', function (e) {
+      if (e.button != null && e.button !== 0) return;
+      if (e.target.closest && e.target.closest('button')) return;
+      dragging = true;
+      sx = e.clientX; sy = e.clientY;
+      var r = panel.getBoundingClientRect();
+      ol = r.left; ot = r.top;
+      /* switch to top/left absolute (drop bottom anchoring) */
+      panel.style.bottom = 'auto';
+      panel.style.left = ol + 'px';
+      panel.style.top = ot + 'px';
+      pid = e.pointerId;
+      try { head.setPointerCapture(e.pointerId); } catch (_) {}
+      e.preventDefault();
+      e.stopPropagation();
+    });
+    head.addEventListener('pointermove', function (e) {
+      if (!dragging) return;
+      var nx = Math.min(window.innerWidth - 40, Math.max(-panel.offsetWidth + 40, ol + e.clientX - sx));
+      var ny = Math.min(window.innerHeight - 40, Math.max(0, ot + e.clientY - sy));
+      panel.style.left = nx + 'px';
+      panel.style.top = ny + 'px';
+    });
+    function endDrag() {
+      if (!dragging) return;
+      dragging = false;
+      try { if (pid != null) head.releasePointerCapture(pid); } catch (_) {}
+      pid = null;
+    }
+    head.addEventListener('pointerup', endDrag);
+    head.addEventListener('pointercancel', endDrag);
+  })();
 
   clearSpec();
 })();
