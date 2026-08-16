@@ -10,14 +10,14 @@ READ THIS BLOCK BEFORE ANY EDIT. Self-governing loop for Grok / Codex sessions.
 Branch:  docs/howmany-v3-decoder-lock
 Repo:    TurboFrogLLC/NestCalc
 Path:    docs/howmany-v3-components/COMPOSITION-HUD-DECODER-v3.html
-Tip (governance notes landed):
+Tip (R10 closed — green ring Post + FLIP IT):
+  commit  1a184ea67cf1bb4578422e22056d5e9a61c60784
+  blob    3cc008ab5f5f4c55dd80e0a915c9d2781c0fe7b2
+  msg     docs(howmany-v3): R10c 1px green ring on Post + FLIP IT
+
+Prior tip (R9 close):
   commit  475f2c4ddb875535430d3aca79908aeea0c1a576
   blob    09eb471d7ace9126b5db5c1c808ba81ce16e6f99
-  msg     docs(howmany-v3): R9 close — kill residual gray highlight on hat/glasses
-
-Prior tip (R9 partial — strip READY green + tool-strip glows):
-  commit  092dc2a573fbcd23c14840874c791b27d856196b
-  blob    626dd51b448da110948cec15f69aded273e4d880
 
 Before every residual: pull tip via GitHub connector and confirm blob SHA.
 After every residual: record new commit SHA + blob SHA in this block.
@@ -44,9 +44,11 @@ After every residual: record new commit SHA + blob SHA in this block.
   6eed4c73 / 108c9e30 / a661716d  Edit chrome series (transparent yellow row,
             gray body, disabled chrome, yellow ring — not solid EDITING banner)
 
-── OPEN residuals ───────────────────────────────────────────────────────────
-  R10  Green outer-ring on Post + FLIP IT (1px solid green @ 90% + soft halo)
-       Authority: ccfb0c5e · 7cd2fa9e — match yellow thickness; yellow unchanged
+── OPEN residuals (R1–R10 CLOSED @ 1a184ea6) ────────────────────────────────
+  (none — green ring + edit chrome series fully closed)
+  R10 closed:
+      1a184ea6  1px solid green @ 90% + soft halo on Post + FLIP IT
+                (ccfb0c5e · 7cd2fa9e; yellow edit ring unchanged)
   R9 closed series (do not reopen):
       6eed4c73  yellow OUTER shell glow; retire solid banner
       108c9e30  1px yellow outer ring + glow; surface grayscale-disabled; status-dot yellow
@@ -55,7 +57,6 @@ After every residual: record new commit SHA + blob SHA in this block.
       3122e318  NO yellow surface wash
       092dc2a5  strip READY green + tool-strip glows
       475f2c4d  kill residual gray highlight on hat/glasses (btn-detect) in edit
-  Tip-sync note: branch tip c408e6ce = governance notes only; content tip 475f2c4d
 
 ── How to work a residual ────────────────────────────────────────────────────
   a. State residual id (e.g. R1) and authority SHA.
@@ -81,11 +82,11 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     "file": "docs/howmany-v3-components/COMPOSITION-HUD-DECODER-v3.html",
     "branch": "docs/howmany-v3-decoder-lock",
     "repo": "TurboFrogLLC/NestCalc",
-    "tip_commit": "475f2c4ddb875535430d3aca79908aeea0c1a576",
-    "tip_blob": "09eb471d7ace9126b5db5c1c808ba81ce16e6f99",
-    "prior_tip_commit": "092dc2a573fbcd23c14840874c791b27d856196b",
-    "prior_tip_blob": "626dd51b448da110948cec15f69aded273e4d880",
-    "open_residuals": ["R10"],
+    "tip_commit": "1a184ea67cf1bb4578422e22056d5e9a61c60784",
+    "tip_blob": "3cc008ab5f5f4c55dd80e0a915c9d2781c0fe7b2",
+    "prior_tip_commit": "475f2c4ddb875535430d3aca79908aeea0c1a576",
+    "prior_tip_blob": "09eb471d7ace9126b5db5c1c808ba81ce16e6f99",
+    "open_residuals": [],
     "rules": [
       "one residual at a time",
       "read tip blob + authority SHA before fix",
