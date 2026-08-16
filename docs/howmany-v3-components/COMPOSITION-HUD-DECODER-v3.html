@@ -2600,35 +2600,47 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       font-weight: 800;
       text-transform: none;
     }
-    /* R16b: muted header icons — match FLiPIT surface-chevron intent (no white-on-white hover)
-       Transparent fill · muted stroke · hover only brightens ink/border, never solid white fill */
-    .toolpath-head .icon-btn {
+    /* R16c: header actions = FLiPIT .btn-surface-chevron params on dark header
+       Authority: .btn-surface-chevron
+         border 1.1px solid ink@0.22 · bg transparent · color ink-50
+         hover: color ink · border ink@0.35 · bg transparent
+       Dark-header ink family = white (same ratios as light-surface ink family).
+       Class tp-head-btn — NOT .icon-btn — so global .icon-btn:hover { background:#fff } cannot win. */
+    .toolpath-head .tp-head-btn {
       width: 28.6px;
       height: 28.6px;
       min-width: 28.6px;
       min-height: 28.6px;
+      margin: 0;
+      padding: 0;
+      border: 1.1px solid rgba(255, 255, 255, 0.22);
       border-radius: var(--chip-r);
-      border: 1.1px solid rgba(255, 255, 255, 0.28);
       background: transparent;
-      color: rgba(255, 255, 255, 0.55);
+      color: rgba(255, 255, 255, 0.50); /* ink-50 on dark */
       display: inline-flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      padding: 0;
       flex-shrink: 0;
       box-sizing: border-box;
-      transition: color 120ms ease, border-color 120ms ease, background 120ms ease;
+      line-height: 0;
+      overflow: visible;
     }
-    .toolpath-head .icon-btn:hover {
+    .toolpath-head .tp-head-btn:hover {
+      color: #ffffff; /* full ink on dark */
+      border-color: rgba(255, 255, 255, 0.35);
       background: transparent;
-      color: rgba(255, 255, 255, 0.92);
-      border-color: rgba(255, 255, 255, 0.45);
     }
-    .toolpath-head .icon-btn:active {
+    .toolpath-head .tp-head-btn:active {
       transform: scale(0.94);
     }
-    .toolpath-head .icon-btn svg { display: block; pointer-events: none; }
+    .toolpath-head .tp-head-btn svg {
+      display: block;
+      flex-shrink: 0;
+      margin: 0;
+      overflow: visible;
+      pointer-events: none;
+    }
     /* Body pad — frost shows around the viewfinder */
     .toolpath-body {
       padding: 11px;
@@ -3181,7 +3193,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
         <div class="wordmark-slot">
           <span class="wordmark"><span class="label-tool">tool</span><span class="label-path">Path</span></span>
         </div>
-        <button type="button" class="icon-btn" id="btn-tp-refresh" title="Refresh path view" aria-label="Refresh path view">
+        <button type="button" class="tp-head-btn" id="btn-tp-refresh" title="Refresh path view" aria-label="Refresh path view">
           <!-- Lucide refresh-ccw -->
           <svg width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
@@ -3190,7 +3202,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
             <path d="M16 16h5v5"/>
           </svg>
         </button>
-        <button type="button" class="icon-btn" id="btn-tp-close" title="Close toolPath" aria-label="Close toolPath">
+        <button type="button" class="tp-head-btn" id="btn-tp-close" title="Close toolPath" aria-label="Close toolPath">
           <!-- Lucide X -->
           <svg width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
             <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
