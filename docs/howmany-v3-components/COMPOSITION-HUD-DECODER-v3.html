@@ -254,6 +254,7 @@
       background: var(--frost);
     }
     .keypad-header:active { cursor: grabbing; }
+    /* Header tools mirror de-coder .icon-btn (active = ink, not close-gray) */
     .keypad-header .tool {
       height: var(--icon-btn);
       width: var(--icon-btn);
@@ -261,8 +262,8 @@
       min-height: var(--icon-btn);
       border-radius: var(--chip-r);
       border: 1.1px solid rgba(26, 20, 40, 0.22);
-      background: var(--white-55);
-      color: #5B6A9A;
+      background: var(--white-70);
+      color: var(--ink);
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -274,11 +275,16 @@
       line-height: 0;
       overflow: hidden; /* clip SVG hard inside the chip */
       transform-origin: center center;
-      /* no scale-on-press — scale was shifting the glyph */
-      transition: background 0.12s, color 0.12s, border-color 0.12s;
+      transition: background 0.12s, border-color 0.12s, transform 0.12s;
     }
+    .keypad-header .tool:hover {
+      background: var(--white);
+      border-color: rgba(26, 20, 40, 0.35);
+      /* color stays ink — no hover flip to black (already black) */
+    }
+    .keypad-header .tool:active,
     .keypad-header .tool.press:active {
-      transform: none;
+      transform: scale(0.94);
     }
     .keypad-header .tool svg {
       display: block;
@@ -288,11 +294,6 @@
       margin: 0;
       overflow: visible;
       pointer-events: none;
-    }
-    .keypad-header .tool:hover {
-      background: rgba(255, 255, 255, 0.85);
-      color: var(--ink);
-      border-color: rgba(26, 20, 40, 0.35);
     }
     .keypad-header .tool.active-calc {
       background: var(--blue-28);
@@ -317,14 +318,15 @@
       display: flex;
     }
 
-    /* Match de-coder: grid-template-rows 0fr ↔ 1fr at --dur / --ease */
+    /* Collapse: same grid 0fr/1fr as de-coder, but HUD-only longer duration
+       (short body travels less distance — 340ms keeps perceived speed matched) */
     #hud-body {
       margin-top: 0;
       display: grid;
       grid-template-rows: 1fr;
       overflow: hidden;
       min-height: 0;
-      transition: grid-template-rows var(--dur) var(--ease);
+      transition: grid-template-rows 340ms var(--ease);
     }
     #hud-body-inner {
       overflow: hidden;
