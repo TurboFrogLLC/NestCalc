@@ -1288,7 +1288,7 @@
       padding: 0 79.2px 0 8.8px;
       border: 1.1px solid transparent;
       border-radius: var(--chip-r);
-      background: var(--white-40);
+      background: #fff; /* always white on dark header */
       color: var(--ink);
       font-size: 12.1px;
       font-weight: 600;
@@ -1298,7 +1298,7 @@
     }
     .prog-name::placeholder { color: var(--ink-30); font-weight: 500; }
     .prog-name:focus {
-      background: var(--white);
+      background: #fff;
       border-color: rgba(83, 139, 236, 0.45);
       box-shadow: 0 0 0 2.2px var(--blue-22);
     }
@@ -1812,20 +1812,23 @@
       display: flex;
       flex-direction: column;
     }
-    /* EDITING: yellow wash on chrome around the white io-panel (code + tool strip stay white) */
-    .gcode:has(.surface-row.is-editing-banner) .gcode-body-inner {
-      background: rgba(255, 206, 27, 0.38);
-    }
-    .gcode:has(.surface-row.is-editing-banner) .action-row {
-      background: transparent;
-    }
-    /* Keep PROCESS/READY (or START OVER/DONE) labels — just disabled look */
+    /* EDITING: keep body gray (no yellow fill). Bottom row fully disabled —
+       labels stay PROCESS/READY etc., rings/highlights stripped, grayscale. */
     .gcode:has(.surface-row.is-editing-banner) .action-row .stage-action,
     .gcode:has(.surface-row.is-editing-banner) .action-row .stage-status,
+    .gcode:has(.surface-row.is-editing-banner) .action-row .rot-chip,
     .gcode:has(.surface-row.is-editing-banner) .action-row .btn-surface-chevron {
       filter: grayscale(1);
-      opacity: 0.7;
+      opacity: 0.55;
       pointer-events: none;
+      box-shadow: none !important;
+      border-color: rgba(26, 20, 40, 0.14) !important;
+      cursor: default;
+    }
+    .gcode:has(.surface-row.is-editing-banner) .action-row .stage-action,
+    .gcode:has(.surface-row.is-editing-banner) .action-row .stage-status {
+      background: var(--chip-gray) !important;
+      color: var(--ink-50) !important;
     }
 
     .io-panel {
@@ -2423,20 +2426,20 @@
         <svg width="17.6" height="17.6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="14" width="4.4" height="6.6" rx="2"/><rect x="6" y="4" width="4.4" height="6.6" rx="2"/><path d="M6 20h4"/><path d="M14 10h4"/><path d="M6 14h2v6"/><path d="M14 4h2v6"/></svg>
       </div>
       <div class="surface-label-slot">
-        <span class="surface-label"><span class="label-de">de-</span><span class="label-coder">coder</span></span>
+        <span class="surface-label"><span class="label-de">de</span><span class="label-coder">coder</span></span>
       </div>
 
       <div class="prog-field" id="prog-field">
         <input class="prog-name" id="prog-name" type="text" placeholder="Program name" spellcheck="false" autocomplete="off" />
         <div class="prog-actions">
-          <button type="button" class="prog-clear" id="prog-clear" title="Clear name" aria-label="Clear program name">
-            <svg width="12.1" height="12.1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-          </button>
           <button type="button" class="icon-btn" id="btn-open" title="Open program" aria-label="Open program">
             <svg width="14.3" height="14.3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.55 6a2 2 0 0 1-1.94 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"/></svg>
           </button>
           <button type="button" class="icon-btn" id="btn-save" title="Save program (from Output)" aria-label="Save program" disabled>
             <svg width="14.3" height="14.3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+          </button>
+          <button type="button" class="prog-clear" id="prog-clear" title="Clear name" aria-label="Clear program name">
+            <svg width="12.1" height="12.1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
           </button>
         </div>
       </div>
@@ -2781,7 +2784,10 @@
          body fully disappears (header-only: calc + part ticker + chevron).
          Restore measured height on expand so calc↔HUD swap stays seamless. */
       if (on) {
+        /* Clear residual inline styles so CSS 1500ms grid transition can run */
         hudBody.style.minHeight = '';
+        hudBody.style.transition = '';
+        hudBody.style.height = '';
       } else {
         const hudH = parseFloat(hudBody.dataset.hudH || '0');
         const calcH = parseFloat(hudBody.dataset.calcH || '0');
@@ -3826,12 +3832,18 @@
       progName.addEventListener('input', syncProgClear);
       progName.addEventListener('focus', function () { progField.classList.add('is-focus'); });
       progName.addEventListener('blur', function () { progField.classList.remove('is-focus'); });
-      document.getElementById('prog-clear').addEventListener('click', function () {
+      var progClearBtn = document.getElementById('prog-clear');
+      /* mousedown preventDefault so input doesn't blur before clear fires */
+      progClearBtn.addEventListener('mousedown', function (e) { e.preventDefault(); });
+      progClearBtn.addEventListener('click', function () {
         progName.value = '';
         syncProgClear();
         progName.focus();
       });
       syncProgClear();
+
+      /* Remember last dragged position so reopen lands where user left it */
+      var lastPanelPos = null; /* { left, top } in px strings, or null = default corner */
 
       /* drag — header bar; pure left/top (host no longer pins with !important / right) */
       (function () {
@@ -3860,6 +3872,7 @@
           if (!dragging) return;
           dragging = false;
           panel.classList.remove('is-dragging');
+          lastPanelPos = { left: panel.style.left, top: panel.style.top };
           try { if (pid != null) dragBar.releasePointerCapture(pid); } catch (_) {}
           pid = null;
         }
@@ -3871,13 +3884,27 @@
         panel.classList.add('is-open');
         panel.setAttribute('aria-hidden', 'false');
         panel.style.display = 'flex';
-        /* Pin top-right — tighter edge margin (16px) */
-        panel.style.top = '16px';
-        panel.style.right = '16px';
-        panel.style.left = 'auto';
+        if (lastPanelPos) {
+          /* Restore last drag position */
+          panel.style.left = lastPanelPos.left;
+          panel.style.top = lastPanelPos.top;
+          panel.style.right = 'auto';
+        } else {
+          /* First open — default top-right corner */
+          panel.style.top = '16px';
+          panel.style.right = '16px';
+          panel.style.left = 'auto';
+        }
         setExpanded(!!expanded);
       }
       function closeGcode() {
+        /* Snapshot position before hide (covers non-drag close too) */
+        if (panel.style.left && panel.style.left !== 'auto') {
+          lastPanelPos = { left: panel.style.left, top: panel.style.top || '16px' };
+        } else {
+          var r = panel.getBoundingClientRect();
+          if (r.width > 0) lastPanelPos = { left: r.left + 'px', top: r.top + 'px' };
+        }
         panel.classList.remove('is-open');
         panel.setAttribute('aria-hidden', 'true');
         panel.style.display = 'none';
