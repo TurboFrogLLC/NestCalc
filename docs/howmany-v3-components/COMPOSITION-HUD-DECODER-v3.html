@@ -1,0 +1,4194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>HowMany V3 — HUD + de-coder on bed (composition)</title>
+  <style>
+
+    /* Composition bed + layout */
+    .bed-stage {
+      position: fixed;
+      inset: 0;
+      background:
+        linear-gradient(rgba(0,0,0,0.04) 1.1px, transparent 1.1px),
+        linear-gradient(90deg, rgba(0,0,0,0.04) 1.1px, transparent 1.1px),
+        #F4F4F6;
+      background-size: 26.4px 26.4px, 26.4px 26.4px, auto;
+      overflow: hidden;
+    }
+    .bed-origin {
+      position: absolute;
+      left: 52.8px;
+      bottom: 52.8px;
+      width: 13.2px;
+      height: 13.2px;
+      border-left: 2.2px solid rgba(0,0,0,0.35);
+      border-bottom: 2.2px solid rgba(0,0,0,0.35);
+      pointer-events: none;
+    }
+    .bed-label {
+      position: absolute;
+      left: 61.6px;
+      bottom: 30.8px;
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(0,0,0,0.35);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      pointer-events: none;
+    }
+    .bed-blank {
+      position: absolute;
+      left: 52.8px;
+      bottom: 52.8px;
+      width: 242px;
+      height: 154px;
+      background: rgba(255,255,255,0.75);
+      border: 1.38px solid rgba(0,0,0,0.55);
+      pointer-events: none;
+    }
+    .comp-note {
+      position: fixed;
+      top: 11px;
+      left: 11px; /* top-left — clear of de-coder pin */
+      transform: none;
+      z-index: 50;
+      font-size: 12.1px;
+      font-weight: 600;
+      color: rgba(26,20,40,0.55);
+      background: rgba(216,214,226,0.9);
+      border: 1.1px solid rgba(26,20,40,0.12);
+      border-radius: 8.8px;
+      padding: 6.6px 13.2px;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    /* Initial placement only — no !important so drag can write inline left/top.
+       Pure left/top (no right:) so pointer-drag scripts own position after first move.
+       HUD always up-front (z above de-coder). */
+    .keypad {
+      /* centered on load via JS (pixel left/top) — no CSS transform */
+      z-index: 40;
+      touch-action: none;
+    }
+    .gcode {
+      top: 16px;
+      right: 16px;
+      left: auto;
+      z-index: 30;
+      touch-action: none;
+    }
+    .gcode.is-open {
+      display: flex;
+    }
+    .keypad-header .drag,
+    .gcode-bar {
+      touch-action: none;
+    }
+
+/* ═══════════════════════════════════════════════════════════════════
+       SHARED DESIGN SYSTEM (composition host)
+       Authority: DE-CODER-v3-LOCKED.html tokens
+       Contract:
+         • All surfaces on this page consume these vars
+         • Component structure stays scoped (.keypad, .gcode, …)
+         • HUD-only inventions OK — build them from this stash
+         • Locked component files remain visual authorities for layout/behavior
+       ═══════════════════════════════════════════════════════════════════ */
+    :root {
+      /* Type */
+      --font: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+      /* Surfaces / ink */
+      --frost: #D8D6E2;
+      --frost-blue: #E8EEF8;
+      --ink: #1A1428;
+      --ink-50: rgba(26, 20, 40, 0.50);
+      --ink-30: rgba(26, 20, 40, 0.30);
+      --ink-22: rgba(26, 20, 40, 0.22);
+      --ink-15: rgba(26, 20, 40, 0.15);
+      --ink-08: rgba(26, 20, 40, 0.08);
+      --white: #ffffff;
+      --white-70: rgba(255, 255, 255, 0.70);
+      --white-55: rgba(255, 255, 255, 0.55);
+      --white-40: rgba(255, 255, 255, 0.40);
+
+      /* Accent / arm */
+      --blue: #538BEC;
+      --blue-22: rgba(83, 139, 236, 0.22);
+      --blue-28: rgba(83, 139, 236, 0.28);
+      --blue-42: rgba(83, 139, 236, 0.42);
+      --blue-dark: #2F6FED;
+      --blue-border: rgba(47, 111, 237, 0.85);
+      --blue-glow: 0 0 0 2.2px rgba(47, 111, 237, 0.45);
+
+      /* Status */
+      --status-none: #DC143C;
+      --status-ready: #00CF00;
+      --status-posted: #7DDB8C;
+      --green: #00CF00;
+      --green-border: rgba(0, 140, 30, 0.70);
+      --green-glow: 0 0 0 2.2px rgba(0, 160, 30, 0.40);
+      --chip-gray: rgba(26, 20, 40, 0.10);
+      --accept: #22A06B;
+      --cancel: #DC143C;
+
+      /* G-code syntax (de-coder editor) */
+      --gc-g: #FF00FF;
+      --gc-comment: #00CF00;
+      --gc-m: #FF8380;
+      --gc-fs: #F86400;
+      --gc-t: #538BEC;
+      --gc-n: #D3D3D3;
+
+      /* Dimension */
+      --panel-w: 418px;
+      --bar-h: 44px;
+      --radius: 15.4px;   /* card shell */
+      --chip-r: 6.6px;    /* chips / icon buttons */
+      --chip-h: 28.6px;   /* standard chip / icon-btn height */
+      --icon-btn: 28.6px; /* square icon buttons */
+      --shell-pad: 11px;
+
+      /* Motion — shared + HUD-specific */
+      --ease: cubic-bezier(0.4, 0, 0.2, 1);
+      --dur: 240ms;
+      --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --smooth: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+      --ease-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+      --ease-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+      --motion-collapse: 520ms;
+      --motion-expand: 560ms;
+      --motion-mode: 420ms;
+      --motion-popover: 180ms;
+      --motion-popover-out: 145ms;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      height: 100%;
+      font-family: var(--font);
+      color: var(--ink);
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+      background: transparent;
+    }
+    #stage { position: absolute; inset: 0; pointer-events: none; background: transparent; }
+    #stage > * { pointer-events: auto; }
+    #hint {
+      position: absolute;
+      top: 13.2px; left: 13.2px; right: 13.2px;
+      font-size: 12.1px;
+      color: rgba(200,205,216,0.7);
+      line-height: 1.4;
+      max-width: 572px;
+      pointer-events: none;
+    }
+
+    /* ── Numeric HUD styles ── */
+
+    /* Residual frost SHELL — de-coder card pattern: no shell pad (header full-bleed)
+       Body pads its own content. Ticker standard = "99.999 × 99.999" */
+    .keypad {
+      position: absolute;
+      /* centered via JS left/top — no transform (keeps fixed popovers viewport-true) */
+      top: 0;
+      left: 0;
+      transform: none;
+      width: max-content; /* equal L/R outer air from content, not stretch */
+      min-width: 268px; /* room for 21ch margin ticker + label + pads */
+      border-radius: var(--radius);
+      padding: 0; /* header line goes edge-to-edge like .gcode-bar */
+      background: var(--frost);
+      color: var(--ink);
+      font-family: var(--font);
+      /* hairlines only on shell — drop shadow lives on outer ring */
+      box-shadow:
+        0 0 0 1.1px rgba(255, 255, 255, 0.55),
+        0 0 0 1.1px rgba(83, 139, 236, 0.22);
+      z-index: 40; /* always up-front above de-coder */
+      display: flex;
+      flex-direction: column;
+      overflow: visible; /* allow floating ring outside */
+    }
+    /* Same floating outer ring + shadow as de-coder */
+    .keypad::after {
+      content: "";
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      bottom: -8px;
+      left: -8px;
+      border: 2px solid rgba(26, 20, 40, 0.22);
+      border-radius: calc(var(--radius) + 8px);
+      box-shadow: 0 18px 40px -12px rgba(0, 0, 0, 0.38);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .press { transition: transform 0.15s var(--spring), background 0.12s, color 0.12s; }
+    .press:active { transform: scale(0.94); }
+
+    /* Header — exact de-coder .gcode-bar math
+       --bar-h: 44px · padding 0 13.2px · border-bottom edge-to-edge */
+    .keypad-header {
+      display: flex;
+      align-items: center;
+      flex: 0 0 44px;
+      height: 44px;
+      gap: 6.6px; /* de-coder bar gap */
+      flex-shrink: 0;
+      cursor: grab;
+      touch-action: none;
+      /* equal top/side inset: (44 - 28.6) / 2 = 7.7 — icon radius sits balanced in shell radius */
+      padding: 0 7.7px;
+      margin: 0;
+      border-bottom: 1.1px solid var(--ink-15);
+      box-sizing: border-box;
+      position: relative;
+      z-index: 1;
+      border-radius: var(--radius) var(--radius) 0 0;
+      background: var(--frost);
+    }
+    .keypad-header:active { cursor: grabbing; }
+    .keypad-header .tool {
+      height: var(--icon-btn);
+      width: var(--icon-btn);
+      min-width: var(--icon-btn);
+      min-height: var(--icon-btn);
+      border-radius: var(--chip-r);
+      border: 1.1px solid rgba(26, 20, 40, 0.22);
+      background: var(--white-55);
+      color: #5B6A9A;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      margin: 0;
+      flex-shrink: 0;
+      box-sizing: border-box;
+      line-height: 0;
+      overflow: hidden; /* clip SVG hard inside the chip */
+      transform-origin: center center;
+      /* no scale-on-press — scale was shifting the glyph */
+      transition: background 0.12s, color 0.12s, border-color 0.12s;
+    }
+    .keypad-header .tool.press:active {
+      transform: none;
+    }
+    .keypad-header .tool svg {
+      display: block;
+      flex-shrink: 0;
+      width: 14.3px;
+      height: 14.3px;
+      margin: 0;
+      overflow: visible;
+      pointer-events: none;
+    }
+    .keypad-header .tool:hover {
+      background: rgba(255, 255, 255, 0.85);
+      color: var(--ink);
+      border-color: rgba(26, 20, 40, 0.35);
+    }
+    .keypad-header .tool.active-calc {
+      background: var(--blue-28);
+      color: #1E3A8A;
+    }
+    .chevron-btn svg { transition: none; }
+    .keypad:not(.collapsed) .chevron-btn svg { transform: rotate(180deg); }
+    .header-spacer {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center; /* part ticker centered when collapsed */
+    }
+    /* Collapsed-only: part size ticker in header (same width, no label)
+       Higher specificity so .param-ticker { display:flex } does not win when expanded */
+    .keypad .header-part-ticker {
+      display: none;
+      pointer-events: none; /* drag stays on header */
+    }
+    .keypad.collapsed .header-part-ticker {
+      display: flex;
+    }
+
+    /* Match de-coder: grid-template-rows 0fr ↔ 1fr at --dur / --ease */
+    #hud-body {
+      margin-top: 0;
+      display: grid;
+      grid-template-rows: 1fr;
+      overflow: hidden;
+      min-height: 0;
+      transition: grid-template-rows var(--dur) var(--ease);
+    }
+    #hud-body-inner {
+      overflow: hidden;
+      min-height: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+      /* H inset 7.7 matches header so ticker right = chevron right, label left = calc left */
+      padding: 13.2px 7.7px;
+    }
+    /* Collapse upward: header stays put, body grid row collapses to 0fr */
+    .keypad.collapsed #hud-body {
+      grid-template-rows: 0fr;
+      pointer-events: none;
+    }
+    .keypad.collapsed #hud-body-inner {
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+    .keypad.collapsed .keypad-header {
+      border-bottom: none;
+      border-radius: var(--radius); /* full pill when collapsed */
+    }
+    #hud-body-inner {
+      border-radius: 0 0 var(--radius) var(--radius);
+      background: var(--frost);
+    }
+    /* No calc/HUD motion — instant swap. Popovers keep their own motion. */
+
+    #hud-mode {
+      display: flex;
+      flex-direction: column;
+      gap: 4.4px;
+    }
+    .keypad.calc-mode #hud-mode { display: none; }
+
+    .section-label-row {
+      display: flex;
+      align-items: center;
+      gap: 8.8px;
+      margin-bottom: 0;
+    }
+    .section-label-line {
+      flex: 1;
+      height: 1.1px;
+      background: rgba(26, 20, 40, 0.22);
+      min-width: 0;
+    }
+    .section-label {
+      font-size: 11px;
+      font-weight: 650;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      color: var(--ink);
+      text-align: right;
+      line-height: 1;
+      margin: 0;
+      flex-shrink: 0;
+    }
+    .part-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4.4px;
+    }
+    .part-below-sep {
+      height: 1.1px;
+      width: 100%;
+      background: rgba(26, 20, 40, 0.22);
+      margin: 6.6px 0 2.2px;
+    }
+
+
+    /* Connected Part size group: X | swap | Y | link — scoped to HUD to avoid de-coder collision */
+    .keypad .part-group {
+      display: flex;
+      align-items: stretch;
+      width: 100%;
+      height: 28.6px;
+      border-radius: var(--chip-r);
+      border: 1.1px solid rgba(26, 20, 40, 0.25);
+      background: rgba(255, 255, 255, 0.7);
+      overflow: hidden;
+    }
+    /* Equal-width X and Y halves — label | centered XX.XXX | clear */
+    .part-half {
+      flex: 1 1 0;
+      width: 0;
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      padding: 0;
+      gap: 0;
+      overflow: hidden;
+      height: 100%;
+    }
+    .part-prefix {
+      font-size: 11px;
+      font-weight: 650;
+      color: #5B5670;
+      flex-shrink: 0;
+      padding-left: 6.6px;
+      padding-right: 4.4px;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      height: 100%;
+    }
+    /* Colon separator — not a dash (avoids negative-look) */
+    .part-prefix::after {
+      content: ":";
+      margin-left: 0;
+    }
+    .part-half input {
+      flex: 1 1 0;
+      width: 0;
+      min-width: 0;
+      height: 100%;
+      border: none;
+      background: transparent;
+      outline: none;
+      box-shadow: none;
+      font-family: var(--font-mono);
+      font-size: 12.1px;
+      font-weight: 650;
+      font-variant-numeric: tabular-nums;
+      color: var(--ink);
+      text-align: center; /* digits centered between label and clear */
+      padding: 0;
+      margin: 0;
+      line-height: 28.6px;
+      -moz-appearance: textfield;
+      appearance: textfield;
+      caret-color: var(--ink);
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .part-half input::-webkit-outer-spin-button,
+    .part-half input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .part-half input:focus {
+      outline: none;
+      box-shadow: none;
+      background: transparent;
+    }
+    /* Clear × — always occupies trailing space so value doesn't shift */
+    .part-clear {
+      flex-shrink: 0;
+      width: 15.4px;
+      height: 15.4px;
+      border: none;
+      border-radius: 3.3px;
+      background: transparent;
+      color: #5B5670;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      visibility: hidden;
+      pointer-events: none;
+      margin-left: 2.2px;
+      margin-right: 4.4px;
+    }
+    .part-half.is-focused .part-clear {
+      visibility: visible;
+      pointer-events: auto;
+    }
+    .part-clear:hover {
+      background: rgba(26, 20, 40, 0.12);
+      color: var(--ink);
+    }
+    .keypad .part-sep {
+      width: 1.1px;
+      background: rgba(26, 20, 40, 0.18);
+      flex-shrink: 0;
+    }
+    /*
+     * Swap + Link:
+     *  idle / disengaged = light blue
+     *  no hover restyle on swap
+     *  link engaged OR swap while pressed = solid #538BEC + white icon
+     */
+    .part-action {
+      width: 28.6px;
+      flex-shrink: 0;
+      border: none;
+      background: rgba(83, 139, 236, 0.22); /* disengaged: light blue */
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+    }
+    .part-action.active,
+    .part-action.is-pressed {
+      background: var(--blue); /* engaged / pressed: solid blue + white icon */
+      color: #fff;
+    }
+    /* Part-size LINK only: white idle → dark blue + white icon when engaged */
+    #btn-link {
+      background: rgba(255, 255, 255, 0.9); /* white fill */
+      color: #5B6A9A;
+    }
+    #btn-link.active {
+      background: var(--blue);
+      color: #fff;
+    }
+    .part-action svg {
+      display: block;
+    }
+
+
+    /* Simplified ticker rows: LABEL left · ticker right · click ticker → popover */
+    .param-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 8.8px;
+      margin-top: 0;
+    }
+
+    /* Footer control strip — Auto Size · GC0DE (popover black + amber) */
+    .hud-footer-sep {
+      height: 0;
+      border-top: 1.1px solid var(--ink-15);
+      margin: 11px -7.7px 0; /* edge-to-edge — matches body H pad */
+    }
+    .hud-controls {
+      display: flex;
+      align-items: stretch;
+      gap: 8.8px;
+      margin-top: 11px;
+    }
+    .hud-ctl {
+      flex: 1 1 0;
+      height: 28.6px;
+      padding: 0 11px;
+      border: 1.1px solid rgba(255, 255, 255, 0.12); /* neutral — amber border off */
+      border-radius: var(--chip-r);
+      background: rgba(26, 20, 40, 0.82);
+      color: #FFCE1B;
+      font-family: var(--font-mono);
+      font-size: 11px;           /* shared — both buttons identical */
+      font-weight: 700;
+      letter-spacing: 0.04em;    /* match de-coder GC0DE chip */
+      text-transform: uppercase;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      transition:
+        background 120ms ease,
+        border-color 120ms ease,
+        box-shadow 120ms ease,
+        transform 120ms ease;
+    }
+    /* A: AUTO-SIZE — static soft lift (always-on shadow) */
+    /* Shared static lift shadow on both control chips — no hover lift */
+    #btn-auto-size,
+    #btn-gcode {
+      /* same soft lift as blue tickers — X 0 */
+      box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.25);
+    }
+    #btn-auto-size:hover,
+    #btn-gcode:hover {
+      background: rgba(26, 20, 40, 0.92);
+    }
+    .hud-ctl:active {
+      transform: scale(0.98); /* press */
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    }
+
+    /* de-coder resize handles — E / S / SE; min = natural, max width +150 */
+    .gcode-resize {
+      position: absolute;
+      z-index: 5;
+      background: transparent;
+    }
+    .gcode-resize-e {
+      top: 12px;
+      right: -4px;
+      width: 10px;
+      bottom: 18px;
+      cursor: ew-resize;
+    }
+    .gcode-resize-s {
+      left: 12px;
+      right: 18px;
+      bottom: -4px;
+      height: 10px;
+      cursor: ns-resize;
+    }
+    .gcode-resize-se {
+      right: -2px;
+      bottom: -2px;
+      width: 18px;
+      height: 18px;
+      cursor: nwse-resize;
+      /* no corner bezel — resize still works, grip is invisible */
+    }
+    .param-row {
+      display: flex;
+      align-items: center;
+      gap: 13.2px; /* increased label → ticker gap */
+      position: relative;
+      width: 100%;
+      min-height: 28.6px;
+    }
+    .param-label {
+      /* column width = longest label "BLANK SIZE"; left edge of B lines up with calc icon */
+      flex: 0 0 70.4px;
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--ink);
+      line-height: 1;
+      user-select: none;
+      white-space: nowrap;
+      text-align: left; /* B of BLANK SIZE = left edge of calc icon */
+    }
+    .param-ticker {
+      /* fixed width: fit margin line "L 99.999 + R 99.999" (widest ticker) */
+      flex: 0 0 auto;
+      width: 21ch;
+      box-sizing: border-box; /* restore prior chip height math */
+      height: 28.6px; /* single-line chip height (pre-condense) */
+      min-height: 28.6px;
+      border-radius: var(--chip-r);
+      border: 1.1px solid rgba(83, 139, 236, 0.35);
+      background: rgba(83, 139, 236, 0.22);
+      color: var(--ink);
+      font-size: 12.1px;
+      font-weight: 650;
+      font-variant-numeric: tabular-nums;
+      font-family: var(--font-mono);
+      display: flex;
+      flex-direction: column;
+      justify-content: center; /* vertical center */
+      align-items: center; /* horizontal center */
+      padding: 0 3.3px; /* tight H pad; V handled by height + flex */
+      gap: 1.1px;
+      white-space: nowrap;
+      cursor: pointer;
+      line-height: 1.25;
+      text-align: center;
+      /* blue tickers — light lift, X 0 */
+      box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.25);
+    }
+    /* margin can be two lines — allow grow past 26 */
+    .param-row[data-param="margin"] .param-ticker {
+      height: auto;
+      min-height: 28.6px;
+      padding: 3.3px;
+    }
+    .param-ticker:hover {
+      background: rgba(83, 139, 236, 0.32);
+      border-color: rgba(83, 139, 236, 0.55);
+    }
+    .param-row.is-open .param-ticker {
+      background: var(--blue-28);
+      border-color: rgba(83, 139, 236, 0.65);
+    }
+    .param-ticker .m-line {
+      display: block;
+      text-align: center;
+    }
+
+    /* Hover card removed — bloat */
+    .hover-card {
+      display: none !important;
+      /* placed in JS: right of HUD, 11px gap */
+      z-index: 40;
+      min-width: 162.8px;
+      max-width: 198px;
+      padding: 8.8px 11px;
+      border-radius: var(--chip-r);
+      background: var(--ink);
+      color: #F4F2FA;
+      font-size: 11px;
+      font-weight: 500;
+      line-height: 1.45;
+      box-shadow: 0 11px 26.4px -8px rgba(0,0,0,0.55);
+      pointer-events: none;
+    }
+    .param-row.show-hover .hover-card {
+      display: block;
+    }
+    .hover-card .hc-title {
+      font-weight: 650;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-size: 9.9px;
+      color: rgba(244,242,250,0.65);
+      margin-bottom: 4.4px;
+    }
+    .hover-card .hc-line {
+      font-variant-numeric: tabular-nums;
+      font-family: var(--font-mono);
+    }
+    .hover-card .hc-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.2px 11px;
+    }
+    .hover-card .hc-grid .hc-line {
+      white-space: nowrap;
+    }
+
+    /* Popover (edit) — fixed field math for 99.999 + static clear ×
+       half: label18 + digits6ch(~42) + clearSlot18 = 78
+       XY+swap+link: 78+28+78+28 + seps3 + pad20 ≈ 255 → 260 */
+    .param-popover {
+      display: block;
+      position: absolute;
+      /* placed in JS: right of HUD, 11px gap */
+      z-index: 50;
+      width: 286px;
+      padding: 11px;
+      border-radius: var(--chip-r);
+      box-sizing: border-box;
+      /* Black shell, slightly transparent so bed/chrome shows through;
+         field chips + action buttons stay opaque on their own fills */
+      background: rgba(26, 20, 40, 0.82);
+      border: 1.1px solid rgba(255, 255, 255, 0.12);
+      color: #FFCE1B;
+      box-shadow:
+        0 0 0 1.1px rgba(0, 0, 0, 0.35),
+        0 13.2px 30.8px -10px rgba(0,0,0,0.55);
+      opacity: 0;
+      transform: translateX(8.8px);
+      pointer-events: none;
+      transition:
+        opacity var(--motion-popover-out) var(--ease-accelerate),
+        transform var(--motion-popover-out) var(--ease-accelerate);
+    }
+    .param-row.is-open .param-popover {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: auto;
+      transition:
+        opacity var(--motion-popover) var(--ease-decelerate),
+        transform var(--motion-popover) var(--ease-decelerate);
+    }
+    .param-popover .pop-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8.8px;
+      margin-bottom: 8.8px;
+    }
+    .param-popover .pop-title {
+      font-size: 11px;
+      font-weight: 650;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #FFCE1B; /* amber shell text */
+      margin: 0;
+    }
+    .param-popover .pop-actions {
+      display: flex;
+      align-items: center;
+      gap: 4.4px;
+      flex-shrink: 0;
+    }
+    .param-popover .pop-close,
+    .param-popover .pop-save {
+      width: 19.8px;
+      height: 19.8px;
+      border: none;
+      border-radius: 4.4px;
+      background: rgba(255, 255, 255, 0.12);
+      color: #FFCE1B;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      flex-shrink: 0;
+    }
+    .param-popover .pop-close:hover {
+      background: rgba(255, 255, 255, 0.22);
+      color: #FFCE1B;
+    }
+    .param-popover .pop-save:hover {
+      background: rgba(255, 255, 255, 0.22);
+      color: #FFCE1B;
+    }
+    /* dirty → icon turns green only; button stays shell-neutral */
+    .param-popover .pop-save.is-dirty {
+      background: rgba(255, 255, 255, 0.12);
+      color: #16A34A;
+    }
+    .param-popover .pop-save.is-dirty:hover {
+      background: rgba(255, 255, 255, 0.22);
+      color: #15803D;
+    }
+    /*
+     * Shared popover field math (X/Y and L/R/B/T identical)
+     * Static left label+colon · centered 99.999 · static clear × slot
+     * half: label18 + digits6ch(~42) + clearSlot18 ≈ 78–84
+     */
+    .pop-xy {
+      display: flex;
+      align-items: stretch;
+      width: 100%;
+      height: 30.8px;
+      border-radius: var(--chip-r);
+      border: 1.1px solid rgba(26, 20, 40, 0.25);
+      background: rgba(255,255,255,0.7);
+      overflow: hidden;
+    }
+    .pop-xy .pop-half {
+      flex: 1 1 0;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      padding: 0;
+      gap: 0;
+      overflow: hidden;
+      box-sizing: border-box;
+      height: 100%;
+    }
+    /* Static left label + colon — vertically centered to match digits */
+    .pop-xy .pop-half span {
+      font-size: 11px;
+      font-weight: 650;
+      color: #5B5670;
+      flex: 0 0 auto;
+      padding: 0 2.2px 0 6.6px;
+      margin: 0;
+      height: 30.8px;
+      line-height: 30.8px; /* match row + input line-height */
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      box-sizing: border-box;
+    }
+    .pop-xy .pop-half span::after {
+      content: ":";
+    }
+    /* Centered digits — room for 99.999 */
+    .pop-xy .pop-half input {
+      flex: 1 1 auto;
+      min-width: 6ch;
+      width: auto;
+      height: 100%;
+      border: none;
+      background: transparent;
+      outline: none;
+      box-shadow: none;
+      font-size: 12.1px;
+      font-weight: 650;
+      font-variant-numeric: tabular-nums;
+      font-family: var(--font-mono);
+      color: var(--ink);
+      text-align: center;
+      padding: 0;
+      margin: 0;
+      line-height: 30.8px;
+      caret-color: var(--ink);
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .pop-xy .pop-half input:focus {
+      outline: none;
+      box-shadow: none;
+      background: transparent;
+    }
+    /* Static clear × slot — always reserved on the right (visibility keeps layout) */
+    .pop-clear {
+      flex: 0 0 17.6px;
+      width: 17.6px;
+      height: 17.6px;
+      border: none;
+      border-radius: 3.3px;
+      background: transparent;
+      color: #5B5670;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      visibility: hidden;
+      pointer-events: none;
+      margin-left: 0;
+      margin-right: 4.4px;
+    }
+    .pop-half.is-focused .pop-clear,
+    .pop-m-field.is-focused .pop-clear {
+      visibility: visible;
+      pointer-events: auto;
+    }
+    .pop-clear:hover {
+      background: rgba(26, 20, 40, 0.12);
+      color: var(--ink);
+    }
+    .pop-xy .pop-sep {
+      width: 1.1px;
+      flex: 0 0 1.1px;
+      background: rgba(26, 20, 40, 0.18);
+    }
+    .pop-xy .pop-link,
+    .pop-xy .pop-swap {
+      width: 30.8px;
+      flex: 0 0 30.8px;
+      border: none;
+      background: rgba(83, 139, 236, 0.22);
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .pop-xy .pop-link.active {
+      background: var(--blue);
+      color: #fff;
+    }
+    .pop-xy .pop-swap:active {
+      background: var(--blue);
+      color: #fff;
+    }
+    /* Margin grid — same field anatomy as X/Y halves */
+    .pop-margins {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6.6px;
+      width: 100%;
+    }
+    .pop-m-field {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      height: 30.8px;
+      padding: 0;
+      border-radius: var(--chip-r);
+      border: 1.1px solid rgba(26, 20, 40, 0.25);
+      background: rgba(255,255,255,0.7);
+      min-width: 0;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+    .pop-m-field span {
+      font-size: 11px;
+      font-weight: 650;
+      color: #5B5670;
+      flex: 0 0 auto;
+      padding: 0 2.2px 0 6.6px;
+      margin: 0;
+      height: 30.8px;
+      line-height: 30.8px; /* match row + input line-height */
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      box-sizing: border-box;
+    }
+    .pop-m-field span::after {
+      content: ":";
+    }
+    .pop-m-field input {
+      flex: 1 1 auto;
+      min-width: 6ch;
+      width: auto;
+      height: 100%;
+      border: none;
+      background: transparent;
+      outline: none;
+      box-shadow: none;
+      font-size: 12.1px;
+      font-weight: 650;
+      font-variant-numeric: tabular-nums;
+      font-family: var(--font-mono);
+      color: var(--ink);
+      text-align: center;
+      padding: 0;
+      caret-color: var(--ink);
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .pop-m-field input:focus {
+      outline: none;
+      box-shadow: none;
+      background: transparent;
+    }
+
+    /* Classic calculator */
+    .classic-calc {
+      display: none;
+      flex-direction: column;
+      gap: 6.6px;
+    }
+    .keypad.calc-mode .classic-calc { display: flex; }
+
+    .classic-lcd {
+      height: 52.8px;
+      border-radius: 11px;
+      border: 1.65px solid var(--ink);
+      background: #fff;
+      color: var(--ink);
+      font-family: var(--font-mono);
+      font-size: 24.2px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0 13.2px;
+    }
+    .classic-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6.6px;
+    }
+    .classic-grid .ckey {
+      height: 44px;
+      border-radius: 11px;
+      border: 1.65px solid var(--ink);
+      background: #fff;
+      color: var(--ink);
+      font-size: 17.6px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .classic-grid .ckey:active {
+      transform: scale(0.94);
+      background: #f0f0f0;
+    }
+    .classic-grid .ckey.op { background: #f3f3f3; }
+    .classic-grid .ckey.zero { grid-column: span 2; }
+  
+    #hint { display: none !important; }
+
+/* ── de-coder styles ── */
+
+    :root {
+      --frost: #D8D6E2;
+      --frost-blue: #E8EEF8;
+      --ink: #1A1428;
+      --ink-50: rgba(26, 20, 40, 0.50);
+      --ink-30: rgba(26, 20, 40, 0.30);
+      --ink-22: rgba(26, 20, 40, 0.22);
+      --ink-15: rgba(26, 20, 40, 0.15);
+      --ink-08: rgba(26, 20, 40, 0.08);
+      --white: #ffffff;
+      --white-70: rgba(255, 255, 255, 0.70);
+      --white-55: rgba(255, 255, 255, 0.55);
+      --white-40: rgba(255, 255, 255, 0.40);
+      --blue: #538BEC;
+      --blue-22: rgba(83, 139, 236, 0.22);
+      --blue-28: rgba(83, 139, 236, 0.28);
+      --blue-42: rgba(83, 139, 236, 0.42);
+      --blue-dark: #2F6FED;
+      /* Thicker / darker arm outline (no soft blur fill) */
+      --blue-border: rgba(47, 111, 237, 0.85);
+      --blue-glow: 0 0 0 2.2px rgba(47, 111, 237, 0.45);
+      --status-none: #DC143C;
+      --status-ready: #00CF00;
+      --status-posted: #7DDB8C;
+      --green: #00CF00;
+      --green-border: rgba(0, 140, 30, 0.70);
+      --green-glow: 0 0 0 2.2px rgba(0, 160, 30, 0.40);
+      --chip-gray: rgba(26, 20, 40, 0.10); /* darker gray fill shared by READY + stale ticker */
+      --gc-g: #FF00FF;
+      --gc-comment: #00CF00;
+      --gc-m: #FF8380;
+      --gc-fs: #F86400;
+      --gc-t: #538BEC;
+      --gc-n: #D3D3D3;
+      --accept: #22A06B;
+      --cancel: #DC143C;
+      --panel-w: 418px;
+      --bar-h: 44px;
+      --radius: 15.4px;
+      --chip-r: 6.6px;
+      --ease: cubic-bezier(0.4, 0, 0.2, 1);
+      --dur: 240ms;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: transparent; }
+
+    .gcode {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      left: auto;
+      width: var(--panel-w);
+      min-width: 418px;
+      max-width: 568px; /* min + 150 */
+      display: none; /* HUD Auto Size / GC0DE open it */
+      flex-direction: column;
+      background: var(--frost);
+      color: var(--ink);
+      font-family: var(--font);
+      border-radius: var(--radius);
+      /* hairlines only on shell — drop shadow lives on outer ring */
+      box-shadow:
+        0 0 0 1.1px rgba(255, 255, 255, 0.55),
+        0 0 0 1.1px rgba(83, 139, 236, 0.22);
+      overflow: visible;
+      z-index: 30;
+      height: auto;
+      touch-action: none;
+    }
+    /* Floating outer ring + drop shadow behind the ring (not the shell).
+       Gap between ring and shell stays clear so bed shows through. */
+    .gcode::after {
+      content: "";
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      bottom: -8px;
+      left: -8px;
+      border: 2px solid rgba(26, 20, 40, 0.22);
+      border-radius: calc(var(--radius) + 8px);
+      box-shadow: 0 18px 40px -12px rgba(0, 0, 0, 0.38);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* ── Card-anchored toast (above header) ── */
+    /* Card toast — flat, no pointer; black + amber text ties to EDITING */
+    .gcode-toast {
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 8.8px);
+      transform: translateX(-50%) translateY(6.6px);
+      min-width: 132px;
+      max-width: calc(100% - 17.6px);
+      padding: 8.8px 15.4px;
+      border-radius: 8.8px;
+      background: var(--ink);
+      color: #FFCE1B;
+      font-size: 12.1px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-align: center;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 30;
+      box-shadow: 0 11px 26.4px -10px rgba(0,0,0,0.50);
+      transition: opacity 180ms var(--ease), transform 180ms var(--ease);
+    }
+    .gcode-toast.is-on {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── Header ── */
+    .gcode-bar {
+      flex: 0 0 var(--bar-h);
+      height: var(--bar-h);
+      display: flex;
+      align-items: center;
+      gap: 6.6px;
+      /* equal top/side inset: (44 - 28.6) / 2 = 7.7 */
+      padding: 0 7.7px;
+      border-bottom: 1.1px solid var(--ink-15);
+      cursor: grab;
+      box-sizing: border-box;
+      min-width: 0;
+      /* keep header chrome from collapsing under ring/overflow */
+      position: relative;
+      z-index: 1;
+      border-radius: var(--radius) var(--radius) 0 0;
+      background: var(--frost);
+    }
+    .gcode.is-dragging .gcode-bar { cursor: grabbing; }
+    .gcode-bar .mark {
+      width: 28.6px; height: 28.6px;
+      border-radius: var(--chip-r);
+      background: transparent;
+      border: 1.1px solid rgba(26, 20, 40, 0.22);
+      color: var(--ink);
+      display: inline-flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .gcode-bar .mark svg { display: block; }
+
+    /* de-coder slot — fills gap between mark and program name, centers label */
+    .gcode-bar .surface-label-slot {
+      flex: 1 1 auto;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .gcode-bar .surface-label {
+      font-size: 17.6px; /* ~50% up from 12.1px */
+      font-weight: 650;
+      color: var(--ink);
+      letter-spacing: -0.015em;
+      white-space: nowrap;
+      user-select: none;
+      line-height: 1;
+    }
+
+    .prog-field {
+      position: relative;
+      flex: 0 0 auto;
+      width: 184.8px;
+      max-width: 184.8px;
+      min-width: 0;
+      height: 28.6px;
+      margin-left: 0;
+    }
+    .prog-name {
+      width: 100%;
+      height: 28.6px;
+      padding: 0 79.2px 0 8.8px;
+      border: 1.1px solid transparent;
+      border-radius: var(--chip-r);
+      background: var(--white-40);
+      color: var(--ink);
+      font-size: 12.1px;
+      font-weight: 600;
+      font-family: inherit;
+      outline: none;
+      text-align: right;
+    }
+    .prog-name::placeholder { color: var(--ink-30); font-weight: 500; }
+    .prog-name:focus {
+      background: var(--white);
+      border-color: rgba(83, 139, 236, 0.45);
+      box-shadow: 0 0 0 2.2px var(--blue-22);
+    }
+    .prog-actions {
+      position: absolute;
+      right: 3.3px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: inline-flex;
+      align-items: center;
+      gap: 2.2px;
+    }
+    /* Open + download only — no border/outline */
+    .prog-actions .icon-btn {
+      width: 24.2px;
+      height: 24.2px;
+      min-width: 24.2px;
+      min-height: 24.2px;
+      border: none;
+      border-radius: var(--chip-r);
+      background: transparent;
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 0;
+      overflow: visible;
+      flex-shrink: 0;
+      box-shadow: none;
+      outline: none;
+    }
+    .prog-actions .icon-btn svg {
+      display: block;
+      flex-shrink: 0;
+      margin: 0;
+      overflow: visible;
+      pointer-events: none;
+    }
+    .prog-actions .icon-btn:hover {
+      background: var(--ink-08);
+      border: none;
+      box-shadow: none;
+    }
+    .prog-actions .icon-btn:disabled { opacity: 0.4; }
+    .prog-clear {
+      width: 19.8px;
+      height: 19.8px;
+      border: none;
+      border-radius: 4.4px;
+      background: transparent;
+      color: var(--ink-50);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+    }
+    .prog-field.is-focus .prog-clear { display: inline-flex; }
+    .prog-clear:hover { color: var(--ink); background: var(--ink-08); }
+    .prog-clear svg { display: block; pointer-events: none; }
+
+    .status-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: var(--status-none);
+      box-shadow: 0 0 0 2.2px rgba(255,255,255,0.45);
+      transition: background var(--dur) var(--ease);
+    }
+    .status-dot[data-state="ready"] { background: var(--status-ready); }
+    .status-dot[data-state="posted"] { background: var(--status-posted); }
+
+    .icon-btn {
+      width: 28.6px;
+      height: 28.6px;
+      min-width: 28.6px;
+      min-height: 28.6px;
+      border: 1.1px solid rgba(26, 20, 40, 0.22);
+      border-radius: var(--chip-r);
+      background: var(--white-70);
+      color: var(--ink);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      margin: 0;
+      flex-shrink: 0;
+      box-sizing: border-box;
+      line-height: 0;
+      overflow: visible;
+    }
+    .icon-btn:hover:not(:disabled):not(.is-editing) { background: var(--white); border-color: rgba(26, 20, 40, 0.35); }
+    .icon-btn:active:not(:disabled):not(.is-editing) { transform: scale(0.94); }
+    .icon-btn:disabled {
+      opacity: 0.4;
+      cursor: default;
+      transform: none !important;
+      pointer-events: none;
+    }
+    .icon-btn svg {
+      display: block;
+      flex-shrink: 0;
+      margin: 0;
+      overflow: visible;
+      pointer-events: none;
+    }
+    .icon-btn.is-on {
+      background: var(--blue-dark);
+      border-color: var(--blue-dark);
+      color: var(--white);
+    }
+    .icon-btn.is-editing {
+      background: rgba(26, 20, 40, 0.10);
+      border-color: rgba(26, 20, 40, 0.14);
+      color: var(--ink-30);
+      cursor: default;
+      transform: none !important;
+      pointer-events: none;
+    }
+    .icon-btn.is-editing:hover,
+    .icon-btn.is-editing:active {
+      background: rgba(26, 20, 40, 0.10);
+      border-color: rgba(26, 20, 40, 0.14);
+      color: var(--ink-30);
+      transform: none !important;
+    }
+    .icon-btn.close {
+      background: var(--white-55);
+      border: 1.1px solid rgba(26, 20, 40, 0.22);
+      color: #5B6A9A;
+    }
+    .icon-btn.close:hover {
+      background: rgba(255,255,255,0.9);
+      color: var(--ink);
+      border-color: rgba(26, 20, 40, 0.35);
+    }
+
+    /* ── Collapsed / expanded surface row ── */
+    .surface-row {
+      display: flex;
+      align-items: center;
+      gap: 4.4px;
+      padding: 8.8px 11px;
+      flex-shrink: 0;
+      border-bottom: 1.1px solid transparent;
+      min-width: 0;
+      overflow: hidden;
+      position: relative; /* hosts EDITING banner */
+    }
+    /* Full-row EDITING takeover — obvious, yellow, centered */
+    .surface-editing-banner {
+      display: none;
+      position: absolute;
+      inset: 0;
+      z-index: 6;
+      background: #FFCE1B;
+      color: #0A0A0A;
+      font-family: var(--font);
+      font-size: 20px; /* big + bold — hard to miss */
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      user-select: none;
+    }
+    .surface-row.is-editing-banner .surface-editing-banner {
+      display: flex;
+    }
+    .surface-row.is-editing-banner {
+      border-bottom-color: rgba(180, 130, 0, 0.35);
+    }
+    .gcode.is-expanded .surface-row {
+      border-bottom: 1.1px solid var(--ink-15);
+      padding-bottom: 8.8px;
+    }
+    .surface-spacer {
+      flex: 1 1 auto;
+      min-width: 4.4px;
+    }
+
+    .btn-gc0de {
+      height: 28.6px;
+      padding: 0 11px;
+      border: none;
+      border-radius: var(--chip-r);
+      background: var(--blue-22);
+      color: var(--ink);
+      font-size: 12.1px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.25); /* same soft lift as HUD blue tickers */
+    }
+    .btn-gc0de:hover { background: var(--blue-28); }
+    .btn-gc0de:active { transform: scale(0.98); }
+    .gcode.is-expanded .btn-gc0de { display: none; }
+
+    /*
+      Part group — detect · ticker · post (scoped under .gcode — HUD uses .keypad .part-group)
+      Empty: separate chips
+      Has dims: connected 3-seg · neutral outer · blue ring ONLY on ticker when ready
+    */
+    .gcode .part-group {
+      display: inline-flex;
+      align-items: stretch;
+      gap: 4.4px;
+      height: 28.6px;
+      flex-shrink: 0;
+      min-width: 0;
+      width: auto;
+      border: none;
+      background: transparent;
+      overflow: visible;
+    }
+    /* Connected — neutral shell (never whole-group blue) */
+    .gcode .part-group.is-connected {
+      gap: 0;
+      border-radius: var(--chip-r);
+      border: 1.1px solid rgba(26, 20, 40, 0.22);
+      background: var(--white-70);
+      overflow: hidden;
+      box-shadow: none;
+    }
+
+    .btn-detect {
+      height: 28.6px;
+      padding: 0 11px;
+      border: 1.1px solid rgba(26, 20, 40, 0.22);
+      border-radius: var(--chip-r);
+      background: var(--white-70);
+      color: var(--ink);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      cursor: pointer;
+      flex-shrink: 0;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.25); /* same soft lift as HUD blue tickers */
+      transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+    }
+    .btn-detect:hover:not(:disabled) { background: var(--white); }
+    .btn-detect .icon-hat { display: none; }
+    .btn-detect .label-detect { display: inline; }
+    .gcode.is-expanded .btn-detect {
+      width: 28.6px;
+      padding: 0;
+    }
+    .gcode.is-expanded .btn-detect .label-detect { display: none; }
+    .gcode.is-expanded .btn-detect .icon-hat { display: block; }
+    .btn-detect:disabled {
+      opacity: 0.4;
+      cursor: default;
+      color: var(--ink);
+      box-shadow: none;
+    }
+    /* Armed pre-size (empty / separate) — blue outline on detect alone */
+    .btn-detect.is-armed:not(:disabled) {
+      background: var(--white-40);
+      border: 1.65px solid var(--blue-border);
+      color: var(--ink);
+      box-shadow: var(--blue-glow);
+    }
+    .btn-detect.is-armed:not(:disabled):hover {
+      background: var(--white-55);
+    }
+    /* Connected — detect segment; armed = Source-tab blue fill only */
+    .gcode .part-group.is-connected .btn-detect {
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      height: 100%;
+      opacity: 1;
+    }
+    .gcode .part-group.is-connected .btn-detect:disabled {
+      opacity: 0.4;
+      background: transparent;
+    }
+    .gcode .part-group.is-connected .btn-detect.is-armed:not(:disabled) {
+      background: var(--blue-22); /* match Source selected */
+      border: none;
+      box-shadow: none;
+      color: var(--ink);
+      opacity: 1;
+    }
+    .gcode .part-group.is-connected .btn-detect:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.55);
+    }
+    .gcode .part-group.is-connected .btn-detect.is-armed:not(:disabled):hover {
+      background: var(--blue-28);
+    }
+
+    /* Part size ticker — authority look (DE-CODER-v3-LOCKED, scaled ×1.1)
+       Keep white-40 + softer 0.16 outline — do NOT force hat-button chrome */
+    .part-ticker {
+      flex: 0 1 auto;
+      width: max-content;
+      max-width: min(184.8px, 100%);
+      min-width: 0;
+      height: 28.6px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 8.8px;
+      border-radius: var(--chip-r);
+      background: var(--white-40);
+      border: 1.1px solid rgba(26, 20, 40, 0.16);
+      box-sizing: border-box;
+      transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+    }
+    /* Separate mode ready — darker gray + blue ring on ticker only */
+    .part-ticker[data-state="ready"] {
+      background: var(--chip-gray);
+      border: 1.65px solid var(--blue-border);
+      box-shadow: var(--blue-glow);
+    }
+    .part-ticker[data-state="posted"] {
+      background: #7DDB8C;
+      border: 1.1px solid rgba(26, 20, 40, 0.28);
+      box-shadow: none;
+    }
+    .part-ticker.is-stale[data-state="ready"],
+    .part-ticker.is-stale[data-state="posted"] {
+      background: var(--chip-gray);
+      box-shadow: none;
+    }
+    .part-ticker.is-stale[data-state="ready"] {
+      border: 1.65px solid var(--blue-border);
+    }
+    .part-ticker.is-stale[data-state="posted"] {
+      border: 1.1px solid rgba(26, 20, 40, 0.28);
+    }
+    /* Connected — middle segment; darker gray always; blue ring ONLY here when ready */
+    .gcode .part-group.is-connected .part-ticker {
+      border: none;
+      border-radius: 0;
+      background: var(--chip-gray);
+      box-shadow: none;
+      height: 100%;
+      max-width: 198px;
+    }
+    .gcode .part-group.is-connected .part-ticker[data-state="ready"]:not(.is-stale) {
+      background: var(--chip-gray);
+      box-shadow: inset 0 0 0 1.65px var(--blue-border);
+    }
+    .gcode .part-group.is-connected .part-ticker[data-state="posted"]:not(.is-stale) {
+      background: #7DDB8C;
+      box-shadow: none;
+    }
+    .gcode .part-group.is-connected .part-ticker.is-stale {
+      background: var(--chip-gray);
+      box-shadow: none;
+    }
+    .part-ticker .readout {
+      flex: 1 1 auto;
+      min-width: 0;
+      font-family: var(--font-mono);
+      font-size: 12.1px;
+      font-weight: 650;
+      font-variant-numeric: tabular-nums;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .part-ticker[data-state="posted"] .readout { color: var(--ink); }
+    .part-ticker.is-stale .readout { color: var(--ink); }
+    .part-ticker .readout.is-empty { color: var(--ink-50); }
+
+    .btn-post {
+      width: 28.6px;
+      height: 28.6px;
+      border: 1.1px solid rgba(26, 20, 40, 0.22);
+      border-radius: var(--chip-r);
+      background: var(--white-70);
+      color: var(--ink);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      flex-shrink: 0;
+      box-sizing: border-box;
+    }
+    .btn-post:hover:not(:disabled) {
+      background: var(--white);
+      border-color: rgba(26, 20, 40, 0.35);
+      color: var(--ink);
+    }
+    .btn-post:disabled {
+      opacity: 0.4;
+      cursor: default;
+      color: var(--ink);
+    }
+    .btn-post svg { display: block; pointer-events: none; }
+    /* Connected — right segment neutral */
+    .gcode .part-group.is-connected .btn-post {
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      height: 100%;
+      width: 30.8px;
+    }
+    .gcode .part-group.is-connected .btn-post:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.55);
+    }
+    .gcode .part-group.is-connected .btn-post:disabled {
+      opacity: 0.35;
+    }
+
+    /* Separators only in connected mode — scoped to de-coder */
+    .gcode .part-sep {
+      display: none;
+      width: 1.1px;
+      flex: 0 0 1.1px;
+      background: rgba(26, 20, 40, 0.18);
+      align-self: stretch;
+    }
+    .gcode .part-group.is-connected .part-sep { display: block; }
+
+    /* Surface-row chevron — left of SOURCE; only when expanded + source tab
+       Same footprint as icon buttons; transparent fill + light gray outline */
+    .btn-surface-chevron {
+      display: none;
+      width: 28.6px;
+      height: 28.6px;
+      min-width: 28.6px;
+      min-height: 28.6px;
+      margin: 0;
+      padding: 0;
+      border: 1.1px solid rgba(26, 20, 40, 0.22);
+      border-radius: var(--chip-r);
+      background: transparent;
+      color: var(--ink-50);
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      box-sizing: border-box;
+      line-height: 0;
+      overflow: visible;
+    }
+    .btn-surface-chevron svg {
+      display: block;
+      flex-shrink: 0;
+      margin: 0;
+      overflow: visible;
+      pointer-events: none;
+    }
+    .gcode.is-expanded .btn-surface-chevron {
+      display: inline-flex;
+    }
+    .btn-surface-chevron:hover {
+      color: var(--ink);
+      border-color: rgba(26, 20, 40, 0.35);
+      background: transparent;
+    }
+    .btn-surface-chevron:active { transform: scale(0.94); }
+    .btn-surface-chevron svg { display: block; pointer-events: none; }
+
+    .io-tabs {
+      display: none;
+      align-items: center;
+      gap: 2.2px;
+      flex-shrink: 0;
+    }
+    .gcode.is-expanded .io-tabs { display: inline-flex; }
+    .io-tab {
+      height: 28.6px;
+      padding: 0 6.6px;
+      border: none;
+      border-radius: var(--chip-r);
+      background: transparent;
+      color: var(--ink-50);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 2.2px;
+    }
+    .io-tab:hover { color: var(--ink); }
+    .io-tab.is-on {
+      background: var(--blue-22);
+      color: var(--ink);
+      box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.25); /* same soft lift as HUD blue tickers */
+    }
+    .io-tab svg { flex-shrink: 0; }
+
+    /* ── Expandable body ── */
+    .gcode-body {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows var(--dur) var(--ease);
+    }
+    .gcode.is-expanded .gcode-body {
+      grid-template-rows: 1fr;
+    }
+    .gcode-body-inner {
+      overflow: hidden;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .io-panel {
+      margin: 8.8px 11px 0;
+      border: 1.1px solid rgba(26, 20, 40, 0.22);
+      border-radius: 8.8px;
+      background: var(--white);
+      overflow: hidden;
+      display: none;
+      flex-direction: column;
+    }
+    .io-panel.is-on { display: flex; }
+
+    .tool-strip {
+      display: flex;
+      align-items: center;
+      gap: 4.4px;
+      padding: 6.6px 8.8px;
+      background: var(--white-70);
+      border-bottom: 1.1px solid var(--ink-15);
+      flex-shrink: 0;
+    }
+    .tool-strip .spacer { flex: 1; }
+
+    .unit-switch {
+      position: relative;
+      display: inline-grid;
+      grid-template-columns: 1fr 1fr;
+      height: 28.6px;
+      width: 70.4px;
+      padding: 2.2px;
+      border-radius: 8.8px;
+      background: rgba(26, 20, 40, 0.16);
+      flex-shrink: 0;
+    }
+    .unit-switch .thumb {
+      position: absolute;
+      top: 2.2px; left: 2.2px;
+      width: calc(50% - 2.2px);
+      height: calc(100% - 4.4px);
+      border-radius: var(--chip-r);
+      background: var(--blue-22);
+      box-shadow: 0 1.1px 2.2px rgba(0,0,0,0.10);
+      transition: transform var(--dur) var(--ease);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .unit-switch[data-unit="mm"] .thumb { transform: translateX(100%); }
+    .unit-switch button {
+      position: relative;
+      z-index: 1;
+      border: none;
+      background: transparent;
+      color: var(--ink-50);
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0;
+      transition: color var(--dur) var(--ease);
+    }
+    .unit-switch button.is-on { color: var(--ink); }
+
+    .code-shell {
+      position: relative;
+      width: 100%;
+      height: 176px;
+      min-height: 110px;
+      max-height: 308px;
+      resize: vertical;
+      overflow: hidden;
+      background: var(--white);
+      transition: background var(--dur) var(--ease);
+    }
+    .code-shell.is-editing {
+      background: var(--frost-blue);
+    }
+
+    .code-area {
+      width: 100%;
+      height: 100%;
+      resize: none;
+      overflow: auto;
+      border: none;
+      background: transparent;
+      color: var(--ink);
+      font-family: var(--font-mono);
+      font-size: 12.1px;
+      line-height: 1.45;
+      padding: 11px;
+      outline: none;
+      box-sizing: border-box;
+      white-space: pre;
+      tab-size: 2;
+    }
+    .code-area::placeholder { color: var(--ink-30); }
+    .code-area:focus {
+      box-shadow: inset 0 0 0 2.2px var(--blue-22);
+    }
+    .code-area[readonly] { cursor: default; }
+
+    .code-hl {
+      display: none;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: auto;
+      padding: 11px;
+      font-family: var(--font-mono);
+      font-size: 12.1px;
+      line-height: 1.45;
+      white-space: pre;
+      tab-size: 2;
+      color: var(--ink);
+      background: transparent;
+      box-sizing: border-box;
+      user-select: text;
+    }
+    .code-shell.is-hl .code-hl { display: block; }
+    .code-shell.is-hl .code-area { display: none; }
+
+    .edit-actions {
+      position: absolute;
+      top: 6.6px;
+      right: 6.6px;
+      display: none;
+      align-items: center;
+      gap: 4.4px;
+      z-index: 2;
+    }
+    .code-shell.is-editing .edit-actions { display: inline-flex; }
+    .edit-actions .btn-accept,
+    .edit-actions .btn-cancel {
+      width: 24.2px;
+      height: 24.2px;
+      border: none;
+      border-radius: 4.4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      background: rgba(255,255,255,0.85);
+      box-shadow: 0 1.1px 3.3px rgba(0,0,0,0.12);
+    }
+    .edit-actions .btn-accept { color: var(--accept); }
+    .edit-actions .btn-accept:hover { background: #fff; }
+    .edit-actions .btn-cancel { color: var(--cancel); }
+    .edit-actions .btn-cancel:hover { background: #fff; }
+    .edit-actions svg { display: block; pointer-events: none; }
+
+    .tok-c { color: var(--gc-comment); }
+    .tok-g { color: var(--gc-g); font-weight: 600; }
+    .tok-m { color: var(--gc-m); font-weight: 600; }
+    .tok-fs { color: var(--gc-fs); font-weight: 600; }
+    .tok-t { color: var(--gc-t); font-weight: 600; }
+    .tok-n { color: var(--gc-n); }
+
+    /* ── Action / stage footer ──
+       Fixed outer borders (must match):
+         L: container edge → action chip  = 11px
+         R: status chip → chevron         = 11px
+       Chips always equal width (85.8px — fits START OVER).
+       Inner gaps equal (11px each side of rot).
+       Rot fills leftover middle.
+       Chevron has NO extra margin (gap only).
+    */
+    .action-row {
+      display: flex;
+      align-items: center;
+      padding: 8.8px 8.8px 11px 11px; /* L=10 fixed outer; R=8 aligns chevron to header X */
+      flex-shrink: 0;
+      min-height: 46.2px;
+      box-sizing: border-box;
+      gap: 11px; /* status → chevron = same 11px as left outer */
+    }
+    .action-main {
+      flex: 1 1 auto;
+      min-width: 0;
+      display: grid;
+      grid-template-columns: 85.8px 1fr 85.8px; /* equal chips; rot absorbs */
+      column-gap: 11px; /* action→rot = rot→status */
+      align-items: center;
+    }
+
+    /*
+      Footer chips — locked equal 85.8px.
+      LEFT  = PROCESS | START OVER | EDITING
+      RIGHT = READY   | DONE       | EDITING
+    */
+    .stage-action,
+    .stage-status {
+      height: 28.6px;
+      width: 85.8px;
+      min-width: 85.8px;
+      max-width: 85.8px;
+      padding: 0 6.6px;
+      box-sizing: border-box;
+      white-space: nowrap;
+      border: 1.1px solid rgba(26, 20, 40, 0.14);
+      border-radius: var(--chip-r);
+      background: var(--white-40);
+      color: var(--ink-30);
+      font-size: 9.9px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: default;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease), color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+    }
+
+    /* LEFT — PROCESS (no fill · thicker darker blue outline) */
+    .stage-action[data-state="process"]:not(:disabled) {
+      background: var(--chip-gray);
+      border: 1.65px solid var(--blue-border);
+      color: var(--ink);
+      box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.25), var(--blue-glow); /* soft lift + blue ring */
+      cursor: pointer;
+      pointer-events: auto;
+    }
+    .stage-action[data-state="process"]:not(:disabled):hover {
+      background: rgba(26, 20, 40, 0.14);
+    }
+    .stage-action[data-state="process"]:not(:disabled):active {
+      transform: scale(0.98);
+    }
+
+    /* LEFT — START OVER (same blue outline as PROCESS) */
+    .stage-action[data-state="start"]:not(:disabled) {
+      background: var(--chip-gray);
+      border: 1.65px solid var(--blue-border);
+      color: var(--ink);
+      cursor: pointer;
+      pointer-events: auto;
+      box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.25), var(--blue-glow);
+    }
+    .stage-action[data-state="start"]:not(:disabled):hover {
+      background: rgba(26, 20, 40, 0.14);
+    }
+
+    /* LEFT / RIGHT — EDITING (amber kept — interrupt) */
+    .stage-action[data-state="editing"],
+    .stage-action[data-state="editing"]:disabled,
+    .stage-status[data-state="editing"],
+    .stage-status[data-state="editing"]:disabled {
+      background: #FFCE1B;
+      border: 1.65px solid rgba(180, 130, 0, 0.65);
+      color: var(--ink);
+      cursor: default;
+      pointer-events: none;
+      box-shadow: 0 0 0 2.2px rgba(255, 206, 27, 0.35);
+      transform: none !important;
+    }
+
+    /* RIGHT — READY / DONE (green ring · ink text for legibility) */
+    .stage-status[data-state="ready"],
+    .stage-status[data-state="ready"]:disabled,
+    .stage-status[data-state="done"],
+    .stage-status[data-state="done"]:disabled {
+      background: var(--chip-gray);
+      border: 1.65px solid var(--green-border);
+      color: var(--ink);
+      cursor: default;
+      pointer-events: none;
+      box-shadow: var(--green-glow);
+    }
+
+    /* Disabled / idle action */
+    .stage-action:disabled,
+    .stage-action[data-state="idle"],
+    .stage-action[data-state="idle"]:disabled,
+    .stage-status[data-state="idle"],
+    .stage-status[data-state="idle"]:disabled {
+      background: var(--white-40);
+      border-color: rgba(26, 20, 40, 0.14);
+      color: var(--ink-30);
+      cursor: default;
+      pointer-events: none;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .rot-row {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      height: 28.6px;
+      width: 100%; /* fills middle grid column — absorbs leftover */
+      min-width: 0;
+      border-radius: var(--chip-r);
+      border: 1.1px solid rgba(26, 20, 40, 0.22);
+      background: var(--white-70);
+      overflow: hidden;
+      flex-shrink: 1;
+    }
+    .rot-chip {
+      flex: 1 1 0;
+      min-width: 0;
+      height: 100%;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      color: var(--ink);
+      font-size: 11px;
+      font-weight: 650;
+      cursor: pointer;
+      padding: 0 1.1px;
+    }
+    .rot-chip:hover { background: rgba(255, 255, 255, 0.55); }
+    .rot-chip.is-on {
+      background: var(--blue-22);
+      color: var(--ink);
+    }
+    .rot-sep {
+      width: 1.1px;
+      flex: 0 0 1.1px;
+      background: rgba(26, 20, 40, 0.18);
+      align-self: stretch;
+    }
+
+    /* Collapse — gap from action-row handles status→chevron (no extra margin) */
+    .btn-collapse {
+      width: 28.6px;
+      height: 28.6px;
+      min-width: 28.6px;
+      min-height: 28.6px;
+      margin: 0;
+      border: 1.1px solid rgba(26, 20, 40, 0.22);
+      border-radius: var(--chip-r);
+      background: var(--white-70);
+      color: var(--ink);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      padding: 0;
+      box-sizing: border-box;
+      line-height: 0;
+      overflow: visible;
+    }
+    .btn-collapse svg {
+      display: block;
+      flex-shrink: 0;
+      margin: 0;
+      overflow: visible;
+      pointer-events: none;
+    }
+    .btn-collapse:hover { background: var(--white); border-color: rgba(26, 20, 40, 0.35); }
+    .btn-collapse:active { transform: scale(0.94); }
+    .btn-collapse svg { display: block; pointer-events: none; }
+
+    .demo-note {
+      position: absolute;
+      right: 17.6px;
+      bottom: 17.6px;
+      color: rgba(0,0,0,0.35);
+      font-size: 12.1px;
+      max-width: 396px;
+      line-height: 1.4;
+      pointer-events: none;
+    }
+  
+  </style>
+</head>
+<body>
+  <div class="bed-stage" aria-hidden="true">
+    <div class="bed-blank"></div>
+    <div class="bed-origin"></div>
+    <div class="bed-label">Faux bed · origin BL · not product LaserBed</div>
+  </div>
+  <div class="comp-note">Composition · both components live · S1/S2/S3 architecture reference</div>
+
+  <div id="stage">
+<div id="hint">NumericHUD simplified · Part · Blank · Gap · Margin tickers · click ticker → popover</div>
+
+    <div class="keypad" id="hud" role="dialog" aria-label="Numeric HUD">
+      <div class="keypad-header" id="hud-header" title="Drag HUD">
+        <button type="button" class="tool press" id="calc-toggle" title="Calculator mode" aria-label="Calculator mode" aria-pressed="false">
+          <svg width="14.3" height="14.3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.54" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="17.6" height="22" x="4" y="2" rx="2"/>
+            <line x1="8" x2="16" y1="6" y2="6"/>
+            <line x1="16" x2="16" y1="14" y2="18"/>
+            <path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/>
+            <path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/>
+          </svg>
+        </button>
+        <div class="header-spacer" id="drag-handle" aria-hidden="true">
+          <!-- shown only when collapsed — same width as body part ticker, no label -->
+          <div class="param-ticker header-part-ticker" data-ticker="part-collapsed">80.342 × 40.000</div>
+        </div>
+        <button type="button" class="tool press chevron-btn" id="btn-chevron" title="Collapse" aria-label="Collapse HUD" aria-expanded="true">
+          <svg width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m6 9 6 6 6-6"/>
+          </svg>
+        </button>
+      </div>
+
+      <div id="hud-body">
+        <div id="hud-body-inner">
+        <div id="hud-mode">
+          <!-- Simplified: Part · Blank · Gap · Margin — label + ticker, click ticker → popover -->
+          <div class="param-rows">
+
+            <!-- PART SIZE -->
+            <div class="param-row" data-param="part">
+              <span class="param-label">Part size</span>
+              <div class="param-ticker" data-ticker="part" data-open="part" tabindex="0">80.342 × 40.000</div>
+              <div class="param-popover" data-pop="part">
+                <div class="pop-head">
+                  <div class="pop-title">Part size</div>
+                  <div class="pop-actions">
+                    <button type="button" class="pop-save" data-pop-save title="Save" aria-label="Save changes"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg></button>
+                    <button type="button" class="pop-close" data-pop-close title="Close" aria-label="Close"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+                  </div>
+                </div>
+                <div class="pop-xy">
+                  <div class="pop-half">
+                    <span>X</span>
+                    <input data-part="x" type="text" inputmode="decimal" value="80.342" />
+                    <button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+                  </div>
+                  <div class="pop-sep"></div>
+                  <button type="button" class="pop-swap press" data-part-swap title="Swap X &amp; Y" aria-label="Swap X and Y">
+                    <svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
+                  </button>
+                  <div class="pop-sep"></div>
+                  <div class="pop-half">
+                    <span>Y</span>
+                    <input data-part="y" type="text" inputmode="decimal" value="40.000" />
+                    <button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+                  </div>
+                  <div class="pop-sep"></div>
+                  <button type="button" class="pop-link" data-part-link title="Link X &amp; Y" aria-pressed="false">
+                    <svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9">
+                      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- BLANK SIZE -->
+            <div class="param-row" data-param="blank">
+              <span class="param-label">Blank size</span>
+              <div class="param-ticker" data-ticker="blank" data-open="blank" tabindex="0">12.000 × 8.000</div>
+              <div class="param-popover" data-pop="blank">
+                <div class="pop-head">
+                  <div class="pop-title">Blank size</div>
+                  <div class="pop-actions">
+                    <button type="button" class="pop-save" data-pop-save title="Save" aria-label="Save changes"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg></button>
+                    <button type="button" class="pop-close" data-pop-close title="Close" aria-label="Close"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+                  </div>
+                </div>
+                <div class="pop-xy">
+                  <div class="pop-half">
+                    <span>X</span>
+                    <input data-blank="x" type="text" inputmode="decimal" value="12.000" />
+                    <button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+                  </div>
+                  <div class="pop-sep"></div>
+                  <button type="button" class="pop-swap press" data-blank-swap title="Swap X &amp; Y" aria-label="Swap X and Y">
+                    <svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
+                  </button>
+                  <div class="pop-sep"></div>
+                  <div class="pop-half">
+                    <span>Y</span>
+                    <input data-blank="y" type="text" inputmode="decimal" value="8.000" />
+                    <button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+                  </div>
+                  <div class="pop-sep"></div>
+                  <button type="button" class="pop-link" data-blank-link title="Link X &amp; Y" aria-pressed="false">
+                    <svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9">
+                      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- GAP -->
+            <div class="param-row" data-param="gap">
+              <span class="param-label">Gap</span>
+              <div class="param-ticker" data-ticker="gap" data-open="gap" tabindex="0">0.375 × 0.125</div>
+              <div class="param-popover" data-pop="gap">
+                <div class="pop-head">
+                  <div class="pop-title">Gap</div>
+                  <div class="pop-actions">
+                    <button type="button" class="pop-save" data-pop-save title="Save" aria-label="Save changes"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg></button>
+                    <button type="button" class="pop-close" data-pop-close title="Close" aria-label="Close"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+                  </div>
+                </div>
+                <div class="pop-xy">
+                  <div class="pop-half">
+                    <span>X</span>
+                    <input data-gap="x" type="text" inputmode="decimal" value="0.375" />
+                    <button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+                  </div>
+                  <div class="pop-sep"></div>
+                  <div class="pop-half">
+                    <span>Y</span>
+                    <input data-gap="y" type="text" inputmode="decimal" value="0.125" />
+                    <button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+                  </div>
+                  <div class="pop-sep"></div>
+                  <button type="button" class="pop-link active" data-gap-link title="Link X &amp; Y" aria-pressed="true">
+                    <svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9">
+                      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- MARGIN -->
+            <div class="param-row" data-param="margin">
+              <span class="param-label">Margin</span>
+              <div class="param-ticker" data-ticker="margin" data-open="margin" tabindex="0">0.250 all</div>
+              <div class="param-popover" data-pop="margin">
+                <div class="pop-head">
+                  <div class="pop-title">Margin</div>
+                  <div class="pop-actions">
+                    <button type="button" class="pop-save" data-pop-save title="Save" aria-label="Save changes"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg></button>
+                    <button type="button" class="pop-close" data-pop-close title="Close" aria-label="Close"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+                  </div>
+                </div>
+                <div class="pop-margins">
+                  <label class="pop-m-field"><span>L</span><input data-m="l" type="text" inputmode="decimal" value="0.250" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></label>
+                  <label class="pop-m-field"><span>R</span><input data-m="r" type="text" inputmode="decimal" value="0.250" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></label>
+                  <label class="pop-m-field"><span>B</span><input data-m="b" type="text" inputmode="decimal" value="0.250" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></label>
+                  <label class="pop-m-field"><span>T</span><input data-m="t" type="text" inputmode="decimal" value="0.250" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></label>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Control strip: opens de-coder -->
+          <div class="hud-footer-sep" aria-hidden="true"></div>
+          <div class="hud-controls">
+            <button type="button" class="hud-ctl" id="btn-auto-size" title="Open de-coder collapsed">AUTO-SIZE</button>
+            <button type="button" class="hud-ctl" id="btn-gcode" title="Open de-coder expanded">GC0DE</button>
+          </div>
+        </div>
+
+        <div class="classic-calc" id="classic-calc">
+          <div class="classic-lcd" id="classic-lcd" aria-label="Calculator display">0</div>
+          <div class="classic-grid">
+            <button type="button" class="ckey press" data-k="C">C</button>
+            <button type="button" class="ckey press" data-k="±">±</button>
+            <button type="button" class="ckey press" data-k="%">%</button>
+            <button type="button" class="ckey op press" data-k="/">÷</button>
+
+            <button type="button" class="ckey press" data-k="7">7</button>
+            <button type="button" class="ckey press" data-k="8">8</button>
+            <button type="button" class="ckey press" data-k="9">9</button>
+            <button type="button" class="ckey op press" data-k="*">×</button>
+
+            <button type="button" class="ckey press" data-k="4">4</button>
+            <button type="button" class="ckey press" data-k="5">5</button>
+            <button type="button" class="ckey press" data-k="6">6</button>
+            <button type="button" class="ckey op press" data-k="-">−</button>
+
+            <button type="button" class="ckey press" data-k="1">1</button>
+            <button type="button" class="ckey press" data-k="2">2</button>
+            <button type="button" class="ckey press" data-k="3">3</button>
+            <button type="button" class="ckey op press" data-k="+">+</button>
+
+            <button type="button" class="ckey zero press" data-k="0">0</button>
+            <button type="button" class="ckey press" data-k=".">.</button>
+            <button type="button" class="ckey op press" data-k="=">=</button>
+          </div>
+        </div>
+        </div><!-- /hud-body-inner -->
+      </div><!-- /hud-body -->
+    </div><!-- /keypad -->
+
+<aside class="gcode" id="gcode" style="--panel-w: 418px;" aria-hidden="true">
+    <div class="gcode-toast" id="gcode-toast" role="status" aria-live="polite"></div>
+    <!-- Resize: E width · S height (grows code shell) · SE both -->
+    <div class="gcode-resize gcode-resize-e" data-dir="e" aria-hidden="true"></div>
+    <div class="gcode-resize gcode-resize-s" data-dir="s" aria-hidden="true"></div>
+    <div class="gcode-resize gcode-resize-se" data-dir="se" aria-hidden="true"></div>
+
+    <!-- Header: mark · de-coder · program name · status · X -->
+    <div class="gcode-bar" id="gcode-drag">
+      <div class="mark" aria-hidden="true">
+        <svg width="17.6" height="17.6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="14" width="4.4" height="6.6" rx="2"/><rect x="6" y="4" width="4.4" height="6.6" rx="2"/><path d="M6 20h4"/><path d="M14 10h4"/><path d="M6 14h2v6"/><path d="M14 4h2v6"/></svg>
+      </div>
+      <div class="surface-label-slot">
+        <span class="surface-label">de-coder</span>
+      </div>
+
+      <div class="prog-field" id="prog-field">
+        <input class="prog-name" id="prog-name" type="text" placeholder="Program name" spellcheck="false" autocomplete="off" />
+        <div class="prog-actions">
+          <button type="button" class="prog-clear" id="prog-clear" title="Clear name" aria-label="Clear program name">
+            <svg width="12.1" height="12.1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          </button>
+          <button type="button" class="icon-btn" id="btn-open" title="Open program" aria-label="Open program">
+            <svg width="14.3" height="14.3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.55 6a2 2 0 0 1-1.94 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"/></svg>
+          </button>
+          <button type="button" class="icon-btn" id="btn-save" title="Save program (from Output)" aria-label="Save program" disabled>
+            <svg width="14.3" height="14.3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="status-dot" id="status-dot" data-state="none" title="No part size" aria-label="Part size status"></div>
+
+      <button type="button" class="icon-btn close" id="btn-close" title="Close" aria-label="Close">
+        <svg width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+
+    <!-- Surface row -->
+    <div class="surface-row" id="surface-row">
+      <div class="surface-editing-banner" aria-live="polite">EDITING</div>
+      <button type="button" class="btn-gc0de" id="btn-expand" title="Expand G-code" aria-label="Expand G-code" aria-expanded="false">GC0DE</button>
+
+      <!-- Collapse chevron — left of SOURCE; only when expanded + source tab; points down -->
+      <button type="button" class="btn-surface-chevron" id="btn-surface-chevron" title="Collapse G-code" aria-label="Collapse G-code">
+        <svg width="14.3" height="14.3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+
+      <div class="io-tabs" id="io-tabs" role="tablist">
+        <button type="button" class="io-tab is-on" role="tab" aria-selected="true" data-tab="source" id="tab-source">
+          <svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>
+          Source
+        </button>
+        <button type="button" class="io-tab" role="tab" aria-selected="false" data-tab="output" id="tab-output">
+          <svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h10"/><path d="M6 12h9"/><path d="M11 18h7"/></svg>
+          Output
+        </button>
+      </div>
+
+      <div class="surface-spacer" aria-hidden="true"></div>
+
+      <!-- Part group: separate when empty · connected 3-seg when dims present -->
+      <div class="part-group" id="part-group" role="group" aria-label="Part size controls">
+        <button type="button" class="btn-detect" id="btn-detect" disabled title="Auto-Size part from source" aria-label="Auto-Size part">
+          <span class="label-detect">Auto-Size</span>
+          <svg class="icon-hat" width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.42" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 18a2 2 0 0 0-4 0"/><path d="m19 11-2.11-6.657a2 2 0 0 0-2.752-1.148l-1.276.61A2 2 0 0 1 12 4H8.5a2 2 0 0 0-1.925 1.456L5 11"/><path d="M2 11h20"/><circle cx="17" cy="18" r="3"/><circle cx="7" cy="18" r="3"/></svg>
+        </button>
+        <span class="part-sep" aria-hidden="true"></span>
+        <div class="part-ticker" id="part-ticker" data-state="none" title="Part size">
+          <span class="readout is-empty" id="part-readout">—</span>
+        </div>
+        <span class="part-sep" aria-hidden="true"></span>
+        <button type="button" class="btn-post" id="btn-post" disabled title="Post part size to HUD / bed" aria-label="Post part size">
+          <svg width="14.3" height="14.3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Expandable G-code body -->
+    <div class="gcode-body" id="gcode-body">
+      <div class="gcode-body-inner">
+        <div class="io-panel is-on" role="tabpanel" data-panel="source" id="panel-source">
+          <div class="tool-strip">
+            <button type="button" class="icon-btn" id="btn-undo-src" title="Undo (Cmd/Ctrl+Z)" aria-label="Undo">
+              <svg width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            </button>
+            <button type="button" class="icon-btn" id="btn-redo-src" title="Redo (Shift+Cmd/Ctrl+Z)" aria-label="Redo">
+              <svg width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+            </button>
+            <div class="spacer"></div>
+            <button type="button" class="icon-btn" id="btn-clear" title="Clear source" aria-label="Clear source">
+              <svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4L13.3 3c1-1 2.5-1 3.4 0l4.3 4.3c1 1 1 2.5 0 3.4L10.4 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>
+            </button>
+            <div class="unit-switch" id="unit-switch" data-unit="in" role="group" aria-label="Units">
+              <div class="thumb" aria-hidden="true"></div>
+              <button type="button" class="is-on" data-unit="in" aria-pressed="true">IN</button>
+              <button type="button" data-unit="mm" aria-pressed="false">MM</button>
+            </div>
+          </div>
+          <div class="code-shell is-hl" id="source-shell">
+            <pre class="code-hl" id="source-hl" aria-hidden="true"></pre>
+            <textarea class="code-area" id="source" spellcheck="false" placeholder="Paste G-code here"></textarea>
+            <div class="edit-actions">
+              <button type="button" class="btn-accept" id="btn-accept-src" title="Accept source edits (does not process)" aria-label="Accept source edits">
+                <svg width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg>
+              </button>
+              <button type="button" class="btn-cancel" id="btn-cancel-src" title="Cancel — discard edits" aria-label="Cancel edits">
+                <svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="io-panel" role="tabpanel" data-panel="output" id="panel-output" hidden>
+          <div class="tool-strip">
+            <button type="button" class="icon-btn" id="btn-undo-out" title="Undo (Cmd/Ctrl+Z)" aria-label="Undo">
+              <svg width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            </button>
+            <button type="button" class="icon-btn" id="btn-redo-out" title="Redo (Shift+Cmd/Ctrl+Z)" aria-label="Redo">
+              <svg width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+            </button>
+            <div class="spacer"></div>
+            <button type="button" class="icon-btn" id="btn-edit-out" title="Edit output" aria-label="Edit output">
+              <svg width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/></svg>
+            </button>
+            <button type="button" class="icon-btn" id="btn-copy" title="Copy" aria-label="Copy" disabled>
+              <svg width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><rect width="15.4" height="15.4" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            </button>
+            <button type="button" class="icon-btn" id="btn-dl" title="Download" aria-label="Download" disabled>
+              <svg width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+            </button>
+          </div>
+          <div class="code-shell is-hl" id="output-shell">
+            <pre class="code-hl" id="output-hl" aria-hidden="true"></pre>
+            <textarea class="code-area" id="output" spellcheck="false" placeholder="Applied code appears here" readonly></textarea>
+            <div class="edit-actions">
+              <button type="button" class="btn-accept" id="btn-accept-out" title="Accept output edits (updates in place)" aria-label="Accept output edits">
+                <svg width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg>
+              </button>
+              <button type="button" class="btn-cancel" id="btn-cancel-out" title="Cancel — discard edits" aria-label="Cancel edits">
+                <svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer: ACTION (PROCESS|START OVER) · rot · STATUS (READY|DONE) · collapse
+             Both chips fixed 90px so rotation stays centered between them -->
+        <div class="action-row">
+          <div class="action-main">
+            <button type="button" class="stage-action" id="stage-action" data-state="idle" disabled title="Process Source to Output">PROCESS</button>
+            <div class="rot-row" role="group" aria-label="Rotation">
+              <button type="button" class="rot-chip is-on" data-rot="0">0°</button>
+              <div class="rot-sep" aria-hidden="true"></div>
+              <button type="button" class="rot-chip" data-rot="90">90°</button>
+              <div class="rot-sep" aria-hidden="true"></div>
+              <button type="button" class="rot-chip" data-rot="-90">−90°</button>
+              <div class="rot-sep" aria-hidden="true"></div>
+              <button type="button" class="rot-chip" data-rot="180">180°</button>
+            </div>
+            <button type="button" class="stage-status" id="stage-status" data-state="idle" disabled title="Not ready">NOT READY</button>
+          </div>
+          <button type="button" class="btn-collapse" id="btn-collapse" title="Collapse G-code" aria-label="Collapse G-code">
+            <svg width="17.6" height="17.6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="demo-note">
+    Empty → separate · Has dims → connected 3-seg · blue ring only on ticker · darker gray fill<br>
+    Hat armed (re-size) = Source blue · posted = green ticker
+  </div>
+
+  <script>
+/* ── Numeric HUD script ── */
+
+    const hud = document.getElementById('hud');
+    const dragHandle = document.getElementById('drag-handle') || document.getElementById('hud-header');
+    const calcToggle = document.getElementById('calc-toggle');
+    const btnChevron = document.getElementById('btn-chevron');
+    const classicLcd = document.getElementById('classic-lcd');
+    const classicEl = document.getElementById('classic-calc');
+    const hudMode = document.getElementById('hud-mode');
+    const hudBody = document.getElementById('hud-body');
+
+    const state = {
+      calc: false,
+      collapsed: false,
+      drag: null,
+      units: 'in',
+      blankW: 12,
+      blankH: 8,
+      partX: 80.342,
+      partY: 40.0,
+      partLinked: false,
+      lcd: '0',
+      acc: null,
+      op: null,
+      fresh: true,
+    };
+
+    const paramState = {
+      part: { x: 80.342, y: 40.0, linked: false },
+      blank: { x: 12, y: 8, linked: false },
+      gap: { x: 0.375, y: 0.125, linked: true },
+      margin: { l: 0.25, r: 0.25, t: 0.25, b: 0.25 },
+      open: null,
+    };
+
+    function fmt3(n) {
+      return (Number.isFinite(n) ? n : 0).toFixed(3);
+    }
+
+    function formatBlankReadout() {
+      const tBlank = document.querySelector('[data-ticker="blank"]');
+      if (!tBlank) return;
+      // no units suffix — keep ticker format consistent with Part / Gap
+      tBlank.textContent = fmt3(state.blankW) + ' × ' + fmt3(state.blankH);
+    }
+
+    function marginSummaryParts(m) {
+      const { l, r, t, b } = m;
+      // All equal → single token
+      if (l === r && r === t && t === b) {
+        return [fmt3(l) + ' all'];
+      }
+      // Build only sides that matter; prefer R+B always when not all-equal,
+      // include L/T when they differ from the free-edge story
+      const parts = [];
+      // Always show differing sides; if everything differs show all four
+      const vals = { L: l, R: r, B: b, T: t };
+      // Order for display: L R / B T (matches popover)
+      const order = ['L', 'R', 'B', 'T'];
+      // Which to include: if not all equal, include every side that is not
+      // equal to all others — practically show all unique values present.
+      // Spec: show the ones that differ; when four values shown → stack.
+      for (const k of order) {
+        parts.push(k + ' ' + fmt3(vals[k]));
+      }
+      // If only R and B differ from a shared L=T base, compress:
+      // e.g. L=T=0.25, R=0.25, B=0.5 → "R 0.250 + B 0.500" is enough
+      // when L equals R and T equals R except B differs:
+      const allFour = [l, r, b, t];
+      const unique = [...new Set(allFour.map((n) => fmt3(n)))];
+      if (unique.length === 2) {
+        // two distinct values — name the sides that differ from the majority
+        const counts = {};
+        allFour.forEach((n) => {
+          const s = fmt3(n);
+          counts[s] = (counts[s] || 0) + 1;
+        });
+        const majority = Object.keys(counts).sort((a, b) => counts[b] - counts[a])[0];
+        const minority = Object.keys(counts).find((k) => k !== majority);
+        const sides = [];
+        if (fmt3(l) !== majority) sides.push('L ' + fmt3(l));
+        if (fmt3(r) !== majority) sides.push('R ' + fmt3(r));
+        if (fmt3(b) !== majority) sides.push('B ' + fmt3(b));
+        if (fmt3(t) !== majority) sides.push('T ' + fmt3(t));
+        // always include the free edges R+B when not "all"
+        if (!sides.some((s) => s.startsWith('R '))) sides.unshift('R ' + fmt3(r));
+        if (!sides.some((s) => s.startsWith('B '))) {
+          // put B after R if possible
+          const ri = sides.findIndex((s) => s.startsWith('R '));
+          sides.splice(ri + 1, 0, 'B ' + fmt3(b));
+        }
+        return sides;
+      }
+      if (unique.length === 3) {
+        return ['L ' + fmt3(l), 'R ' + fmt3(r), 'B ' + fmt3(b), 'T ' + fmt3(t)];
+      }
+      // 4 unique or fallback — full L R B T
+      return ['L ' + fmt3(l), 'R ' + fmt3(r), 'B ' + fmt3(b), 'T ' + fmt3(t)];
+    }
+
+    function marginSummaryHTML(m) {
+      const parts = marginSummaryParts(m);
+      if (parts.length === 1) return parts[0];
+      if (parts.length === 2) return parts.join(' + ');
+      // 3–4 → stack two lines: L R on top, B T on bottom (or pair evenly)
+      if (parts.length === 3) {
+        return '<span class="m-line">' + parts[0] + ' + ' + parts[1] + '</span>' +
+               '<span class="m-line">' + parts[2] + '</span>';
+      }
+      // 4: L R / B T
+      return '<span class="m-line">' + parts[0] + ' + ' + parts[1] + '</span>' +
+             '<span class="m-line">' + parts[2] + ' + ' + parts[3] + '</span>';
+    }
+
+    function marginSummary(m) {
+      // plain-text fallback for non-HTML uses
+      const parts = marginSummaryParts(m);
+      if (parts.length <= 2) return parts.join(' + ');
+      return parts.join(' + ');
+    }
+
+    function refreshTickers() {
+      const p = paramState.part;
+      const b = paramState.blank;
+      const g = paramState.gap;
+      const m = paramState.margin;
+      const tPart = document.querySelector('[data-ticker="part"]');
+      const tPartCollapsed = document.querySelector('[data-ticker="part-collapsed"]');
+      const tBlank = document.querySelector('[data-ticker="blank"]');
+      const tGap = document.querySelector('[data-ticker="gap"]');
+      const tMar = document.querySelector('[data-ticker="margin"]');
+      const partText = fmt3(p.x) + ' × ' + fmt3(p.y);
+      if (tPart) tPart.textContent = partText;
+      if (tPartCollapsed) tPartCollapsed.textContent = partText;
+      if (tBlank) tBlank.textContent = fmt3(b.x) + ' × ' + fmt3(b.y);
+      if (tGap) tGap.textContent = fmt3(g.x) + ' × ' + fmt3(g.y);
+      if (tMar) tMar.innerHTML = marginSummaryHTML(m);
+
+      state.partX = p.x;
+      state.partY = p.y;
+      state.partLinked = !!p.linked;
+      state.blankW = b.x;
+      state.blankH = b.y;
+      updateSaveDirty();
+    }
+
+    function applyModeVisibility() {
+      /* Collapse is CSS-driven via grid-template-rows on #hud-body.
+         NEVER set hudBody.style.display — that overrides grid and breaks collapse. */
+      hudBody.style.display = '';
+      if (state.collapsed) {
+        return;
+      }
+      if (state.calc) {
+        classicEl.style.display = 'flex';
+        hudMode.style.display = 'none';
+      } else {
+        classicEl.style.display = 'none';
+        hudMode.style.display = 'flex';
+      }
+    }
+
+    function centerHud() {
+      /* Pixel left/top only — never CSS transform (breaks fixed popovers) */
+      hud.style.transform = 'none';
+      const w = hud.offsetWidth;
+      const h = hud.offsetHeight;
+      const x = Math.max(0, Math.round((window.innerWidth - w) / 2));
+      const y = Math.max(0, Math.round((window.innerHeight - h) / 2));
+      hud.style.left = x + 'px';
+      hud.style.top = y + 'px';
+    }
+    centerHud();
+    window.addEventListener('resize', function () {
+      if (!state.drag) centerHud();
+    });
+
+    function setCollapsed(on) {
+      state.collapsed = on;
+      hud.classList.toggle('collapsed', on);
+      btnChevron.setAttribute('aria-expanded', on ? 'false' : 'true');
+      btnChevron.title = on ? 'Expand' : 'Collapse';
+      if (on && state.calc) {
+        state.calc = false;
+        hud.classList.remove('calc-mode');
+        calcToggle.classList.remove('active-calc');
+        calcToggle.setAttribute('aria-pressed', 'false');
+      }
+      if (on) closeAllParamPopovers();
+
+      /* Critical: residual inline minHeight from lockBodyHeight/setCalc
+         blocks CSS grid-template-rows: 0fr. Clear on collapse so the
+         body fully disappears (header-only: calc + part ticker + chevron).
+         Restore measured height on expand so calc↔HUD swap stays seamless. */
+      if (on) {
+        hudBody.style.minHeight = '';
+      } else {
+        const hudH = parseFloat(hudBody.dataset.hudH || '0');
+        const calcH = parseFloat(hudBody.dataset.calcH || '0');
+        if (hudH && calcH) {
+          hudBody.style.transition = 'none';
+          hudBody.style.minHeight = (state.calc ? calcH : hudH) + 'px';
+        }
+      }
+
+      applyModeVisibility();
+    }
+
+    function setCalc(on) {
+      state.calc = on;
+      hud.classList.toggle('calc-mode', on);
+      calcToggle.classList.toggle('active-calc', on);
+      calcToggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+      if (on && state.collapsed) {
+        state.collapsed = false;
+        hud.classList.remove('collapsed');
+        btnChevron.setAttribute('aria-expanded', 'true');
+        btnChevron.title = 'Collapse';
+      }
+      if (on) closeAllParamPopovers();
+      applyModeVisibility();
+    }
+
+    btnChevron.addEventListener('click', () => {
+      if (state.collapsed) {
+        setCollapsed(false);
+        setCalc(false);
+      } else {
+        setCollapsed(true);
+      }
+    });
+
+    calcToggle.addEventListener('click', () => {
+      if (state.calc) setCalc(false);
+      else setCalc(true);
+    });
+
+    // Drag — entire header (title row + blank ticker). Buttons still clickable.
+    const hudHeader = document.getElementById('hud-header');
+    function beginHudDrag(e) {
+      if (e.button != null && e.button !== 0) return;
+      // Don't steal clicks from calc / chevron
+      if (e.target.closest && e.target.closest('button')) return;
+      const r = hud.getBoundingClientRect();
+      state.drag = {
+        ox: e.clientX - r.left,
+        oy: e.clientY - r.top,
+        pid: e.pointerId,
+      };
+      /* Convert centered transform → absolute left/top so drag tracks 1:1 */
+      hud.style.transform = 'none';
+      hud.style.left = r.left + 'px';
+      hud.style.top = r.top + 'px';
+      try { hudHeader.setPointerCapture(e.pointerId); } catch (_) {}
+      e.preventDefault();
+    }
+    function moveHudDrag(e) {
+      if (!state.drag) return;
+      const x = Math.max(0, Math.min(window.innerWidth - hud.offsetWidth, e.clientX - state.drag.ox));
+      const y = Math.max(0, Math.min(window.innerHeight - hud.offsetHeight, e.clientY - state.drag.oy));
+      hud.style.left = x + 'px';
+      hud.style.top = y + 'px';
+      if (paramState.open) positionOutsideHUD();
+    }
+    function endHudDrag() {
+      if (!state.drag) return;
+      try { hudHeader.releasePointerCapture(state.drag.pid); } catch (_) {}
+      state.drag = null;
+    }
+    hudHeader.addEventListener('pointerdown', beginHudDrag);
+    hudHeader.addEventListener('pointermove', moveHudDrag);
+    hudHeader.addEventListener('pointerup', endHudDrag);
+    hudHeader.addEventListener('pointercancel', endHudDrag);
+
+    // Part size — same behavior as blank popover:
+    // strip non-numeric while typing (preserve cursor), lock to 3 decimals on blur.
+    // Max 99.999 (2 int + 3 frac). No letters. No live reformat that kills caret.
+    function sanitizeNumericLive(el) {
+      const start = el.selectionStart;
+      const old = el.value;
+      let v = old.replace(/[^0-9.]/g, '');
+      const firstDot = v.indexOf('.');
+      if (firstDot !== -1) {
+        v = v.slice(0, firstDot + 1) + v.slice(firstDot + 1).replace(/\./g, '');
+      }
+      const parts = v.split('.');
+      const intPart = (parts[0] || '').slice(0, 2);
+      const frac = parts.length > 1 ? parts[1].slice(0, 3) : null;
+      const next = parts.length > 1 ? intPart + '.' + frac : intPart;
+      if (next !== old) {
+        el.value = next;
+        const pos = Math.min(start - (old.length - next.length), next.length);
+        try { el.setSelectionRange(Math.max(0, pos), Math.max(0, pos)); } catch (_) {}
+      }
+    }
+    function formatPartDisplay(el, n) {
+      if (!Number.isFinite(n)) { el.value = ''; return; }
+      el.value = Math.min(99.999, Math.max(0, n)).toFixed(3);
+    }
+
+    // Part size now lives only in its popover (data-part inputs)
+    function wireXyGroup(prefix, stateKey) {
+      const ix = document.querySelector('[data-' + prefix + '="x"]');
+      const iy = document.querySelector('[data-' + prefix + '="y"]');
+      const linkBtn = document.querySelector('[data-' + prefix + '-link]');
+      const swapBtn = document.querySelector('[data-' + prefix + '-swap]');
+      if (!ix || !iy) return;
+
+      function syncLinked(from) {
+        const bag = paramState[stateKey];
+        if (!bag || !bag.linked) return;
+        if (from === 'x') {
+          bag.y = bag.x;
+          iy.value = ix.value;
+        } else {
+          bag.x = bag.y;
+          ix.value = iy.value;
+        }
+      }
+
+      [ix, iy].forEach((inp) => {
+        const axis = inp.getAttribute('data-' + prefix);
+        const wrap = inp.closest('.pop-half');
+        inp.addEventListener('input', () => {
+          sanitizeNumericLive(inp);
+          const raw = inp.value;
+          const bag = paramState[stateKey];
+          if (raw === '' || raw === '.') {
+            bag[axis] = 0;
+            if (bag.linked) {
+              const other = axis === 'x' ? iy : ix;
+              const otherAxis = axis === 'x' ? 'y' : 'x';
+              bag[otherAxis] = 0;
+              other.value = '';
+            }
+            updateSaveDirty();
+            return;
+          }
+          const n = parseFloat(raw);
+          if (!Number.isFinite(n)) return;
+          bag[axis] = n;
+          syncLinked(axis);
+          updateSaveDirty();
+        });
+        inp.addEventListener('focus', () => { if (wrap) wrap.classList.add('is-focused'); });
+        inp.addEventListener('blur', () => {
+          if (wrap) setTimeout(() => wrap.classList.remove('is-focused'), 120);
+          const raw = inp.value.trim();
+          const bag = paramState[stateKey];
+          if (raw === '' || raw === '.') {
+            bag[axis] = 0;
+            inp.value = '';
+            if (bag.linked) {
+              const other = axis === 'x' ? iy : ix;
+              const otherAxis = axis === 'x' ? 'y' : 'x';
+              bag[otherAxis] = 0;
+              other.value = '';
+            }
+            updateSaveDirty();
+            return;
+          }
+          const n = parseFloat(raw);
+          if (Number.isFinite(n)) {
+            bag[axis] = n;
+            formatPartDisplay(inp, n);
+            if (bag.linked) {
+              const other = axis === 'x' ? iy : ix;
+              const otherAxis = axis === 'x' ? 'y' : 'x';
+              bag[otherAxis] = n;
+              formatPartDisplay(other, n);
+            }
+          }
+          updateSaveDirty();
+        });
+      });
+
+      if (linkBtn) {
+        linkBtn.addEventListener('click', () => {
+          const bag = paramState[stateKey];
+          bag.linked = !bag.linked;
+          linkBtn.classList.toggle('active', bag.linked);
+          linkBtn.setAttribute('aria-pressed', bag.linked ? 'true' : 'false');
+          if (bag.linked) {
+            bag.y = bag.x;
+            iy.value = ix.value || fmt3(bag.x);
+          }
+          updateSaveDirty();
+        });
+      }
+      if (swapBtn) {
+        swapBtn.addEventListener('click', () => {
+          const bag = paramState[stateKey];
+          const tx = bag.x;
+          bag.x = bag.y;
+          bag.y = tx;
+          formatPartDisplay(ix, bag.x);
+          formatPartDisplay(iy, bag.y);
+          updateSaveDirty();
+        });
+      }
+    }
+    wireXyGroup('part', 'part');
+    wireXyGroup('blank', 'blank');
+
+    // Popovers outside left — click ticker to open
+    function closeAllParamPopovers() {
+      paramState.open = null;
+      document.querySelectorAll('.param-row').forEach((row) => {
+        row.classList.remove('is-open', 'show-hover');
+        const btn = row.querySelector('.param-btn');
+        if (btn) btn.classList.remove('is-open');
+      });
+    }
+
+    // Event delegation for popover close X + save check
+    document.addEventListener('click', (e) => {
+      const closeBtn = e.target.closest('[data-pop-close]');
+      if (closeBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        // Close discards? Values are live-applied already; snapshot just tracks dirty UI.
+        // Revert to snapshot on close without save
+        if (paramState.open && paramState.snapshot) {
+          const key = paramState.open;
+          const s = paramState.snapshot;
+          if (key === 'part') {
+            paramState.part.x = s.x; paramState.part.y = s.y; paramState.part.linked = s.linked;
+            const ix = document.querySelector('[data-part="x"]');
+            const iy = document.querySelector('[data-part="y"]');
+            if (ix) ix.value = fmt3(s.x);
+            if (iy) iy.value = fmt3(s.y);
+            const pl = document.querySelector('[data-part-link]');
+            if (pl) {
+              pl.classList.toggle('active', s.linked);
+              pl.setAttribute('aria-pressed', s.linked ? 'true' : 'false');
+            }
+          } else if (key === 'blank') {
+            paramState.blank.x = s.x; paramState.blank.y = s.y; paramState.blank.linked = s.linked;
+            const ix = document.querySelector('[data-blank="x"]');
+            const iy = document.querySelector('[data-blank="y"]');
+            if (ix) ix.value = fmt3(s.x);
+            if (iy) iy.value = fmt3(s.y);
+            const bl = document.querySelector('[data-blank-link]');
+            if (bl) {
+              bl.classList.toggle('active', s.linked);
+              bl.setAttribute('aria-pressed', s.linked ? 'true' : 'false');
+            }
+          } else if (key === 'gap') {
+            paramState.gap.x = s.x; paramState.gap.y = s.y; paramState.gap.linked = s.linked;
+            const ix = document.querySelector('[data-gap="x"]');
+            const iy = document.querySelector('[data-gap="y"]');
+            if (ix) ix.value = fmt3(s.x);
+            if (iy) iy.value = fmt3(s.y);
+            const gl = document.querySelector('[data-gap-link]');
+            if (gl) {
+              gl.classList.toggle('active', s.linked);
+              gl.setAttribute('aria-pressed', s.linked ? 'true' : 'false');
+            }
+          } else if (key === 'margin') {
+            paramState.margin.l = s.l; paramState.margin.r = s.r;
+            paramState.margin.t = s.t; paramState.margin.b = s.b;
+            ['l','r','t','b'].forEach((k) => {
+              const el = document.querySelector('[data-m="' + k + '"]');
+              if (el) el.value = fmt3(s[k]);
+            });
+          }
+          refreshTickers();
+        }
+        closeAllParamPopovers();
+        return;
+      }
+      const saveBtn = e.target.closest('[data-pop-save]');
+      if (saveBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        // Save = accept current values (already in paramState) and close
+        if (paramState.open && isDirty(paramState.open)) {
+          paramState.snapshot = takeSnapshot(paramState.open);
+          refreshTickers();
+          closeAllParamPopovers();
+        } else if (paramState.open) {
+          // not dirty — still allow close via save as confirm
+          closeAllParamPopovers();
+        }
+      }
+    });
+
+    function positionOutsideHUD() {
+      const hudRect = hud.getBoundingClientRect();
+      const openRow = document.querySelector('.param-row.is-open');
+      const top = openRow ? openRow.getBoundingClientRect().top : hudRect.top;
+      document.querySelectorAll('.param-popover').forEach((pop) => {
+        pop.style.position = 'fixed';
+        pop.style.top = top + 'px';
+        // fully outside on the RIGHT: 11px gap after HUD right edge (10 × 1.1)
+        pop.style.left = Math.round(hudRect.right + 11) + 'px';
+        pop.style.right = 'auto';
+      });
+    }
+
+    // Snapshot at open — dirty when fields diverge from snapshot
+    paramState.snapshot = null;
+
+    function takeSnapshot(key) {
+      if (key === 'part') {
+        return { x: paramState.part.x, y: paramState.part.y, linked: paramState.part.linked };
+      }
+      if (key === 'blank') {
+        return { x: paramState.blank.x, y: paramState.blank.y, linked: paramState.blank.linked };
+      }
+      if (key === 'gap') {
+        return { x: paramState.gap.x, y: paramState.gap.y, linked: paramState.gap.linked };
+      }
+      if (key === 'margin') {
+        return { l: paramState.margin.l, r: paramState.margin.r, t: paramState.margin.t, b: paramState.margin.b };
+      }
+      return null;
+    }
+
+    function isDirty(key) {
+      const s = paramState.snapshot;
+      if (!s || !key) return false;
+      if (key === 'part') {
+        return s.x !== paramState.part.x || s.y !== paramState.part.y || s.linked !== paramState.part.linked;
+      }
+      if (key === 'blank') {
+        return s.x !== paramState.blank.x || s.y !== paramState.blank.y || s.linked !== paramState.blank.linked;
+      }
+      if (key === 'gap') {
+        return s.x !== paramState.gap.x || s.y !== paramState.gap.y || s.linked !== paramState.gap.linked;
+      }
+      if (key === 'margin') {
+        return s.l !== paramState.margin.l || s.r !== paramState.margin.r ||
+               s.t !== paramState.margin.t || s.b !== paramState.margin.b;
+      }
+      return false;
+    }
+
+    function updateSaveDirty() {
+      const key = paramState.open;
+      document.querySelectorAll('.pop-save').forEach((btn) => {
+        const row = btn.closest('.param-row');
+        const rowKey = row && row.getAttribute('data-param');
+        const dirty = rowKey === key && isDirty(key);
+        btn.classList.toggle('is-dirty', dirty);
+      });
+    }
+
+    function openParamPopover(key) {
+      closeAllParamPopovers();
+      paramState.open = key;
+      // sync fields to 3 decimals before show
+      if (key === 'part') {
+        const ix = document.querySelector('[data-part="x"]');
+        const iy = document.querySelector('[data-part="y"]');
+        if (ix) ix.value = fmt3(paramState.part.x);
+        if (iy) iy.value = fmt3(paramState.part.y);
+        const pl = document.querySelector('[data-part-link]');
+        if (pl) {
+          pl.classList.toggle('active', !!paramState.part.linked);
+          pl.setAttribute('aria-pressed', paramState.part.linked ? 'true' : 'false');
+        }
+      } else if (key === 'blank') {
+        const ix = document.querySelector('[data-blank="x"]');
+        const iy = document.querySelector('[data-blank="y"]');
+        if (ix) ix.value = fmt3(paramState.blank.x);
+        if (iy) iy.value = fmt3(paramState.blank.y);
+        const bl = document.querySelector('[data-blank-link]');
+        if (bl) {
+          bl.classList.toggle('active', !!paramState.blank.linked);
+          bl.setAttribute('aria-pressed', paramState.blank.linked ? 'true' : 'false');
+        }
+      } else if (key === 'gap') {
+        const ix = document.querySelector('[data-gap="x"]');
+        const iy = document.querySelector('[data-gap="y"]');
+        if (ix) ix.value = fmt3(paramState.gap.x);
+        if (iy) iy.value = fmt3(paramState.gap.y);
+      } else if (key === 'margin') {
+        ['l','r','t','b'].forEach((k) => {
+          const el = document.querySelector('[data-m="' + k + '"]');
+          if (el) el.value = fmt3(paramState.margin[k]);
+        });
+      }
+      paramState.snapshot = takeSnapshot(key);
+      const row = document.querySelector('.param-row[data-param="' + key + '"]');
+      if (!row) return;
+      row.classList.add('is-open');
+      updateSaveDirty();
+      requestAnimationFrame(() => {
+        positionOutsideHUD();
+        positionOutsideHUD();
+      });
+    }
+
+    // Click ticker → open/close popover (delegated so it always stays wired)
+    hud.addEventListener('click', (e) => {
+      const tick = e.target.closest && e.target.closest('.param-ticker[data-open]');
+      if (!tick || !hud.contains(tick)) return;
+      // Header collapsed ticker is display-only
+      if (tick.classList.contains('header-part-ticker')) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const key = tick.getAttribute('data-open');
+      if (!key) return;
+      if (paramState.open === key) {
+        closeAllParamPopovers();
+      } else {
+        openParamPopover(key);
+      }
+    });
+    // Keyboard: Enter/Space on focused ticker
+    hud.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      const tick = e.target.closest && e.target.closest('.param-ticker[data-open]');
+      if (!tick || tick.classList.contains('header-part-ticker')) return;
+      e.preventDefault();
+      const key = tick.getAttribute('data-open');
+      if (!key) return;
+      if (paramState.open === key) closeAllParamPopovers();
+      else openParamPopover(key);
+    });
+
+    document.addEventListener('pointerdown', (e) => {
+      if (!paramState.open) return;
+      const openRow = document.querySelector('.param-row.is-open');
+      if (!openRow) return;
+      const pop = openRow.querySelector('.param-popover');
+      const tick = openRow.querySelector('.param-ticker');
+      const inPop = pop && pop.contains(e.target);
+      const inTick = tick && tick.contains(e.target);
+      if (!inPop && !inTick) closeAllParamPopovers();
+    });
+
+    // Blank handled by wireXyGroup('blank') — no second binding
+
+    // Gap (default linked)
+    const gapLink = document.querySelector('[data-gap-link]');
+    if (gapLink) {
+      gapLink.addEventListener('click', () => {
+        paramState.gap.linked = !paramState.gap.linked;
+        gapLink.classList.toggle('active', paramState.gap.linked);
+        gapLink.setAttribute('aria-pressed', paramState.gap.linked ? 'true' : 'false');
+        if (paramState.gap.linked) {
+          paramState.gap.y = paramState.gap.x;
+          const iy = document.querySelector('[data-gap="y"]');
+          if (iy) iy.value = fmt3(paramState.gap.y);
+          refreshTickers();
+        }
+      });
+    }
+    document.querySelectorAll('[data-gap]').forEach((inp) => {
+      inp.addEventListener('input', () => {
+        sanitizeNumericLive(inp);
+        const raw = inp.value;
+        const n = raw === '' || raw === '.' ? 0 : parseFloat(raw);
+        if (!Number.isFinite(n)) return;
+        const axis = inp.getAttribute('data-gap');
+        if (axis === 'x') {
+          paramState.gap.x = n;
+          if (paramState.gap.linked) {
+            paramState.gap.y = n;
+            const iy = document.querySelector('[data-gap="y"]');
+            if (iy && iy !== inp) iy.value = raw === '' ? '' : inp.value;
+          }
+        } else {
+          paramState.gap.y = n;
+          if (paramState.gap.linked) {
+            paramState.gap.x = n;
+            const ix = document.querySelector('[data-gap="x"]');
+            if (ix && ix !== inp) ix.value = raw === '' ? '' : inp.value;
+          }
+        }
+        refreshTickers();
+        updateSaveDirty();
+      });
+      inp.addEventListener('blur', () => {
+        const raw = inp.value.trim();
+        const axis = inp.getAttribute('data-gap');
+        if (raw === '' || raw === '.') {
+          if (axis === 'x') paramState.gap.x = 0;
+          else paramState.gap.y = 0;
+          inp.value = '';
+          if (paramState.gap.linked) {
+            const other = axis === 'x'
+              ? document.querySelector('[data-gap="y"]')
+              : document.querySelector('[data-gap="x"]');
+            if (other) {
+              if (axis === 'x') paramState.gap.y = 0;
+              else paramState.gap.x = 0;
+              other.value = '';
+            }
+          }
+          refreshTickers();
+          return;
+        }
+        const n = parseFloat(raw);
+        if (!Number.isFinite(n)) return;
+        if (axis === 'x') paramState.gap.x = n;
+        else paramState.gap.y = n;
+        inp.value = fmt3(n);
+        if (paramState.gap.linked) {
+          const other = axis === 'x'
+            ? document.querySelector('[data-gap="y"]')
+            : document.querySelector('[data-gap="x"]');
+          if (other) {
+            if (axis === 'x') paramState.gap.y = n;
+            else paramState.gap.x = n;
+            other.value = fmt3(n);
+          }
+        }
+        refreshTickers();
+      });
+    });
+
+    // Margin
+    document.querySelectorAll('[data-m]').forEach((inp) => {
+      inp.addEventListener('input', () => {
+        sanitizeNumericLive(inp);
+        const raw = inp.value;
+        const n = raw === '' || raw === '.' ? 0 : parseFloat(raw);
+        if (!Number.isFinite(n)) return;
+        paramState.margin[inp.getAttribute('data-m')] = n;
+        refreshTickers();
+        updateSaveDirty();
+      });
+      inp.addEventListener('blur', () => {
+        const raw = inp.value.trim();
+        if (raw === '' || raw === '.') {
+          paramState.margin[inp.getAttribute('data-m')] = 0;
+          inp.value = '';
+          refreshTickers();
+          return;
+        }
+        const n = parseFloat(raw);
+        if (!Number.isFinite(n)) return;
+        paramState.margin[inp.getAttribute('data-m')] = n;
+        inp.value = fmt3(n);
+        refreshTickers();
+      });
+    });
+
+    // Calculator
+    function setLcd(v) {
+      state.lcd = v;
+      if (classicLcd) classicLcd.textContent = v;
+    }
+    function calcInput(k) {
+      if (k === 'C' || k === 'bk') {
+        if (k === 'bk' && !state.fresh && state.lcd.length > 1) {
+          setLcd(state.lcd.slice(0, -1));
+          return;
+        }
+        state.acc = null; state.op = null; state.fresh = true;
+        setLcd('0');
+        return;
+      }
+      if (k === '±') {
+        if (state.lcd === '0') return;
+        setLcd(state.lcd.startsWith('-') ? state.lcd.slice(1) : '-' + state.lcd);
+        return;
+      }
+      if (k === '%') {
+        setLcd(String(parseFloat(state.lcd) / 100));
+        state.fresh = true;
+        return;
+      }
+      if (k === '=' || k === 'enter') {
+        if (state.op == null || state.acc == null) return;
+        const b = parseFloat(state.lcd);
+        let r = state.acc;
+        if (state.op === '+') r += b;
+        if (state.op === '-') r -= b;
+        if (state.op === '*') r *= b;
+        if (state.op === '/') r = b === 0 ? NaN : r / b;
+        setLcd(Number.isFinite(r) ? String(parseFloat(r.toPrecision(10))) : 'Err');
+        state.acc = null; state.op = null; state.fresh = true;
+        return;
+      }
+      if ('+-*/'.includes(k)) {
+        state.acc = parseFloat(state.lcd);
+        state.op = k;
+        state.fresh = true;
+        return;
+      }
+      if (state.fresh) {
+        setLcd(k === '.' ? '0.' : k);
+        state.fresh = false;
+        return;
+      }
+      if (k === '.' && state.lcd.includes('.')) return;
+      if (state.lcd === '0' && k !== '.') setLcd(k);
+      else setLcd(state.lcd + k);
+    }
+    document.querySelectorAll('.ckey').forEach((btn) => {
+      btn.addEventListener('click', () => calcInput(btn.dataset.k));
+    });
+    window.addEventListener('keydown', (e) => {
+      if (!state.calc) return;
+      if (e.target.matches('input')) return;
+      const map = {
+        '0':'0','1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9',
+        '.':'.', '+':'+', '-':'-', '*':'*', '/':'/', Enter:'=', Escape:'C',
+      };
+      if (map[e.key] != null) {
+        e.preventDefault();
+        calcInput(map[e.key]);
+      }
+    });
+
+    function lockBodyHeight() {
+      const wasCollapsed = state.collapsed;
+      const wasCalc = state.calc;
+      hud.classList.remove('collapsed');
+      classicEl.style.display = 'flex';
+      hudMode.style.display = 'none';
+      hudBody.style.display = 'flex';
+      hudBody.style.minHeight = '';
+      requestAnimationFrame(() => {
+        const calcH = classicEl.offsetHeight;
+        classicEl.style.display = 'none';
+        hudMode.style.display = 'flex';
+        const hudH = hudMode.offsetHeight;
+        // Instant height lock — no transition
+        hudBody.style.transition = 'none';
+        hudBody.dataset.hudH = String(hudH);
+        hudBody.dataset.calcH = String(calcH);
+        /* Only apply minHeight when expanded; collapsed must stay clear
+           so grid-template-rows: 0fr can fully hide the body. */
+        if (wasCollapsed) {
+          hudBody.style.minHeight = '';
+        } else {
+          hudBody.style.minHeight = (wasCalc ? calcH : hudH) + 'px';
+        }
+        state.calc = wasCalc;
+        state.collapsed = wasCollapsed;
+        applyModeVisibility();
+      });
+    }
+
+    // Instant calc ↔ HUD height (no animation)
+    const _setCalc = setCalc;
+    setCalc = function(on) {
+      _setCalc(on);
+      /* Never leave residual minHeight while collapsed — grid 0fr must win */
+      if (state.collapsed) {
+        hudBody.style.minHeight = '';
+        return;
+      }
+      const hudH = parseFloat(hudBody.dataset.hudH || '0');
+      const calcH = parseFloat(hudBody.dataset.calcH || '0');
+      if (hudH && calcH) {
+        hudBody.style.transition = 'none';
+        hudBody.style.minHeight = (on ? calcH : hudH) + 'px';
+      }
+    };
+
+
+    // Popover clear × — blank the field (empty), not 0.000 — ready to type
+    document.querySelectorAll('.pop-half, .pop-m-field').forEach((wrap) => {
+      const input = wrap.querySelector('input');
+      const clear = wrap.querySelector('.pop-clear');
+      if (!input || !clear) return;
+      input.addEventListener('focus', () => wrap.classList.add('is-focused'));
+      input.addEventListener('blur', () => {
+        setTimeout(() => wrap.classList.remove('is-focused'), 120);
+      });
+      clear.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        input.value = '';
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        updateSaveDirty();
+        input.focus();
+      });
+    });
+
+    // Boot
+    setCalc(false);
+    refreshTickers();
+    lockBodyHeight();
+    window.addEventListener('resize', () => {
+      if (paramState.open) positionOutsideHUD();
+    });
+  
+  </script>
+  <script>
+/* ── de-coder script ── */
+
+    (function () {
+      var SAMPLE =
+        'O1001\n' +
+        '(BRACKET PLATE - SAMPLE)\n' +
+        'N10 G90 G17 G20\n' +
+        'N20 G0 X0. Y0. Z1.\n' +
+        'N30 T1 M6\n' +
+        'N40 M3 S2400\n' +
+        'N50 G1 Z-0.125 F12.0\n' +
+        'N60 G1 X82.398 F18.0\n' +
+        'N70 Y92.396\n' +
+        'N80 X0.\n' +
+        'N90 Y0.\n' +
+        'N100 G0 Z1.\n' +
+        'N110 M5\n' +
+        'N120 M30\n';
+
+      var panel = document.getElementById('gcode');
+      var toastEl = document.getElementById('gcode-toast');
+      var source = document.getElementById('source');
+      var sourceHl = document.getElementById('source-hl');
+      var sourceShell = document.getElementById('source-shell');
+      var output = document.getElementById('output');
+      var outputHl = document.getElementById('output-hl');
+      var outputShell = document.getElementById('output-shell');
+      var progName = document.getElementById('prog-name');
+      var progField = document.getElementById('prog-field');
+      var statusDot = document.getElementById('status-dot');
+      var partGroup = document.getElementById('part-group');
+      var partTicker = document.getElementById('part-ticker');
+      var partReadout = document.getElementById('part-readout');
+      var btnPost = document.getElementById('btn-post');
+      var stageAction = document.getElementById('stage-action');
+      var stageStatus = document.getElementById('stage-status');
+      var btnCopy = document.getElementById('btn-copy');
+      var btnDl = document.getElementById('btn-dl');
+      var btnSave = document.getElementById('btn-save');
+      var btnEditOut = document.getElementById('btn-edit-out');
+      var btnExpand = document.getElementById('btn-expand');
+      var btnCollapse = document.getElementById('btn-collapse');
+      var ioTabs = document.getElementById('io-tabs');
+      var unitSwitch = document.getElementById('unit-switch');
+      var dragBar = document.getElementById('gcode-drag');
+      var btnDetect = document.getElementById('btn-detect');
+
+      var unit = 'in';
+      var rot = 0;
+      var bounds = null;
+      var posted = false;
+      var outEdit = false;
+      var srcEdit = false;
+      var srcSnapshot = '';
+      var outSnapshot = '';
+      var processDone = false;
+      var sizedClean = false; /* true after Auto-Size until source is edited */
+      var toastTimer = null;
+
+      /* --- toast --- */
+      function showToast(msg) {
+        if (!msg) return;
+        toastEl.textContent = msg;
+        toastEl.classList.add('is-on');
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () {
+          toastEl.classList.remove('is-on');
+          toastTimer = null;
+        }, 2200);
+      }
+
+      /* --- highlighter --- */
+      function escapeHtml(s) {
+        return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+      function highlight(text) {
+        if (!text) return '';
+        return text.split('\n').map(function (line) {
+          var out = '';
+          var i = 0;
+          while (i < line.length) {
+            if (line[i] === '(') {
+              var end = line.indexOf(')', i);
+              if (end === -1) end = line.length - 1;
+              out += '<span class="tok-c">' + escapeHtml(line.slice(i, end + 1)) + '</span>';
+              i = end + 1;
+              continue;
+            }
+            if (line[i] === ';') {
+              out += '<span class="tok-c">' + escapeHtml(line.slice(i)) + '</span>';
+              break;
+            }
+            var m = line.slice(i).match(/^([A-Za-z])([-+]?\d*\.?\d*)/);
+            if (m) {
+              var letter = m[1].toUpperCase();
+              var word = m[0];
+              var cls = '';
+              if (letter === 'G') cls = 'tok-g';
+              else if (letter === 'M') cls = 'tok-m';
+              else if (letter === 'F' || letter === 'S') cls = 'tok-fs';
+              else if (letter === 'T') cls = 'tok-t';
+              else if (letter === 'N') cls = 'tok-n';
+              if (cls) out += '<span class="' + cls + '">' + escapeHtml(word) + '</span>';
+              else out += escapeHtml(word);
+              i += word.length;
+              continue;
+            }
+            out += escapeHtml(line[i]);
+            i += 1;
+          }
+          return out;
+        }).join('\n');
+      }
+      function renderSourceHl() { sourceHl.innerHTML = highlight(source.value); }
+      function renderOutputHl() { outputHl.innerHTML = highlight(output.value); }
+
+      function makeHistory(el, limit) {
+        limit = limit || 40;
+        var stack = [el.value];
+        var idx = 0;
+        var quiet = false;
+        el.addEventListener('input', function () {
+          if (quiet) return;
+          stack.length = idx + 1;
+          stack.push(el.value);
+          if (stack.length > limit) stack.shift();
+          idx = stack.length - 1;
+        });
+        return {
+          undo: function () {
+            if (idx <= 0) return;
+            quiet = true; idx -= 1; el.value = stack[idx];
+            el.dispatchEvent(new Event('input', { bubbles: true })); quiet = false;
+          },
+          redo: function () {
+            if (idx >= stack.length - 1) return;
+            quiet = true; idx += 1; el.value = stack[idx];
+            el.dispatchEvent(new Event('input', { bubbles: true })); quiet = false;
+          },
+          reset: function (v) {
+            quiet = true; el.value = v; stack.length = 0; stack.push(v); idx = 0; quiet = false;
+          },
+          push: function (v) {
+            quiet = true; el.value = v; stack.length = idx + 1; stack.push(v);
+            if (stack.length > limit) stack.shift(); idx = stack.length - 1; quiet = false;
+          }
+        };
+      }
+      var histSrc = makeHistory(source);
+      var histOut = makeHistory(output);
+
+      histSrc.reset('');
+      histOut.reset('');
+      renderSourceHl();
+      renderOutputHl();
+      btnCopy.disabled = true;
+      btnDl.disabled = true;
+      btnSave.disabled = true;
+
+      function hasSource() {
+        return source.value.trim().length > 0;
+      }
+      function hasOutput() {
+        return output.value.trim().length > 0;
+      }
+
+      /* --- footer chips ---
+         LEFT  stage-action = PROCESS | START OVER | EDITING  (actions)
+         RIGHT stage-status = READY   | DONE       | EDITING  (indicators)
+      */
+      function syncProcessState() {
+        var on = hasSource();
+        var editing = srcEdit || outEdit;
+
+        if (editing) {
+          stageAction.disabled = true;
+          stageAction.setAttribute('data-state', 'editing');
+          stageAction.textContent = 'EDITING';
+          stageAction.title = 'Finish edit to continue';
+
+          stageStatus.disabled = true;
+          stageStatus.setAttribute('data-state', 'editing');
+          stageStatus.textContent = 'EDITING';
+          stageStatus.title = 'Editing';
+          return;
+        }
+
+        if (processDone && hasOutput()) {
+          /* Left action = START OVER · Right indicator = DONE */
+          stageAction.disabled = false;
+          stageAction.setAttribute('data-state', 'start');
+          stageAction.textContent = 'START OVER';
+          stageAction.title = 'Clear Output and start over';
+
+          stageStatus.disabled = true;
+          stageStatus.setAttribute('data-state', 'done');
+          stageStatus.textContent = 'DONE';
+          stageStatus.title = 'Output is current';
+          return;
+        }
+
+        if (on) {
+          /* Left action = PROCESS · Right indicator = READY */
+          stageAction.disabled = false;
+          stageAction.setAttribute('data-state', 'process');
+          stageAction.textContent = 'PROCESS';
+          stageAction.title = 'Process Source to Output';
+
+          stageStatus.disabled = true;
+          stageStatus.setAttribute('data-state', 'ready');
+          stageStatus.textContent = 'READY';
+          stageStatus.title = 'Ready — hit Process';
+          return;
+        }
+
+        /* Empty source — both chips muted; status reads NOT READY */
+        processDone = false;
+        stageAction.disabled = true;
+        stageAction.setAttribute('data-state', 'idle');
+        stageAction.textContent = 'PROCESS';
+        stageAction.title = 'Process Source to Output';
+
+        stageStatus.disabled = true;
+        stageStatus.setAttribute('data-state', 'idle');
+        stageStatus.textContent = 'NOT READY';
+        stageStatus.title = 'Not ready — load source';
+      }
+
+      function syncDetectArm() {
+        /* Armed only when source exists AND (no size yet OR source dirty since last size).
+           After a clean Auto-Size, button disables until the user edits source. */
+        if (!hasSource()) {
+          btnDetect.disabled = true;
+          btnDetect.classList.remove('is-armed');
+          btnDetect.title = 'Auto-Size part from source';
+          syncPartGroup();
+          return;
+        }
+        if (sizedClean) {
+          btnDetect.disabled = true;
+          btnDetect.classList.remove('is-armed');
+          btnDetect.title = 'Part already sized — edit source to re-size';
+          syncPartGroup();
+          return;
+        }
+        btnDetect.disabled = false;
+        btnDetect.classList.add('is-armed');
+        btnDetect.title = 'Auto-Size part from source — ready';
+        syncPartGroup();
+      }
+      /* Connected 3-seg only when dims exist; empty stays separate chips */
+      function syncPartGroup() {
+        if (!partGroup) return;
+        partGroup.classList.toggle('is-connected', !!bounds);
+      }
+      function syncSourceChrome() {
+        syncDetectArm();
+        syncProcessState();
+      }
+
+      function detectPart() {
+        if (!hasSource()) return false;
+        /* demo part envelope from G-code travel — product parses real bounds */
+        setBounds(82.398, 92.396);
+        sizedClean = true;
+        syncDetectArm();
+        return true;
+      }
+
+      function loadSourceText(text, name) {
+        histSrc.reset(String(text || ''));
+        renderSourceHl();
+        if (name && !progName.value) {
+          progName.value = name;
+          syncProgClear();
+        }
+        processDone = false;
+        /* New source invalidates prior part size — re-arm Auto-Size */
+        clearBounds();
+        histOut.reset('');
+        renderOutputHl();
+        setOutEnabled(false);
+        syncSourceChrome();
+        setTab('source');
+      }
+      function loadSampleProgram() {
+        loadSourceText(SAMPLE, 'BRACKET_PLATE');
+        showToast('Program loaded — Auto-Size ready');
+      }
+
+      /* status helpers */
+      function setStatus(state) {
+        statusDot.setAttribute('data-state', state);
+        partTicker.setAttribute('data-state', state);
+        var titles = {
+          none: 'No part size',
+          ready: 'Part size ready — not posted',
+          posted: 'Part size posted to HUD / bed'
+        };
+        statusDot.title = titles[state] || '';
+        statusDot.setAttribute('aria-label', titles[state] || 'Status');
+      }
+      function setBounds(x, y) {
+        bounds = { x: x, y: y };
+        posted = false;
+        partReadout.textContent = x.toFixed(3) + ' × ' + y.toFixed(3);
+        partReadout.classList.remove('is-empty');
+        partTicker.classList.remove('is-stale');
+        btnPost.disabled = false;
+        setStatus('ready');
+        syncDetectArm();
+        syncPartGroup();
+      }
+      function clearBounds() {
+        bounds = null;
+        posted = false;
+        sizedClean = false;
+        partReadout.textContent = '—';
+        partReadout.classList.add('is-empty');
+        partTicker.classList.remove('is-stale');
+        btnPost.disabled = true;
+        setStatus('none');
+        syncDetectArm();
+        syncPartGroup();
+      }
+
+      /* expand / collapse */
+      var btnSurfaceChevron = document.getElementById('btn-surface-chevron');
+      function setExpanded(on) {
+        panel.classList.toggle('is-expanded', on);
+        btnExpand.setAttribute('aria-expanded', on ? 'true' : 'false');
+        btnExpand.title = on ? 'G-code expanded' : 'Expand G-code';
+      }
+      function collapseGcode() {
+        setExpanded(false);
+        /* Keep work — never discard on collapse (was wiping source via empty srcSnapshot) */
+        if (srcEdit) exitSrcEdit(true);
+        if (outEdit) {
+          histOut.push(output.value);
+          setOutEdit(false);
+        }
+      }
+      btnExpand.addEventListener('click', function () {
+        if (panel.classList.contains('is-expanded')) return;
+        setExpanded(true);
+      });
+      btnCollapse.addEventListener('click', collapseGcode);
+      if (btnSurfaceChevron) {
+        btnSurfaceChevron.addEventListener('click', collapseGcode);
+      }
+
+      /* program name */
+      function syncProgClear() {
+        progField.classList.toggle('has-value', progName.value.length > 0);
+      }
+      progName.addEventListener('input', syncProgClear);
+      progName.addEventListener('focus', function () { progField.classList.add('is-focus'); });
+      progName.addEventListener('blur', function () { progField.classList.remove('is-focus'); });
+      document.getElementById('prog-clear').addEventListener('click', function () {
+        progName.value = '';
+        syncProgClear();
+        progName.focus();
+      });
+      syncProgClear();
+
+      /* drag — header bar; pure left/top (host no longer pins with !important / right) */
+      (function () {
+        var dragging = false, sx, sy, ol, ot, pid = null;
+        dragBar.addEventListener('pointerdown', function (e) {
+          if (e.button != null && e.button !== 0) return;
+          if (e.target.closest('button, input')) return;
+          dragging = true;
+          panel.classList.add('is-dragging');
+          sx = e.clientX; sy = e.clientY;
+          var r = panel.getBoundingClientRect();
+          ol = r.left; ot = r.top;
+          panel.style.left = ol + 'px';
+          panel.style.top = ot + 'px';
+          panel.style.right = 'auto';
+          pid = e.pointerId;
+          try { dragBar.setPointerCapture(e.pointerId); } catch (_) {}
+          e.preventDefault();
+        });
+        dragBar.addEventListener('pointermove', function (e) {
+          if (!dragging) return;
+          panel.style.left = Math.min(window.innerWidth - 44, Math.max(-panel.offsetWidth + 44, ol + e.clientX - sx)) + 'px';
+          panel.style.top = Math.min(window.innerHeight - 44, Math.max(0, ot + e.clientY - sy)) + 'px';
+        });
+        function end(e) {
+          if (!dragging) return;
+          dragging = false;
+          panel.classList.remove('is-dragging');
+          try { if (pid != null) dragBar.releasePointerCapture(pid); } catch (_) {}
+          pid = null;
+        }
+        dragBar.addEventListener('pointerup', end);
+        dragBar.addEventListener('pointercancel', end);
+      })();
+
+      function openGcode(expanded) {
+        panel.classList.add('is-open');
+        panel.setAttribute('aria-hidden', 'false');
+        panel.style.display = 'flex';
+        /* Pin top-right — tighter edge margin (16px) */
+        panel.style.top = '16px';
+        panel.style.right = '16px';
+        panel.style.left = 'auto';
+        setExpanded(!!expanded);
+      }
+      function closeGcode() {
+        panel.classList.remove('is-open');
+        panel.setAttribute('aria-hidden', 'true');
+        panel.style.display = 'none';
+        setExpanded(false);
+      }
+      document.getElementById('btn-close').addEventListener('click', closeGcode);
+
+      /* HUD → de-coder bridges */
+      var btnAutoSize = document.getElementById('btn-auto-size');
+      var btnGcodeHud = document.getElementById('btn-gcode');
+      function isGcodeOpen() {
+        return panel.classList.contains('is-open') && panel.style.display !== 'none';
+      }
+      if (btnAutoSize) {
+        btnAutoSize.addEventListener('click', function () {
+          /* Toggle: open+collapsed → close; otherwise open collapsed */
+          if (isGcodeOpen() && !panel.classList.contains('is-expanded')) {
+            closeGcode();
+          } else {
+            openGcode(false);
+          }
+        });
+      }
+      if (btnGcodeHud) {
+        btnGcodeHud.addEventListener('click', function () {
+          /* Toggle: open+expanded → close; otherwise open expanded */
+          if (isGcodeOpen() && panel.classList.contains('is-expanded')) {
+            closeGcode();
+          } else {
+            openGcode(true);
+          }
+        });
+      }
+
+      /* Panel resize — E / S / SE; width 418–568; code-shell height 110–308 */
+      (function () {
+        var MIN_W = 418, MAX_W = 568;
+        var MIN_SHELL = 110, MAX_SHELL = 308;
+        var shells = panel.querySelectorAll('.code-shell');
+        function shellH() {
+          var s = panel.querySelector('.io-panel.is-on .code-shell') || panel.querySelector('.code-shell');
+          return s ? s.getBoundingClientRect().height : 176;
+        }
+        function setShellH(h) {
+          h = Math.max(MIN_SHELL, Math.min(MAX_SHELL, h));
+          shells.forEach(function (s) { s.style.height = h + 'px'; });
+        }
+        panel.querySelectorAll('.gcode-resize').forEach(function (handle) {
+          handle.addEventListener('pointerdown', function (e) {
+            if (e.button != null && e.button !== 0) return;
+            e.preventDefault();
+            e.stopPropagation();
+            var dir = handle.getAttribute('data-dir');
+            var startX = e.clientX, startY = e.clientY;
+            var rect = panel.getBoundingClientRect();
+            var startW = rect.width;
+            var startLeft = rect.left;
+            var startShell = shellH();
+            /* Switch to left-anchored so the right edge follows the pointer */
+            if (dir === 'e' || dir === 'se') {
+              panel.style.left = startLeft + 'px';
+              panel.style.right = 'auto';
+            }
+            var pid = e.pointerId;
+            try { handle.setPointerCapture(pid); } catch (_) {}
+            function move(ev) {
+              if (dir === 'e' || dir === 'se') {
+                var dw = ev.clientX - startX;
+                var nw = Math.max(MIN_W, Math.min(MAX_W, startW + dw));
+                panel.style.width = nw + 'px';
+                panel.style.setProperty('--panel-w', nw + 'px');
+              }
+              if (dir === 's' || dir === 'se') {
+                var dh = ev.clientY - startY;
+                setShellH(startShell + dh);
+              }
+            }
+            function end() {
+              handle.removeEventListener('pointermove', move);
+              handle.removeEventListener('pointerup', end);
+              handle.removeEventListener('pointercancel', end);
+              try { handle.releasePointerCapture(pid); } catch (_) {}
+            }
+            handle.addEventListener('pointermove', move);
+            handle.addEventListener('pointerup', end);
+            handle.addEventListener('pointercancel', end);
+          });
+        });
+      })();
+
+      /* units */
+      unitSwitch.querySelectorAll('button').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          unit = btn.getAttribute('data-unit');
+          unitSwitch.setAttribute('data-unit', unit);
+          unitSwitch.querySelectorAll('button').forEach(function (b) {
+            var on = b === btn;
+            b.classList.toggle('is-on', on);
+            b.setAttribute('aria-pressed', on ? 'true' : 'false');
+          });
+        });
+      });
+
+      /* rotation */
+      document.querySelectorAll('[data-rot]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          rot = parseInt(btn.getAttribute('data-rot'), 10);
+          document.querySelectorAll('[data-rot]').forEach(function (b) {
+            b.classList.toggle('is-on', b === btn);
+          });
+          /* rotation change after DONE dirties process */
+          if (processDone) {
+            processDone = false;
+            syncProcessState();
+            showToast('Source changed — process again');
+          }
+        });
+      });
+
+      /* Source / Output tabs */
+      function setTab(key) {
+        ioTabs.querySelectorAll('.io-tab').forEach(function (t) {
+          var on = t.getAttribute('data-tab') === key;
+          t.classList.toggle('is-on', on);
+          t.setAttribute('aria-selected', on ? 'true' : 'false');
+        });
+        document.querySelectorAll('.io-panel').forEach(function (p) {
+          var on = p.getAttribute('data-panel') === key;
+          p.classList.toggle('is-on', on);
+          if (on) p.removeAttribute('hidden'); else p.setAttribute('hidden', '');
+        });
+        /* Surface chevron only on SOURCE tab (when expanded) */
+        panel.classList.toggle('is-source-tab', key === 'source');
+      }
+      ioTabs.querySelectorAll('.io-tab').forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          setTab(tab.getAttribute('data-tab'));
+        });
+      });
+      /* Boot: source is default active tab */
+      panel.classList.add('is-source-tab');
+
+      /* Source edit chrome — accept does NOT process */
+      var surfaceRow = document.getElementById('surface-row');
+      function syncEditingBanner() {
+        if (!surfaceRow) return;
+        surfaceRow.classList.toggle('is-editing-banner', !!(srcEdit || outEdit));
+      }
+      function enterSrcEdit() {
+        srcEdit = true;
+        srcSnapshot = source.value;
+        sourceShell.classList.remove('is-hl');
+        sourceShell.classList.add('is-editing');
+        source.focus();
+        syncEditingBanner();
+        syncProcessState();
+      }
+      function exitSrcEdit(commit) {
+        if (commit) {
+          histSrc.push(source.value);
+        } else {
+          /* Cancel discards in-progress edits */
+          source.value = srcSnapshot;
+          histSrc.push(srcSnapshot);
+        }
+        srcEdit = false;
+        sourceShell.classList.remove('is-editing');
+        renderSourceHl();
+        sourceShell.classList.add('is-hl');
+        source.blur();
+        syncEditingBanner();
+        syncProcessState();
+      }
+      source.addEventListener('focus', function () {
+        if (!sourceShell.classList.contains('is-editing')) enterSrcEdit();
+      });
+      sourceHl.addEventListener('click', function () { enterSrcEdit(); });
+      source.addEventListener('input', function () {
+        renderSourceHl();
+        if (processDone) {
+          processDone = false;
+          showToast('Source changed — process again');
+        }
+        /* Source edit after size → re-arm Auto-Size; part ticker goes stale (gray fill, keep border) */
+        if (sizedClean || bounds) {
+          sizedClean = false;
+          if (bounds) partTicker.classList.add('is-stale');
+        }
+        syncDetectArm();
+        syncPartGroup();
+        syncSourceChrome();
+        syncProcessState();
+      });
+      document.getElementById('btn-accept-src').addEventListener('click', function (e) {
+        e.stopPropagation();
+        exitSrcEdit(true);
+        /* Source accept ≠ process */
+      });
+      document.getElementById('btn-cancel-src').addEventListener('click', function (e) {
+        e.stopPropagation();
+        exitSrcEdit(false);
+      });
+
+      /* Output edit chrome — accept = update in place */
+      function setOutEdit(on) {
+        outEdit = on;
+        btnEditOut.classList.toggle('is-on', on);
+        btnEditOut.classList.toggle('is-editing', on);
+        if (on) {
+          outSnapshot = output.value;
+          outputShell.classList.remove('is-hl');
+          outputShell.classList.add('is-editing');
+          output.readOnly = false;
+          output.focus();
+        } else {
+          outputShell.classList.remove('is-editing');
+          renderOutputHl();
+          outputShell.classList.add('is-hl');
+          output.readOnly = true;
+        }
+        syncEditingBanner();
+        syncProcessState();
+      }
+      btnEditOut.addEventListener('click', function () {
+        if (!outEdit && hasOutput()) setOutEdit(true);
+      });
+      document.getElementById('btn-accept-out').addEventListener('click', function (e) {
+        e.stopPropagation();
+        var changed = output.value !== outSnapshot;
+        histOut.push(output.value);
+        renderOutputHl();
+        setOutEdit(false);
+        setOutEnabled(output.value.trim().length > 0);
+        /* Output accept = the update. Stay DONE if we had processed. */
+        if (changed) {
+          showToast('Output updated');
+          if (hasOutput()) {
+            processDone = true;
+            syncProcessState();
+          }
+        }
+      });
+      document.getElementById('btn-cancel-out').addEventListener('click', function (e) {
+        e.stopPropagation();
+        output.value = outSnapshot;
+        renderOutputHl();
+        setOutEdit(false);
+      });
+      output.addEventListener('input', function () {
+        if (outEdit) renderOutputHl();
+      });
+
+      function setOutEnabled(on) {
+        btnCopy.disabled = !on;
+        btnDl.disabled = !on;
+        btnSave.disabled = !on;
+        btnEditOut.disabled = !on;
+      }
+
+      /* LEFT action chip: PROCESS or START OVER */
+      stageAction.addEventListener('click', function () {
+        if (srcEdit || outEdit) return;
+        var state = stageAction.getAttribute('data-state');
+
+        if (state === 'start') {
+          /* START OVER — clear Output, rewind */
+          histOut.reset('');
+          renderOutputHl();
+          setOutEnabled(false);
+          processDone = false;
+          syncProcessState();
+          setTab('source');
+          showToast('Output cleared');
+          return;
+        }
+
+        if (state === 'process') {
+          /* PROCESS: Source + rotation → Output */
+          if (!hasSource()) return;
+          detectPart();
+          var header = '; ' + (progName.value.trim() || 'untitled') +
+            ' · rotation ' + rot + '° · ' + unit + '\n';
+          if (rot !== 0) header += '; (demo) rotation transform applied\n';
+          histOut.push(header + source.value.trim());
+          renderOutputHl();
+          setOutEnabled(true);
+          processDone = true;
+          syncProcessState();
+          setOutEdit(false);
+          setTab('output');
+          showToast('Output ready');
+        }
+      });
+
+      /* undo / redo */
+      document.getElementById('btn-undo-src').addEventListener('click', function () { histSrc.undo(); });
+      document.getElementById('btn-redo-src').addEventListener('click', function () { histSrc.redo(); });
+      document.getElementById('btn-undo-out').addEventListener('click', function () {
+        histOut.undo(); renderOutputHl(); setOutEnabled(output.value.trim().length > 0);
+      });
+      document.getElementById('btn-redo-out').addEventListener('click', function () {
+        histOut.redo(); renderOutputHl(); setOutEnabled(output.value.trim().length > 0);
+      });
+
+      document.getElementById('btn-clear').addEventListener('click', function () {
+        histSrc.reset('');
+        clearBounds();
+        histOut.reset('');
+        renderSourceHl();
+        renderOutputHl();
+        setOutEnabled(false);
+        setOutEdit(false);
+        exitSrcEdit(false);
+        processDone = false;
+        syncSourceChrome();
+      });
+
+      btnDetect.addEventListener('click', function () {
+        if (detectPart()) showToast('Part sized');
+        syncDetectArm();
+      });
+
+      /* PROCESS handled on stageAction click */
+
+      btnPost.addEventListener('click', function () {
+        if (!bounds || btnPost.disabled) return;
+        posted = true;
+        setStatus('posted');
+        syncPartGroup();
+        showToast('Part posted');
+      });
+
+      function downloadOut() {
+        if (!output.value.trim()) return;
+        var name = (progName.value.trim() || 'program').replace(/[^\w.\-]+/g, '_');
+        var blob = new Blob([output.value], { type: 'text/plain' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = name + '.nc';
+        a.click();
+        URL.revokeObjectURL(a.href);
+      }
+      btnCopy.addEventListener('click', function () {
+        if (!btnCopy.disabled && navigator.clipboard) navigator.clipboard.writeText(output.value);
+      });
+      btnDl.addEventListener('click', downloadOut);
+      btnSave.addEventListener('click', downloadOut);
+
+      document.getElementById('btn-open').addEventListener('click', loadSampleProgram);
+
+      setExpanded(false);
+      setStatus('none');
+      setOutEnabled(false);
+      syncSourceChrome();
+      syncPartGroup();
+    })();
+  
+  </script>
+</body>
+</html>
