@@ -44,12 +44,16 @@ After every residual: record new commit SHA + blob SHA in this block.
   6eed4c73 / 108c9e30 / a661716d  Edit chrome series (transparent yellow row,
             gray body, disabled chrome, yellow ring — not solid EDITING banner)
 
-── OPEN residuals (R1–R10 CLOSED @ 1a184ea6) ────────────────────────────────
-  (none — green ring + edit chrome series fully closed)
-  R10 closed:
-      1a184ea6  1px solid green @ 90% + soft halo on Post + FLIP IT
-                (ccfb0c5e · 7cd2fa9e; yellow edit ring unchanged)
-  R9 closed series (do not reopen):
+── OPEN residuals ───────────────────────────────────────────────────────────
+  R11  flipIT reopen remembers last left/top after close (AUTO-SIZE + FLiPIT)
+  R12  HUD popover input select-on-focus (black@60% over white · text #FFCE1B)
+  R13  blackplot 200×200 separate unattached component (not a drawer)
+  R14  sandbox show/hide card (bottom-right · isolate surfaces · not production)
+  R15  faux-bed blank child-spec table on surface click (template tokens)
+
+── CLOSED (do not reopen without human OK) ──────────────────────────────────
+  R10 closed @ 1a184ea6  1px solid green @ 90% + soft halo on Post + FLIP IT
+  R9 closed series:
       6eed4c73  yellow OUTER shell glow; retire solid banner
       108c9e30  1px yellow outer ring + glow; surface grayscale-disabled; status-dot yellow
       a661716d  NO EDITING chip takeover — keep stage labels (FLIP IT/READY)
@@ -86,7 +90,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     "tip_blob": "3cc008ab5f5f4c55dd80e0a915c9d2781c0fe7b2",
     "prior_tip_commit": "475f2c4ddb875535430d3aca79908aeea0c1a576",
     "prior_tip_blob": "09eb471d7ace9126b5db5c1c808ba81ce16e6f99",
-    "open_residuals": [],
+    "open_residuals": ["R11"],
     "rules": [
       "one residual at a time",
       "read tip blob + authority SHA before fix",
@@ -4125,17 +4129,33 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
         dragBar.addEventListener('pointercancel', end);
       })();
 
+      /* R11: remember last position so AUTO-SIZE / FLiPIT reopen in the same spot */
+      var lastGcodePos = null; /* { left, top } in px, or null = first open → default TR */
       function openGcode(expanded) {
         panel.classList.add('is-open');
         panel.setAttribute('aria-hidden', 'false');
         panel.style.display = 'flex';
-        /* Pin top-right — tighter edge margin (16px) */
-        panel.style.top = '16px';
-        panel.style.right = '16px';
-        panel.style.left = 'auto';
+        if (lastGcodePos) {
+          panel.style.left = lastGcodePos.left + 'px';
+          panel.style.top = lastGcodePos.top + 'px';
+          panel.style.right = 'auto';
+        } else {
+          /* First open this session — pin top-right (16px) */
+          panel.style.top = '16px';
+          panel.style.right = '16px';
+          panel.style.left = 'auto';
+        }
         setExpanded(!!expanded);
       }
       function closeGcode() {
+        /* Capture geometry before hide (display:none collapses rect) */
+        if (panel.classList.contains('is-open') && panel.style.display !== 'none') {
+          var r = panel.getBoundingClientRect();
+          lastGcodePos = {
+            left: Math.round(r.left),
+            top: Math.round(r.top)
+          };
+        }
         panel.classList.remove('is-open');
         panel.setAttribute('aria-hidden', 'true');
         panel.style.display = 'none';
