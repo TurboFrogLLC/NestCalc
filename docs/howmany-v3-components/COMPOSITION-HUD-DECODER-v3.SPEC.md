@@ -4,8 +4,8 @@
 **Composition HTML:** `COMPOSITION-HUD-DECODER-v3.html`  
 **Branch:** `docs/howmany-v3-decoder-lock`  
 **Repo:** `TurboFrogLLC/NestCalc`  
-**Branch tip:** `f87394dbddfdc1654486fe3c62e26bc86c979cde`  
-**HTML blob (tip):** `b1cd0d13955aa42c560f7561b0cfb62371cd1c8a`  
+**Branch tip:** `f52aa3a9b8638e72497f5779bc139c4999034978`  
+**HTML blob (tip):** `72ff09381ba9d59ab49301246870bc68b5101385`  
 **OPEN residuals:** _(none)_  
 **Class:** Exploratory composition only — not a product GOAL  
 
@@ -24,7 +24,8 @@
 |------|-----|-------|------------------------|
 | 2026-08-16 | 00b7975e | R14 PASS | Sandbox isolator |
 | 2026-08-16 | 58ec1be0 | R15 PASS | Child-spec table · elementsFromPoint · FLiPIT children |
-| 2026-08-16 | f87394db | **R16 PASS** | toolPath card · header icon system · READY amber · popover vs toolPath · wordmark left gap |
+| 2026-08-16 | f87394db | R16 PASS | toolPath card · header icon system · READY amber · popover vs toolPath · wordmark left gap |
+| 2026-08-16 | **f52aa3a9** | **R17 PASS** | FLiPIT strip waypoints open toolPath (Source+Output) · strip unlock when idle · black strip icons · visible hover |
 
 ---
 
@@ -54,6 +55,17 @@ Static left **mark** chip (FLiPIT binary mark · toolPath waypoints):
 
 HUD calc **engaged**: fill `--blue-28` · icon white · border blue @ 0.55.
 
+## FLiPIT tool-strip icons (R17)
+
+Live when **not** editing. Locked only under `:has(.surface-row.is-editing-banner)`.
+
+| State | Border | Fill | Icon |
+|-------|--------|------|------|
+| Idle | 1.1px ink @ 0.22 | white-70 | **ink (black)** |
+| Hover | ink @ 0.40 | ink @ 0.08 | ink |
+
+Waypoints control opens/closes toolPath from Source and Output strips. No blue engaged paint.
+
 ## Shared outer ring
 
 HUD · FLiPIT · toolPath: `::after` 2px solid ink @ 0.22 · offset 8px · drop shadow `0 18px 40px -12px`.
@@ -71,4 +83,4 @@ Fixed BR card · toggles HUD / FLiPIT / **toolPath** / Faux bed · z-index 90.
 
 ## OPEN residuals
 
-_None. Residual wave R11–R16 closed._
+_None. Residual wave R11–R17 closed._

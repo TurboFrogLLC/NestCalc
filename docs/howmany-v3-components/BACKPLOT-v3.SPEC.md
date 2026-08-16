@@ -2,15 +2,26 @@
 
 **Status:** Living (tip-sync after PASS)  
 **Surface name:** **toolPath** (case-sensitive)  
-**Composition HTML tip:** `f87394dbddfdc1654486fe3c62e26bc86c979cde`  
-**HTML blob:** `b1cd0d13955aa42c560f7561b0cfb62371cd1c8a`  
+**Composition HTML tip:** `f52aa3a9b8638e72497f5779bc139c4999034978`  
+**HTML blob:** `72ff09381ba9d59ab49301246870bc68b5101385`  
 **OPEN residuals:** _(none)_  
 **DOM id:** `#backplot` (stable for isolator / child-spec) · class `.toolpath`
 
 ## Class
 
 Non-modal path viewer card. Not a dialog. Not a drawer. Not a **FLiPIT** child.  
-No resize. Open-from-HUD/FLiPIT button deferred (future residual).
+No resize.
+
+## Open / close (R17)
+
+| Path | Behavior |
+|------|----------|
+| FLiPIT tool-strip waypoints (Source + Output) | `toggleToolpath()` → `setToolpathOpen(on)` |
+| Header **X** | `setToolpathOpen(false)` |
+| Isolator checkbox | syncs via `setToolpathOpen(!!checked)` |
+
+`setToolpathOpen` toggles `.is-hidden`, keeps isolator checkbox + strip `aria-pressed` in sync.  
+Strip waypoints stay **black** when open (no blue engaged fill).
 
 ## Shell
 

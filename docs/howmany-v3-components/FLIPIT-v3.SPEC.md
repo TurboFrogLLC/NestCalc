@@ -2,9 +2,9 @@
 
 **Status:** Living (tip-sync after PASS)  
 **Product name:** **FLiPIT** (case-sensitive — not flipIT)  
-**Composition HTML tip:** `f87394dbddfdc1654486fe3c62e26bc86c979cde`  
-**HTML blob:** `b1cd0d13955aa42c560f7561b0cfb62371cd1c8a`  
-**OPEN residuals:** _(none)_  
+**Composition HTML tip:** `f52aa3a9b8638e72497f5779bc139c4999034978`  
+**HTML blob:** `72ff09381ba9d59ab49301246870bc68b5101385`  
+**OPEN residuals:** _(none)_
 
 ## Shell
 
@@ -29,6 +29,33 @@
 
 Stage action button copy: `FLIP IT` (uppercase UI string).
 
+## Tool strip (R17)
+
+Present on **Source** and **Output** panels (same row pattern).
+
+| Control | Notes |
+|---------|-------|
+| Undo / Redo | live when not editing |
+| **Waypoints** (`btn-toolpath-src` / `btn-toolpath-out`) | Lucide waypoints · toggles toolPath open/close · `data-child-spec="flipit-toolpath"` |
+| Clear (Source) / Edit · Copy · Download (Output) | existing |
+| Unit switch (Source) | IN / MM |
+
+### Strip icon chrome (live)
+
+| State | Border | Fill | Icon |
+|-------|--------|------|------|
+| Idle | 1.1px solid ink @ 0.22 | `var(--white-70)` | **ink (black)** |
+| Hover | ink @ 0.40 | `rgba(26,20,40,0.08)` | ink |
+| Active press | — | ink @ 0.12 | ink · scale 0.94 |
+
+**No blue engaged paint** on waypoints (parity with pencil / copy / download).  
+`aria-pressed` tracks open/closed only.
+
+### Edit lock
+
+`.gcode:has(.surface-row.is-editing-banner) .tool-strip .icon-btn` → grayscale + `pointer-events: none`.  
+Unit switch same parent scope. Accept/cancel in `.edit-actions` stay live.
+
 ## Footer stage chips
 
 | Chip | State | Border | Glow |
@@ -51,8 +78,8 @@ Accept / cancel (`.edit-actions`): `top: 6.6px` · **`right: 18px`** (inset past
 | Edit | 1px `#FFCE1B` | soft 2px @ 55% |
 | Post / process flash | 1px green @ 90% | soft 2px @ 70% · 2200ms |
 
-## Child-spec marks (R15)
+## Child-spec marks (R15 + R17)
 
-`flipit-header` · `flipit-prog` · `flipit-status-dot` · `flipit-close` · `flipit-gc0de` · `flipit-part-group` · `flipit-detect` · `part-ticker` · `flipit-post` · `flipit-io-tabs` · `flipit-tool-strip` · `flipit-code-shell` · `flipit-stage-action` · `flipit-stage-status` · `flipit-rot` · `flipit-collapse` · `flipit-shell`
+`flipit-header` · `flipit-prog` · `flipit-status-dot` · `flipit-close` · `flipit-gc0de` · `flipit-part-group` · `flipit-detect` · `part-ticker` · `flipit-post` · `flipit-io-tabs` · `flipit-tool-strip` · **`flipit-toolpath`** · `flipit-code-shell` · `flipit-stage-action` · `flipit-stage-status` · `flipit-rot` · `flipit-collapse` · `flipit-shell`
 
 Disabled controls hydrate via `elementsFromPoint`.
