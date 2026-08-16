@@ -3733,7 +3733,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       });
     });
 
-    /* R12: click/focus any popover number field → select all value (type replaces)
+    /* R12b: always full-select on click/focus — mouseup must not place caret mid-value
        Selection paint = CSS ::selection black@60% · text #FFCE1B · white field under */
     document.querySelectorAll('.param-popover input[type="text"]').forEach((inp) => {
       function selectAll() {
@@ -3743,12 +3743,14 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
           if (len) inp.setSelectionRange(0, len);
         } catch (_) {}
       }
-      inp.addEventListener('focus', selectAll);
-      /* pointerdown also — some browsers don't select-all on pure focus from mouse */
+      inp.addEventListener('focus', function () {
+        /* defer past browser caret placement on mouse focus */
+        setTimeout(selectAll, 0);
+      });
+      /* preventDefault stops mouseup from collapsing select-all to click offset */
       inp.addEventListener('mouseup', function (e) {
-        if (document.activeElement === inp && inp.selectionStart === inp.selectionEnd) {
-          selectAll();
-        }
+        e.preventDefault();
+        selectAll();
       });
     });
 
