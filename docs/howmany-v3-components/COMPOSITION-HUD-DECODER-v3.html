@@ -1457,12 +1457,6 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     /* tool-strip hourglasses + clear + units fully dead — no active border/glow.
        Accept/cancel in .edit-actions stay live (exit path). */
     .gcode:has(.surface-row.is-editing-banner) 
-    /* R17 — toolPath open control engaged (strip waypoints) */
-    .tool-strip .icon-btn.is-on {
-      background: rgba(83, 139, 236, 0.18);
-      border-color: rgba(83, 139, 236, 0.55);
-      color: var(--ink);
-    }
 
     /* R17 fix — strip icons only lock during edit; idle strip stays live */
     .gcode:has(.surface-row.is-editing-banner) .tool-strip .icon-btn {
@@ -1481,6 +1475,24 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       opacity: 0.45 !important;
       pointer-events: none !important;
     }
+
+    /* R17 — strip icons always black when live; visible hover (not white-on-white) */
+    .tool-strip .icon-btn:not(:disabled) {
+      background: var(--white-70);
+      border: 1.1px solid rgba(26, 20, 40, 0.22);
+      color: var(--ink);
+    }
+    .tool-strip .icon-btn:not(:disabled):hover {
+      background: rgba(26, 20, 40, 0.08);
+      border-color: rgba(26, 20, 40, 0.40);
+      color: var(--ink);
+    }
+    .tool-strip .icon-btn:not(:disabled):active {
+      transform: scale(0.94);
+      background: rgba(26, 20, 40, 0.12);
+      color: var(--ink);
+    }
+
     /* R9 close: kill residual gray/blue highlight on hat (btn-detect) + part-group
        while editing. Surface-row only did opacity/filter; border + box-shadow stayed. */
     .gcode:has(.surface-row.is-editing-banner) .btn-detect,
@@ -5146,7 +5158,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       var b = document.getElementById(id);
       if (!b) return;
       b.setAttribute('aria-pressed', pressed ? 'true' : 'false');
-      b.classList.toggle('is-on', pressed);
+      b.classList.remove('is-on');
       b.title = pressed ? 'Close toolPath' : 'Open toolPath';
       b.setAttribute('aria-label', pressed ? 'Close toolPath' : 'Open toolPath');
     });
