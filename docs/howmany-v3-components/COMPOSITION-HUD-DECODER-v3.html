@@ -5064,10 +5064,10 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
   </script>
 
   <script>
-/* ── R15 Child-spec table — template tokens in faux-bed blank ──
-   Default blank. Click a child surface → hydrate. Click outside → clear.
-   Prefer deepest child (ticker/popover) over parent shell.
-   Never block buttons/inputs (AUTO-SIZE / FLiPIT / isolator toggles). */
+/* ── R15c Child-spec table — capture hydrate · outside-only clear ──
+   HUD ticker clicks call stopPropagation, so hydrate must run in capture.
+   Clear only when click is outside all composition surfaces (not on every miss).
+   Buttons keep their own handlers (AUTO-SIZE / FLiPIT / isolator / backplot icon). */
 (function () {
   var panel = document.getElementById('child-spec');
   var nameEl = document.getElementById('cs-name');
@@ -5125,6 +5125,18 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
         note: 'AUTO-SIZE · FLiPIT open flipIT'
       }
     },
+    'hud-header-tool': {
+      label: 'HUD header tool',
+      tokens: {
+        font: 'icon 14.3px stroke',
+        size: '28.6 × 28.6px',
+        outline: '1.1px solid rgba(255,255,255,0.22)',
+        radius: '6.6px',
+        fill: '#ffffff · ink icon',
+        shadow: 'none idle',
+        note: 'calc toggle · chevron collapse'
+      }
+    },
     'flipit-shell': {
       label: 'flipIT shell',
       tokens: {
@@ -5179,7 +5191,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     panel.classList.add('is-empty');
     nameEl.textContent = '—';
     rowsEl.innerHTML = '';
-    document.querySelectorAll('[data-child-spec].cs-armed, .cs-armed').forEach(function (el) {
+    document.querySelectorAll('.cs-armed').forEach(function (el) {
       el.classList.remove('cs-armed');
     });
   }
@@ -5201,16 +5213,10 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     if (sourceEl && sourceEl.classList) sourceEl.classList.add('cs-armed');
   }
 
-  function isInteractive(el) {
-    if (!el || !el.closest) return false;
-    /* buttons/inputs keep their own handlers — do not treat as shell hit */
-    return !!el.closest('button, input, textarea, select, a, label, [role="button"], .icon-btn, .hud-ctl, .prog-clear');
-  }
-
   function resolveId(el) {
     if (!el || !el.closest) return null;
 
-    /* 1) Deepest children first — tickers / popovers / part ticker */
+    /* deepest children first */
     var tick = el.closest('.param-ticker[data-open]');
     if (tick && !tick.classList.contains('header-part-ticker')) {
       return { id: 'hud-ticker', el: tick };
@@ -5221,14 +5227,13 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     var part = el.closest('#part-ticker');
     if (part) return { id: 'part-ticker', el: part };
 
-    /* 2) Optional: control chips show their own token set but do NOT block click */
     var ctl = el.closest('.hud-ctl');
-    if (ctl) return { id: 'hud-ctl', el: ctl, pass: true };
+    if (ctl) return { id: 'hud-ctl', el: ctl };
 
-    /* 3) Interactive chrome (other buttons) — no shell hydrate, no block */
-    if (isInteractive(el)) return null;
+    var htool = el.closest('.keypad-header .tool');
+    if (htool) return { id: 'hud-header-tool', el: htool };
 
-    /* 4) Shells / marked surfaces */
+    /* shells / marked — including clicks on their buttons (backplot icon → still backplot) */
     var marked = el.closest('[data-child-spec]');
     if (marked) {
       var id = marked.getAttribute('data-child-spec');
@@ -5237,7 +5242,14 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     return null;
   }
 
-  /* bubble phase — after target handlers (AUTO-SIZE / FLiPIT) have run */
+  function isInsideComposition(el) {
+    if (!el || !el.closest) return false;
+    return !!el.closest(
+      '#hud, #gcode, #backplot, #sandbox-iso, #child-spec, #bed-blank, .param-popover, .bed-stage'
+    );
+  }
+
+  /* capture: run before HUD stopPropagation on tickers */
   document.addEventListener('click', function (e) {
     var t = e.target;
     if (!t) return;
@@ -5246,11 +5258,11 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     var resolved = resolveId(t);
     if (resolved && REG[resolved.id]) {
       hydrate(resolved.id, resolved.el);
-      /* never stopPropagation — product / open handlers must fire */
-      return;
+      return; /* never stopPropagation */
     }
-    clearSpec();
-  }, false);
+    /* only clear when truly outside composition chrome */
+    if (!isInsideComposition(t)) clearSpec();
+  }, true);
 
   var iso = document.getElementById('sandbox-iso');
   if (iso && !iso.getAttribute('data-child-spec')) {
