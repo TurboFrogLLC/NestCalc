@@ -389,6 +389,18 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       color: var(--ink);
       border-color: rgba(83, 139, 236, 0.45);
     }
+    /* R6: HUD chevron = solid white + ink, match flipIT bottom .btn-collapse intent
+       (never inherits active-calc blue; surface-row chevron stays separate) */
+    .keypad-header .tool.chevron-btn {
+      background: #ffffff;
+      color: var(--ink);
+      border-color: rgba(255, 255, 255, 0.22);
+    }
+    .keypad-header .tool.chevron-btn:hover {
+      background: #ffffff;
+      color: var(--ink);
+      border-color: rgba(255, 255, 255, 0.35);
+    }
     .chevron-btn svg { transition: none; }
     .keypad:not(.collapsed) .chevron-btn svg { transform: rotate(180deg); }
     .header-spacer {
