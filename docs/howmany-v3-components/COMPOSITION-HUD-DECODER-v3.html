@@ -10,9 +10,9 @@ READ THIS BLOCK BEFORE ANY EDIT. Self-governing loop for Grok / Codex sessions.
 Branch:  docs/howmany-v3-decoder-lock
 Repo:    TurboFrogLLC/NestCalc
 Path:    docs/howmany-v3-components/COMPOSITION-HUD-DECODER-v3.html
-Tip (governance notes landed — PENDING this push):
-  commit  (pending R9 close — hat highlight kill)
-  blob    (pending)
+Tip (governance notes landed):
+  commit  475f2c4ddb875535430d3aca79908aeea0c1a576
+  blob    09eb471d7ace9126b5db5c1c808ba81ce16e6f99
   msg     docs(howmany-v3): R9 close — kill residual gray highlight on hat/glasses
 
 Prior tip (R9 partial — strip READY green + tool-strip glows):
@@ -44,19 +44,16 @@ After every residual: record new commit SHA + blob SHA in this block.
   6eed4c73 / 108c9e30 / a661716d  Edit chrome series (transparent yellow row,
             gray body, disabled chrome, yellow ring — not solid EDITING banner)
 
-── OPEN residuals (R1–R8 CLOSED @ 8cd12048 · R9 CLOSE PENDING THIS PUSH) ────
-  R9  Edit mode chrome (authority LOCKED — full series, latest wins) — CLOSING:
+── OPEN residuals (R1–R9 CLOSED @ 475f2c4d) ─────────────────────────────────
+  (none — R9 edit chrome fully closed)
+  R9 closed series:
       6eed4c73  yellow OUTER shell glow; retire solid banner
       108c9e30  1px yellow outer ring + glow; surface grayscale-disabled; status-dot yellow
       a661716d  NO EDITING chip takeover — keep stage labels (FLIP IT/READY)
       82d08feb  Edit keeps GRAY body; bottom row fully disabled/grayscale
-      3122e318  NO yellow surface wash (later polish — overrides a661716d body wash)
+      3122e318  NO yellow surface wash
       092dc2a5  strip READY green + tool-strip glows
-      (this)    kill residual gray highlight on hat/glasses (btn-detect) in edit
-      MUST: outer ring #FFCE1B + glow only
-      MUST: grayscale-disable surface + footer; keep FLIP IT/READY labels
-      MUST NOT: solid EDITING banner, EDITING chip text, any yellow INSIDE the shell
-                residual gray/blue border or glow on hat while editing
+      475f2c4d  kill residual gray highlight on hat/glasses (btn-detect) in edit
 
 ── How to work a residual ────────────────────────────────────────────────────
   a. State residual id (e.g. R1) and authority SHA.
@@ -82,13 +79,11 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     "file": "docs/howmany-v3-components/COMPOSITION-HUD-DECODER-v3.html",
     "branch": "docs/howmany-v3-decoder-lock",
     "repo": "TurboFrogLLC/NestCalc",
-    "tip_commit": "pending-R9-close",
-    "tip_blob": "pending",
+    "tip_commit": "475f2c4ddb875535430d3aca79908aeea0c1a576",
+    "tip_blob": "09eb471d7ace9126b5db5c1c808ba81ce16e6f99",
     "prior_tip_commit": "092dc2a573fbcd23c14840874c791b27d856196b",
     "prior_tip_blob": "626dd51b448da110948cec15f69aded273e4d880",
-    "open_residuals": [
-      "R9"
-    ],
+    "open_residuals": [],
     "rules": [
       "one residual at a time",
       "read tip blob + authority SHA before fix",
