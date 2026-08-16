@@ -45,8 +45,8 @@ After every residual: record new commit SHA + blob SHA in this block.
             gray body, disabled chrome, yellow ring — not solid EDITING banner)
 
 ── OPEN residuals ───────────────────────────────────────────────────────────
-  R10  Restore green outer-ring flash on post + posted ticker green
-       Authority: ccfb0c5e (green halo) · 7cd2fa9e (outer ring green flash)
+  R10  Green outer-ring flash on post (soft halo match yellow glow)
+       Authority: ccfb0c5e · 7cd2fa9e — soft 0 0 2px 2px @ 70% (yellow unchanged)
   R9 closed series (do not reopen):
       6eed4c73  yellow OUTER shell glow; retire solid banner
       108c9e30  1px yellow outer ring + glow; surface grayscale-disabled; status-dot yellow
@@ -1275,16 +1275,14 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       z-index: -1;
       transition: border-color 180ms var(--ease), box-shadow 180ms var(--ease);
     }
-    /* R10 / R8 restore: 2200ms outer-ring GREEN flash on post
-       Authority ccfb0c5e (green halo) + 7cd2fa9e (outer ring green flash).
-       Explicit border-width + full green-glow so the ring is visible again
-       after R9 yellow outer-ring work. */
+    /* R10b: green post flash — soft halo matched to yellow edit glow
+       Yellow stays LOCKED (1px + 0 0 2px 2px amber @ 55%).
+       Green glow/halo only → soft 0 0 2px 2px @ 70% green. Border 2px kept. */
     .gcode.is-post-flash::after {
       border-width: 2px;
       border-color: rgba(0, 180, 40, 0.90);
       box-shadow:
-        0 0 0 3px rgba(0, 180, 40, 0.70),
-        0 0 0 6px rgba(0, 180, 40, 0.28),
+        0 0 2px 2px rgba(0, 180, 40, 0.70),
         0 18px 40px -12px rgba(0, 0, 0, 0.38);
     }
     /* R9 LOCKED 108c9e30/3122e318: yellow OUTER ring only — no yellow inside shell */
