@@ -1464,7 +1464,8 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       color: var(--ink);
     }
 
-    .tool-strip .icon-btn {
+    /* R17 fix — strip icons only lock during edit; idle strip stays live */
+    .gcode:has(.surface-row.is-editing-banner) .tool-strip .icon-btn {
       filter: grayscale(1) !important;
       opacity: 0.45 !important;
       pointer-events: none !important;
