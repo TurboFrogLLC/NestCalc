@@ -10,14 +10,14 @@ READ THIS BLOCK BEFORE ANY EDIT. Self-governing loop for Grok / Codex sessions.
 Branch:  docs/howmany-v3-decoder-lock
 Repo:    TurboFrogLLC/NestCalc
 Path:    docs/howmany-v3-components/COMPOSITION-HUD-DECODER-v3.html
-Tip (R10 closed — green ring Post + FLIP IT):
+Tip (R11 closed — flipIT position memory):
+  commit  4438c2ac81b024e01a00879178e32b7376b0f890
+  blob    2e42cb42a9a963b3956d490c6f14b60baec1bd8a
+  msg     docs(howmany-v3): R11 flipIT reopen remembers last position
+
+Prior tip (R10c content authority):
   commit  1a184ea67cf1bb4578422e22056d5e9a61c60784
   blob    3cc008ab5f5f4c55dd80e0a915c9d2781c0fe7b2
-  msg     docs(howmany-v3): R10c 1px green ring on Post + FLIP IT
-
-Prior tip (R9 close):
-  commit  475f2c4ddb875535430d3aca79908aeea0c1a576
-  blob    09eb471d7ace9126b5db5c1c808ba81ce16e6f99
 
 Before every residual: pull tip via GitHub connector and confirm blob SHA.
 After every residual: record new commit SHA + blob SHA in this block.
@@ -45,13 +45,13 @@ After every residual: record new commit SHA + blob SHA in this block.
             gray body, disabled chrome, yellow ring — not solid EDITING banner)
 
 ── OPEN residuals ───────────────────────────────────────────────────────────
-  R11  flipIT reopen remembers last left/top after close (AUTO-SIZE + FLiPIT)
   R12  HUD popover input select-on-focus (black@60% over white · text #FFCE1B)
   R13  blackplot 200×200 separate unattached component (not a drawer)
   R14  sandbox show/hide card (bottom-right · isolate surfaces · not production)
   R15  faux-bed blank child-spec table on surface click (template tokens)
 
 ── CLOSED (do not reopen without human OK) ──────────────────────────────────
+  R11 closed @ 4438c2ac  flipIT reopen remembers last left/top (AUTO-SIZE + FLiPIT)
   R10 closed @ 1a184ea6  1px solid green @ 90% + soft halo on Post + FLIP IT
   R9 closed series:
       6eed4c73  yellow OUTER shell glow; retire solid banner
@@ -86,11 +86,11 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     "file": "docs/howmany-v3-components/COMPOSITION-HUD-DECODER-v3.html",
     "branch": "docs/howmany-v3-decoder-lock",
     "repo": "TurboFrogLLC/NestCalc",
-    "tip_commit": "1a184ea67cf1bb4578422e22056d5e9a61c60784",
-    "tip_blob": "3cc008ab5f5f4c55dd80e0a915c9d2781c0fe7b2",
-    "prior_tip_commit": "475f2c4ddb875535430d3aca79908aeea0c1a576",
-    "prior_tip_blob": "09eb471d7ace9126b5db5c1c808ba81ce16e6f99",
-    "open_residuals": ["R11"],
+    "tip_commit": "4438c2ac81b024e01a00879178e32b7376b0f890",
+    "tip_blob": "2e42cb42a9a963b3956d490c6f14b60baec1bd8a",
+    "prior_tip_commit": "1a184ea67cf1bb4578422e22056d5e9a61c60784",
+    "prior_tip_blob": "3cc008ab5f5f4c55dd80e0a915c9d2781c0fe7b2",
+    "open_residuals": ["R12","R13","R14","R15"],
     "rules": [
       "one residual at a time",
       "read tip blob + authority SHA before fix",
@@ -1025,6 +1025,27 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       outline: none;
       box-shadow: none;
       background: transparent;
+    }
+    /* R12: popover number fields — allow select; selection = black@60% over white field · text #FFCE1B */
+    .param-popover .pop-half input,
+    .param-popover .pop-m-field input {
+      -webkit-user-select: text;
+      user-select: text;
+    }
+    .param-popover .pop-half.is-focused,
+    .param-popover .pop-m-field.is-focused {
+      /* solid white under selection so black@60% reads clearly */
+      background: #ffffff;
+    }
+    .param-popover .pop-half input::selection,
+    .param-popover .pop-m-field input::selection {
+      background: rgba(0, 0, 0, 0.60);
+      color: #FFCE1B;
+    }
+    .param-popover .pop-half input::-moz-selection,
+    .param-popover .pop-m-field input::-moz-selection {
+      background: rgba(0, 0, 0, 0.60);
+      color: #FFCE1B;
     }
     /* Static clear × slot — always reserved on the right (visibility keeps layout) */
     .pop-clear {
@@ -3709,6 +3730,25 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
         input.dispatchEvent(new Event('input', { bubbles: true }));
         updateSaveDirty();
         input.focus();
+      });
+    });
+
+    /* R12: click/focus any popover number field → select all value (type replaces)
+       Selection paint = CSS ::selection black@60% · text #FFCE1B · white field under */
+    document.querySelectorAll('.param-popover input[type="text"]').forEach((inp) => {
+      function selectAll() {
+        try {
+          inp.select();
+          var len = (inp.value || '').length;
+          if (len) inp.setSelectionRange(0, len);
+        } catch (_) {}
+      }
+      inp.addEventListener('focus', selectAll);
+      /* pointerdown also — some browsers don't select-all on pure focus from mouse */
+      inp.addEventListener('mouseup', function (e) {
+        if (document.activeElement === inp && inp.selectionStart === inp.selectionEnd) {
+          selectAll();
+        }
       });
     });
 
