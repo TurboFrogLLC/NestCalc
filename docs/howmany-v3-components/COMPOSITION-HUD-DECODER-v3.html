@@ -1,9 +1,99 @@
 <!DOCTYPE html>
+<!--
+═══════════════════════════════════════════════════════════════════════════════
+COMPOSITION GOVERNANCE — HowMany V3 HUD + flipIT
+(HTML comment only · never rendered · travels with the file through Git)
+
+READ THIS BLOCK BEFORE ANY EDIT. Self-governing loop for Grok / Codex sessions.
+
+── Traceability ──────────────────────────────────────────────────────────────
+Branch:  docs/howmany-v3-decoder-lock
+Repo:    TurboFrogLLC/NestCalc
+Path:    docs/howmany-v3-components/COMPOSITION-HUD-DECODER-v3.html
+Tip (user push after dark-header/flipIT pass):
+  commit  6fb030805f8cacd441e95a96664baab8cfd74026
+  blob    a7b33d288c5e109eab4de651ad8570ec2d7d3e62
+  msg     docs(howmany-v3): flipIT rename + dark headers + toast/green restore
+
+Before every residual: pull tip via GitHub connector and confirm blob SHA.
+After every residual: record new commit SHA + blob SHA in this block.
+
+── Working rules (locked) ────────────────────────────────────────────────────
+1. NO broad rewrites. One residual at a time from the OPEN list below.
+2. Before a fix: read tip blob AND the prior authority SHA that last owned
+   that residual (listed under each item).
+3. After a push: update tip SHA + blob SHA in this block so the next session
+   starts from Git, not from chat memory.
+4. Docs-only exploratory. No product code. No V2 residual packages. No GOAL.
+5. Prefer surgical CSS/HTML/JS edits. Preserve flipIT rename + 600ms collapse
+   + smart popovers + ALL-CAPS toasts unless a residual explicitly overrides.
+6. When in doubt, the older authority SHA wins over a later regression.
+
+── Prior authority SHAs (do not lose these) ──────────────────────────────────
+  ccfb0c5e  Drop open/part-sized toasts · green halo 1500ms · HUD tools white
+            + black icons · calc engaged = black icon on blue fill
+  7cd2fa9e  Dark HUD header · open/download icons ink on WHITE field ·
+            outer ring green flash on post/process
+  82d08feb  WHITE program field · clear X RIGHT OF open/save · actually clears
+  d3e6a7d8  White base under blue for dark-header chips (active-calc + ticker)
+  3122e318  Centered toast · smart popovers · accept/cancel inset
+  6eed4c73 / 108c9e30 / a661716d  Edit chrome series (transparent yellow row,
+            gray body, disabled chrome, yellow ring — not solid EDITING banner)
+
+── OPEN residuals (from 2026-08-16 human screenshots @ tip 6fb03080) ─────────
+  R1  Program name field → WHITE (not translucent dark). Authority: 82d08feb / 7cd2fa9e
+  R2  Open + download icons in program field → BLACK (ink), not light-on-dark.
+      Authority: 7cd2fa9e
+  R3  Clear (X) position → RIGHT OF download, at the END of prog-actions.
+      Authority: 82d08feb
+  R4  Calculator idle → white background + black icon (not gray)
+  R5  Calculator active → light blue OVER white base, black icon on top
+      (not pure muddy blue). Authority: ccfb0c5e + d3e6a7d8
+  R6  HUD chevron → white background; match flipIT panel BOTTOM collapse
+      chevron chrome (not surface chevron next to SOURCE)
+  R7  Remove "Program loaded" toast on sample/open. Load is self-evident.
+      Authority: ccfb0c5e (dropped open/part-sized toasts)
+  R8  Green halo on post / Auto-Size post missing or invisible.
+      Authority: ccfb0c5e, 7cd2fa9e (ticker green + outer-ring flash)
+  R9  Edit mode chrome still wrong vs prior polish (solid EDITING banner).
+      Re-check 6eed4c73 / 108c9e30 / a661716d series.
+
+── How to work a residual ────────────────────────────────────────────────────
+  a. State residual id (e.g. R1) and authority SHA.
+  b. Pull tip from GitHub; confirm blob.
+  c. Surgical fix only that residual.
+  d. Human verify in browser.
+  e. User pushes; update tip SHA + blob in this block; strike residual when PASS.
+
+── Class ─────────────────────────────────────────────────────────────────────
+Exploratory composition only. Not a product GOAL. Not bridge wire.
+Locked component authorities remain: NUMERIC-HUD-v3-LOCKED.html,
+DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
+═══════════════════════════════════════════════════════════════════════════════
+-->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>HowMany V3 — HUD + flipIT on bed (composition)</title>
+  <!-- machine-readable mirror of governance tip (optional parse; comment block is authority) -->
+  <script type="application/json" id="composition-governance">
+  {
+    "file": "docs/howmany-v3-components/COMPOSITION-HUD-DECODER-v3.html",
+    "branch": "docs/howmany-v3-decoder-lock",
+    "repo": "TurboFrogLLC/NestCalc",
+    "tip_commit": "6fb030805f8cacd441e95a96664baab8cfd74026",
+    "tip_blob": "a7b33d288c5e109eab4de651ad8570ec2d7d3e62",
+    "open_residuals": ["R1","R2","R3","R4","R5","R6","R7","R8","R9"],
+    "rules": [
+      "one residual at a time",
+      "read tip blob + authority SHA before fix",
+      "update tip SHA after every push",
+      "no broad rewrites",
+      "docs-only exploratory"
+    ]
+  }
+  </script>
   <style>
 
     /* Composition bed + layout */
