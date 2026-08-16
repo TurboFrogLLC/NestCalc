@@ -330,7 +330,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       --status-posted: #7DDB8C;
       --green: #00CF00;
       --green-border: rgba(0, 140, 30, 0.70);
-      --green-glow: 0 0 0 3px rgba(0, 180, 40, 0.70), 0 0 0 6px rgba(0, 180, 40, 0.28);
+      --green-glow: 0 0 0 2.2px rgba(0, 180, 40, 0.45); /* match --blue-glow weight · was double 3+6 */
       --chip-gray: rgba(26, 20, 40, 0.10);
       --accept: #22A06B;
       --cancel: #DC143C;
@@ -464,7 +464,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       border-radius: var(--chip-r);
       border: 1.1px solid rgba(255, 255, 255, 0.22);
       background: transparent;
-      color: rgba(255, 255, 255, 0.50);
+      color: #ffffff; /* icons always white */
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -484,16 +484,16 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     .keypad-header .tool svg {
       display: block;
       flex-shrink: 0;
-      width: 16.5px; /* +~2px for clarity */
+      width: 16.5px;
       height: 16.5px;
       margin: 0;
       overflow: visible;
       pointer-events: none;
     }
     .keypad-header .tool:hover {
-      background: transparent;
       color: #ffffff;
       border-color: rgba(255, 255, 255, 0.35);
+      background: rgba(255, 255, 255, 0.12); /* match static mark fill */
     }
     /* Calculator engaged — light blue field, white icon */
     .keypad-header .tool.active-calc {
@@ -506,16 +506,16 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       color: #ffffff;
       border-color: rgba(83, 139, 236, 0.70);
     }
-    /* Chevron — same muted system; never inherits active-calc */
+    /* Chevron — same system; never inherits active-calc */
     .keypad-header .tool.chevron-btn {
       background: transparent;
-      color: rgba(255, 255, 255, 0.50);
+      color: #ffffff;
       border-color: rgba(255, 255, 255, 0.22);
     }
     .keypad-header .tool.chevron-btn:hover {
-      background: transparent;
       color: #ffffff;
       border-color: rgba(255, 255, 255, 0.35);
+      background: rgba(255, 255, 255, 0.12);
     }
     .chevron-btn svg { transition: none; }
     .keypad:not(.collapsed) .chevron-btn svg { transform: rotate(180deg); }
@@ -1350,7 +1350,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       --status-posted: #7DDB8C;
       --green: #00CF00;
       --green-border: rgba(0, 140, 30, 0.70);
-      --green-glow: 0 0 0 3px rgba(0, 180, 40, 0.70), 0 0 0 6px rgba(0, 180, 40, 0.28);
+      --green-glow: 0 0 0 2.2px rgba(0, 180, 40, 0.45); /* match --blue-glow weight · was double 3+6 */
       --chip-gray: rgba(26, 20, 40, 0.10); /* darker gray fill shared by READY + stale ticker */
       --gc-g: #FF00FF;
       --gc-comment: #00CF00;
@@ -1744,18 +1744,13 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     .gcode-bar .icon-btn.close {
       background: transparent;
       border: 1.1px solid rgba(255, 255, 255, 0.22);
-      color: rgba(255, 255, 255, 0.50);
+      color: #ffffff; /* icons always white */
     }
-    .gcode-bar .icon-btn.close:hover {
-      background: transparent;
-      color: #ffffff;
-      border-color: rgba(255, 255, 255, 0.35);
-    }
-    /* beat global .icon-btn:hover { background: #fff } */
+    .gcode-bar .icon-btn.close:hover,
     .gcode-bar .icon-btn.close:hover:not(:disabled):not(.is-editing) {
-      background: transparent;
       color: #ffffff;
       border-color: rgba(255, 255, 255, 0.35);
+      background: rgba(255, 255, 255, 0.12); /* match static mark fill */
     }
     /* R2: prog icons sit on WHITE field — ink black, not light-on-dark */
     .gcode-bar .prog-actions .icon-btn {
@@ -2415,7 +2410,8 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       color: var(--ink);
       cursor: default;
       pointer-events: none;
-      box-shadow: var(--green-glow);
+      /* same weight as FLIP IT / START OVER blue ring — soft lift + single glow */
+      box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.25), var(--green-glow);
     }
 
     /* Disabled / idle action */
@@ -2594,7 +2590,8 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       min-width: 0;
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start; /* left-align wordmark */
+      padding-left: 15px; /* gap from waypoints mark → T */
     }
     .toolpath-head .wordmark {
       /* parity with .gcode-bar .surface-label (FLiPIT wordmark) */
@@ -2631,7 +2628,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       border: 1.1px solid rgba(255, 255, 255, 0.22);
       border-radius: var(--chip-r);
       background: transparent;
-      color: rgba(255, 255, 255, 0.50); /* ink-50 on dark */
+      color: #ffffff; /* icons always white */
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -2642,9 +2639,10 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       overflow: visible;
     }
     .toolpath-head .tp-head-btn:hover {
-      color: #ffffff; /* full ink on dark */
+      color: #ffffff;
       border-color: rgba(255, 255, 255, 0.35);
-      background: transparent;
+      /* match static mark chip fill */
+      background: rgba(255, 255, 255, 0.12);
     }
     .toolpath-head .tp-head-btn:active {
       transform: scale(0.94);
