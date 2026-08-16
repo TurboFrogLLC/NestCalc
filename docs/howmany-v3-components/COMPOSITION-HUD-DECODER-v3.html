@@ -11,9 +11,9 @@ Branch:  docs/howmany-v3-decoder-lock
 Repo:    TurboFrogLLC/NestCalc
 Path:    docs/howmany-v3-components/COMPOSITION-HUD-DECODER-v3.html
 Tip (governance notes landed):
-  commit  1f9732df8bde52ba6f07c1148b16398fcd4322d3
-  blob    1663758a0de431f5046db054273afffa7944c838
-  msg     docs(howmany-v3): wordmark trial FLiPIT (white FLiP + yellow IT, case-sensitive)
+  commit  d17a3ca3ea010f66ec63f16880f506d258e7eb35
+  blob    8385358c007db991a709efd78ea63ec40c8ac01a
+  msg     docs(howmany-v3): R6 HUD chevron solid white + ink (match flipIT bottom collapse)
 
 Prior tip (R1–R3 program field):
   commit  8ab507ab827f95f596b05cfebaebd3c7a35a2c68
@@ -44,9 +44,7 @@ After every residual: record new commit SHA + blob SHA in this block.
   6eed4c73 / 108c9e30 / a661716d  Edit chrome series (transparent yellow row,
             gray body, disabled chrome, yellow ring — not solid EDITING banner)
 
-── OPEN residuals (R1–R5 CLOSED @ e6479566) ─────────────────────────────────
-  R6  HUD chevron → white background; match flipIT panel BOTTOM collapse
-      chevron chrome (not surface chevron next to SOURCE)
+── OPEN residuals (R1–R6 CLOSED @ d17a3ca3) ─────────────────────────────────
   R7  Remove "Program loaded" toast on sample/open. Load is self-evident.
       Authority: ccfb0c5e (dropped open/part-sized toasts)
   R8  Green halo on post / Auto-Size post missing or invisible.
@@ -78,11 +76,15 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     "file": "docs/howmany-v3-components/COMPOSITION-HUD-DECODER-v3.html",
     "branch": "docs/howmany-v3-decoder-lock",
     "repo": "TurboFrogLLC/NestCalc",
-    "tip_commit": "1f9732df8bde52ba6f07c1148b16398fcd4322d3",
-    "tip_blob": "1663758a0de431f5046db054273afffa7944c838",
+    "tip_commit": "d17a3ca3ea010f66ec63f16880f506d258e7eb35",
+    "tip_blob": "8385358c007db991a709efd78ea63ec40c8ac01a",
     "prior_tip_commit": "8ab507ab827f95f596b05cfebaebd3c7a35a2c68",
     "prior_tip_blob": "af8c38250837bcbf73788d35f37be801ab3dcc44",
-    "open_residuals": ["R6","R7","R8","R9"],
+    "open_residuals": [
+      "R7",
+      "R8",
+      "R9"
+    ],
     "rules": [
       "one residual at a time",
       "read tip blob + authority SHA before fix",
@@ -3923,7 +3925,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       }
       function loadSampleProgram() {
         loadSourceText(SAMPLE, 'BRACKET_PLATE');
-        showToast('Program loaded — Auto-Size ready');
+        /* R7: no "Program loaded" toast — load is self-evident */
       }
 
       /* status helpers */
