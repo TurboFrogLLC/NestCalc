@@ -2501,8 +2501,8 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       pointer-events: none;
     }
 
-    /* ── R16: toolPath card — non-modal · HUD-size chrome · no resize ──
-       Product name case-sensitive: toolPath. Not a dialog. z-index 20. */
+    /* ── R16b: toolPath card — outer halo · frost shell · white grid viewfinder · muted header icons ──
+       Product name case-sensitive: toolPath. Non-modal. No resize. z-index 20. */
     .toolpath {
       position: absolute;
       left: 52.8px;
@@ -2511,6 +2511,9 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       min-width: 268px;
       z-index: 20;
       touch-action: none;
+      /* hairlines on shell — drop shadow lives on outer ring */
+      border-radius: var(--radius);
+      background: transparent;
     }
     .toolpath.is-hidden {
       display: none !important;
@@ -2518,18 +2521,31 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     .toolpath-inner {
       width: 100%;
       min-width: 268px;
-      background: var(--frost);
+      background: var(--frost); /* light gray shell — same as HUD / FLiPIT */
       border-radius: var(--radius);
       box-shadow:
         0 0 0 1.1px rgba(255, 255, 255, 0.55),
-        0 0 0 1.1px rgba(83, 139, 236, 0.22),
-        0 14px 32px -10px rgba(0, 0, 0, 0.35);
+        0 0 0 1.1px rgba(83, 139, 236, 0.22);
       display: flex;
       flex-direction: column;
-      overflow: hidden;
+      overflow: visible; /* allow outer ring */
       position: relative;
     }
-    /* Header — match HUD / FLiPIT dark shell */
+    /* Gray outer halo — match HUD / FLiPIT ::after ring */
+    .toolpath-inner::after {
+      content: "";
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      bottom: -8px;
+      left: -8px;
+      border: 2px solid rgba(26, 20, 40, 0.22);
+      border-radius: calc(var(--radius) + 8px);
+      box-shadow: 0 18px 40px -12px rgba(0, 0, 0, 0.38);
+      pointer-events: none;
+      z-index: -1;
+    }
+    /* Header — dark ink shell */
     .toolpath-head {
       flex: 0 0 44px;
       height: 44px;
@@ -2584,15 +2600,17 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       font-weight: 800;
       text-transform: none;
     }
+    /* R16b: muted header icons — match FLiPIT surface-chevron intent (no white-on-white hover)
+       Transparent fill · muted stroke · hover only brightens ink/border, never solid white fill */
     .toolpath-head .icon-btn {
       width: 28.6px;
       height: 28.6px;
       min-width: 28.6px;
       min-height: 28.6px;
       border-radius: var(--chip-r);
-      border: 1.1px solid rgba(255, 255, 255, 0.18);
-      background: rgba(255, 255, 255, 0.14);
-      color: rgba(255, 255, 255, 0.85);
+      border: 1.1px solid rgba(255, 255, 255, 0.28);
+      background: transparent;
+      color: rgba(255, 255, 255, 0.55);
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -2600,23 +2618,32 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       padding: 0;
       flex-shrink: 0;
       box-sizing: border-box;
+      transition: color 120ms ease, border-color 120ms ease, background 120ms ease;
     }
     .toolpath-head .icon-btn:hover {
-      background: rgba(255, 255, 255, 0.28);
-      color: #ffffff;
-      border-color: rgba(255, 255, 255, 0.35);
+      background: transparent;
+      color: rgba(255, 255, 255, 0.92);
+      border-color: rgba(255, 255, 255, 0.45);
+    }
+    .toolpath-head .icon-btn:active {
+      transform: scale(0.94);
     }
     .toolpath-head .icon-btn svg { display: block; pointer-events: none; }
-    /* Viewing pane — bed-style static grid */
+    /* Body pad — frost shows around the viewfinder */
+    .toolpath-body {
+      padding: 11px;
+      box-sizing: border-box;
+      background: var(--frost);
+      border-radius: 0 0 var(--radius) var(--radius);
+    }
+    /* Viewfinder — white + bed grid · holds the part */
     .toolpath-canvas {
-      flex: 0 0 auto;
       position: relative;
       width: 100%;
       height: 200px;
       min-height: 160px;
-      margin: 0;
-      border: none;
-      border-radius: 0 0 var(--radius) var(--radius);
+      border: 1.1px solid rgba(26, 20, 40, 0.16);
+      border-radius: 8.8px;
       overflow: hidden;
       background:
         linear-gradient(rgba(0,0,0,0.04) 1.1px, transparent 1.1px),
@@ -2658,8 +2685,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       pointer-events: none;
     }
     .toolpath-canvas.has-part .toolpath-empty { display: none; }
-    /* Legacy class aliases kept for isolator map (id stays #backplot) */
-    .backplot { /* superseded by .toolpath — keep empty for safety */ }
+    .backplot { /* superseded by .toolpath */ }
 
 
     /* ── R14: Sandbox isolator — bottom-right · NOT production ── */
@@ -3171,11 +3197,13 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
           </svg>
         </button>
       </div>
-      <div class="toolpath-canvas" id="bp-canvas" data-child-spec="backplot-canvas">
-        <div class="toolpath-empty" id="tp-empty">No path</div>
-        <div class="part" id="tp-part" hidden></div>
-        <div class="hole a" id="tp-hole-a" hidden></div>
-        <div class="hole b" id="tp-hole-b" hidden></div>
+      <div class="toolpath-body">
+        <div class="toolpath-canvas" id="bp-canvas" data-child-spec="backplot-canvas">
+          <div class="toolpath-empty" id="tp-empty">No path</div>
+          <div class="part" id="tp-part" hidden></div>
+          <div class="hole a" id="tp-hole-a" hidden></div>
+          <div class="hole b" id="tp-hole-b" hidden></div>
+        </div>
       </div>
     </div>
   </div>
@@ -5401,9 +5429,9 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
         size: 'max-content · min 268px · header 44px',
         outline: 'hairline white + blue 0.22',
         radius: '15.4px',
-        fill: '#D8D6E2 · pane grid white',
+        fill: '#D8D6E2 shell · white grid viewfinder inset',
         shadow: '0 14px 32px -10px',
-        note: 'non-modal · no resize · z-index 20 · R16'
+        note: 'outer halo · frost shell · viewfinder · R16b'
       }
     },
     'backplot-head': {
@@ -5427,7 +5455,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
         radius: '0 0 15.4px 15.4px',
         fill: 'bed-grid on white · part blue-22',
         shadow: 'none',
-        note: 'static bed grid · refresh redraws'
+        note: 'white viewfinder + bed grid · refresh redraws'
       }
     },
     'sandbox-iso': {
