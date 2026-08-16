@@ -1294,14 +1294,43 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     .gcode:has(.surface-row.is-editing-banner) .status-dot {
       background: #FFCE1B !important;
     }
-    /* 3122e318: NO yellow surface/body wash inside the shell */
-    /* 82d08feb: gray disabled chrome on footer only */
+    /* 82d08feb LOCKED: bottom row fully disabled — ALL glowing outlines STRIPPED
+       labels stay FLIP IT/READY; no green glow on READY; no blue ring on process */
     .gcode:has(.surface-row.is-editing-banner) .action-row .stage-action,
     .gcode:has(.surface-row.is-editing-banner) .action-row .stage-status,
+    .gcode:has(.surface-row.is-editing-banner) .action-row .rot-chip,
     .gcode:has(.surface-row.is-editing-banner) .action-row .btn-collapse {
-      filter: grayscale(1);
-      opacity: 0.7;
-      pointer-events: none;
+      filter: grayscale(1) !important;
+      opacity: 0.55 !important;
+      pointer-events: none !important;
+      box-shadow: none !important;
+      border-color: rgba(26, 20, 40, 0.14) !important;
+      cursor: default !important;
+      transform: none !important;
+    }
+    .gcode:has(.surface-row.is-editing-banner) .action-row .stage-action,
+    .gcode:has(.surface-row.is-editing-banner) .action-row .stage-status {
+      background: var(--chip-gray) !important;
+      color: var(--ink-50) !important;
+      border: 1.1px solid rgba(26, 20, 40, 0.14) !important;
+    }
+    /* tool-strip hourglasses + clear + units fully dead — no active border/glow.
+       Accept/cancel in .edit-actions stay live (exit path). */
+    .gcode:has(.surface-row.is-editing-banner) .tool-strip .icon-btn {
+      filter: grayscale(1) !important;
+      opacity: 0.45 !important;
+      pointer-events: none !important;
+      box-shadow: none !important;
+      border-color: rgba(26, 20, 40, 0.12) !important;
+      background: var(--white-40) !important;
+      color: var(--ink-30) !important;
+      cursor: default !important;
+      transform: none !important;
+    }
+    .gcode:has(.surface-row.is-editing-banner) .tool-strip .unit-switch {
+      filter: grayscale(1) !important;
+      opacity: 0.45 !important;
+      pointer-events: none !important;
     }
 
     /* ── Card-centered toast (middle of panel, not above the top) ── */
