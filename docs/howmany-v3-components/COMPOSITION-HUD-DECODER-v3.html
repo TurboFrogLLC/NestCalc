@@ -45,16 +45,15 @@ After every residual: record new commit SHA + blob SHA in this block.
             gray body, disabled chrome, yellow ring — not solid EDITING banner)
 
 ── OPEN residuals (R1–R8 CLOSED @ 8cd12048) ─────────────────────────────────
-  R9  Edit mode chrome (authority LOCKED from GitHub commits — do not invent):
-      6eed4c73  transparent yellow row + yellow OUTER shell glow; retire solid banner
-      108c9e30  1px yellow outer ring + glow; surface controls grayscale-disabled;
-                status-dot yellow while editing
-      a661716d  NO EDITING chip takeover — keep stage labels (FLIP IT/READY);
-                grayscale-disable footer; yellow body wash optional; outer ring is alert
-      MUST: .gcode:has(.surface-row.is-editing-banner)::after → border #FFCE1B + glow
-      MUST: syncProcessState editing path does NOT set data-state="editing" / text EDITING
-      MUST: surface controls filter:grayscale(1) opacity 0.7 pointer-events none
-      MUST NOT: solid EDITING banner, solid yellow footer chips labeled EDITING
+  R9  Edit mode chrome (authority LOCKED — full series, latest wins):
+      6eed4c73  yellow OUTER shell glow; retire solid banner
+      108c9e30  1px yellow outer ring + glow; surface grayscale-disabled; status-dot yellow
+      a661716d  NO EDITING chip takeover — keep stage labels (FLIP IT/READY)
+      82d08feb  Edit keeps GRAY body; bottom row fully disabled/grayscale
+      3122e318  NO yellow surface wash (later polish — overrides a661716d body wash)
+      MUST: outer ring #FFCE1B + glow only
+      MUST: grayscale-disable surface + footer; keep FLIP IT/READY labels
+      MUST NOT: solid EDITING banner, EDITING chip text, any yellow INSIDE the shell
 
 ── How to work a residual ────────────────────────────────────────────────────
   a. State residual id (e.g. R1) and authority SHA.
@@ -1283,7 +1282,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
         0 0 0 3px rgba(0, 180, 40, 0.45),
         0 18px 40px -12px rgba(0, 0, 0, 0.38);
     }
-    /* R9 LOCKED a661716d/108c9e30: EDITING → 1px yellow outer ring + glow */
+    /* R9 LOCKED 108c9e30/3122e318: yellow OUTER ring only — no yellow inside shell */
     .gcode:has(.surface-row.is-editing-banner)::after {
       border-width: 1px;
       border-color: #FFCE1B;
@@ -1291,18 +1290,12 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
         0 0 2px 2px rgba(255, 206, 27, 0.55),
         0 18px 40px -12px rgba(0, 0, 0, 0.38);
     }
-    /* R9: status-dot yellow while editing (not green — that reads as posted) */
+    /* status-dot yellow while editing (not green — that reads as posted) */
     .gcode:has(.surface-row.is-editing-banner) .status-dot {
       background: #FFCE1B !important;
     }
-    /* R9: body chrome wash around white io-panel (code stays white) */
-    .gcode:has(.surface-row.is-editing-banner) .gcode-body-inner {
-      background: rgba(255, 206, 27, 0.38);
-    }
-    .gcode:has(.surface-row.is-editing-banner) .action-row {
-      background: transparent;
-    }
-    /* R9: keep FLIP IT / READY labels — grayscale disable only, no EDITING text */
+    /* 3122e318: NO yellow surface/body wash inside the shell */
+    /* 82d08feb: gray disabled chrome on footer only */
     .gcode:has(.surface-row.is-editing-banner) .action-row .stage-action,
     .gcode:has(.surface-row.is-editing-banner) .action-row .stage-status,
     .gcode:has(.surface-row.is-editing-banner) .action-row .btn-collapse {
@@ -1595,15 +1588,15 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       overflow: hidden;
       position: relative; /* hosts EDITING banner */
     }
-    /* R9 LOCKED from a661716d / 108c9e30 / 6eed4c73 — do not invent
-       No solid EDITING banner. Surface row wash + grayscale-disabled controls.
-       Outer shell ring is the primary alert (see .gcode:has(...)::after below). */
+    /* R9 LOCKED 3122e318 + 82d08feb — no yellow inside shell
+       Outer ring is the alert. Surface controls grayscale-disabled only. */
     .surface-editing-banner {
       display: none !important; /* retired takeover label */
     }
     .surface-row.is-editing-banner {
-      background: rgba(255, 206, 27, 0.38);
-      border-bottom-color: rgba(180, 130, 0, 0.35);
+      /* 3122e318: no yellow surface wash */
+      background: transparent;
+      border-bottom-color: var(--ink-15);
     }
     .surface-row.is-editing-banner > *:not(.surface-editing-banner) {
       opacity: 0.7;
