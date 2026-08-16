@@ -5,8 +5,8 @@
 **Locked sibling (standalone):** `NUMERIC-HUD-v3-LOCKED.html`  
 **Branch:** `docs/howmany-v3-decoder-lock`  
 **Repo:** `TurboFrogLLC/NestCalc`  
-**Branch tip:** `52b2d4647d113376197460f8f93e52d93d069df5`  
-**HTML blob (tip):** `abd626d1235d7c87760ba716465653ed095bc484`  
+**Branch tip:** `4438c2ac81b024e01a00879178e32b7376b0f890`  
+**HTML blob (tip):** `2e42cb42a9a963b3956d490c6f14b60baec1bd8a`  
 **Content authority (R10c):** `1a184ea67cf1bb4578422e22056d5e9a61c60784` / blob `3cc008ab5f5f4c55dd80e0a915c9d2781c0fe7b2`  
 **Class:** Exploratory composition only — not a product GOAL  
 
@@ -16,6 +16,7 @@
 |------|-----|----------|------------------------|
 | 2026-08-16 | 1a184ea6 | scaffold | Header stubs only — fill on next HUD residual PASS |
 | 2026-08-16 | 52b2d464 | docs-only land three SPECs | Tip header aligned to branch |
+| 2026-08-16 | 4438c2ac | R11 PASS (no HUD change) | Tip header aligned |
 
 ---
 
