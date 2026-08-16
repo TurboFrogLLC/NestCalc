@@ -682,15 +682,15 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
         box-shadow 120ms ease,
         transform 120ms ease;
     }
-    /* flipIT wordmark on dark chip: FLIP = white, IT = yellow (ALL CAPS) */
+    /* flipIT wordmark on dark chip: FLiP = white, IT = yellow (case-sensitive, no forced uppercase) */
     #btn-gcode .label-flip {
       color: #ffffff;
-      text-transform: uppercase;
+      text-transform: none;
       letter-spacing: -0.01em;
     }
     #btn-gcode .label-it {
       color: #FFCE1B;
-      text-transform: uppercase;
+      text-transform: none;
       letter-spacing: -0.01em;
     }
     /* Shared static lift shadow on both control chips — no hover lift */
@@ -1338,15 +1338,15 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       user-select: none;
       line-height: 1;
     }
-    /* Wordmark ALL CAPS on dark header: FLIP = white · IT = yellow */
+    /* Wordmark case-sensitive on dark header: FLiP = white · IT = yellow */
     .gcode-bar .surface-label .label-flip {
       color: #ffffff;
-      text-transform: uppercase;
+      text-transform: none;
     }
     .gcode-bar .surface-label .label-it {
       color: #FFCE1B;
       font-weight: 800;
-      text-transform: uppercase;
+      text-transform: none;
     }
 
     .prog-field {
@@ -2459,7 +2459,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
           <div class="hud-footer-sep" aria-hidden="true"></div>
           <div class="hud-controls">
             <button type="button" class="hud-ctl" id="btn-auto-size" title="Open flipIT collapsed">AUTO-SIZE</button>
-            <button type="button" class="hud-ctl" id="btn-gcode" title="Open flipIT expanded"><span class="label-flip">FLIP</span><span class="label-it">IT</span></button>
+            <button type="button" class="hud-ctl" id="btn-gcode" title="Open flipIT expanded"><span class="label-flip">FLiP</span><span class="label-it">IT</span></button>
           </div>
         </div>
 
@@ -2508,7 +2508,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
         <svg width="17.6" height="17.6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="14" width="4.4" height="6.6" rx="2"/><rect x="6" y="4" width="4.4" height="6.6" rx="2"/><path d="M6 20h4"/><path d="M14 10h4"/><path d="M6 14h2v6"/><path d="M14 4h2v6"/></svg>
       </div>
       <div class="surface-label-slot">
-        <span class="surface-label"><span class="label-flip">FLIP</span><span class="label-it">IT</span></span>
+        <span class="surface-label"><span class="label-flip">FLiP</span><span class="label-it">IT</span></span>
       </div>
 
       <div class="prog-field" id="prog-field">
