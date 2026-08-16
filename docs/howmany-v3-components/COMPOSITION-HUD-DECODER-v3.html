@@ -10,14 +10,14 @@ READ THIS BLOCK BEFORE ANY EDIT. Self-governing loop for Grok / Codex sessions.
 Branch:  docs/howmany-v3-decoder-lock
 Repo:    TurboFrogLLC/NestCalc
 Path:    docs/howmany-v3-components/COMPOSITION-HUD-DECODER-v3.html
-Tip (R12 closed — popover select-all):
+Tip (R13 closed — backplot unattached):
+  commit  2fb32796297510f5d19d1fbc97918960d5172de6
+  blob    efcd1d59eabaf3ff72adb8c3856def85d7598bb5
+  msg     docs(howmany-v3): R13 backplot 200x200 unattached component
+
+Prior tip (R12 select-all):
   commit  ad530cad765b0de5b7c70677e1d2399867b48733
   blob    e7c083fcbcf00317259734d5153dc5e332f79d1d
-  msg     docs(howmany-v3): R12b popover click always select-all (mouseup race)
-
-Prior tip (R11 position memory):
-  commit  4438c2ac81b024e01a00879178e32b7376b0f890
-  blob    2e42cb42a9a963b3956d490c6f14b60baec1bd8a
 
 Before every residual: pull tip via GitHub connector and confirm blob SHA.
 After every residual: record new commit SHA + blob SHA in this block.
@@ -45,11 +45,11 @@ After every residual: record new commit SHA + blob SHA in this block.
             gray body, disabled chrome, yellow ring — not solid EDITING banner)
 
 ── OPEN residuals ───────────────────────────────────────────────────────────
-  R13  blackplot 200×200 separate unattached component (not a drawer)
   R14  sandbox show/hide card (bottom-right · isolate surfaces · not production)
   R15  faux-bed blank child-spec table on surface click (template tokens)
 
 ── CLOSED (do not reopen without human OK) ──────────────────────────────────
+  R13 closed @ 2fb32796  backplot 200×200 unattached (not a drawer · not flipIT child)
   R12 closed @ ad530cad  popover select-all · black@60% · text #FFCE1B · mouseup race fixed
   R11 closed @ 4438c2ac  flipIT reopen remembers last left/top (AUTO-SIZE + FLiPIT)
   R10 closed @ 1a184ea6  1px solid green @ 90% + soft halo on Post + FLIP IT
@@ -86,11 +86,11 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     "file": "docs/howmany-v3-components/COMPOSITION-HUD-DECODER-v3.html",
     "branch": "docs/howmany-v3-decoder-lock",
     "repo": "TurboFrogLLC/NestCalc",
-    "tip_commit": "ad530cad765b0de5b7c70677e1d2399867b48733",
-    "tip_blob": "e7c083fcbcf00317259734d5153dc5e332f79d1d",
-    "prior_tip_commit": "4438c2ac81b024e01a00879178e32b7376b0f890",
-    "prior_tip_blob": "2e42cb42a9a963b3956d490c6f14b60baec1bd8a",
-    "open_residuals": ["R13","R14","R15"],
+    "tip_commit": "2fb32796297510f5d19d1fbc97918960d5172de6",
+    "tip_blob": "efcd1d59eabaf3ff72adb8c3856def85d7598bb5",
+    "prior_tip_commit": "ad530cad765b0de5b7c70677e1d2399867b48733",
+    "prior_tip_blob": "e7c083fcbcf00317259734d5153dc5e332f79d1d",
+    "open_residuals": ["R14","R15"],
     "rules": [
       "one residual at a time",
       "read tip blob + authority SHA before fix",
@@ -2531,6 +2531,80 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       text-transform: uppercase;
     }
     .backplot-canvas.has-part .backplot-empty { display: none; }
+
+    /* ── R14: Sandbox isolator — bottom-right · NOT production ── */
+    .sandbox-iso {
+      position: fixed;
+      right: 12px;
+      bottom: 12px;
+      z-index: 90; /* above composition surfaces */
+      width: 168px;
+      background: rgba(26, 20, 40, 0.88);
+      color: #FFCE1B;
+      border: 1.1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 10px;
+      box-shadow: 0 12px 28px -10px rgba(0, 0, 0, 0.45);
+      font-family: var(--font);
+      font-size: 11px;
+      padding: 8px 10px 10px;
+      user-select: none;
+      touch-action: none;
+    }
+    .sandbox-iso .si-head {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: rgba(255, 206, 27, 0.85);
+    }
+    .sandbox-iso .si-head .si-tag {
+      margin-left: auto;
+      font-size: 9px;
+      font-weight: 650;
+      letter-spacing: 0.06em;
+      color: rgba(255, 255, 255, 0.45);
+      text-transform: uppercase;
+    }
+    .sandbox-iso .si-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 26px;
+      padding: 2px 0;
+    }
+    .sandbox-iso .si-row label {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      color: rgba(255, 255, 255, 0.88);
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    .sandbox-iso .si-row input[type="checkbox"] {
+      width: 14px;
+      height: 14px;
+      margin: 0;
+      accent-color: #538BEC;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .sandbox-iso .si-row.is-off label {
+      color: rgba(255, 255, 255, 0.38);
+    }
+    .sandbox-iso .si-note {
+      margin-top: 8px;
+      padding-top: 7px;
+      border-top: 1px solid rgba(255, 255, 255, 0.10);
+      font-size: 9.5px;
+      line-height: 1.35;
+      color: rgba(255, 255, 255, 0.40);
+      letter-spacing: 0.02em;
+    }
   
   </style>
 </head>
@@ -2945,6 +3019,27 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
   <div class="demo-note">
     Empty → separate · Has dims → connected 3-seg · blue ring only on ticker · darker gray fill<br>
     Hat armed (re-size) = Source blue · posted = green ticker · Backplot unattached 200×200
+  </div>
+
+  <!-- R14: Sandbox isolator — bottom-right · NOT production -->
+  <div class="sandbox-iso" id="sandbox-iso" role="group" aria-label="Sandbox show hide surfaces">
+    <div class="si-head">
+      <span>Isolate</span>
+      <span class="si-tag">sandbox</span>
+    </div>
+    <div class="si-row" data-si="hud">
+      <label><input type="checkbox" id="si-hud" checked /> HUD</label>
+    </div>
+    <div class="si-row" data-si="flipit">
+      <label><input type="checkbox" id="si-flipit" checked /> flipIT</label>
+    </div>
+    <div class="si-row" data-si="backplot">
+      <label><input type="checkbox" id="si-backplot" checked /> Backplot</label>
+    </div>
+    <div class="si-row" data-si="bed">
+      <label><input type="checkbox" id="si-bed" checked /> Faux bed</label>
+    </div>
+    <div class="si-note">Local only · hide surfaces to inspect one at a time · not product chrome</div>
   </div>
 
   <script>
@@ -4801,6 +4896,52 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       });
     });
   }
+})();
+  </script>
+
+  <script>
+/* ── R14 Sandbox isolator — show/hide composition surfaces (not production) ── */
+(function () {
+  var map = {
+    hud: document.getElementById('hud'),
+    flipit: document.getElementById('gcode'),
+    backplot: document.getElementById('backplot'),
+    bed: document.querySelector('.bed-stage')
+  };
+  function apply(key, on) {
+    var el = map[key];
+    if (!el) return;
+    if (key === 'flipit') {
+      /* flipIT uses display flex when open; isolator forces hide without wiping open state */
+      if (on) {
+        el.style.removeProperty('visibility');
+        el.style.removeProperty('pointer-events');
+        if (el.classList.contains('is-open')) el.style.display = 'flex';
+        /* if closed, leave display as script manages */
+      } else {
+        el.style.visibility = 'hidden';
+        el.style.pointerEvents = 'none';
+      }
+      return;
+    }
+    el.style.display = on ? '' : 'none';
+  }
+  function wire(id, key) {
+    var input = document.getElementById(id);
+    if (!input) return;
+    var row = input.closest('.si-row');
+    function sync() {
+      var on = !!input.checked;
+      if (row) row.classList.toggle('is-off', !on);
+      apply(key, on);
+    }
+    input.addEventListener('change', sync);
+    sync();
+  }
+  wire('si-hud', 'hud');
+  wire('si-flipit', 'flipit');
+  wire('si-backplot', 'backplot');
+  wire('si-bed', 'bed');
 })();
   </script>
 </body>
