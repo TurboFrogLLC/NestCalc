@@ -4,8 +4,8 @@
 **Composition HTML:** `COMPOSITION-HUD-DECODER-v3.html`  
 **Branch:** `docs/howmany-v3-decoder-lock`  
 **Repo:** `TurboFrogLLC/NestCalc`  
-**Branch tip:** `f52aa3a9b8638e72497f5779bc139c4999034978`  
-**HTML blob (tip):** `72ff09381ba9d59ab49301246870bc68b5101385`  
+**Branch tip:** `9d8cade5bb9cb108845f38f40d4f41fba5272207`  
+**HTML blob (tip):** `09e5448e54ed8a980b2b8d2258f879dc318849d8`  
 **OPEN residuals:** _(none)_  
 **Class:** Exploratory composition only — not a product GOAL  
 
@@ -25,7 +25,8 @@
 | 2026-08-16 | 00b7975e | R14 PASS | Sandbox isolator |
 | 2026-08-16 | 58ec1be0 | R15 PASS | Child-spec table · elementsFromPoint · FLiPIT children |
 | 2026-08-16 | f87394db | R16 PASS | toolPath card · header icon system · READY amber · popover vs toolPath · wordmark left gap |
-| 2026-08-16 | **f52aa3a9** | **R17 PASS** | FLiPIT strip waypoints open toolPath (Source+Output) · strip unlock when idle · black strip icons · visible hover |
+| 2026-08-16 | f52aa3a9 | R17 PASS | FLiPIT strip waypoints open toolPath (Source+Output) · strip unlock when idle · black strip icons · visible hover |
+| 2026-08-16 | **9d8cade5** | **R26 PASS** | Child-spec Lucide copy per row + free-draggable panel (reparent under `.bed-stage`) |
 
 ---
 
@@ -38,7 +39,7 @@
 | **toolPath** | `#backplot` · class `.toolpath` | `BACKPLOT-v3.SPEC.md` | 20 |
 | Faux bed | `.bed-stage` | host only | behind |
 | Sandbox isolator | `#sandbox-iso` | this index · **not production** | 90 |
-| Child-spec table | `#child-spec` in `#bed-blank` | this index · **not production** | inside bed |
+| Child-spec panel | `#child-spec` (reparented under `.bed-stage`) | this index · **not production** | 25 |
 
 ## Shared header icon system (R16)
 
@@ -75,12 +76,15 @@ HUD · FLiPIT · toolPath: `::after` 2px solid ink @ 0.22 · offset 8px · drop 
 ### Isolator (R14)
 Fixed BR card · toggles HUD / FLiPIT / **toolPath** / Faux bed · z-index 90.
 
-### Child-spec table (R15)
-- Host: faux-bed blank 280×210  
-- Template keys: `font` · `size` · `outline` · `radius` · `fill` · `shadow` · `note`  
-- Hydrate: `pointerdown` capture + `elementsFromPoint`  
-- Clear: click outside composition surfaces only  
+### Child-spec panel (R15 + R26)
+- Frost panel · 8px radius · shadow · absolute under `.bed-stage` (z 25)
+- Template keys: `font` · `size` · `outline` · `radius` · `fill` · `shadow` · `note`
+- Hydrate: `pointerdown` capture + `elementsFromPoint` · click surface → rows
+- Clear: click outside composition surfaces only
+- **R26 copy:** every row has Lucide copy icon (far right); click copies `"key: value"` to clipboard · green flash 900ms
+- **R26 drag:** grab `.cs-head` (cursor grab/grabbing) · free move across stage · reparent + `overflow: visible` on blank so panel can leave the 280×210 host
+- Non-production exploratory only
 
 ## OPEN residuals
 
-_None. Residual wave R11–R17 closed._
+_None. Residual wave R11–R17 + R26 closed._
