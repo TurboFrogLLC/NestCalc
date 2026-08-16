@@ -350,11 +350,10 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       min-width: var(--icon-btn);
       min-height: var(--icon-btn);
       border-radius: var(--chip-r);
-      border: 1.1px solid rgba(255, 255, 255, 0.14);
-      /* layered: white base under translucent blue so chip stays solid on dark header */
-      background:
-        linear-gradient(rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.72));
-      color: #1A1428;
+      border: 1.1px solid rgba(255, 255, 255, 0.22);
+      /* R4: solid white idle + black (ink) icon — not gray / not translucent */
+      background: #ffffff;
+      color: var(--ink);
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -381,16 +380,16 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       pointer-events: none;
     }
     .keypad-header .tool:hover {
-      background: rgba(255, 255, 255, 0.92);
+      background: #ffffff;
       color: var(--ink);
-      border-color: rgba(255, 255, 255, 0.28);
+      border-color: rgba(255, 255, 255, 0.35);
     }
-    /* Active calc: white base + blue tint layered (not pure muddy blue) */
+    /* R5: light blue OVER solid white base; black icon on top (not blue icon) */
     .keypad-header .tool.active-calc {
       background:
         linear-gradient(var(--blue-28), var(--blue-28)),
         #ffffff;
-      color: #1E3A8A;
+      color: var(--ink);
       border-color: rgba(83, 139, 236, 0.45);
     }
     .chevron-btn svg { transition: none; }
