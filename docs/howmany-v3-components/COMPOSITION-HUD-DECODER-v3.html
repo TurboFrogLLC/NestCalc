@@ -2264,7 +2264,8 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     .edit-actions {
       position: absolute;
       top: 6.6px;
-      right: 6.6px;
+      /* inset past typical scrollbar (~14px) + air so X never hangs on the track */
+      right: 18px;
       display: none;
       align-items: center;
       gap: 4.4px;
@@ -2401,8 +2402,18 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     }
 
     /* RIGHT — READY / DONE (green ring · ink text for legibility) */
+    /* READY = amber (definitive · not green) · DONE = green */
     .stage-status[data-state="ready"],
-    .stage-status[data-state="ready"]:disabled,
+    .stage-status[data-state="ready"]:disabled {
+      background: var(--chip-gray);
+      border: 1.65px solid rgba(255, 206, 27, 0.85);
+      color: var(--ink);
+      cursor: default;
+      pointer-events: none;
+      box-shadow:
+        0 0.5px 1px rgba(0, 0, 0, 0.25),
+        0 0 0 2.2px rgba(255, 206, 27, 0.45); /* match blue/green glow weight */
+    }
     .stage-status[data-state="done"],
     .stage-status[data-state="done"]:disabled {
       background: var(--chip-gray);
@@ -2410,7 +2421,6 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       color: var(--ink);
       cursor: default;
       pointer-events: none;
-      /* same weight as FLIP IT / START OVER blue ring — soft lift + single glow */
       box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.25), var(--green-glow);
     }
 
