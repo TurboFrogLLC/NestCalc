@@ -1566,9 +1566,9 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       display: none; /* keep node for a11y live region; no solid takeover */
     }
     .surface-row.is-editing-banner {
-      background: rgba(255, 206, 27, 0.22); /* transparent yellow row */
-      border-bottom-color: rgba(180, 130, 0, 0.45);
-      box-shadow: inset 0 0 0 1.65px rgba(180, 130, 0, 0.55); /* yellow ring */
+      background: rgba(255, 206, 27, 0.32); /* transparent yellow row — readable, not solid */
+      border-bottom-color: rgba(180, 130, 0, 0.50);
+      box-shadow: inset 0 0 0 2px rgba(180, 130, 0, 0.65); /* yellow ring */
     }
     /* Soften sibling chrome while editing (gray / disabled feel) */
     .surface-row.is-editing-banner .btn-gc0de,
@@ -2170,17 +2170,18 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       background: rgba(26, 20, 40, 0.14);
     }
 
-    /* LEFT / RIGHT — EDITING (amber kept — interrupt) */
+    /* R9: LEFT / RIGHT EDITING — gray body + yellow ring (not solid banner fill)
+       Authority: 6eed4c73 / 108c9e30 / a661716d */
     .stage-action[data-state="editing"],
     .stage-action[data-state="editing"]:disabled,
     .stage-status[data-state="editing"],
     .stage-status[data-state="editing"]:disabled {
-      background: #FFCE1B;
-      border: 1.65px solid rgba(180, 130, 0, 0.65);
+      background: var(--chip-gray);
+      border: 1.65px solid rgba(180, 130, 0, 0.70);
       color: var(--ink);
       cursor: default;
       pointer-events: none;
-      box-shadow: 0 0 0 2.2px rgba(255, 206, 27, 0.35);
+      box-shadow: 0 0 0 2.2px rgba(255, 206, 27, 0.40);
       transform: none !important;
     }
 
