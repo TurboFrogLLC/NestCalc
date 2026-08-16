@@ -10,14 +10,14 @@ READ THIS BLOCK BEFORE ANY EDIT. Self-governing loop for Grok / Codex sessions.
 Branch:  docs/howmany-v3-decoder-lock
 Repo:    TurboFrogLLC/NestCalc
 Path:    docs/howmany-v3-components/COMPOSITION-HUD-DECODER-v3.html
-Tip (R26 closed — child-spec copy + draggable):
+Tip (R18–R19 closed — HUD dock + comp-note):
+  commit  b25d373b59d63cf3da01a773551a134054c89cd0
+  blob    bb974196db1cecdd58d3b2377cb2cdcff2b98122
+  msg     docs(howmany-v3): R18–R19 HUD top-left dock + expand restore; move comp-note bottom
+
+Prior tip (R26 content):
   commit  9d8cade5bb9cb108845f38f40d4f41fba5272207
   blob    09e5448e54ed8a980b2b8d2258f879dc318849d8
-  msg     docs(howmany-v3): R26 child-spec copy rows + draggable panel
-
-Prior tip (R17 content / pre-R26):
-  commit  f52aa3a9b8638e72497f5779bc139c4999034978
-  blob    72ff09381ba9d59ab49301246870bc68b5101385
 
 Before every residual: pull tip via GitHub connector and confirm blob SHA.
 After every residual: record new commit SHA + blob SHA in this block.
@@ -45,9 +45,11 @@ After every residual: record new commit SHA + blob SHA in this block.
             gray body, disabled chrome, yellow ring — not solid EDITING banner)
 
 ── OPEN residuals ───────────────────────────────────────────────────────────
-  (none — R26 closed this cycle)
+  R27  toolPath default-hidden on load · open only via FLiPIT strip waypoints
+       (or sandbox isolator). Isolator starts unchecked.
 
 ── CLOSED (do not reopen without human OK) ──────────────────────────────────
+  R18–R19 closed @ b25d373b  HUD top-left dock on collapse/load + expand restore; comp-note bottom
   R26 closed @ 9d8cade5  child-spec Lucide copy per row + free-draggable panel
   R17 closed series  toolPath open from FLiPIT strip · strip unlock · black icons
   R16 closed series  toolPath card polish · header icons · READY amber · popovers
@@ -91,11 +93,11 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     "file": "docs/howmany-v3-components/COMPOSITION-HUD-DECODER-v3.html",
     "branch": "docs/howmany-v3-decoder-lock",
     "repo": "TurboFrogLLC/NestCalc",
-    "tip_commit": "9d8cade5bb9cb108845f38f40d4f41fba5272207",
-    "tip_blob": "09e5448e54ed8a980b2b8d2258f879dc318849d8",
-    "prior_tip_commit": "f52aa3a9b8638e72497f5779bc139c4999034978",
-    "prior_tip_blob": "72ff09381ba9d59ab49301246870bc68b5101385",
-    "open_residuals": [],
+    "tip_commit": "b25d373b59d63cf3da01a773551a134054c89cd0",
+    "tip_blob": "bb974196db1cecdd58d3b2377cb2cdcff2b98122",
+    "prior_tip_commit": "9d8cade5bb9cb108845f38f40d4f41fba5272207",
+    "prior_tip_blob": "09e5448e54ed8a980b2b8d2258f879dc318849d8",
+    "open_residuals": ["R27"],
     "rules": [
       "one residual at a time",
       "read tip blob + authority SHA before fix",
@@ -3282,8 +3284,8 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     </div>
   </aside>
 
-  <!-- R16: toolPath — non-modal card · HUD-size · no resize · open later from HUD/FLiPIT -->
-  <div class="toolpath" id="backplot" aria-label="toolPath" data-child-spec="backplot">
+  <!-- R16 + R27: toolPath — non-modal card · default hidden · open only from FLiPIT strip (or sandbox isolator) -->
+  <div class="toolpath is-hidden" id="backplot" aria-label="toolPath" data-child-spec="backplot">
     <div class="toolpath-inner">
       <div class="toolpath-head" id="bp-drag" title="Drag toolPath" data-child-spec="backplot-head">
         <div class="mark" aria-hidden="true">
@@ -3348,7 +3350,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       <label><input type="checkbox" id="si-flipit" checked /> flipIT</label>
     </div>
     <div class="si-row" data-si="backplot">
-      <label><input type="checkbox" id="si-backplot" checked /> toolPath</label>
+      <label><input type="checkbox" id="si-backplot" /> toolPath</label>
     </div>
     <div class="si-row" data-si="bed">
       <label><input type="checkbox" id="si-bed" checked /> Faux bed</label>
