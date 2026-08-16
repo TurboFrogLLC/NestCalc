@@ -1560,6 +1560,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       justify-content: center;
     }
     .gcode-bar .surface-label {
+      font-family: var(--font);
       font-size: 19.8px; /* a bit bigger on the panel wordmark */
       font-weight: 700;
       letter-spacing: -0.02em;
@@ -1734,13 +1735,21 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       color: var(--ink-30);
       transform: none !important;
     }
-    .icon-btn.close {
-      background: rgba(255, 255, 255, 0.14);
-      border: 1.1px solid rgba(255, 255, 255, 0.18);
-      color: rgba(255, 255, 255, 0.85);
+    /* R16d: FLiPIT close = same dark-header surface-chevron ratios as toolPath tp-head-btn
+       transparent fill · muted icon · hover only brightens — never solid white fill */
+    .gcode-bar .icon-btn.close {
+      background: transparent;
+      border: 1.1px solid rgba(255, 255, 255, 0.22);
+      color: rgba(255, 255, 255, 0.50);
     }
-    .icon-btn.close:hover {
-      background: rgba(255, 255, 255, 0.28);
+    .gcode-bar .icon-btn.close:hover {
+      background: transparent;
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.35);
+    }
+    /* beat global .icon-btn:hover { background: #fff } */
+    .gcode-bar .icon-btn.close:hover:not(:disabled):not(.is-editing) {
+      background: transparent;
       color: #ffffff;
       border-color: rgba(255, 255, 255, 0.35);
     }
@@ -2584,6 +2593,8 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       justify-content: center;
     }
     .toolpath-head .wordmark {
+      /* parity with .gcode-bar .surface-label (FLiPIT wordmark) */
+      font-family: var(--font);
       font-size: 19.8px;
       font-weight: 700;
       letter-spacing: -0.02em;
@@ -2657,11 +2668,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       border: 1.1px solid rgba(26, 20, 40, 0.16);
       border-radius: 8.8px;
       overflow: hidden;
-      background:
-        linear-gradient(rgba(0,0,0,0.04) 1.1px, transparent 1.1px),
-        linear-gradient(90deg, rgba(0,0,0,0.04) 1.1px, transparent 1.1px),
-        #ffffff;
-      background-size: 26.4px 26.4px, 26.4px 26.4px, auto;
+      background: #ffffff;
       box-sizing: border-box;
     }
     .toolpath-canvas .part {
@@ -5467,7 +5474,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
         radius: '0 0 15.4px 15.4px',
         fill: 'bed-grid on white · part blue-22',
         shadow: 'none',
-        note: 'white viewfinder + bed grid · refresh redraws'
+        note: 'solid white viewfinder · refresh redraws'
       }
     },
     'sandbox-iso': {
