@@ -2957,7 +2957,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
         <span class="surface-label"><span class="label-flip">FLiP</span><span class="label-it">IT</span></span>
       </div>
 
-      <div class="prog-field" id="prog-field">
+      <div class="prog-field" id="prog-field" data-child-spec="flipit-prog">
         <input class="prog-name" id="prog-name" type="text" placeholder="Program name" spellcheck="false" autocomplete="off" />
         <div class="prog-actions">
           <!-- R3: open · download · clear X at END (right of download) -->
@@ -2973,9 +2973,9 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
         </div>
       </div>
 
-      <div class="status-dot" id="status-dot" data-state="none" title="No part size" aria-label="Part size status"></div>
+      <div class="status-dot" id="status-dot" data-child-spec="flipit-status-dot" data-state="none" title="No part size" aria-label="Part size status"></div>
 
-      <button type="button" class="icon-btn close" id="btn-close" title="Close" aria-label="Close">
+      <button type="button" class="icon-btn close" id="btn-close" data-child-spec="flipit-close" title="Close" aria-label="Close">
         <svg width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
       </button>
     </div>
@@ -2983,14 +2983,14 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     <!-- Surface row -->
     <div class="surface-row" id="surface-row">
       <div class="surface-editing-banner" aria-live="polite">EDITING</div>
-      <button type="button" class="btn-gc0de" id="btn-expand" title="Expand G-code" aria-label="Expand G-code" aria-expanded="false">GC0DE</button>
+      <button type="button" class="btn-gc0de" id="btn-expand" data-child-spec="flipit-gc0de" title="Expand G-code" aria-label="Expand G-code" aria-expanded="false">GC0DE</button>
 
       <!-- Collapse chevron — left of SOURCE; only when expanded + source tab; points down -->
       <button type="button" class="btn-surface-chevron" id="btn-surface-chevron" title="Collapse G-code" aria-label="Collapse G-code">
         <svg width="14.3" height="14.3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
       </button>
 
-      <div class="io-tabs" id="io-tabs" role="tablist">
+      <div class="io-tabs" id="io-tabs" role="tablist" data-child-spec="flipit-io-tabs">
         <button type="button" class="io-tab is-on" role="tab" aria-selected="true" data-tab="source" id="tab-source">
           <svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>
           Source
@@ -3024,7 +3024,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     <div class="gcode-body" id="gcode-body">
       <div class="gcode-body-inner">
         <div class="io-panel is-on" role="tabpanel" data-panel="source" id="panel-source">
-          <div class="tool-strip">
+          <div class="tool-strip" data-child-spec="flipit-tool-strip">
             <button type="button" class="icon-btn" id="btn-undo-src" title="Undo (Cmd/Ctrl+Z)" aria-label="Undo">
               <svg width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
             </button>
@@ -3093,7 +3093,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
         <div class="action-row">
           <div class="action-main">
             <button type="button" class="stage-action" id="stage-action" data-child-spec="flipit-stage-action" data-state="idle" disabled title="Flip Source to Output">FLIP IT</button>
-            <div class="rot-row" role="group" aria-label="Rotation">
+            <div class="rot-row" role="group" aria-label="Rotation" data-child-spec="flipit-rot">
               <button type="button" class="rot-chip is-on" data-rot="0">0°</button>
               <div class="rot-sep" aria-hidden="true"></div>
               <button type="button" class="rot-chip" data-rot="90">90°</button>
@@ -3104,7 +3104,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
             </div>
             <button type="button" class="stage-status" id="stage-status" data-child-spec="flipit-stage-status" data-state="idle" disabled title="Not ready">NOT READY</button>
           </div>
-          <button type="button" class="btn-collapse" id="btn-collapse" title="Collapse G-code" aria-label="Collapse G-code">
+          <button type="button" class="btn-collapse" id="btn-collapse" data-child-spec="flipit-collapse" title="Collapse G-code" aria-label="Collapse G-code">
             <svg width="17.6" height="17.6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
           </button>
         </div>
@@ -5064,9 +5064,9 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
   </script>
 
   <script>
-/* ── R15d Child-spec — HUD + flipIT + Backplot children ──
-   Capture hydrate (before HUD stopPropagation). Outside-only clear.
-   Deepest marked child wins over parent shell. */
+/* ── R15e Child-spec — elementsFromPoint so disabled flipIT buttons still hydrate
+   Capture pointerdown. Walk hit stack deepest→shallow for data-child-spec / HUD kids.
+   Outside-only clear. Never stopPropagation. */
 (function () {
   var panel = document.getElementById('child-spec');
   var nameEl = document.getElementById('cs-name');
@@ -5160,6 +5160,54 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
         note: 'drag · program field · status dot · close'
       }
     },
+    'flipit-prog': {
+      label: 'flipIT program field',
+      tokens: {
+        font: '12.1px weight 600',
+        size: '184.8 × 28.6px',
+        outline: 'focus blue 1.1px + glow',
+        radius: '6.6px',
+        fill: '#ffffff',
+        shadow: 'focus 0 0 0 2.2px blue-22',
+        note: 'open · save · clear X'
+      }
+    },
+    'flipit-status-dot': {
+      label: 'flipIT status dot',
+      tokens: {
+        font: 'n/a',
+        size: '11 × 11px circle',
+        outline: '0 0 0 2.2px white-45',
+        radius: '50%',
+        fill: 'none #DC143C · ready green · posted #7DDB8C',
+        shadow: 'ring only',
+        note: 'part size status'
+      }
+    },
+    'flipit-close': {
+      label: 'flipIT close',
+      tokens: {
+        font: 'icon 15.4px',
+        size: '28.6 × 28.6px',
+        outline: '1.1px solid rgba(255,255,255,0.18)',
+        radius: '6.6px',
+        fill: 'rgba(255,255,255,0.14)',
+        shadow: 'none',
+        note: 'closes panel · saves position'
+      }
+    },
+    'flipit-gc0de': {
+      label: 'flipIT GC0DE',
+      tokens: {
+        font: 'mono 12.1px weight 700',
+        size: 'h 28.6px · pad 0 11px',
+        outline: 'none',
+        radius: '6.6px',
+        fill: 'blue-22',
+        shadow: '0 0.5px 1px rgba(0,0,0,0.25)',
+        note: 'expand G-code body'
+      }
+    },
     'flipit-part-group': {
       label: 'flipIT part group',
       tokens: {
@@ -5181,7 +5229,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
         radius: '6.6px',
         fill: 'white-70 · armed white-40 + blue-glow',
         shadow: '0 0.5px 1px · armed blue-glow',
-        note: 'Auto-Size / hat'
+        note: 'Auto-Size / hat — often disabled until source'
       }
     },
     'part-ticker': {
@@ -5205,7 +5253,43 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
         radius: '6.6px',
         fill: 'white-70 · connected transparent',
         shadow: 'none',
-        note: 'post part size → HUD / bed'
+        note: 'post part size — disabled until sized'
+      }
+    },
+    'flipit-io-tabs': {
+      label: 'flipIT IO tabs',
+      tokens: {
+        font: '11px weight 700 uppercase',
+        size: 'h 28.6px · pad 0 6.6px per tab',
+        outline: 'none',
+        radius: '6.6px',
+        fill: 'transparent · on blue-22',
+        shadow: 'on tab 0 0.5px 1px',
+        note: 'Source · Output'
+      }
+    },
+    'flipit-tool-strip': {
+      label: 'flipIT tool strip',
+      tokens: {
+        font: 'icon 15.4px',
+        size: 'row pad 6.6px 8.8px · icons 28.6sq',
+        outline: 'bottom 1.1px ink-15',
+        radius: 'none',
+        fill: 'white-70',
+        shadow: 'none',
+        note: 'undo · redo · clear · units'
+      }
+    },
+    'flipit-code-shell': {
+      label: 'flipIT code shell',
+      tokens: {
+        font: 'mono 12.1px · line-height 1.45',
+        size: 'h 176px default · 110–308 resize',
+        outline: 'panel border via io-panel',
+        radius: 'inner with io-panel 8.8px',
+        fill: 'white · editing frost-blue',
+        shadow: 'focus inset blue-22',
+        note: 'source / output editor'
       }
     },
     'flipit-stage-action': {
@@ -5217,7 +5301,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
         radius: '6.6px',
         fill: 'chip-gray when live · white-40 idle',
         shadow: 'blue-glow when FLIP IT / START OVER',
-        note: 'FLIP IT · START OVER'
+        note: 'FLIP IT · START OVER — disabled until source'
       }
     },
     'flipit-stage-status': {
@@ -5232,16 +5316,28 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
         note: 'READY · DONE · NOT READY'
       }
     },
-    'flipit-code-shell': {
-      label: 'flipIT code shell',
+    'flipit-rot': {
+      label: 'flipIT rotation',
       tokens: {
-        font: 'mono 12.1px · line-height 1.45',
-        size: 'h 176px default · 110–308 resize',
-        outline: 'panel border via io-panel',
-        radius: 'inner with io-panel 8.8px',
-        fill: 'white · editing frost-blue',
-        shadow: 'focus inset blue-22',
-        note: 'source / output editor'
+        font: '11px weight 650',
+        size: 'h 28.6px · flex row',
+        outline: '1.1px rgba(26,20,40,0.22)',
+        radius: '6.6px',
+        fill: 'white-70 · on chip blue-22',
+        shadow: 'none',
+        note: '0° · 90° · −90° · 180°'
+      }
+    },
+    'flipit-collapse': {
+      label: 'flipIT collapse',
+      tokens: {
+        font: 'icon 17.6px',
+        size: '28.6 × 28.6px',
+        outline: '1.1px rgba(26,20,40,0.22)',
+        radius: '6.6px',
+        fill: 'white-70',
+        shadow: 'none',
+        note: 'collapse G-code body'
       }
     },
     'backplot': {
@@ -5320,26 +5416,53 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     if (sourceEl && sourceEl.classList) sourceEl.classList.add('cs-armed');
   }
 
-  function resolveId(el) {
+  /* Prefer explicit HUD class hits; else deepest data-child-spec on this node */
+  function matchNode(el) {
     if (!el || !el.closest) return null;
+    if (el.nodeType !== 1) return null;
 
-    /* HUD children */
-    var tick = el.closest('.param-ticker[data-open]');
-    if (tick && !tick.classList.contains('header-part-ticker')) {
-      return { id: 'hud-ticker', el: tick };
+    if (el.matches && el.matches('.param-ticker[data-open]') && !el.classList.contains('header-part-ticker')) {
+      return { id: 'hud-ticker', el: el };
     }
-    var pop = el.closest('.param-popover');
-    if (pop) return { id: 'hud-popover', el: pop };
-    var ctl = el.closest('.hud-ctl');
-    if (ctl) return { id: 'hud-ctl', el: ctl };
-    var htool = el.closest('.keypad-header .tool');
-    if (htool) return { id: 'hud-header-tool', el: htool };
+    if (el.matches && el.matches('.param-popover, .param-popover *')) {
+      var pop = el.closest('.param-popover');
+      if (pop) return { id: 'hud-popover', el: pop };
+    }
+    if (el.matches && el.matches('.hud-ctl, .hud-ctl *')) {
+      var ctl = el.closest('.hud-ctl');
+      if (ctl) return { id: 'hud-ctl', el: ctl };
+    }
+    if (el.matches && el.matches('.keypad-header .tool, .keypad-header .tool *')) {
+      var ht = el.closest('.keypad-header .tool');
+      if (ht) return { id: 'hud-header-tool', el: ht };
+    }
 
-    /* Deepest data-child-spec wins (part-ticker, detect, post, header, canvas, …) */
-    var marked = el.closest('[data-child-spec]');
-    if (marked) {
-      var id = marked.getAttribute('data-child-spec');
-      if (id && REG[id]) return { id: id, el: marked };
+    if (el.hasAttribute && el.hasAttribute('data-child-spec')) {
+      var id = el.getAttribute('data-child-spec');
+      if (id && REG[id]) return { id: id, el: el };
+    }
+    return null;
+  }
+
+  function resolveFromPoint(x, y) {
+    var stack;
+    try {
+      stack = document.elementsFromPoint(x, y) || [];
+    } catch (_) {
+      stack = [];
+    }
+    /* deepest first — elementsFromPoint is topmost-first */
+    for (var i = 0; i < stack.length; i++) {
+      var hit = matchNode(stack[i]);
+      if (hit) return hit;
+      /* also: if node itself isn't marked, check if it's inside a marked button/control */
+      if (stack[i].closest) {
+        var marked = stack[i].closest('[data-child-spec]');
+        if (marked) {
+          var id = marked.getAttribute('data-child-spec');
+          if (id && REG[id]) return { id: id, el: marked };
+        }
+      }
     }
     return null;
   }
@@ -5351,17 +5474,18 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     );
   }
 
-  document.addEventListener('click', function (e) {
+  /* pointerdown capture: sees disabled buttons via elementsFromPoint */
+  document.addEventListener('pointerdown', function (e) {
+    if (e.button != null && e.button !== 0) return;
     var t = e.target;
-    if (!t) return;
-    if (panel.contains(t)) return;
+    if (t && panel.contains(t)) return;
 
-    var resolved = resolveId(t);
+    var resolved = resolveFromPoint(e.clientX, e.clientY);
     if (resolved && REG[resolved.id]) {
       hydrate(resolved.id, resolved.el);
       return;
     }
-    if (!isInsideComposition(t)) clearSpec();
+    if (t && !isInsideComposition(t)) clearSpec();
   }, true);
 
   var iso = document.getElementById('sandbox-iso');
