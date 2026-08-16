@@ -4,8 +4,8 @@
 **Composition HTML:** `COMPOSITION-HUD-DECODER-v3.html`  
 **Branch:** `docs/howmany-v3-decoder-lock`  
 **Repo:** `TurboFrogLLC/NestCalc`  
-**Branch tip:** `9d8cade5bb9cb108845f38f40d4f41fba5272207`  
-**HTML blob (tip):** `09e5448e54ed8a980b2b8d2258f879dc318849d8`  
+**Branch tip:** `0b779cabd9adac4c2329a0a4df3ccfc95a66b049`  
+**HTML blob (tip):** `cc9ed3f8a6f11b240dcf2cb422e89599cd53e15e`  
 **OPEN residuals:** _(none)_  
 **Class:** Exploratory composition only — not a product GOAL  
 
@@ -27,6 +27,8 @@
 | 2026-08-16 | f87394db | R16 PASS | toolPath card · header icon system · READY amber · popover vs toolPath · wordmark left gap |
 | 2026-08-16 | f52aa3a9 | R17 PASS | FLiPIT strip waypoints open toolPath (Source+Output) · strip unlock when idle · black strip icons · visible hover |
 | 2026-08-16 | **9d8cade5** | **R26 PASS** | Child-spec Lucide copy per row + free-draggable panel (reparent under `.bed-stage`) |
+| 2026-08-16 | **b25d373b** | **R18–R19 PASS** | HUD top-left 16px dock on load/collapse + expand restores pre-collapse position · comp-note bottom z5 |
+| 2026-08-16 | **0b779cab** | **R27 PASS** | toolPath default-hidden on load · open only via FLiPIT strip waypoints or isolator · isolator toolPath starts unchecked |
 
 ---
 
@@ -71,10 +73,23 @@ Waypoints control opens/closes toolPath from Source and Output strips. No blue e
 
 HUD · FLiPIT · toolPath: `::after` 2px solid ink @ 0.22 · offset 8px · drop shadow `0 18px 40px -12px`.
 
+## HUD dock (R18–R19)
+
+| Behavior | Rule |
+|----------|------|
+| Load | Expanded HUD starts top-left at **16px** inset (matches FLiPIT first-open gap) |
+| Collapse | Saves current left/top → docks to top-left **16px** |
+| Expand | Restores pre-collapse left/top (or stays docked if never moved) |
+| Drag | Free after load; user can move anywhere |
+| Resize | Re-docks only while collapsed |
+
+`.comp-note` moved to bottom-left (`left:16px; bottom:16px; z-index:5`) — sits on grid behind surfaces.
+
 ## Sandbox tools (not product)
 
-### Isolator (R14)
-Fixed BR card · toggles HUD / FLiPIT / **toolPath** / Faux bed · z-index 90.
+### Isolator (R14 + R27)
+Fixed BR card · toggles HUD / FLiPIT / **toolPath** / Faux bed · z-index 90.  
+**R27:** toolPath checkbox starts **unchecked** (card `.is-hidden` on load).
 
 ### Child-spec panel (R15 + R26)
 - Frost panel · 8px radius · shadow · absolute under `.bed-stage` (z 25)
@@ -87,4 +102,4 @@ Fixed BR card · toggles HUD / FLiPIT / **toolPath** / Faux bed · z-index 90.
 
 ## OPEN residuals
 
-_None. Residual wave R11–R17 + R26 closed._
+_None. Residual wave R11–R19 + R26–R27 closed._
