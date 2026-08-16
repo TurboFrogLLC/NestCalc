@@ -5065,18 +5065,17 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
 
   <script>
 /* ── R15 Child-spec table — template tokens in faux-bed blank ──
-   Default blank. Click a marked child surface → hydrate. Click outside → clear.
-   Template is fixed keys so hydration never invents fields. */
+   Default blank. Click a child surface → hydrate. Click outside → clear.
+   Prefer deepest child (ticker/popover) over parent shell.
+   Never block buttons/inputs (AUTO-SIZE / FLiPIT / isolator toggles). */
 (function () {
   var panel = document.getElementById('child-spec');
   var nameEl = document.getElementById('cs-name');
   var rowsEl = document.getElementById('cs-rows');
   if (!panel || !nameEl || !rowsEl) return;
 
-  /* Persistent template keys — same for every child */
   var KEYS = ['font', 'size', 'outline', 'radius', 'fill', 'shadow', 'note'];
 
-  /* Registry: id → { label, tokens } */
   var REG = {
     'hud-shell': {
       label: 'HUD shell',
@@ -5112,6 +5111,18 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
         fill: 'rgba(26,20,40,0.82) · amber text',
         shadow: '0 13.2px 30.8px -10px',
         note: 'selection black@60% · text #FFCE1B'
+      }
+    },
+    'hud-ctl': {
+      label: 'HUD control chip',
+      tokens: {
+        font: 'mono 11px · weight 700 · uppercase',
+        size: 'flex 1 · h 28.6px · pad 0 11px',
+        outline: '1.1px solid rgba(255,255,255,0.12)',
+        radius: '6.6px',
+        fill: 'rgba(26,20,40,0.82) · amber / white wordmark',
+        shadow: '0 0.5px 1px rgba(0,0,0,0.25)',
+        note: 'AUTO-SIZE · FLiPIT open flipIT'
       }
     },
     'flipit-shell': {
@@ -5168,7 +5179,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     panel.classList.add('is-empty');
     nameEl.textContent = '—';
     rowsEl.innerHTML = '';
-    document.querySelectorAll('[data-child-spec].cs-armed').forEach(function (el) {
+    document.querySelectorAll('[data-child-spec].cs-armed, .cs-armed').forEach(function (el) {
       el.classList.remove('cs-armed');
     });
   }
@@ -5184,46 +5195,63 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       html += '<tr><th>' + k + '</th><td><code>' + String(v).replace(/</g, '&lt;') + '</code></td></tr>';
     });
     rowsEl.innerHTML = html;
-    document.querySelectorAll('[data-child-spec].cs-armed').forEach(function (el) {
+    document.querySelectorAll('.cs-armed').forEach(function (el) {
       el.classList.remove('cs-armed');
     });
     if (sourceEl && sourceEl.classList) sourceEl.classList.add('cs-armed');
   }
 
+  function isInteractive(el) {
+    if (!el || !el.closest) return false;
+    /* buttons/inputs keep their own handlers — do not treat as shell hit */
+    return !!el.closest('button, input, textarea, select, a, label, [role="button"], .icon-btn, .hud-ctl, .prog-clear');
+  }
+
   function resolveId(el) {
     if (!el || !el.closest) return null;
-    /* Prefer deepest marked child */
-    var marked = el.closest('[data-child-spec]');
-    if (marked) return { id: marked.getAttribute('data-child-spec'), el: marked };
-    /* HUD ticker without explicit attr */
+
+    /* 1) Deepest children first — tickers / popovers / part ticker */
     var tick = el.closest('.param-ticker[data-open]');
     if (tick && !tick.classList.contains('header-part-ticker')) {
       return { id: 'hud-ticker', el: tick };
     }
-    /* HUD popover */
     var pop = el.closest('.param-popover');
     if (pop) return { id: 'hud-popover', el: pop };
+
+    var part = el.closest('#part-ticker');
+    if (part) return { id: 'part-ticker', el: part };
+
+    /* 2) Optional: control chips show their own token set but do NOT block click */
+    var ctl = el.closest('.hud-ctl');
+    if (ctl) return { id: 'hud-ctl', el: ctl, pass: true };
+
+    /* 3) Interactive chrome (other buttons) — no shell hydrate, no block */
+    if (isInteractive(el)) return null;
+
+    /* 4) Shells / marked surfaces */
+    var marked = el.closest('[data-child-spec]');
+    if (marked) {
+      var id = marked.getAttribute('data-child-spec');
+      if (id && REG[id]) return { id: id, el: marked };
+    }
     return null;
   }
 
+  /* bubble phase — after target handlers (AUTO-SIZE / FLiPIT) have run */
   document.addEventListener('click', function (e) {
-    /* ignore isolator chrome so toggles still work without forcing its own spec unless on card shell */
     var t = e.target;
     if (!t) return;
-    /* clicks inside the child-spec panel itself do not clear */
     if (panel.contains(t)) return;
 
     var resolved = resolveId(t);
     if (resolved && REG[resolved.id]) {
-      e.stopPropagation();
       hydrate(resolved.id, resolved.el);
+      /* never stopPropagation — product / open handlers must fire */
       return;
     }
-    /* outside any registered surface → clear */
     clearSpec();
-  }, true);
+  }, false);
 
-  /* Mark sandbox isolator for optional inspect */
   var iso = document.getElementById('sandbox-iso');
   if (iso && !iso.getAttribute('data-child-spec')) {
     iso.setAttribute('data-child-spec', 'sandbox-iso');
