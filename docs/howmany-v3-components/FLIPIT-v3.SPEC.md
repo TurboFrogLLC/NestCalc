@@ -5,8 +5,8 @@
 **Surface name:** flipIT (wordmark case-sensitive: `FLiP` + `IT`)  
 **Branch:** `docs/howmany-v3-decoder-lock`  
 **Repo:** `TurboFrogLLC/NestCalc`  
-**Branch tip:** `ad530cad765b0de5b7c70677e1d2399867b48733`  
-**HTML blob (tip):** `e7c083fcbcf00317259734d5153dc5e332f79d1d`  
+**Branch tip:** `2fb32796297510f5d19d1fbc97918960d5172de6`  
+**HTML blob (tip):** `efcd1d59eabaf3ff72adb8c3856def85d7598bb5`  
 **Content authority (R10c rings):** `1a184ea67cf1bb4578422e22056d5e9a61c60784` / blob `3cc008ab5f5f4c55dd80e0a915c9d2781c0fe7b2`  
 **Class:** Exploratory composition only — not a product GOAL  
 
@@ -18,6 +18,7 @@
 | 2026-08-16 | 52b2d464 | docs-only land three SPECs | Tip header aligned to branch |
 | 2026-08-16 | 4438c2ac | R11 PASS | Position memory on close/reopen |
 | 2026-08-16 | ad530cad | R12 PASS (no flipIT change) | Tip header aligned |
+| 2026-08-16 | 2fb32796 | R13 PASS (no flipIT change) | Tip header aligned |
 
 ---
 

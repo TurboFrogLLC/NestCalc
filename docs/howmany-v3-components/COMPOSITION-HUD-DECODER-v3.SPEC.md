@@ -4,10 +4,10 @@
 **Composition HTML:** `COMPOSITION-HUD-DECODER-v3.html`  
 **Branch:** `docs/howmany-v3-decoder-lock`  
 **Repo:** `TurboFrogLLC/NestCalc`  
-**Branch tip:** `ad530cad765b0de5b7c70677e1d2399867b48733`  
-**HTML blob (tip):** `e7c083fcbcf00317259734d5153dc5e332f79d1d`  
+**Branch tip:** `2fb32796297510f5d19d1fbc97918960d5172de6`  
+**HTML blob (tip):** `efcd1d59eabaf3ff72adb8c3856def85d7598bb5`  
 **Content authority (R10c chrome):** `1a184ea67cf1bb4578422e22056d5e9a61c60784` / blob `3cc008ab5f5f4c55dd80e0a915c9d2781c0fe7b2`  
-**OPEN residuals:** R13 · R14 · R15  
+**OPEN residuals:** R14 · R15  
 **Class:** Exploratory composition only — not a product GOAL  
 
 ## Changelog
@@ -17,6 +17,7 @@
 | 2026-08-16 | 52b2d464 | docs-only land three SPECs | Index scaffold · links to HUD + flipIT |
 | 2026-08-16 | 4438c2ac | R11 PASS | Position memory · OPEN R12–R15 |
 | 2026-08-16 | ad530cad | R12 PASS | Popover select-all · OPEN R13–R15 |
+| 2026-08-16 | 2fb32796 | R13 PASS | Backplot 200×200 unattached · OPEN R14–R15 |
 
 ---
 
@@ -26,6 +27,7 @@
 |---------|---------------|-------------|---------| 
 | Numeric HUD | `#hud` / `.keypad` | `NUMERIC-HUD-v3.SPEC.md` | 40 (front) |
 | flipIT | `#gcode` / `.gcode` | `FLIPIT-v3.SPEC.md` | 30 |
+| Backplot | `#backplot` / `.backplot` | `BACKPLOT-v3.SPEC.md` | 20 |
 | Faux bed | `.bed-stage` | (host only — not a living product LaserBed) | behind |
 
 **Connections**
@@ -37,6 +39,7 @@
 - Part ticker posted state is independent of outer-ring flash duration.
 - **R11:** flipIT close saves left/top; next open restores (first open = top-right 16px).
 - **R12:** popover number fields always full-select on click; selection = black@60% · text `#FFCE1B`.
+- **R13:** Backplot is independent of HUD + flipIT (no open/close coupling; own drag/resize).
 
 ---
 
@@ -82,6 +85,7 @@ Full CSS/JS: see **Shell rings** in `FLIPIT-v3.SPEC.md`.
 | R10 | 1a184ea6 | Green outer ring on **Post + FLIP IT** · 1px @ 90% · soft halo match yellow |
 | R11 | 4438c2ac | flipIT reopen remembers last left/top (AUTO-SIZE + FLiPIT) |
 | R12 | ad530cad | Popover select-all · black@60% · text #FFCE1B · mouseup race fixed |
+| R13 | 2fb32796 | Backplot 200×200 unattached (not drawer · not flipIT child) |
 
 ---
 
@@ -91,4 +95,4 @@ Full CSS/JS: see **Shell rings** in `FLIPIT-v3.SPEC.md`.
 2. **pass / pushed** — agent verifies tip.  
 3. **Handoff B** — agent patches SPEC sections touched · **agent pushes SPEC only** · human may `git pull` (never `git add *.SPEC.md`).
 
-Detail numbers live in the two surface SPECs; this index stays the map of connections and ownership.
+Detail numbers live in the surface SPECs; this index stays the map of connections and ownership.
