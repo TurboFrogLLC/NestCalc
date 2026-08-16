@@ -10,14 +10,14 @@ READ THIS BLOCK BEFORE ANY EDIT. Self-governing loop for Grok / Codex sessions.
 Branch:  docs/howmany-v3-decoder-lock
 Repo:    TurboFrogLLC/NestCalc
 Path:    docs/howmany-v3-components/COMPOSITION-HUD-DECODER-v3.html
-Tip (governance notes landed):
-  commit  32c848ca04a06aee5fe97681b0774b618dd9a342
-  blob    d9d5bd692f43f28384a3144f12f2ee7d6d5a19a7
-  msg     docs(howmany-v3): tip-sync R8 closed — OPEN now R9
+Tip (governance notes landed — PENDING this push):
+  commit  (pending R9 close — hat highlight kill)
+  blob    (pending)
+  msg     docs(howmany-v3): R9 close — kill residual gray highlight on hat/glasses
 
-Prior tip (R8 code):
-  commit  8cd1204833aad1bb2c1b0a22eeef05c0b30b2ef5
-  blob    46b4490e1fc71865a7ae874019e2050b50e70291
+Prior tip (R9 partial — strip READY green + tool-strip glows):
+  commit  092dc2a573fbcd23c14840874c791b27d856196b
+  blob    626dd51b448da110948cec15f69aded273e4d880
 
 Before every residual: pull tip via GitHub connector and confirm blob SHA.
 After every residual: record new commit SHA + blob SHA in this block.
@@ -44,16 +44,19 @@ After every residual: record new commit SHA + blob SHA in this block.
   6eed4c73 / 108c9e30 / a661716d  Edit chrome series (transparent yellow row,
             gray body, disabled chrome, yellow ring — not solid EDITING banner)
 
-── OPEN residuals (R1–R8 CLOSED @ 8cd12048) ─────────────────────────────────
-  R9  Edit mode chrome (authority LOCKED — full series, latest wins):
+── OPEN residuals (R1–R8 CLOSED @ 8cd12048 · R9 CLOSE PENDING THIS PUSH) ────
+  R9  Edit mode chrome (authority LOCKED — full series, latest wins) — CLOSING:
       6eed4c73  yellow OUTER shell glow; retire solid banner
       108c9e30  1px yellow outer ring + glow; surface grayscale-disabled; status-dot yellow
       a661716d  NO EDITING chip takeover — keep stage labels (FLIP IT/READY)
       82d08feb  Edit keeps GRAY body; bottom row fully disabled/grayscale
       3122e318  NO yellow surface wash (later polish — overrides a661716d body wash)
+      092dc2a5  strip READY green + tool-strip glows
+      (this)    kill residual gray highlight on hat/glasses (btn-detect) in edit
       MUST: outer ring #FFCE1B + glow only
       MUST: grayscale-disable surface + footer; keep FLIP IT/READY labels
       MUST NOT: solid EDITING banner, EDITING chip text, any yellow INSIDE the shell
+                residual gray/blue border or glow on hat while editing
 
 ── How to work a residual ────────────────────────────────────────────────────
   a. State residual id (e.g. R1) and authority SHA.
@@ -79,10 +82,10 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     "file": "docs/howmany-v3-components/COMPOSITION-HUD-DECODER-v3.html",
     "branch": "docs/howmany-v3-decoder-lock",
     "repo": "TurboFrogLLC/NestCalc",
-    "tip_commit": "32c848ca04a06aee5fe97681b0774b618dd9a342",
-    "tip_blob": "d9d5bd692f43f28384a3144f12f2ee7d6d5a19a7",
-    "prior_tip_commit": "8cd1204833aad1bb2c1b0a22eeef05c0b30b2ef5",
-    "prior_tip_blob": "46b4490e1fc71865a7ae874019e2050b50e70291",
+    "tip_commit": "pending-R9-close",
+    "tip_blob": "pending",
+    "prior_tip_commit": "092dc2a573fbcd23c14840874c791b27d856196b",
+    "prior_tip_blob": "626dd51b448da110948cec15f69aded273e4d880",
     "open_residuals": [
       "R9"
     ],
@@ -1331,6 +1334,29 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       filter: grayscale(1) !important;
       opacity: 0.45 !important;
       pointer-events: none !important;
+    }
+    /* R9 close: kill residual gray/blue highlight on hat (btn-detect) + part-group
+       while editing. Surface-row only did opacity/filter; border + box-shadow stayed. */
+    .gcode:has(.surface-row.is-editing-banner) .btn-detect,
+    .gcode:has(.surface-row.is-editing-banner) .part-group .btn-detect,
+    .gcode:has(.surface-row.is-editing-banner) .part-group .btn-post,
+    .gcode:has(.surface-row.is-editing-banner) .part-group .part-ticker {
+      box-shadow: none !important;
+      border-color: rgba(26, 20, 40, 0.12) !important;
+      border-width: 1.1px !important;
+      background: var(--white-40) !important;
+    }
+    .gcode:has(.surface-row.is-editing-banner) .part-group.is-connected {
+      border-color: rgba(26, 20, 40, 0.12) !important;
+      box-shadow: none !important;
+      background: var(--white-40) !important;
+    }
+    .gcode:has(.surface-row.is-editing-banner) .part-group.is-connected .btn-detect,
+    .gcode:has(.surface-row.is-editing-banner) .part-group.is-connected .btn-post,
+    .gcode:has(.surface-row.is-editing-banner) .part-group.is-connected .part-ticker {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
     }
 
     /* ── Card-centered toast (middle of panel, not above the top) ── */
