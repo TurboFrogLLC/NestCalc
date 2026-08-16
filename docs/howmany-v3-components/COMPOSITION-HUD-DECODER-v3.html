@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>HowMany V3 — HUD + de-coder on bed (composition)</title>
+  <title>HowMany V3 — HUD + flipIT on bed (composition)</title>
   <style>
 
     /* Composition bed + layout */
@@ -160,7 +160,7 @@
       --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
       --ease-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
       --ease-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
-      --motion-collapse: 520ms;
+      --motion-collapse: 600ms; /* HUD body grid collapse */
       --motion-expand: 560ms;
       --motion-mode: 420ms;
       --motion-popover: 180ms;
@@ -205,8 +205,10 @@
       background: var(--frost);
       color: var(--ink);
       font-family: var(--font);
-      /* no shell hairline — gap to outer ring stays fully transparent (halo) */
-      box-shadow: none;
+      /* hairlines only on shell — drop shadow lives on outer ring */
+      box-shadow:
+        0 0 0 1.1px rgba(255, 255, 255, 0.55),
+        0 0 0 1.1px rgba(83, 139, 236, 0.22);
       z-index: 40; /* always up-front above de-coder */
       display: flex;
       flex-direction: column;
@@ -244,16 +246,14 @@
       /* equal top/side inset: (44 - 28.6) / 2 = 7.7 — icon radius sits balanced in shell radius */
       padding: 0 7.7px;
       margin: 0;
-      border-bottom: 1.1px solid rgba(255, 255, 255, 0.12);
+      border-bottom: 1.1px solid var(--ink-15);
       box-sizing: border-box;
       position: relative;
       z-index: 1;
       border-radius: var(--radius) var(--radius) 0 0;
-      /* match de-coder dark header */
-      background: rgba(26, 20, 40, 0.82);
+      background: var(--frost);
     }
     .keypad-header:active { cursor: grabbing; }
-    /* Header tools: white chips + black icons + gray borders (locked, even on dark bar) */
     .keypad-header .tool {
       height: var(--icon-btn);
       width: var(--icon-btn);
@@ -261,8 +261,8 @@
       min-height: var(--icon-btn);
       border-radius: var(--chip-r);
       border: 1.1px solid rgba(26, 20, 40, 0.22);
-      background: #fff;
-      color: var(--ink);
+      background: var(--white-55);
+      color: #5B6A9A;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -274,16 +274,11 @@
       line-height: 0;
       overflow: hidden; /* clip SVG hard inside the chip */
       transform-origin: center center;
-      transition: background 0.12s, border-color 0.12s, transform 0.12s;
+      /* no scale-on-press — scale was shifting the glyph */
+      transition: background 0.12s, color 0.12s, border-color 0.12s;
     }
-    .keypad-header .tool:hover {
-      background: #fff;
-      border-color: rgba(26, 20, 40, 0.35);
-      color: var(--ink);
-    }
-    .keypad-header .tool:active,
     .keypad-header .tool.press:active {
-      transform: scale(0.94);
+      transform: none;
     }
     .keypad-header .tool svg {
       display: block;
@@ -294,11 +289,14 @@
       overflow: visible;
       pointer-events: none;
     }
-    /* Calc engaged: white base under blue tint (dark header would mud transparent blue alone) */
-    .keypad-header .tool.active-calc {
-      background: linear-gradient(rgba(83, 139, 236, 0.28), rgba(83, 139, 236, 0.28)), #fff;
-      border-color: rgba(83, 139, 236, 0.45);
+    .keypad-header .tool:hover {
+      background: rgba(255, 255, 255, 0.85);
       color: var(--ink);
+      border-color: rgba(26, 20, 40, 0.35);
+    }
+    .keypad-header .tool.active-calc {
+      background: var(--blue-28);
+      color: #1E3A8A;
     }
     .chevron-btn svg { transition: none; }
     .keypad:not(.collapsed) .chevron-btn svg { transform: rotate(180deg); }
@@ -317,20 +315,16 @@
     }
     .keypad.collapsed .header-part-ticker {
       display: flex;
-      /* white base under blue tint — same fix as active-calc; transparent alone muds on dark header */
-      background: linear-gradient(rgba(83, 139, 236, 0.22), rgba(83, 139, 236, 0.22)), #fff;
-      border-color: rgba(83, 139, 236, 0.35);
-      color: var(--ink);
     }
 
-    /* Collapse: same grid 0fr/1fr as de-coder; HUD-only 750ms for perceived parity */
+    /* HUD body collapse: grid-template-rows 0fr ↔ 1fr at --motion-collapse */
     #hud-body {
       margin-top: 0;
       display: grid;
       grid-template-rows: 1fr;
       overflow: hidden;
       min-height: 0;
-      transition: grid-template-rows 750ms var(--ease);
+      transition: grid-template-rows var(--motion-collapse) var(--ease);
     }
     #hud-body-inner {
       overflow: hidden;
@@ -555,7 +549,7 @@
       margin-top: 0;
     }
 
-    /* Footer control strip — Auto Size · GC0DE (popover black + amber) */
+    /* Footer control strip — Auto Size · flipIT (dark chip + white/amber split) */
     .hud-footer-sep {
       height: 0;
       border-top: 1.1px solid var(--ink-15);
@@ -578,7 +572,7 @@
       font-family: var(--font-mono);
       font-size: 11px;           /* shared — both buttons identical */
       font-weight: 700;
-      letter-spacing: 0.04em;    /* match de-coder GC0DE chip */
+      letter-spacing: 0.04em;
       text-transform: uppercase;
       cursor: pointer;
       display: inline-flex;
@@ -591,7 +585,17 @@
         box-shadow 120ms ease,
         transform 120ms ease;
     }
-    /* A: AUTO-SIZE — static soft lift (always-on shadow) */
+    /* flipIT wordmark on dark chip: flip = white, IT = yellow */
+    #btn-gcode .label-flip {
+      color: #ffffff;
+      text-transform: none; /* keep "flip" lowercase */
+      letter-spacing: -0.01em;
+    }
+    #btn-gcode .label-it {
+      color: #FFCE1B;
+      text-transform: none; /* keep "IT" as designed */
+      letter-spacing: -0.01em;
+    }
     /* Shared static lift shadow on both control chips — no hover lift */
     #btn-auto-size,
     #btn-gcode {
@@ -607,17 +611,11 @@
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
     }
 
-    /* de-coder resize handles — only when expanded (G-code mode); disabled when collapsed */
+    /* de-coder resize handles — E / S / SE; min = natural, max width +150 */
     .gcode-resize {
       position: absolute;
       z-index: 5;
       background: transparent;
-      display: none;
-      pointer-events: none;
-    }
-    .gcode.is-expanded .gcode-resize {
-      display: block;
-      pointer-events: auto;
     }
     .gcode-resize-e {
       top: 12px;
@@ -1134,14 +1132,16 @@
       width: var(--panel-w);
       min-width: 418px;
       max-width: 568px; /* min + 150 */
-      display: none; /* HUD Auto Size / GC0DE open it */
+      display: none; /* HUD Auto Size / flipIT open it */
       flex-direction: column;
       background: var(--frost);
       color: var(--ink);
       font-family: var(--font);
       border-radius: var(--radius);
-      /* no shell hairline — gap to outer ring stays fully transparent (halo) */
-      box-shadow: none;
+      /* hairlines only on shell — drop shadow lives on outer ring */
+      box-shadow:
+        0 0 0 1.1px rgba(255, 255, 255, 0.55),
+        0 0 0 1.1px rgba(83, 139, 236, 0.22);
       overflow: visible;
       z-index: 30;
       height: auto;
@@ -1161,56 +1161,36 @@
       box-shadow: 0 18px 40px -12px rgba(0, 0, 0, 0.38);
       pointer-events: none;
       z-index: -1;
-      transition: border-color 180ms var(--ease), box-shadow 180ms var(--ease);
-    }
-    /* EDITING alert: 1px yellow outer ring + soft glow */
-    .gcode:has(.surface-row.is-editing-banner)::after {
-      border-width: 1px;
-      border-color: #FFCE1B;
-      box-shadow:
-        0 0 2px 2px rgba(255, 206, 27, 0.55),
-        0 18px 40px -12px rgba(0, 0, 0, 0.38);
-    }
-    /* Success flash: outer ring green ~1s (post / process) */
-    .gcode.ring-flash-green::after {
-      border-width: 2px;
-      border-color: #00CF00;
-      box-shadow:
-        0 0 3px 3px rgba(0, 207, 0, 0.45),
-        0 18px 40px -12px rgba(0, 0, 0, 0.38);
-    }
-    /* Status dot → yellow while editing (not green — that reads as "posted") */
-    .gcode:has(.surface-row.is-editing-banner) .status-dot {
-      background: #FFCE1B !important;
     }
 
-    /* Centered in-panel toast — dark header color at ~50% opacity */
+    /* ── Card-anchored toast (above header) ── */
+    /* Card toast — flat, no pointer; 60% ink + amber ALL-CAPS text */
     .gcode-toast {
       position: absolute;
       left: 50%;
-      top: 50%;
-      bottom: auto;
-      transform: translate(-50%, -50%) scale(0.96);
+      bottom: calc(100% + 8.8px);
+      transform: translateX(-50%) translateY(6.6px);
       min-width: 132px;
       max-width: calc(100% - 17.6px);
-      padding: 10px 18px;
+      padding: 8.8px 15.4px;
       border-radius: 8.8px;
-      background: rgba(26, 20, 40, 0.50);
+      background: rgba(26, 20, 40, 0.60); /* 60% ink */
       color: #FFCE1B;
-      font-size: 13px;
+      font-size: 12.1px;
       font-weight: 700;
-      letter-spacing: 0.02em;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
       text-align: center;
       white-space: nowrap;
       opacity: 0;
       pointer-events: none;
-      z-index: 40;
-      box-shadow: 0 11px 26.4px -10px rgba(0,0,0,0.40);
+      z-index: 30;
+      box-shadow: 0 11px 26.4px -10px rgba(0,0,0,0.50);
       transition: opacity 180ms var(--ease), transform 180ms var(--ease);
     }
     .gcode-toast.is-on {
       opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
+      transform: translateX(-50%) translateY(0);
     }
 
     /* ── Header ── */
@@ -1222,7 +1202,7 @@
       gap: 6.6px;
       /* equal top/side inset: (44 - 28.6) / 2 = 7.7 */
       padding: 0 7.7px;
-      border-bottom: 1.1px solid rgba(255, 255, 255, 0.12);
+      border-bottom: 1.1px solid var(--ink-15);
       cursor: grab;
       box-sizing: border-box;
       min-width: 0;
@@ -1230,8 +1210,7 @@
       position: relative;
       z-index: 1;
       border-radius: var(--radius) var(--radius) 0 0;
-      /* match HUD AUTO-SIZE / GC0DE chip fill */
-      background: rgba(26, 20, 40, 0.82);
+      background: var(--frost);
     }
     .gcode.is-dragging .gcode-bar { cursor: grabbing; }
     .gcode-bar .mark {
@@ -1245,7 +1224,7 @@
     }
     .gcode-bar .mark svg { display: block; }
 
-    /* de-coder slot — fills gap between mark and program name, centers label */
+    /* flipIT slot — fills gap between mark and program name, centers label */
     .gcode-bar .surface-label-slot {
       flex: 1 1 auto;
       min-width: 0;
@@ -1254,60 +1233,20 @@
       justify-content: center;
     }
     .gcode-bar .surface-label {
-      font-size: 22px;
+      font-size: 17.6px; /* ~50% up from 12.1px */
       font-weight: 650;
       letter-spacing: -0.015em;
       white-space: nowrap;
       user-select: none;
       line-height: 1;
     }
-    .gcode-bar .surface-label .label-de {
-      color: #fff; /* white on dark header */
+    /* Wordmark: flip (ink on frost) + IT (amber) — readable on light header */
+    .gcode-bar .surface-label .label-flip {
+      color: var(--ink);
     }
-    .gcode-bar .surface-label .label-coder {
-      color: #FFCE1B; /* same yellow as HUD chip text / stage amber */
-    }
-    /* Header chrome on dark bar — light icons (program field keeps its own fill) */
-    .gcode-bar .mark {
-      border-color: rgba(255, 255, 255, 0.28);
-      color: #fff;
-    }
-    .gcode-bar .icon-btn:not(.close) {
-      background: rgba(255, 255, 255, 0.14);
-      border-color: rgba(255, 255, 255, 0.22);
-      color: #fff;
-    }
-    .gcode-bar .icon-btn:not(.close):hover:not(:disabled) {
-      background: rgba(255, 255, 255, 0.22);
-      border-color: rgba(255, 255, 255, 0.35);
-      color: #fff;
-    }
-    .gcode-bar .icon-btn.close {
-      background: rgba(255, 255, 255, 0.10);
-      border-color: transparent;
-      color: rgba(255, 255, 255, 0.55);
-    }
-    .gcode-bar .icon-btn.close:hover {
-      background: rgba(255, 255, 255, 0.18);
-      color: #fff;
-      border-color: transparent;
-    }
-    /* Open/download sit on white program field — force visible ink icons */
-    .gcode-bar .prog-actions .icon-btn {
-      background: transparent !important;
-      border: none !important;
-      color: var(--ink) !important;
-    }
-    .gcode-bar .prog-actions .icon-btn:hover:not(:disabled) {
-      background: var(--ink-08) !important;
-      color: var(--ink) !important;
-    }
-    .gcode-bar .prog-actions .icon-btn:disabled {
-      color: var(--ink-30) !important;
-      opacity: 0.45;
-    }
-    .gcode-bar .prog-clear {
-      color: var(--ink-50);
+    .gcode-bar .surface-label .label-it {
+      color: #FFCE1B;
+      font-weight: 700;
     }
 
     .prog-field {
@@ -1325,7 +1264,7 @@
       padding: 0 79.2px 0 8.8px;
       border: 1.1px solid transparent;
       border-radius: var(--chip-r);
-      background: #fff; /* always white on dark header */
+      background: var(--white-40);
       color: var(--ink);
       font-size: 12.1px;
       font-weight: 600;
@@ -1335,7 +1274,7 @@
     }
     .prog-name::placeholder { color: var(--ink-30); font-weight: 500; }
     .prog-name:focus {
-      background: #fff;
+      background: var(--white);
       border-color: rgba(83, 139, 236, 0.45);
       box-shadow: 0 0 0 2.2px var(--blue-22);
     }
@@ -1489,21 +1428,29 @@
       overflow: hidden;
       position: relative; /* hosts EDITING banner */
     }
-    /* EDITING: no solid banner / no "EDITING" text.
-       Row stays visible (Source · Output · part controls) but disabled;
-       transparent yellow wash on the row; shell outer ring handles the alert. */
+    /* Full-row EDITING takeover — obvious, yellow, centered */
     .surface-editing-banner {
-      display: none !important; /* retired takeover label */
-    }
-    /* EDITING surface row: no yellow wash — just disabled look; outer ring carries the alert */
-    .surface-row.is-editing-banner {
-      background: transparent;
-      border-bottom-color: var(--ink-15);
-    }
-    .surface-row.is-editing-banner > *:not(.surface-editing-banner) {
-      opacity: 0.55;
-      filter: grayscale(1);
+      display: none;
+      position: absolute;
+      inset: 0;
+      z-index: 6;
+      background: #FFCE1B;
+      color: #0A0A0A;
+      font-family: var(--font);
+      font-size: 20px; /* big + bold — hard to miss */
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      align-items: center;
+      justify-content: center;
       pointer-events: none;
+      user-select: none;
+    }
+    .surface-row.is-editing-banner .surface-editing-banner {
+      display: flex;
+    }
+    .surface-row.is-editing-banner {
+      border-bottom-color: rgba(180, 130, 0, 0.35);
     }
     .gcode.is-expanded .surface-row {
       border-bottom: 1.1px solid var(--ink-15);
@@ -1849,24 +1796,6 @@
       display: flex;
       flex-direction: column;
     }
-    /* EDITING: keep body gray (no yellow fill). Bottom row fully disabled —
-       labels stay PROCESS/READY etc., rings/highlights stripped, grayscale. */
-    .gcode:has(.surface-row.is-editing-banner) .action-row .stage-action,
-    .gcode:has(.surface-row.is-editing-banner) .action-row .stage-status,
-    .gcode:has(.surface-row.is-editing-banner) .action-row .rot-chip,
-    .gcode:has(.surface-row.is-editing-banner) .action-row .btn-surface-chevron {
-      filter: grayscale(1);
-      opacity: 0.55;
-      pointer-events: none;
-      box-shadow: none !important;
-      border-color: rgba(26, 20, 40, 0.14) !important;
-      cursor: default;
-    }
-    .gcode:has(.surface-row.is-editing-banner) .action-row .stage-action,
-    .gcode:has(.surface-row.is-editing-banner) .action-row .stage-status {
-      background: var(--chip-gray) !important;
-      color: var(--ink-50) !important;
-    }
 
     .io-panel {
       margin: 8.8px 11px 0;
@@ -1988,9 +1917,8 @@
 
     .edit-actions {
       position: absolute;
-      /* top matches original; right clears scrollbar (~15px) + chip width gap */
       top: 6.6px;
-      right: 22px;
+      right: 6.6px;
       display: none;
       align-items: center;
       gap: 4.4px;
@@ -2053,7 +1981,7 @@
 
     /*
       Footer chips — locked equal 85.8px.
-      LEFT  = PROCESS | START OVER | EDITING
+      LEFT  = FLIP IT | START OVER | EDITING
       RIGHT = READY   | DONE       | EDITING
     */
     .stage-action,
@@ -2082,7 +2010,7 @@
       transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease), color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
     }
 
-    /* LEFT — PROCESS (no fill · thicker darker blue outline) */
+    /* LEFT — FLIP IT (no fill · thicker darker blue outline) */
     .stage-action[data-state="process"]:not(:disabled) {
       background: var(--chip-gray);
       border: 1.65px solid var(--blue-border);
@@ -2098,7 +2026,7 @@
       transform: scale(0.98);
     }
 
-    /* LEFT — START OVER (same blue outline as PROCESS) */
+    /* LEFT — START OVER (same blue outline as FLIP IT) */
     .stage-action[data-state="start"]:not(:disabled) {
       background: var(--chip-gray);
       border: 1.65px solid var(--blue-border);
@@ -2411,11 +2339,11 @@
 
           </div>
 
-          <!-- Control strip: opens de-coder -->
+          <!-- Control strip: opens flipIT -->
           <div class="hud-footer-sep" aria-hidden="true"></div>
           <div class="hud-controls">
-            <button type="button" class="hud-ctl" id="btn-auto-size" title="Open de-coder collapsed">AUTO-SIZE</button>
-            <button type="button" class="hud-ctl" id="btn-gcode" title="Open de-coder expanded">GC0DE</button>
+            <button type="button" class="hud-ctl" id="btn-auto-size" title="Open flipIT collapsed">AUTO-SIZE</button>
+            <button type="button" class="hud-ctl" id="btn-gcode" title="Open flipIT expanded"><span class="label-flip">flip</span><span class="label-it">IT</span></button>
           </div>
         </div>
 
@@ -2458,26 +2386,26 @@
     <div class="gcode-resize gcode-resize-s" data-dir="s" aria-hidden="true"></div>
     <div class="gcode-resize gcode-resize-se" data-dir="se" aria-hidden="true"></div>
 
-    <!-- Header: mark · de-coder · program name · status · X -->
+    <!-- Header: mark · flipIT · program name · status · X -->
     <div class="gcode-bar" id="gcode-drag">
       <div class="mark" aria-hidden="true">
         <svg width="17.6" height="17.6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="14" width="4.4" height="6.6" rx="2"/><rect x="6" y="4" width="4.4" height="6.6" rx="2"/><path d="M6 20h4"/><path d="M14 10h4"/><path d="M6 14h2v6"/><path d="M14 4h2v6"/></svg>
       </div>
       <div class="surface-label-slot">
-        <span class="surface-label"><span class="label-de">de</span><span class="label-coder">coder</span></span>
+        <span class="surface-label"><span class="label-flip">flip</span><span class="label-it">IT</span></span>
       </div>
 
       <div class="prog-field" id="prog-field">
         <input class="prog-name" id="prog-name" type="text" placeholder="Program name" spellcheck="false" autocomplete="off" />
         <div class="prog-actions">
+          <button type="button" class="prog-clear" id="prog-clear" title="Clear name" aria-label="Clear program name">
+            <svg width="12.1" height="12.1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          </button>
           <button type="button" class="icon-btn" id="btn-open" title="Open program" aria-label="Open program">
             <svg width="14.3" height="14.3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.55 6a2 2 0 0 1-1.94 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"/></svg>
           </button>
           <button type="button" class="icon-btn" id="btn-save" title="Save program (from Output)" aria-label="Save program" disabled>
             <svg width="14.3" height="14.3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
-          </button>
-          <button type="button" class="prog-clear" id="prog-clear" title="Clear name" aria-label="Clear program name">
-            <svg width="12.1" height="12.1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
           </button>
         </div>
       </div>
@@ -2597,11 +2525,11 @@
           </div>
         </div>
 
-        <!-- Footer: ACTION (PROCESS|START OVER) · rot · STATUS (READY|DONE) · collapse
+        <!-- Footer: ACTION (FLIP IT|START OVER) · rot · STATUS (READY|DONE) · collapse
              Both chips fixed 90px so rotation stays centered between them -->
         <div class="action-row">
           <div class="action-main">
-            <button type="button" class="stage-action" id="stage-action" data-state="idle" disabled title="Process Source to Output">PROCESS</button>
+            <button type="button" class="stage-action" id="stage-action" data-state="idle" disabled title="Flip Source to Output">FLIP IT</button>
             <div class="rot-row" role="group" aria-label="Rotation">
               <button type="button" class="rot-chip is-on" data-rot="0">0°</button>
               <div class="rot-sep" aria-hidden="true"></div>
@@ -2815,26 +2743,17 @@
         calcToggle.classList.remove('active-calc');
         calcToggle.setAttribute('aria-pressed', 'false');
       }
-      if (on) closeAllParamPopovers();
-
-      /* Critical: residual inline minHeight from lockBodyHeight/setCalc
-         blocks CSS grid-template-rows: 0fr. Clear on collapse so the
-         body fully disappears (header-only: calc + part ticker + chevron).
-         Restore measured height on expand so calc↔HUD swap stays seamless. */
+      /* Clear residual inline minHeight so CSS grid 0fr can collapse fully */
       if (on) {
-        /* Clear residual inline styles so CSS 750ms grid transition can run */
         hudBody.style.minHeight = '';
-        hudBody.style.transition = '';
-        hudBody.style.height = '';
+        closeAllParamPopovers();
       } else {
+        /* restore measured height when expanding */
         const hudH = parseFloat(hudBody.dataset.hudH || '0');
         const calcH = parseFloat(hudBody.dataset.calcH || '0');
-        if (hudH && calcH) {
-          hudBody.style.transition = 'none';
-          hudBody.style.minHeight = (state.calc ? calcH : hudH) + 'px';
-        }
+        if (state.calc && calcH) hudBody.style.minHeight = calcH + 'px';
+        else if (hudH) hudBody.style.minHeight = hudH + 'px';
       }
-
       applyModeVisibility();
     }
 
@@ -3118,24 +3037,100 @@
     });
 
     function positionOutsideHUD() {
+      /* Smart placement: default RIGHT of HUD; flip to left / bottom / top
+         to stay clear of browser edges and any open flipIT panel. */
       const hudRect = hud.getBoundingClientRect();
       const openRow = document.querySelector('.param-row.is-open');
-      const top = openRow ? openRow.getBoundingClientRect().top : hudRect.top;
+      if (!openRow) return;
+      const rowRect = openRow.getBoundingClientRect();
+      const pop = openRow.querySelector('.param-popover');
+      if (!pop) return;
+
       const gap = 11;
-      const margin = 8;
-      document.querySelectorAll('.param-popover').forEach((pop) => {
-        pop.style.position = 'fixed';
-        pop.style.top = top + 'px';
-        pop.style.right = 'auto';
-        /* Prefer right of HUD; flip to left if it would clip the viewport */
-        const popW = pop.offsetWidth || 280;
-        const rightLeft = hudRect.right + gap;
-        if (rightLeft + popW > window.innerWidth - margin) {
-          pop.style.left = Math.round(Math.max(margin, hudRect.left - gap - popW)) + 'px';
-        } else {
-          pop.style.left = Math.round(rightLeft) + 'px';
+      const edge = 8;
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      pop.style.position = 'fixed';
+      pop.style.right = 'auto';
+      pop.style.bottom = 'auto';
+      /* measure size (visible or not) */
+      const pw = pop.offsetWidth || 286;
+      const ph = pop.offsetHeight || 140;
+
+      const obstacles = [hudRect];
+      const gcodeEl = document.getElementById('gcode');
+      if (gcodeEl && gcodeEl.classList.contains('is-open') && gcodeEl.style.display !== 'none') {
+        obstacles.push(gcodeEl.getBoundingClientRect());
+      }
+
+      function rectOf(left, top) {
+        return { left: left, top: top, right: left + pw, bottom: top + ph };
+      }
+      function overlaps(a, b, pad) {
+        pad = pad == null ? 4 : pad;
+        return !(a.right + pad <= b.left || a.left - pad >= b.right ||
+                 a.bottom + pad <= b.top || a.top - pad >= b.bottom);
+      }
+      function inView(r) {
+        return r.left >= edge && r.top >= edge &&
+               r.right <= vw - edge && r.bottom <= vh - edge;
+      }
+      function clearOfPanels(r) {
+        for (let i = 0; i < obstacles.length; i++) {
+          if (overlaps(r, obstacles[i])) return false;
         }
+        return true;
+      }
+
+      /* Preference: right → left → bottom → top */
+      const candidates = [];
+      /* right of HUD, top-aligned to open row */
+      candidates.push({
+        side: 'right',
+        left: hudRect.right + gap,
+        top: Math.max(edge, Math.min(rowRect.top, vh - edge - ph))
       });
+      /* left of HUD */
+      candidates.push({
+        side: 'left',
+        left: hudRect.left - gap - pw,
+        top: Math.max(edge, Math.min(rowRect.top, vh - edge - ph))
+      });
+      /* below HUD, centered on HUD width */
+      candidates.push({
+        side: 'bottom',
+        left: Math.max(edge, Math.min(hudRect.left + (hudRect.width - pw) / 2, vw - edge - pw)),
+        top: hudRect.bottom + gap
+      });
+      /* above HUD */
+      candidates.push({
+        side: 'top',
+        left: Math.max(edge, Math.min(hudRect.left + (hudRect.width - pw) / 2, vw - edge - pw)),
+        top: hudRect.top - gap - ph
+      });
+
+      let chosen = null;
+      for (let i = 0; i < candidates.length; i++) {
+        const c = candidates[i];
+        const r = rectOf(c.left, c.top);
+        if (inView(r) && clearOfPanels(r)) {
+          chosen = c;
+          break;
+        }
+      }
+      /* last resort: right, clamped into viewport (may soft-overlap) */
+      if (!chosen) {
+        chosen = {
+          side: 'right',
+          left: Math.max(edge, Math.min(hudRect.right + gap, vw - edge - pw)),
+          top: Math.max(edge, Math.min(rowRect.top, vh - edge - ph))
+        };
+      }
+
+      pop.style.left = Math.round(chosen.left) + 'px';
+      pop.style.top = Math.round(chosen.top) + 'px';
+      pop.dataset.side = chosen.side;
     }
 
     // Snapshot at open — dirty when fields diverge from snapshot
@@ -3464,13 +3459,7 @@
         hudBody.style.transition = 'none';
         hudBody.dataset.hudH = String(hudH);
         hudBody.dataset.calcH = String(calcH);
-        /* Only apply minHeight when expanded; collapsed must stay clear
-           so grid-template-rows: 0fr can fully hide the body. */
-        if (wasCollapsed) {
-          hudBody.style.minHeight = '';
-        } else {
-          hudBody.style.minHeight = (wasCalc ? calcH : hudH) + 'px';
-        }
+        hudBody.style.minHeight = (wasCalc ? calcH : hudH) + 'px';
         state.calc = wasCalc;
         state.collapsed = wasCollapsed;
         applyModeVisibility();
@@ -3481,11 +3470,6 @@
     const _setCalc = setCalc;
     setCalc = function(on) {
       _setCalc(on);
-      /* Never leave residual minHeight while collapsed — grid 0fr must win */
-      if (state.collapsed) {
-        hudBody.style.minHeight = '';
-        return;
-      }
       const hudH = parseFloat(hudBody.dataset.hudH || '0');
       const calcH = parseFloat(hudBody.dataset.calcH || '0');
       if (hudH && calcH) {
@@ -3582,16 +3566,16 @@
       var sizedClean = false; /* true after Auto-Size until source is edited */
       var toastTimer = null;
 
-      /* --- toast --- */
+      /* --- toast (ALL CAPS, 60% ink shell via CSS) --- */
       function showToast(msg) {
         if (!msg) return;
-        toastEl.textContent = msg;
+        toastEl.textContent = String(msg).toUpperCase();
         toastEl.classList.add('is-on');
         if (toastTimer) clearTimeout(toastTimer);
         toastTimer = setTimeout(function () {
           toastEl.classList.remove('is-on');
           toastTimer = null;
-        }, 1500);
+        }, 2200);
       }
 
       /* --- highlighter --- */
@@ -3690,7 +3674,7 @@
       }
 
       /* --- footer chips ---
-         LEFT  stage-action = PROCESS | START OVER | EDITING  (actions)
+         LEFT  stage-action = FLIP IT | START OVER | EDITING  (actions)
          RIGHT stage-status = READY   | DONE       | EDITING  (indicators)
       */
       function syncProcessState() {
@@ -3698,11 +3682,14 @@
         var editing = srcEdit || outEdit;
 
         if (editing) {
-          /* Keep current PROCESS/READY or START OVER/DONE labels — only disable.
-             Yellow wash + grayscale come from CSS on .action-row. */
           stageAction.disabled = true;
-          stageStatus.disabled = true;
+          stageAction.setAttribute('data-state', 'editing');
+          stageAction.textContent = 'EDITING';
           stageAction.title = 'Finish edit to continue';
+
+          stageStatus.disabled = true;
+          stageStatus.setAttribute('data-state', 'editing');
+          stageStatus.textContent = 'EDITING';
           stageStatus.title = 'Editing';
           return;
         }
@@ -3722,16 +3709,16 @@
         }
 
         if (on) {
-          /* Left action = PROCESS · Right indicator = READY */
+          /* Left action = FLIP IT · Right indicator = READY */
           stageAction.disabled = false;
           stageAction.setAttribute('data-state', 'process');
-          stageAction.textContent = 'PROCESS';
-          stageAction.title = 'Process Source to Output';
+          stageAction.textContent = 'FLIP IT';
+          stageAction.title = 'Flip Source to Output';
 
           stageStatus.disabled = true;
           stageStatus.setAttribute('data-state', 'ready');
           stageStatus.textContent = 'READY';
-          stageStatus.title = 'Ready — hit Process';
+          stageStatus.title = 'Ready — hit Flip IT';
           return;
         }
 
@@ -3739,8 +3726,8 @@
         processDone = false;
         stageAction.disabled = true;
         stageAction.setAttribute('data-state', 'idle');
-        stageAction.textContent = 'PROCESS';
-        stageAction.title = 'Process Source to Output';
+        stageAction.textContent = 'FLIP IT';
+        stageAction.title = 'Flip Source to Output';
 
         stageStatus.disabled = true;
         stageStatus.setAttribute('data-state', 'idle');
@@ -3807,7 +3794,7 @@
       }
       function loadSampleProgram() {
         loadSourceText(SAMPLE, 'BRACKET_PLATE');
-        /* no open toast — quiet load */
+        showToast('Program loaded — Auto-Size ready');
       }
 
       /* status helpers */
@@ -3878,18 +3865,12 @@
       progName.addEventListener('input', syncProgClear);
       progName.addEventListener('focus', function () { progField.classList.add('is-focus'); });
       progName.addEventListener('blur', function () { progField.classList.remove('is-focus'); });
-      var progClearBtn = document.getElementById('prog-clear');
-      /* mousedown preventDefault so input doesn't blur before clear fires */
-      progClearBtn.addEventListener('mousedown', function (e) { e.preventDefault(); });
-      progClearBtn.addEventListener('click', function () {
+      document.getElementById('prog-clear').addEventListener('click', function () {
         progName.value = '';
         syncProgClear();
         progName.focus();
       });
       syncProgClear();
-
-      /* Remember last dragged position so reopen lands where user left it */
-      var lastPanelPos = null; /* { left, top } in px strings, or null = default corner */
 
       /* drag — header bar; pure left/top (host no longer pins with !important / right) */
       (function () {
@@ -3918,7 +3899,6 @@
           if (!dragging) return;
           dragging = false;
           panel.classList.remove('is-dragging');
-          lastPanelPos = { left: panel.style.left, top: panel.style.top };
           try { if (pid != null) dragBar.releasePointerCapture(pid); } catch (_) {}
           pid = null;
         }
@@ -3930,27 +3910,13 @@
         panel.classList.add('is-open');
         panel.setAttribute('aria-hidden', 'false');
         panel.style.display = 'flex';
-        if (lastPanelPos) {
-          /* Restore last drag position */
-          panel.style.left = lastPanelPos.left;
-          panel.style.top = lastPanelPos.top;
-          panel.style.right = 'auto';
-        } else {
-          /* First open — default top-right corner */
-          panel.style.top = '16px';
-          panel.style.right = '16px';
-          panel.style.left = 'auto';
-        }
+        /* Pin top-right — tighter edge margin (16px) */
+        panel.style.top = '16px';
+        panel.style.right = '16px';
+        panel.style.left = 'auto';
         setExpanded(!!expanded);
       }
       function closeGcode() {
-        /* Snapshot position before hide (covers non-drag close too) */
-        if (panel.style.left && panel.style.left !== 'auto') {
-          lastPanelPos = { left: panel.style.left, top: panel.style.top || '16px' };
-        } else {
-          var r = panel.getBoundingClientRect();
-          if (r.width > 0) lastPanelPos = { left: r.left + 'px', top: r.top + 'px' };
-        }
         panel.classList.remove('is-open');
         panel.setAttribute('aria-hidden', 'true');
         panel.style.display = 'none';
@@ -3958,7 +3924,7 @@
       }
       document.getElementById('btn-close').addEventListener('click', closeGcode);
 
-      /* HUD → de-coder bridges */
+      /* HUD → flipIT bridges */
       var btnAutoSize = document.getElementById('btn-auto-size');
       var btnGcodeHud = document.getElementById('btn-gcode');
       function isGcodeOpen() {
@@ -4065,7 +4031,7 @@
           if (processDone) {
             processDone = false;
             syncProcessState();
-            showToast('Source changed — process again');
+            showToast('Source changed — flip again');
           }
         });
       });
@@ -4132,7 +4098,7 @@
         renderSourceHl();
         if (processDone) {
           processDone = false;
-          showToast('Source changed — process again');
+          showToast('Source changed — flip again');
         }
         /* Source edit after size → re-arm Auto-Size; part ticker goes stale (gray fill, keep border) */
         if (sizedClean || bounds) {
@@ -4210,7 +4176,7 @@
         btnEditOut.disabled = !on;
       }
 
-      /* LEFT action chip: PROCESS or START OVER */
+      /* LEFT action chip: FLIP IT or START OVER */
       stageAction.addEventListener('click', function () {
         if (srcEdit || outEdit) return;
         var state = stageAction.getAttribute('data-state');
@@ -4228,7 +4194,7 @@
         }
 
         if (state === 'process') {
-          /* PROCESS: Source + rotation → Output */
+          /* FLIP IT: Source + rotation → Output */
           if (!hasSource()) return;
           detectPart();
           var header = '; ' + (progName.value.trim() || 'untitled') +
@@ -4242,7 +4208,6 @@
           setOutEdit(false);
           setTab('output');
           showToast('Output ready');
-          flashRingGreen();
         }
       });
 
@@ -4270,22 +4235,11 @@
       });
 
       btnDetect.addEventListener('click', function () {
-        detectPart(); /* no "Part sized" toast */
+        if (detectPart()) showToast('Part sized');
         syncDetectArm();
       });
 
-      /* PROCESS handled on stageAction click */
-
-      /* Outer-ring green success flash — 1500ms, matched to toast */
-      var ringFlashTimer = null;
-      function flashRingGreen() {
-        panel.classList.add('ring-flash-green');
-        if (ringFlashTimer) clearTimeout(ringFlashTimer);
-        ringFlashTimer = setTimeout(function () {
-          panel.classList.remove('ring-flash-green');
-          ringFlashTimer = null;
-        }, 1500);
-      }
+      /* FLIP IT handled on stageAction click */
 
       btnPost.addEventListener('click', function () {
         if (!bounds || btnPost.disabled) return;
@@ -4293,7 +4247,6 @@
         setStatus('posted');
         syncPartGroup();
         showToast('Part posted');
-        flashRingGreen();
       });
 
       function downloadOut() {
