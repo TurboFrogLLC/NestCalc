@@ -10,14 +10,14 @@ READ THIS BLOCK BEFORE ANY EDIT. Self-governing loop for Grok / Codex sessions.
 Branch:  docs/howmany-v3-decoder-lock
 Repo:    TurboFrogLLC/NestCalc
 Path:    docs/howmany-v3-components/COMPOSITION-HUD-DECODER-v3.html
-Tip (R13 closed — backplot unattached):
+Tip (R14 closed — sandbox isolator):
+  commit  00b7975efea7a28ff60996b1dd09194ec0130234
+  blob    0158c636f1144770432bb792215b22df2cd135cc
+  msg     docs(howmany-v3): R14 sandbox isolator show/hide card
+
+Prior tip (R13 backplot):
   commit  2fb32796297510f5d19d1fbc97918960d5172de6
   blob    efcd1d59eabaf3ff72adb8c3856def85d7598bb5
-  msg     docs(howmany-v3): R13 backplot 200x200 unattached component
-
-Prior tip (R12 select-all):
-  commit  ad530cad765b0de5b7c70677e1d2399867b48733
-  blob    e7c083fcbcf00317259734d5153dc5e332f79d1d
 
 Before every residual: pull tip via GitHub connector and confirm blob SHA.
 After every residual: record new commit SHA + blob SHA in this block.
@@ -45,10 +45,10 @@ After every residual: record new commit SHA + blob SHA in this block.
             gray body, disabled chrome, yellow ring — not solid EDITING banner)
 
 ── OPEN residuals ───────────────────────────────────────────────────────────
-  R14  sandbox show/hide card (bottom-right · isolate surfaces · not production)
   R15  faux-bed blank child-spec table on surface click (template tokens)
 
 ── CLOSED (do not reopen without human OK) ──────────────────────────────────
+  R14 closed @ 00b7975e  sandbox isolator show/hide (bottom-right · not production)
   R13 closed @ 2fb32796  backplot 200×200 unattached (not a drawer · not flipIT child)
   R12 closed @ ad530cad  popover select-all · black@60% · text #FFCE1B · mouseup race fixed
   R11 closed @ 4438c2ac  flipIT reopen remembers last left/top (AUTO-SIZE + FLiPIT)
@@ -86,11 +86,11 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     "file": "docs/howmany-v3-components/COMPOSITION-HUD-DECODER-v3.html",
     "branch": "docs/howmany-v3-decoder-lock",
     "repo": "TurboFrogLLC/NestCalc",
-    "tip_commit": "2fb32796297510f5d19d1fbc97918960d5172de6",
-    "tip_blob": "efcd1d59eabaf3ff72adb8c3856def85d7598bb5",
-    "prior_tip_commit": "ad530cad765b0de5b7c70677e1d2399867b48733",
-    "prior_tip_blob": "e7c083fcbcf00317259734d5153dc5e332f79d1d",
-    "open_residuals": ["R14","R15"],
+    "tip_commit": "00b7975efea7a28ff60996b1dd09194ec0130234",
+    "tip_blob": "0158c636f1144770432bb792215b22df2cd135cc",
+    "prior_tip_commit": "2fb32796297510f5d19d1fbc97918960d5172de6",
+    "prior_tip_blob": "efcd1d59eabaf3ff72adb8c3856def85d7598bb5",
+    "open_residuals": ["R15"],
     "rules": [
       "one residual at a time",
       "read tip blob + authority SHA before fix",
@@ -138,11 +138,115 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       position: absolute;
       left: 52.8px;
       bottom: 52.8px;
-      width: 242px;
-      height: 154px;
-      background: rgba(255,255,255,0.75);
+      width: 280px;
+      height: 210px;
+      background: rgba(255,255,255,0.82);
       border: 1.38px solid rgba(0,0,0,0.55);
-      pointer-events: none;
+      pointer-events: auto; /* host child-spec clicks only when table open area */
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+    /* R15: child-spec table inside faux-bed blank */
+    .child-spec {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+      font-size: 10px;
+      color: rgba(26, 20, 40, 0.78);
+      padding: 6px 8px 8px;
+      box-sizing: border-box;
+      user-select: text;
+      -webkit-user-select: text;
+    }
+    .child-spec .cs-head {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-bottom: 5px;
+      flex-shrink: 0;
+      border-bottom: 1px solid rgba(26, 20, 40, 0.14);
+      padding-bottom: 4px;
+    }
+    .child-spec .cs-title {
+      font-family: var(--font);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: rgba(26, 20, 40, 0.55);
+    }
+    .child-spec .cs-name {
+      font-family: var(--font);
+      font-size: 11px;
+      font-weight: 650;
+      color: var(--ink, #1A1428);
+      margin-left: auto;
+      max-width: 55%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .child-spec.is-empty .cs-name { color: rgba(26, 20, 40, 0.35); font-weight: 500; }
+    .child-spec .cs-body {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+    }
+    .child-spec table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+    .child-spec th,
+    .child-spec td {
+      text-align: left;
+      vertical-align: top;
+      padding: 2px 4px 2px 0;
+      border-bottom: 1px solid rgba(26, 20, 40, 0.08);
+      line-height: 1.35;
+    }
+    .child-spec th {
+      width: 34%;
+      font-weight: 650;
+      color: rgba(26, 20, 40, 0.45);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      font-size: 9px;
+    }
+    .child-spec td {
+      font-weight: 500;
+      word-break: break-word;
+      color: rgba(26, 20, 40, 0.88);
+    }
+    .child-spec td code {
+      font-family: inherit;
+      font-size: 10px;
+      background: rgba(26, 20, 40, 0.06);
+      padding: 0 3px;
+      border-radius: 3px;
+    }
+    .child-spec .cs-empty {
+      display: none;
+      flex: 1;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: rgba(26, 20, 40, 0.32);
+      font-family: var(--font);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      line-height: 1.4;
+      padding: 12px;
+    }
+    .child-spec.is-empty .cs-body { display: none; }
+    .child-spec.is-empty .cs-empty { display: flex; }
+    /* clickable child surfaces get a soft affordance only while inspecting — no permanent chrome */
+    [data-child-spec].cs-armed {
+      outline: 1.5px dashed rgba(83, 139, 236, 0.55);
+      outline-offset: 2px;
     }
     .comp-note {
       position: fixed;
@@ -2610,7 +2714,21 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
 </head>
 <body>
   <div class="bed-stage" aria-hidden="true">
-    <div class="bed-blank"></div>
+    <div class="bed-blank" id="bed-blank">
+      <!-- R15: child-spec table — default blank; click a child surface to hydrate -->
+      <div class="child-spec is-empty" id="child-spec" aria-live="polite">
+        <div class="cs-head">
+          <span class="cs-title">Child spec</span>
+          <span class="cs-name" id="cs-name">—</span>
+        </div>
+        <div class="cs-body">
+          <table>
+            <tbody id="cs-rows"></tbody>
+          </table>
+        </div>
+        <div class="cs-empty">Click a child surface<br/>to show build tokens</div>
+      </div>
+    </div>
     <div class="bed-origin"></div>
     <div class="bed-label">Faux bed · origin BL · not product LaserBed</div>
   </div>
@@ -2619,7 +2737,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
   <div id="stage">
 <div id="hint">NumericHUD simplified · Part · Blank · Gap · Margin tickers · click ticker → popover</div>
 
-    <div class="keypad" id="hud" role="dialog" aria-label="Numeric HUD">
+    <div class="keypad" id="hud" role="dialog" aria-label="Numeric HUD" data-child-spec="hud-shell">
       <div class="keypad-header" id="hud-header" title="Drag HUD">
         <button type="button" class="tool press" id="calc-toggle" title="Calculator mode" aria-label="Calculator mode" aria-pressed="false">
           <svg width="14.3" height="14.3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.54" stroke-linecap="round" stroke-linejoin="round">
@@ -2823,7 +2941,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       </div><!-- /hud-body -->
     </div><!-- /keypad -->
 
-<aside class="gcode" id="gcode" style="--panel-w: 418px;" aria-hidden="true">
+<aside class="gcode" id="gcode" style="--panel-w: 418px;" aria-hidden="true" data-child-spec="flipit-shell">
     <div class="gcode-toast" id="gcode-toast" role="status" aria-live="polite"></div>
     <!-- Resize: E width · S height (grows code shell) · SE both -->
     <div class="gcode-resize gcode-resize-e" data-dir="e" aria-hidden="true"></div>
@@ -2892,7 +3010,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
           <svg class="icon-hat" width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.42" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 18a2 2 0 0 0-4 0"/><path d="m19 11-2.11-6.657a2 2 0 0 0-2.752-1.148l-1.276.61A2 2 0 0 1 12 4H8.5a2 2 0 0 0-1.925 1.456L5 11"/><path d="M2 11h20"/><circle cx="17" cy="18" r="3"/><circle cx="7" cy="18" r="3"/></svg>
         </button>
         <span class="part-sep" aria-hidden="true"></span>
-        <div class="part-ticker" id="part-ticker" data-state="none" title="Part size">
+        <div class="part-ticker" id="part-ticker" data-state="none" title="Part size" data-child-spec="part-ticker">
           <span class="readout is-empty" id="part-readout">—</span>
         </div>
         <span class="part-sep" aria-hidden="true"></span>
@@ -2995,7 +3113,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
   </aside>
 
   <!-- R13: Backplot — separate unattached 200×200 (not a drawer, not flipIT child) -->
-  <div class="backplot" id="backplot" style="--bp-w: 200px; --bp-h: 200px;" aria-label="Backplot">
+  <div class="backplot" id="backplot" style="--bp-w: 200px; --bp-h: 200px;" aria-label="Backplot" data-child-spec="backplot">
     <div class="backplot-inner">
       <div class="bp-handle e" data-bp="e" aria-hidden="true"></div>
       <div class="bp-handle s" data-bp="s" aria-hidden="true"></div>
@@ -4942,6 +5060,176 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
   wire('si-flipit', 'flipit');
   wire('si-backplot', 'backplot');
   wire('si-bed', 'bed');
+})();
+  </script>
+
+  <script>
+/* ── R15 Child-spec table — template tokens in faux-bed blank ──
+   Default blank. Click a marked child surface → hydrate. Click outside → clear.
+   Template is fixed keys so hydration never invents fields. */
+(function () {
+  var panel = document.getElementById('child-spec');
+  var nameEl = document.getElementById('cs-name');
+  var rowsEl = document.getElementById('cs-rows');
+  if (!panel || !nameEl || !rowsEl) return;
+
+  /* Persistent template keys — same for every child */
+  var KEYS = ['font', 'size', 'outline', 'radius', 'fill', 'shadow', 'note'];
+
+  /* Registry: id → { label, tokens } */
+  var REG = {
+    'hud-shell': {
+      label: 'HUD shell',
+      tokens: {
+        font: 'SF Pro / system · 11–12.1px',
+        size: 'max-content · min 268px · header 44px',
+        outline: 'hairline white + blue 0.22',
+        radius: '15.4px (--radius)',
+        fill: '#D8D6E2 (--frost)',
+        shadow: '::after 2px ring + 0 18px 40px -12px',
+        note: 'z-index 40 · drag header'
+      }
+    },
+    'hud-ticker': {
+      label: 'HUD ticker',
+      tokens: {
+        font: 'mono 12.1px · weight 650 · tabular',
+        size: '21ch × 28.6px',
+        outline: '1.1px solid rgba(83,139,236,0.35)',
+        radius: '6.6px (--chip-r)',
+        fill: 'rgba(83,139,236,0.22)',
+        shadow: '0 0.5px 1px rgba(0,0,0,0.25)',
+        note: 'click → popover'
+      }
+    },
+    'hud-popover': {
+      label: 'HUD popover',
+      tokens: {
+        font: 'title 11px · fields mono 12.1px',
+        size: '286px wide · pad 11px',
+        outline: '1.1px solid rgba(255,255,255,0.12)',
+        radius: '6.6px',
+        fill: 'rgba(26,20,40,0.82) · amber text',
+        shadow: '0 13.2px 30.8px -10px',
+        note: 'selection black@60% · text #FFCE1B'
+      }
+    },
+    'flipit-shell': {
+      label: 'flipIT shell',
+      tokens: {
+        font: 'SF Pro / system · mono code 12.1px',
+        size: '418–568px · bar 44px',
+        outline: 'hairline white + blue 0.22',
+        radius: '15.4px',
+        fill: '#D8D6E2',
+        shadow: '::after ring · green/yellow flash states',
+        note: 'z-index 30 · position memory R11'
+      }
+    },
+    'part-ticker': {
+      label: 'Part ticker',
+      tokens: {
+        font: 'mono 12.1px · weight 650',
+        size: 'max-content · h 28.6px · pad 0 8.8px',
+        outline: '1.1px rgba(26,20,40,0.16) · ready blue 1.65px',
+        radius: '6.6px',
+        fill: 'white-40 · ready chip-gray · posted #7DDB8C',
+        shadow: 'ready blue-glow · posted green-glow',
+        note: 'connected 3-seg when dims exist'
+      }
+    },
+    'backplot': {
+      label: 'Backplot',
+      tokens: {
+        font: '10px uppercase head · weight 650',
+        size: '200×200 default · 160–320 resize',
+        outline: 'hairline white + blue 0.22',
+        radius: '15.4px',
+        fill: '#D8D6E2 · canvas white',
+        shadow: '0 14px 32px -10px',
+        note: 'unattached · z-index 20'
+      }
+    },
+    'sandbox-iso': {
+      label: 'Sandbox isolator',
+      tokens: {
+        font: '11px · weight 600–700',
+        size: '168px wide · fixed BR',
+        outline: '1.1px solid rgba(255,255,255,0.14)',
+        radius: '10px',
+        fill: 'rgba(26,20,40,0.88) · amber text',
+        shadow: '0 12px 28px -10px',
+        note: 'NOT production · z-index 90'
+      }
+    }
+  };
+
+  function clearSpec() {
+    panel.classList.add('is-empty');
+    nameEl.textContent = '—';
+    rowsEl.innerHTML = '';
+    document.querySelectorAll('[data-child-spec].cs-armed').forEach(function (el) {
+      el.classList.remove('cs-armed');
+    });
+  }
+
+  function hydrate(id, sourceEl) {
+    var entry = REG[id];
+    if (!entry) return;
+    panel.classList.remove('is-empty');
+    nameEl.textContent = entry.label;
+    var html = '';
+    KEYS.forEach(function (k) {
+      var v = entry.tokens[k] || '—';
+      html += '<tr><th>' + k + '</th><td><code>' + String(v).replace(/</g, '&lt;') + '</code></td></tr>';
+    });
+    rowsEl.innerHTML = html;
+    document.querySelectorAll('[data-child-spec].cs-armed').forEach(function (el) {
+      el.classList.remove('cs-armed');
+    });
+    if (sourceEl && sourceEl.classList) sourceEl.classList.add('cs-armed');
+  }
+
+  function resolveId(el) {
+    if (!el || !el.closest) return null;
+    /* Prefer deepest marked child */
+    var marked = el.closest('[data-child-spec]');
+    if (marked) return { id: marked.getAttribute('data-child-spec'), el: marked };
+    /* HUD ticker without explicit attr */
+    var tick = el.closest('.param-ticker[data-open]');
+    if (tick && !tick.classList.contains('header-part-ticker')) {
+      return { id: 'hud-ticker', el: tick };
+    }
+    /* HUD popover */
+    var pop = el.closest('.param-popover');
+    if (pop) return { id: 'hud-popover', el: pop };
+    return null;
+  }
+
+  document.addEventListener('click', function (e) {
+    /* ignore isolator chrome so toggles still work without forcing its own spec unless on card shell */
+    var t = e.target;
+    if (!t) return;
+    /* clicks inside the child-spec panel itself do not clear */
+    if (panel.contains(t)) return;
+
+    var resolved = resolveId(t);
+    if (resolved && REG[resolved.id]) {
+      e.stopPropagation();
+      hydrate(resolved.id, resolved.el);
+      return;
+    }
+    /* outside any registered surface → clear */
+    clearSpec();
+  }, true);
+
+  /* Mark sandbox isolator for optional inspect */
+  var iso = document.getElementById('sandbox-iso');
+  if (iso && !iso.getAttribute('data-child-spec')) {
+    iso.setAttribute('data-child-spec', 'sandbox-iso');
+  }
+
+  clearSpec();
 })();
   </script>
 </body>
