@@ -11,13 +11,13 @@ Branch:  docs/howmany-v3-decoder-lock
 Repo:    TurboFrogLLC/NestCalc
 Path:    docs/howmany-v3-components/COMPOSITION-HUD-DECODER-v3.html
 Tip (governance notes landed):
+  commit  e6479566d4e1b3ed301c2c582f20e93b58ace49a
+  blob    75b07b6160efe150ee77e8f723f0cd484d96250b
+  msg     docs(howmany-v3): R4–R5 calc idle white + active blue-over-white black icon
+
+Prior tip (R1–R3 program field):
   commit  8ab507ab827f95f596b05cfebaebd3c7a35a2c68
   blob    af8c38250837bcbf73788d35f37be801ab3dcc44
-  msg     docs(howmany-v3): R1–R3 program field white + black icons + clear X end
-
-Prior tip (governance notes — before R1–R3):
-  commit  3c78d19722d6fde635f3186681639eb36e4d9da5
-  blob    cd783cd3837934a29217cb3284f09f13bf49d2ee
 
 Before every residual: pull tip via GitHub connector and confirm blob SHA.
 After every residual: record new commit SHA + blob SHA in this block.
@@ -44,10 +44,7 @@ After every residual: record new commit SHA + blob SHA in this block.
   6eed4c73 / 108c9e30 / a661716d  Edit chrome series (transparent yellow row,
             gray body, disabled chrome, yellow ring — not solid EDITING banner)
 
-── OPEN residuals (R1–R3 CLOSED @ 8ab507ab) ─────────────────────────────────
-  R4  Calculator idle → white background + black icon (not gray)
-  R5  Calculator active → light blue OVER white base, black icon on top
-      (not pure muddy blue). Authority: ccfb0c5e + d3e6a7d8
+── OPEN residuals (R1–R5 CLOSED @ e6479566) ─────────────────────────────────
   R6  HUD chevron → white background; match flipIT panel BOTTOM collapse
       chevron chrome (not surface chevron next to SOURCE)
   R7  Remove "Program loaded" toast on sample/open. Load is self-evident.
@@ -81,11 +78,11 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     "file": "docs/howmany-v3-components/COMPOSITION-HUD-DECODER-v3.html",
     "branch": "docs/howmany-v3-decoder-lock",
     "repo": "TurboFrogLLC/NestCalc",
-    "tip_commit": "8ab507ab827f95f596b05cfebaebd3c7a35a2c68",
-    "tip_blob": "af8c38250837bcbf73788d35f37be801ab3dcc44",
-    "prior_tip_commit": "3c78d19722d6fde635f3186681639eb36e4d9da5",
-    "prior_tip_blob": "cd783cd3837934a29217cb3284f09f13bf49d2ee",
-    "open_residuals": ["R4","R5","R6","R7","R8","R9"],
+    "tip_commit": "e6479566d4e1b3ed301c2c582f20e93b58ace49a",
+    "tip_blob": "75b07b6160efe150ee77e8f723f0cd484d96250b",
+    "prior_tip_commit": "8ab507ab827f95f596b05cfebaebd3c7a35a2c68",
+    "prior_tip_blob": "af8c38250837bcbf73788d35f37be801ab3dcc44",
+    "open_residuals": ["R6","R7","R8","R9"],
     "rules": [
       "one residual at a time",
       "read tip blob + authority SHA before fix",
