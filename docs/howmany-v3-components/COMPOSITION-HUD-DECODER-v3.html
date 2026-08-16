@@ -1561,7 +1561,8 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       min-width: 0;
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start; /* match toolPath wordmark left gap */
+      padding-left: 10px; /* same gap from mark → F as toolPath mark → T */
     }
     .gcode-bar .surface-label {
       font-family: var(--font);
@@ -2601,7 +2602,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       display: flex;
       align-items: center;
       justify-content: flex-start; /* left-align wordmark */
-      padding-left: 15px; /* gap from waypoints mark → T */
+      padding-left: 10px; /* gap from waypoints mark → T (R16h) */
     }
     .toolpath-head .wordmark {
       /* parity with .gcode-bar .surface-label (FLiPIT wordmark) */
@@ -3777,6 +3778,14 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       const gcodeEl = document.getElementById('gcode');
       if (gcodeEl && gcodeEl.classList.contains('is-open') && gcodeEl.style.display !== 'none') {
         obstacles.push(gcodeEl.getBoundingClientRect());
+      }
+      /* R16h: toolPath is a collision surface (was only HUD + FLiPIT) */
+      const toolpathEl = document.getElementById('backplot');
+      if (toolpathEl && !toolpathEl.classList.contains('is-hidden') && toolpathEl.style.display !== 'none') {
+        var tpVis = window.getComputedStyle(toolpathEl).display;
+        if (tpVis !== 'none' && tpVis !== '') {
+          obstacles.push(toolpathEl.getBoundingClientRect());
+        }
       }
 
       function rectOf(left, top) {
