@@ -2949,7 +2949,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     <div class="gcode-resize gcode-resize-se" data-dir="se" aria-hidden="true"></div>
 
     <!-- Header: mark · flipIT · program name · status · X -->
-    <div class="gcode-bar" id="gcode-drag">
+    <div class="gcode-bar" id="gcode-drag" data-child-spec="flipit-header">
       <div class="mark" aria-hidden="true">
         <svg width="17.6" height="17.6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="14" width="4.4" height="6.6" rx="2"/><rect x="6" y="4" width="4.4" height="6.6" rx="2"/><path d="M6 20h4"/><path d="M14 10h4"/><path d="M6 14h2v6"/><path d="M14 4h2v6"/></svg>
       </div>
@@ -3004,8 +3004,8 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       <div class="surface-spacer" aria-hidden="true"></div>
 
       <!-- Part group: separate when empty · connected 3-seg when dims present -->
-      <div class="part-group" id="part-group" role="group" aria-label="Part size controls">
-        <button type="button" class="btn-detect" id="btn-detect" disabled title="Auto-Size part from source" aria-label="Auto-Size part">
+      <div class="part-group" id="part-group" role="group" aria-label="Part size controls" data-child-spec="flipit-part-group">
+        <button type="button" class="btn-detect" id="btn-detect" data-child-spec="flipit-detect" disabled title="Auto-Size part from source" aria-label="Auto-Size part">
           <span class="label-detect">Auto-Size</span>
           <svg class="icon-hat" width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.42" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 18a2 2 0 0 0-4 0"/><path d="m19 11-2.11-6.657a2 2 0 0 0-2.752-1.148l-1.276.61A2 2 0 0 1 12 4H8.5a2 2 0 0 0-1.925 1.456L5 11"/><path d="M2 11h20"/><circle cx="17" cy="18" r="3"/><circle cx="7" cy="18" r="3"/></svg>
         </button>
@@ -3014,7 +3014,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
           <span class="readout is-empty" id="part-readout">—</span>
         </div>
         <span class="part-sep" aria-hidden="true"></span>
-        <button type="button" class="btn-post" id="btn-post" disabled title="Post part size to HUD / bed" aria-label="Post part size">
+        <button type="button" class="btn-post" id="btn-post" data-child-spec="flipit-post" disabled title="Post part size to HUD / bed" aria-label="Post part size">
           <svg width="14.3" height="14.3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
         </button>
       </div>
@@ -3041,7 +3041,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
               <button type="button" data-unit="mm" aria-pressed="false">MM</button>
             </div>
           </div>
-          <div class="code-shell is-hl" id="source-shell">
+          <div class="code-shell is-hl" id="source-shell" data-child-spec="flipit-code-shell">
             <pre class="code-hl" id="source-hl" aria-hidden="true"></pre>
             <textarea class="code-area" id="source" spellcheck="false" placeholder="Paste G-code here"></textarea>
             <div class="edit-actions">
@@ -3074,7 +3074,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
               <svg width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
             </button>
           </div>
-          <div class="code-shell is-hl" id="output-shell">
+          <div class="code-shell is-hl" id="output-shell" data-child-spec="flipit-code-shell">
             <pre class="code-hl" id="output-hl" aria-hidden="true"></pre>
             <textarea class="code-area" id="output" spellcheck="false" placeholder="Applied code appears here" readonly></textarea>
             <div class="edit-actions">
@@ -3092,7 +3092,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
              Both chips fixed 90px so rotation stays centered between them -->
         <div class="action-row">
           <div class="action-main">
-            <button type="button" class="stage-action" id="stage-action" data-state="idle" disabled title="Flip Source to Output">FLIP IT</button>
+            <button type="button" class="stage-action" id="stage-action" data-child-spec="flipit-stage-action" data-state="idle" disabled title="Flip Source to Output">FLIP IT</button>
             <div class="rot-row" role="group" aria-label="Rotation">
               <button type="button" class="rot-chip is-on" data-rot="0">0°</button>
               <div class="rot-sep" aria-hidden="true"></div>
@@ -3102,7 +3102,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
               <div class="rot-sep" aria-hidden="true"></div>
               <button type="button" class="rot-chip" data-rot="180">180°</button>
             </div>
-            <button type="button" class="stage-status" id="stage-status" data-state="idle" disabled title="Not ready">NOT READY</button>
+            <button type="button" class="stage-status" id="stage-status" data-child-spec="flipit-stage-status" data-state="idle" disabled title="Not ready">NOT READY</button>
           </div>
           <button type="button" class="btn-collapse" id="btn-collapse" title="Collapse G-code" aria-label="Collapse G-code">
             <svg width="17.6" height="17.6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
@@ -3118,14 +3118,14 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       <div class="bp-handle e" data-bp="e" aria-hidden="true"></div>
       <div class="bp-handle s" data-bp="s" aria-hidden="true"></div>
       <div class="bp-handle se" data-bp="se" aria-hidden="true"></div>
-      <div class="backplot-head" id="bp-drag" title="Drag Backplot">
+      <div class="backplot-head" id="bp-drag" title="Drag Backplot" data-child-spec="backplot-head">
         <span class="title">Backplot</span>
         <div class="spacer"></div>
         <button type="button" class="icon-btn" id="btn-demo-part" title="Toggle demo part" aria-label="Toggle demo part">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg>
         </button>
       </div>
-      <div class="backplot-canvas" id="bp-canvas">
+      <div class="backplot-canvas" id="bp-canvas" data-child-spec="backplot-canvas">
         <div class="backplot-empty">No part</div>
         <div class="part" hidden></div>
         <div class="hole a" hidden></div>
@@ -5064,10 +5064,9 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
   </script>
 
   <script>
-/* ── R15c Child-spec table — capture hydrate · outside-only clear ──
-   HUD ticker clicks call stopPropagation, so hydrate must run in capture.
-   Clear only when click is outside all composition surfaces (not on every miss).
-   Buttons keep their own handlers (AUTO-SIZE / FLiPIT / isolator / backplot icon). */
+/* ── R15d Child-spec — HUD + flipIT + Backplot children ──
+   Capture hydrate (before HUD stopPropagation). Outside-only clear.
+   Deepest marked child wins over parent shell. */
 (function () {
   var panel = document.getElementById('child-spec');
   var nameEl = document.getElementById('cs-name');
@@ -5149,6 +5148,42 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
         note: 'z-index 30 · position memory R11'
       }
     },
+    'flipit-header': {
+      label: 'flipIT header',
+      tokens: {
+        font: 'wordmark 19.8px · prog 12.1px',
+        size: 'bar 44px · full width',
+        outline: 'bottom 1.1px rgba(255,255,255,0.10)',
+        radius: '15.4px 15.4px 0 0',
+        fill: 'rgba(26,20,40,0.82)',
+        shadow: 'none (shell owns ring)',
+        note: 'drag · program field · status dot · close'
+      }
+    },
+    'flipit-part-group': {
+      label: 'flipIT part group',
+      tokens: {
+        font: 'mono 12.1px ticker · 11px detect',
+        size: 'h 28.6px · connected 3-seg',
+        outline: 'connected 1.1px rgba(26,20,40,0.22)',
+        radius: '6.6px',
+        fill: 'white-70 connected · transparent empty',
+        shadow: 'none on group · ticker owns glow',
+        note: 'detect · ticker · post'
+      }
+    },
+    'flipit-detect': {
+      label: 'flipIT detect',
+      tokens: {
+        font: '11px weight 700 uppercase · hat icon expanded',
+        size: 'h 28.6px · pad 0 11px · expanded 28.6sq',
+        outline: '1.1px rgba(26,20,40,0.22) · armed blue 1.65px',
+        radius: '6.6px',
+        fill: 'white-70 · armed white-40 + blue-glow',
+        shadow: '0 0.5px 1px · armed blue-glow',
+        note: 'Auto-Size / hat'
+      }
+    },
     'part-ticker': {
       label: 'Part ticker',
       tokens: {
@@ -5161,8 +5196,56 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
         note: 'connected 3-seg when dims exist'
       }
     },
+    'flipit-post': {
+      label: 'flipIT post',
+      tokens: {
+        font: 'icon 14.3px',
+        size: '28.6 × 28.6px · connected 30.8px',
+        outline: '1.1px rgba(26,20,40,0.22)',
+        radius: '6.6px',
+        fill: 'white-70 · connected transparent',
+        shadow: 'none',
+        note: 'post part size → HUD / bed'
+      }
+    },
+    'flipit-stage-action': {
+      label: 'flipIT stage action',
+      tokens: {
+        font: '9.9px weight 700 uppercase',
+        size: '85.8 × 28.6px fixed',
+        outline: 'process 1.65px blue-border · idle 1.1px',
+        radius: '6.6px',
+        fill: 'chip-gray when live · white-40 idle',
+        shadow: 'blue-glow when FLIP IT / START OVER',
+        note: 'FLIP IT · START OVER'
+      }
+    },
+    'flipit-stage-status': {
+      label: 'flipIT stage status',
+      tokens: {
+        font: '9.9px weight 700 uppercase',
+        size: '85.8 × 28.6px fixed',
+        outline: 'ready/done 1.65px green-border',
+        radius: '6.6px',
+        fill: 'chip-gray when ready/done',
+        shadow: 'green-glow when READY / DONE',
+        note: 'READY · DONE · NOT READY'
+      }
+    },
+    'flipit-code-shell': {
+      label: 'flipIT code shell',
+      tokens: {
+        font: 'mono 12.1px · line-height 1.45',
+        size: 'h 176px default · 110–308 resize',
+        outline: 'panel border via io-panel',
+        radius: 'inner with io-panel 8.8px',
+        fill: 'white · editing frost-blue',
+        shadow: 'focus inset blue-22',
+        note: 'source / output editor'
+      }
+    },
     'backplot': {
-      label: 'Backplot',
+      label: 'Backplot shell',
       tokens: {
         font: '10px uppercase head · weight 650',
         size: '200×200 default · 160–320 resize',
@@ -5171,6 +5254,30 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
         fill: '#D8D6E2 · canvas white',
         shadow: '0 14px 32px -10px',
         note: 'unattached · z-index 20'
+      }
+    },
+    'backplot-head': {
+      label: 'Backplot head',
+      tokens: {
+        font: '10px weight 650 uppercase · letter 0.04em',
+        size: 'h 32px · pad 0 8px',
+        outline: 'bottom 1px ink-15',
+        radius: 'none (card clips)',
+        fill: 'inherits frost',
+        shadow: 'none',
+        note: 'drag handle · demo-part toggle'
+      }
+    },
+    'backplot-canvas': {
+      label: 'Backplot canvas',
+      tokens: {
+        font: 'empty 10px uppercase ink-30',
+        size: 'flex 1 · margin 8px',
+        outline: '1px solid ink-15',
+        radius: '6px',
+        fill: 'white · part blue-22',
+        shadow: 'none',
+        note: 'demo silhouette · holes'
       }
     },
     'sandbox-iso': {
@@ -5216,24 +5323,19 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
   function resolveId(el) {
     if (!el || !el.closest) return null;
 
-    /* deepest children first */
+    /* HUD children */
     var tick = el.closest('.param-ticker[data-open]');
     if (tick && !tick.classList.contains('header-part-ticker')) {
       return { id: 'hud-ticker', el: tick };
     }
     var pop = el.closest('.param-popover');
     if (pop) return { id: 'hud-popover', el: pop };
-
-    var part = el.closest('#part-ticker');
-    if (part) return { id: 'part-ticker', el: part };
-
     var ctl = el.closest('.hud-ctl');
     if (ctl) return { id: 'hud-ctl', el: ctl };
-
     var htool = el.closest('.keypad-header .tool');
     if (htool) return { id: 'hud-header-tool', el: htool };
 
-    /* shells / marked — including clicks on their buttons (backplot icon → still backplot) */
+    /* Deepest data-child-spec wins (part-ticker, detect, post, header, canvas, …) */
     var marked = el.closest('[data-child-spec]');
     if (marked) {
       var id = marked.getAttribute('data-child-spec');
@@ -5249,7 +5351,6 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     );
   }
 
-  /* capture: run before HUD stopPropagation on tickers */
   document.addEventListener('click', function (e) {
     var t = e.target;
     if (!t) return;
@@ -5258,9 +5359,8 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     var resolved = resolveId(t);
     if (resolved && REG[resolved.id]) {
       hydrate(resolved.id, resolved.el);
-      return; /* never stopPropagation */
+      return;
     }
-    /* only clear when truly outside composition chrome */
     if (!isInsideComposition(t)) clearSpec();
   }, true);
 
