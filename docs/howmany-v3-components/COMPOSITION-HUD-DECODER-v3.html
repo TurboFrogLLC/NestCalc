@@ -253,16 +253,16 @@
       background: rgba(26, 20, 40, 0.82);
     }
     .keypad-header:active { cursor: grabbing; }
-    /* Header tools on dark bar — light icons */
+    /* Header tools: white chips + black icons + gray borders (locked, even on dark bar) */
     .keypad-header .tool {
       height: var(--icon-btn);
       width: var(--icon-btn);
       min-width: var(--icon-btn);
       min-height: var(--icon-btn);
       border-radius: var(--chip-r);
-      border: 1.1px solid rgba(255, 255, 255, 0.22);
-      background: rgba(255, 255, 255, 0.14);
-      color: #fff;
+      border: 1.1px solid rgba(26, 20, 40, 0.22);
+      background: #fff;
+      color: var(--ink);
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -277,9 +277,9 @@
       transition: background 0.12s, border-color 0.12s, transform 0.12s;
     }
     .keypad-header .tool:hover {
-      background: rgba(255, 255, 255, 0.22);
-      border-color: rgba(255, 255, 255, 0.35);
-      color: #fff;
+      background: #fff;
+      border-color: rgba(26, 20, 40, 0.35);
+      color: var(--ink);
     }
     .keypad-header .tool:active,
     .keypad-header .tool.press:active {
@@ -294,9 +294,11 @@
       overflow: visible;
       pointer-events: none;
     }
+    /* Calc engaged: light-blue fill, still black icon */
     .keypad-header .tool.active-calc {
-      background: var(--blue-28);
-      color: #1E3A8A;
+      background: rgba(83, 139, 236, 0.28);
+      border-color: rgba(83, 139, 236, 0.45);
+      color: var(--ink);
     }
     .chevron-btn svg { transition: none; }
     .keypad:not(.collapsed) .chevron-btn svg { transform: rotate(180deg); }
@@ -1982,9 +1984,9 @@
 
     .edit-actions {
       position: absolute;
-      /* equal inset from top + right of the code shell; clear of scrollbar (~14px) */
-      top: 14px;
-      right: 14px;
+      /* top matches original; right clears scrollbar (~15px) + chip width gap */
+      top: 6.6px;
+      right: 22px;
       display: none;
       align-items: center;
       gap: 4.4px;
@@ -3585,7 +3587,7 @@
         toastTimer = setTimeout(function () {
           toastEl.classList.remove('is-on');
           toastTimer = null;
-        }, 2200);
+        }, 1500);
       }
 
       /* --- highlighter --- */
@@ -3801,7 +3803,7 @@
       }
       function loadSampleProgram() {
         loadSourceText(SAMPLE, 'BRACKET_PLATE');
-        showToast('Program loaded — Auto-Size ready');
+        /* no open toast — quiet load */
       }
 
       /* status helpers */
@@ -4264,13 +4266,13 @@
       });
 
       btnDetect.addEventListener('click', function () {
-        if (detectPart()) showToast('Part sized');
+        detectPart(); /* no "Part sized" toast */
         syncDetectArm();
       });
 
       /* PROCESS handled on stageAction click */
 
-      /* Outer-ring green success flash (~1s) — works collapsed or expanded */
+      /* Outer-ring green success flash — 1500ms, matched to toast */
       var ringFlashTimer = null;
       function flashRingGreen() {
         panel.classList.add('ring-flash-green');
@@ -4278,7 +4280,7 @@
         ringFlashTimer = setTimeout(function () {
           panel.classList.remove('ring-flash-green');
           ringFlashTimer = null;
-        }, 1000);
+        }, 1500);
       }
 
       btnPost.addEventListener('click', function () {
