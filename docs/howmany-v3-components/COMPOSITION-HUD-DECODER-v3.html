@@ -326,7 +326,7 @@
       grid-template-rows: 1fr;
       overflow: hidden;
       min-height: 0;
-      transition: grid-template-rows 340ms var(--ease);
+      transition: grid-template-rows 500ms var(--ease);
     }
     #hud-body-inner {
       overflow: hidden;
@@ -1155,12 +1155,17 @@
       z-index: -1;
       transition: border-color 180ms var(--ease), box-shadow 180ms var(--ease);
     }
-    /* EDITING alert: outer ring goes yellow + soft 2px glow */
+    /* EDITING alert: 1px yellow outer ring + soft glow */
     .gcode:has(.surface-row.is-editing-banner)::after {
+      border-width: 1px;
       border-color: #FFCE1B;
       box-shadow:
         0 0 2px 2px rgba(255, 206, 27, 0.55),
         0 18px 40px -12px rgba(0, 0, 0, 0.38);
+    }
+    /* Status dot → yellow while editing (not green — that reads as "posted") */
+    .gcode:has(.surface-row.is-editing-banner) .status-dot {
+      background: #FFCE1B !important;
     }
 
     /* ── Card-anchored toast (above header) ── */
@@ -1232,13 +1237,18 @@
       justify-content: center;
     }
     .gcode-bar .surface-label {
-      font-size: 17.6px; /* ~50% up from 12.1px */
+      font-size: 22px;
       font-weight: 650;
-      color: var(--ink);
       letter-spacing: -0.015em;
       white-space: nowrap;
       user-select: none;
       line-height: 1;
+    }
+    .gcode-bar .surface-label .label-de {
+      color: var(--ink);
+    }
+    .gcode-bar .surface-label .label-coder {
+      color: #FFCE1B; /* same yellow as EDITING stage chips */
     }
 
     .prog-field {
@@ -1430,8 +1440,10 @@
       background: rgba(255, 206, 27, 0.38);
       border-bottom-color: rgba(180, 130, 0, 0.35);
     }
+    /* Controls stay on top of the yellow wash — disabled look (no color, no click) */
     .surface-row.is-editing-banner > *:not(.surface-editing-banner) {
-      opacity: 0.55;
+      opacity: 0.7;
+      filter: grayscale(1);
       pointer-events: none;
     }
     .gcode.is-expanded .surface-row {
@@ -2374,7 +2386,7 @@
         <svg width="17.6" height="17.6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="14" width="4.4" height="6.6" rx="2"/><rect x="6" y="4" width="4.4" height="6.6" rx="2"/><path d="M6 20h4"/><path d="M14 10h4"/><path d="M6 14h2v6"/><path d="M14 4h2v6"/></svg>
       </div>
       <div class="surface-label-slot">
-        <span class="surface-label">de-coder</span>
+        <span class="surface-label"><span class="label-de">de-</span><span class="label-coder">coder</span></span>
       </div>
 
       <div class="prog-field" id="prog-field">
