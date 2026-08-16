@@ -45,8 +45,16 @@ After every residual: record new commit SHA + blob SHA in this block.
             gray body, disabled chrome, yellow ring — not solid EDITING banner)
 
 ── OPEN residuals (R1–R8 CLOSED @ 8cd12048) ─────────────────────────────────
-  R9  Edit mode chrome still wrong vs prior polish (solid EDITING banner).
-      Re-check 6eed4c73 / 108c9e30 / a661716d series.
+  R9  Edit mode chrome (authority LOCKED from GitHub commits — do not invent):
+      6eed4c73  transparent yellow row + yellow OUTER shell glow; retire solid banner
+      108c9e30  1px yellow outer ring + glow; surface controls grayscale-disabled;
+                status-dot yellow while editing
+      a661716d  NO EDITING chip takeover — keep stage labels (FLIP IT/READY);
+                grayscale-disable footer; yellow body wash optional; outer ring is alert
+      MUST: .gcode:has(.surface-row.is-editing-banner)::after → border #FFCE1B + glow
+      MUST: syncProcessState editing path does NOT set data-state="editing" / text EDITING
+      MUST: surface controls filter:grayscale(1) opacity 0.7 pointer-events none
+      MUST NOT: solid EDITING banner, solid yellow footer chips labeled EDITING
 
 ── How to work a residual ────────────────────────────────────────────────────
   a. State residual id (e.g. R1) and authority SHA.
@@ -1275,6 +1283,33 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
         0 0 0 3px rgba(0, 180, 40, 0.45),
         0 18px 40px -12px rgba(0, 0, 0, 0.38);
     }
+    /* R9 LOCKED a661716d/108c9e30: EDITING → 1px yellow outer ring + glow */
+    .gcode:has(.surface-row.is-editing-banner)::after {
+      border-width: 1px;
+      border-color: #FFCE1B;
+      box-shadow:
+        0 0 2px 2px rgba(255, 206, 27, 0.55),
+        0 18px 40px -12px rgba(0, 0, 0, 0.38);
+    }
+    /* R9: status-dot yellow while editing (not green — that reads as posted) */
+    .gcode:has(.surface-row.is-editing-banner) .status-dot {
+      background: #FFCE1B !important;
+    }
+    /* R9: body chrome wash around white io-panel (code stays white) */
+    .gcode:has(.surface-row.is-editing-banner) .gcode-body-inner {
+      background: rgba(255, 206, 27, 0.38);
+    }
+    .gcode:has(.surface-row.is-editing-banner) .action-row {
+      background: transparent;
+    }
+    /* R9: keep FLIP IT / READY labels — grayscale disable only, no EDITING text */
+    .gcode:has(.surface-row.is-editing-banner) .action-row .stage-action,
+    .gcode:has(.surface-row.is-editing-banner) .action-row .stage-status,
+    .gcode:has(.surface-row.is-editing-banner) .action-row .btn-collapse {
+      filter: grayscale(1);
+      opacity: 0.7;
+      pointer-events: none;
+    }
 
     /* ── Card-centered toast (middle of panel, not above the top) ── */
     /* 60% ink + amber ALL-CAPS text */
@@ -1560,27 +1595,20 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       overflow: hidden;
       position: relative; /* hosts EDITING banner */
     }
-    /* R9: transparent yellow row + yellow ring — NOT solid EDITING banner
-       Authority: 6eed4c73 / 108c9e30 / a661716d */
+    /* R9 LOCKED from a661716d / 108c9e30 / 6eed4c73 — do not invent
+       No solid EDITING banner. Surface row wash + grayscale-disabled controls.
+       Outer shell ring is the primary alert (see .gcode:has(...)::after below). */
     .surface-editing-banner {
-      display: none; /* keep node for a11y live region; no solid takeover */
+      display: none !important; /* retired takeover label */
     }
     .surface-row.is-editing-banner {
-      background: rgba(255, 206, 27, 0.22); /* transparent yellow row */
-      border-bottom-color: rgba(180, 130, 0, 0.45);
-      box-shadow: inset 0 0 0 1.65px rgba(180, 130, 0, 0.55); /* yellow ring */
+      background: rgba(255, 206, 27, 0.38);
+      border-bottom-color: rgba(180, 130, 0, 0.35);
     }
-    /* Soften sibling chrome while editing (gray / disabled feel) */
-    .surface-row.is-editing-banner .btn-gc0de,
-    .surface-row.is-editing-banner .btn-surface-chevron,
-    .surface-row.is-editing-banner .io-tab,
-    .surface-row.is-editing-banner .btn-detect,
-    .surface-row.is-editing-banner .btn-post {
-      opacity: 0.55;
-      pointer-events: none;
-    }
-    .surface-row.is-editing-banner .part-ticker {
+    .surface-row.is-editing-banner > *:not(.surface-editing-banner) {
       opacity: 0.7;
+      filter: grayscale(1);
+      pointer-events: none;
     }
     .gcode.is-expanded .surface-row {
       border-bottom: 1.1px solid var(--ink-15);
@@ -2170,17 +2198,18 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       background: rgba(26, 20, 40, 0.14);
     }
 
-    /* LEFT / RIGHT — EDITING (amber kept — interrupt) */
+    /* R9: data-state=editing should NOT be used (a661716d keeps stage labels).
+       Fallback only if residual JS regression sets it — muted, not solid yellow. */
     .stage-action[data-state="editing"],
     .stage-action[data-state="editing"]:disabled,
     .stage-status[data-state="editing"],
     .stage-status[data-state="editing"]:disabled {
-      background: #FFCE1B;
-      border: 1.65px solid rgba(180, 130, 0, 0.65);
-      color: var(--ink);
+      background: var(--chip-gray);
+      border: 1.1px solid rgba(26, 20, 40, 0.22);
+      color: var(--ink-30);
       cursor: default;
       pointer-events: none;
-      box-shadow: 0 0 0 2.2px rgba(255, 206, 27, 0.35);
+      box-shadow: none;
       transform: none !important;
     }
 
@@ -3814,14 +3843,11 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
         var editing = srcEdit || outEdit;
 
         if (editing) {
+          /* R9 LOCKED a661716d: keep PROCESS/READY or START OVER/DONE labels.
+             Only disable. Yellow outer ring + grayscale come from CSS :has(). */
           stageAction.disabled = true;
-          stageAction.setAttribute('data-state', 'editing');
-          stageAction.textContent = 'EDITING';
-          stageAction.title = 'Finish edit to continue';
-
           stageStatus.disabled = true;
-          stageStatus.setAttribute('data-state', 'editing');
-          stageStatus.textContent = 'EDITING';
+          stageAction.title = 'Finish edit to continue';
           stageStatus.title = 'Editing';
           return;
         }
