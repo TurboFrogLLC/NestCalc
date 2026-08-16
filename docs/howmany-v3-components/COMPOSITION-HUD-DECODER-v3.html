@@ -11,13 +11,13 @@ Branch:  docs/howmany-v3-decoder-lock
 Repo:    TurboFrogLLC/NestCalc
 Path:    docs/howmany-v3-components/COMPOSITION-HUD-DECODER-v3.html
 Tip (governance notes landed):
+  commit  32c848ca04a06aee5fe97681b0774b618dd9a342
+  blob    d9d5bd692f43f28384a3144f12f2ee7d6d5a19a7
+  msg     docs(howmany-v3): tip-sync R8 closed — OPEN now R9
+
+Prior tip (R8 code):
   commit  8cd1204833aad1bb2c1b0a22eeef05c0b30b2ef5
   blob    46b4490e1fc71865a7ae874019e2050b50e70291
-  msg     docs(howmany-v3): R8 inset green halo on connected post + flash 2200ms
-
-Prior tip (R7 tip-sync):
-  commit  bb32a7c68a82bf7f0ff15105643ba4dbd650cc4b
-  blob    7d5967842e97618a21bb4427b92f4aa758f1e26f
 
 Before every residual: pull tip via GitHub connector and confirm blob SHA.
 After every residual: record new commit SHA + blob SHA in this block.
@@ -72,10 +72,10 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     "file": "docs/howmany-v3-components/COMPOSITION-HUD-DECODER-v3.html",
     "branch": "docs/howmany-v3-decoder-lock",
     "repo": "TurboFrogLLC/NestCalc",
-    "tip_commit": "8cd1204833aad1bb2c1b0a22eeef05c0b30b2ef5",
-    "tip_blob": "46b4490e1fc71865a7ae874019e2050b50e70291",
-    "prior_tip_commit": "bb32a7c68a82bf7f0ff15105643ba4dbd650cc4b",
-    "prior_tip_blob": "7d5967842e97618a21bb4427b92f4aa758f1e26f",
+    "tip_commit": "32c848ca04a06aee5fe97681b0774b618dd9a342",
+    "tip_blob": "d9d5bd692f43f28384a3144f12f2ee7d6d5a19a7",
+    "prior_tip_commit": "8cd1204833aad1bb2c1b0a22eeef05c0b30b2ef5",
+    "prior_tip_blob": "46b4490e1fc71865a7ae874019e2050b50e70291",
     "open_residuals": [
       "R9"
     ],
@@ -1560,29 +1560,27 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       overflow: hidden;
       position: relative; /* hosts EDITING banner */
     }
-    /* Full-row EDITING takeover — obvious, yellow, centered */
+    /* R9: transparent yellow row + yellow ring — NOT solid EDITING banner
+       Authority: 6eed4c73 / 108c9e30 / a661716d */
     .surface-editing-banner {
-      display: none;
-      position: absolute;
-      inset: 0;
-      z-index: 6;
-      background: #FFCE1B;
-      color: #0A0A0A;
-      font-family: var(--font);
-      font-size: 20px; /* big + bold — hard to miss */
-      font-weight: 900;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      align-items: center;
-      justify-content: center;
-      pointer-events: none;
-      user-select: none;
-    }
-    .surface-row.is-editing-banner .surface-editing-banner {
-      display: flex;
+      display: none; /* keep node for a11y live region; no solid takeover */
     }
     .surface-row.is-editing-banner {
-      border-bottom-color: rgba(180, 130, 0, 0.35);
+      background: rgba(255, 206, 27, 0.22); /* transparent yellow row */
+      border-bottom-color: rgba(180, 130, 0, 0.45);
+      box-shadow: inset 0 0 0 1.65px rgba(180, 130, 0, 0.55); /* yellow ring */
+    }
+    /* Soften sibling chrome while editing (gray / disabled feel) */
+    .surface-row.is-editing-banner .btn-gc0de,
+    .surface-row.is-editing-banner .btn-surface-chevron,
+    .surface-row.is-editing-banner .io-tab,
+    .surface-row.is-editing-banner .btn-detect,
+    .surface-row.is-editing-banner .btn-post {
+      opacity: 0.55;
+      pointer-events: none;
+    }
+    .surface-row.is-editing-banner .part-ticker {
+      opacity: 0.7;
     }
     .gcode.is-expanded .surface-row {
       border-bottom: 1.1px solid var(--ink-15);
