@@ -44,9 +44,10 @@ After every residual: record new commit SHA + blob SHA in this block.
   6eed4c73 / 108c9e30 / a661716d  Edit chrome series (transparent yellow row,
             gray body, disabled chrome, yellow ring — not solid EDITING banner)
 
-── OPEN residuals (R1–R9 CLOSED @ 475f2c4d) ─────────────────────────────────
-  (none — R9 edit chrome fully closed)
-  R9 closed series:
+── OPEN residuals ───────────────────────────────────────────────────────────
+  R10  Restore green outer-ring flash on post + posted ticker green
+       Authority: ccfb0c5e (green halo) · 7cd2fa9e (outer ring green flash)
+  R9 closed series (do not reopen):
       6eed4c73  yellow OUTER shell glow; retire solid banner
       108c9e30  1px yellow outer ring + glow; surface grayscale-disabled; status-dot yellow
       a661716d  NO EDITING chip takeover — keep stage labels (FLIP IT/READY)
@@ -54,6 +55,7 @@ After every residual: record new commit SHA + blob SHA in this block.
       3122e318  NO yellow surface wash
       092dc2a5  strip READY green + tool-strip glows
       475f2c4d  kill residual gray highlight on hat/glasses (btn-detect) in edit
+  Tip-sync note: branch tip c408e6ce = governance notes only; content tip 475f2c4d
 
 ── How to work a residual ────────────────────────────────────────────────────
   a. State residual id (e.g. R1) and authority SHA.
@@ -83,7 +85,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     "tip_blob": "09eb471d7ace9126b5db5c1c808ba81ce16e6f99",
     "prior_tip_commit": "092dc2a573fbcd23c14840874c791b27d856196b",
     "prior_tip_blob": "626dd51b448da110948cec15f69aded273e4d880",
-    "open_residuals": [],
+    "open_residuals": ["R10"],
     "rules": [
       "one residual at a time",
       "read tip blob + authority SHA before fix",
@@ -1273,11 +1275,16 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       z-index: -1;
       transition: border-color 180ms var(--ease), box-shadow 180ms var(--ease);
     }
-    /* R8: 2200ms outer-ring green flash on post (authority ccfb0c5e / 7cd2fa9e) */
+    /* R10 / R8 restore: 2200ms outer-ring GREEN flash on post
+       Authority ccfb0c5e (green halo) + 7cd2fa9e (outer ring green flash).
+       Explicit border-width + full green-glow so the ring is visible again
+       after R9 yellow outer-ring work. */
     .gcode.is-post-flash::after {
-      border-color: rgba(0, 180, 40, 0.85);
+      border-width: 2px;
+      border-color: rgba(0, 180, 40, 0.90);
       box-shadow:
-        0 0 0 3px rgba(0, 180, 40, 0.45),
+        0 0 0 3px rgba(0, 180, 40, 0.70),
+        0 0 0 6px rgba(0, 180, 40, 0.28),
         0 18px 40px -12px rgba(0, 0, 0, 0.38);
     }
     /* R9 LOCKED 108c9e30/3122e318: yellow OUTER ring only — no yellow inside shell */
@@ -1838,8 +1845,9 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     }
     .gcode .part-group.is-connected .part-ticker[data-state="posted"]:not(.is-stale) {
       background: #7DDB8C;
-      /* R8: inset — outer box-shadow is clipped by .part-group overflow:hidden */
-      box-shadow: inset 0 0 0 2.2px rgba(0, 160, 30, 0.75);
+      /* R10: stronger inset green so posted reads clearly inside connected shell
+         (outer box-shadow is clipped by .part-group overflow:hidden) */
+      box-shadow: inset 0 0 0 2.4px rgba(0, 160, 30, 0.90);
     }
     .gcode .part-group.is-connected .part-ticker.is-stale {
       background: var(--chip-gray);
