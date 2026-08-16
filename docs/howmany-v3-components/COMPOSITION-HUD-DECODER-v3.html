@@ -453,6 +453,9 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       background: rgba(26, 20, 40, 0.82); /* dark ink + opacity */
     }
     .keypad-header:active { cursor: grabbing; }
+    /* R16e: HUD header tools = same dark-header muted system as FLiPIT close / toolPath tp-head-btn
+       transparent · border white@0.22 · icon white@0.50 · hover brightens only
+       calc active = light blue fill + white icon */
     .keypad-header .tool {
       height: var(--icon-btn);
       width: var(--icon-btn);
@@ -460,9 +463,8 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       min-height: var(--icon-btn);
       border-radius: var(--chip-r);
       border: 1.1px solid rgba(255, 255, 255, 0.22);
-      /* R4: solid white idle + black (ink) icon — not gray / not translucent */
-      background: #ffffff;
-      color: var(--ink);
+      background: transparent;
+      color: rgba(255, 255, 255, 0.50);
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -472,45 +474,47 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       flex-shrink: 0;
       box-sizing: border-box;
       line-height: 0;
-      overflow: hidden;
+      overflow: visible;
       transform-origin: center center;
       transition: background 0.12s, color 0.12s, border-color 0.12s;
     }
     .keypad-header .tool.press:active {
-      transform: none;
+      transform: scale(0.94);
     }
     .keypad-header .tool svg {
       display: block;
       flex-shrink: 0;
-      width: 14.3px;
-      height: 14.3px;
+      width: 16.5px; /* +~2px for clarity */
+      height: 16.5px;
       margin: 0;
       overflow: visible;
       pointer-events: none;
     }
     .keypad-header .tool:hover {
-      background: #ffffff;
-      color: var(--ink);
+      background: transparent;
+      color: #ffffff;
       border-color: rgba(255, 255, 255, 0.35);
     }
-    /* R5: light blue OVER solid white base; black icon on top (not blue icon) */
+    /* Calculator engaged — light blue field, white icon */
     .keypad-header .tool.active-calc {
-      background:
-        linear-gradient(var(--blue-28), var(--blue-28)),
-        #ffffff;
-      color: var(--ink);
-      border-color: rgba(83, 139, 236, 0.45);
+      background: var(--blue-28);
+      color: #ffffff;
+      border-color: rgba(83, 139, 236, 0.55);
     }
-    /* R6: HUD chevron = solid white + ink, match flipIT bottom .btn-collapse intent
-       (never inherits active-calc blue; surface-row chevron stays separate) */
+    .keypad-header .tool.active-calc:hover {
+      background: var(--blue-28);
+      color: #ffffff;
+      border-color: rgba(83, 139, 236, 0.70);
+    }
+    /* Chevron — same muted system; never inherits active-calc */
     .keypad-header .tool.chevron-btn {
-      background: #ffffff;
-      color: var(--ink);
+      background: transparent;
+      color: rgba(255, 255, 255, 0.50);
       border-color: rgba(255, 255, 255, 0.22);
     }
     .keypad-header .tool.chevron-btn:hover {
-      background: #ffffff;
-      color: var(--ink);
+      background: transparent;
+      color: #ffffff;
       border-color: rgba(255, 255, 255, 0.35);
     }
     .chevron-btn svg { transition: none; }
@@ -2811,7 +2815,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     <div class="keypad" id="hud" role="dialog" aria-label="Numeric HUD" data-child-spec="hud-shell">
       <div class="keypad-header" id="hud-header" title="Drag HUD">
         <button type="button" class="tool press" id="calc-toggle" title="Calculator mode" aria-label="Calculator mode" aria-pressed="false">
-          <svg width="14.3" height="14.3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.54" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="16.5" height="16.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.54" stroke-linecap="round" stroke-linejoin="round">
             <rect width="17.6" height="22" x="4" y="2" rx="2"/>
             <line x1="8" x2="16" y1="6" y2="6"/>
             <line x1="16" x2="16" y1="14" y2="18"/>
@@ -2824,7 +2828,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
           <div class="param-ticker header-part-ticker" data-ticker="part-collapsed">80.342 × 40.000</div>
         </div>
         <button type="button" class="tool press chevron-btn" id="btn-chevron" title="Collapse" aria-label="Collapse HUD" aria-expanded="true">
-          <svg width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="16.5" height="16.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round">
             <path d="m6 9 6 6 6-6"/>
           </svg>
         </button>
@@ -3188,13 +3192,15 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     <div class="toolpath-inner">
       <div class="toolpath-head" id="bp-drag" title="Drag toolPath" data-child-spec="backplot-head">
         <div class="mark" aria-hidden="true">
-          <!-- Lucide shell -->
+          <!-- Lucide waypoints -->
           <svg width="17.6" height="17.6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M14 11a2 2 0 1 1-4 0 4 4 0 0 1 8 0 2 2 0 0 1-4 0"/>
-            <path d="M18.5 3.2c-2 2.5-2.5 5-2.5 7.8"/>
-            <path d="M5.5 3.2c2 2.5 2.5 5 2.5 7.8"/>
-            <path d="M12 22c-3.5 0-6-2-6-5.5 0-2 1-4 3-5.5"/>
-            <path d="M12 22c3.5 0 6-2 6-5.5 0-2-1-4-3-5.5"/>
+            <circle cx="12" cy="4.5" r="2.5"/>
+            <path d="m10.2 6.3-3.9 3.9"/>
+            <circle cx="4.5" cy="12" r="2.5"/>
+            <path d="M7 12h10"/>
+            <circle cx="19.5" cy="12" r="2.5"/>
+            <path d="m13.8 17.7 3.9-3.9"/>
+            <circle cx="12" cy="19.5" r="2.5"/>
           </svg>
         </div>
         <div class="wordmark-slot">
