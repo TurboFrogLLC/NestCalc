@@ -4,8 +4,8 @@
 **Composition HTML:** `COMPOSITION-HUD-DECODER-v3.html`  
 **Branch:** `docs/howmany-v3-decoder-lock`  
 **Repo:** `TurboFrogLLC/NestCalc`  
-**Branch tip:** `0b779cabd9adac4c2329a0a4df3ccfc95a66b049`  
-**HTML blob (tip):** `cc9ed3f8a6f11b240dcf2cb422e89599cd53e15e`  
+**Branch tip:** `fb011e6b230b5f7b4d28751554257782cf9c1b51`  
+**HTML blob (tip):** `69d0bd9a17e9c10cc716f604726c8cdeea678772`  
 **OPEN residuals:** _(none)_  
 **Class:** Exploratory composition only — not a product GOAL  
 
@@ -29,6 +29,7 @@
 | 2026-08-16 | **9d8cade5** | **R26 PASS** | Child-spec Lucide copy per row + free-draggable panel (reparent under `.bed-stage`) |
 | 2026-08-16 | **b25d373b** | **R18–R19 PASS** | HUD top-left 16px dock on load/collapse + expand restores pre-collapse position · comp-note bottom z5 |
 | 2026-08-16 | **0b779cab** | **R27 PASS** | toolPath default-hidden on load · open only via FLiPIT strip waypoints or isolator · isolator toolPath starts unchecked |
+| 2026-08-16 | **fb011e6b** | **R20 PASS** | HUD fonts: `.hud-ctl` / `.param-label` / `.pop-title` → Wordmark (`var(--font)`); numbers/tickers/editor stay mono (`var(--font-mono)`); child-spec REG tokens updated |
 
 ---
 
@@ -102,4 +103,4 @@ Fixed BR card · toggles HUD / FLiPIT / **toolPath** / Faux bed · z-index 90.
 
 ## OPEN residuals
 
-_None. Residual wave R11–R19 + R26–R27 closed._
+_None. Residual wave R11–R19 + R26–R27 + R20 closed._
