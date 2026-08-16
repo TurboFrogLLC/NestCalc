@@ -11,13 +11,13 @@ Branch:  docs/howmany-v3-decoder-lock
 Repo:    TurboFrogLLC/NestCalc
 Path:    docs/howmany-v3-components/COMPOSITION-HUD-DECODER-v3.html
 Tip (governance notes landed):
+  commit  bb32a7c68a82bf7f0ff15105643ba4dbd650cc4b
+  blob    7d5967842e97618a21bb4427b92f4aa758f1e26f
+  msg     docs(howmany-v3): tip-sync R7 closed — OPEN now R8 R9
+
+Prior tip (R7 drop Program loaded toast):
   commit  28356b106f669dd713f81a234f9ed0e0ee1199e6
   blob    1533f4c6d7a357f9afdde5bc872b281d2996f662
-  msg     docs(howmany-v3): R7 drop Program loaded toast on sample/open
-
-Prior tip (R6 HUD chevron white):
-  commit  d17a3ca3ea010f66ec63f16880f506d258e7eb35
-  blob    8385358c007db991a709efd78ea63ec40c8ac01a
 
 Before every residual: pull tip via GitHub connector and confirm blob SHA.
 After every residual: record new commit SHA + blob SHA in this block.
@@ -44,7 +44,7 @@ After every residual: record new commit SHA + blob SHA in this block.
   6eed4c73 / 108c9e30 / a661716d  Edit chrome series (transparent yellow row,
             gray body, disabled chrome, yellow ring — not solid EDITING banner)
 
-── OPEN residuals (R1–R7 CLOSED @ 28356b10) ─────────────────────────────────
+── OPEN residuals (R1–R7 CLOSED @ bb32a7c6) ─────────────────────────────────
   R8  Green halo on post / Auto-Size post missing or invisible.
       Authority: ccfb0c5e, 7cd2fa9e (ticker green + outer-ring flash)
   R9  Edit mode chrome still wrong vs prior polish (solid EDITING banner).
@@ -74,10 +74,10 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     "file": "docs/howmany-v3-components/COMPOSITION-HUD-DECODER-v3.html",
     "branch": "docs/howmany-v3-decoder-lock",
     "repo": "TurboFrogLLC/NestCalc",
-    "tip_commit": "28356b106f669dd713f81a234f9ed0e0ee1199e6",
-    "tip_blob": "1533f4c6d7a357f9afdde5bc872b281d2996f662",
-    "prior_tip_commit": "d17a3ca3ea010f66ec63f16880f506d258e7eb35",
-    "prior_tip_blob": "8385358c007db991a709efd78ea63ec40c8ac01a",
+    "tip_commit": "bb32a7c68a82bf7f0ff15105643ba4dbd650cc4b",
+    "tip_blob": "7d5967842e97618a21bb4427b92f4aa758f1e26f",
+    "prior_tip_commit": "28356b106f669dd713f81a234f9ed0e0ee1199e6",
+    "prior_tip_blob": "1533f4c6d7a357f9afdde5bc872b281d2996f662",
     "open_residuals": [
       "R8",
       "R9"
@@ -217,7 +217,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       --status-posted: #7DDB8C;
       --green: #00CF00;
       --green-border: rgba(0, 140, 30, 0.70);
-      --green-glow: 0 0 0 2.2px rgba(0, 160, 30, 0.40);
+      --green-glow: 0 0 0 3px rgba(0, 180, 40, 0.70), 0 0 0 6px rgba(0, 180, 40, 0.28);
       --chip-gray: rgba(26, 20, 40, 0.10);
       --accept: #22A06B;
       --cancel: #DC143C;
@@ -1212,7 +1212,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       --status-posted: #7DDB8C;
       --green: #00CF00;
       --green-border: rgba(0, 140, 30, 0.70);
-      --green-glow: 0 0 0 2.2px rgba(0, 160, 30, 0.40);
+      --green-glow: 0 0 0 3px rgba(0, 180, 40, 0.70), 0 0 0 6px rgba(0, 180, 40, 0.28);
       --chip-gray: rgba(26, 20, 40, 0.10); /* darker gray fill shared by READY + stale ticker */
       --gc-g: #FF00FF;
       --gc-comment: #00CF00;
@@ -1269,6 +1269,14 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       box-shadow: 0 18px 40px -12px rgba(0, 0, 0, 0.38);
       pointer-events: none;
       z-index: -1;
+      transition: border-color 180ms var(--ease), box-shadow 180ms var(--ease);
+    }
+    /* R8: 1500ms outer-ring green flash on post (authority ccfb0c5e / 7cd2fa9e) */
+    .gcode.is-post-flash::after {
+      border-color: rgba(0, 180, 40, 0.85);
+      box-shadow:
+        0 0 0 3px rgba(0, 180, 40, 0.45),
+        0 18px 40px -12px rgba(0, 0, 0, 0.38);
     }
 
     /* ── Card-centered toast (middle of panel, not above the top) ── */
@@ -4375,6 +4383,9 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
         setStatus('posted');
         syncPartGroup();
         showToast('Part posted');
+        /* R8: 1500ms outer-ring green flash (authority ccfb0c5e) */
+        panel.classList.add('is-post-flash');
+        setTimeout(function () { panel.classList.remove('is-post-flash'); }, 1500);
       });
 
       function downloadOut() {
