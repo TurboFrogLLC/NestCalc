@@ -244,24 +244,25 @@
       /* equal top/side inset: (44 - 28.6) / 2 = 7.7 — icon radius sits balanced in shell radius */
       padding: 0 7.7px;
       margin: 0;
-      border-bottom: 1.1px solid var(--ink-15);
+      border-bottom: 1.1px solid rgba(255, 255, 255, 0.12);
       box-sizing: border-box;
       position: relative;
       z-index: 1;
       border-radius: var(--radius) var(--radius) 0 0;
-      background: var(--frost);
+      /* match de-coder dark header */
+      background: rgba(26, 20, 40, 0.82);
     }
     .keypad-header:active { cursor: grabbing; }
-    /* Header tools mirror de-coder .icon-btn (active = ink, not close-gray) */
+    /* Header tools on dark bar — light icons */
     .keypad-header .tool {
       height: var(--icon-btn);
       width: var(--icon-btn);
       min-width: var(--icon-btn);
       min-height: var(--icon-btn);
       border-radius: var(--chip-r);
-      border: 1.1px solid rgba(26, 20, 40, 0.22);
-      background: var(--white-70);
-      color: var(--ink);
+      border: 1.1px solid rgba(255, 255, 255, 0.22);
+      background: rgba(255, 255, 255, 0.14);
+      color: #fff;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -276,9 +277,9 @@
       transition: background 0.12s, border-color 0.12s, transform 0.12s;
     }
     .keypad-header .tool:hover {
-      background: var(--white);
-      border-color: rgba(26, 20, 40, 0.35);
-      /* color stays ink — no hover flip to black (already black) */
+      background: rgba(255, 255, 255, 0.22);
+      border-color: rgba(255, 255, 255, 0.35);
+      color: #fff;
     }
     .keypad-header .tool:active,
     .keypad-header .tool.press:active {
@@ -316,15 +317,14 @@
       display: flex;
     }
 
-    /* Collapse: same grid 0fr/1fr as de-coder, but HUD-only longer duration
-       (short body travels less distance — 340ms keeps perceived speed matched) */
+    /* Collapse: same grid 0fr/1fr as de-coder; HUD-only 750ms for perceived parity */
     #hud-body {
       margin-top: 0;
       display: grid;
       grid-template-rows: 1fr;
       overflow: hidden;
       min-height: 0;
-      transition: grid-template-rows 1500ms var(--ease);
+      transition: grid-template-rows 750ms var(--ease);
     }
     #hud-body-inner {
       overflow: hidden;
@@ -1159,6 +1159,14 @@
         0 0 2px 2px rgba(255, 206, 27, 0.55),
         0 18px 40px -12px rgba(0, 0, 0, 0.38);
     }
+    /* Success flash: outer ring green ~1s (post / process) */
+    .gcode.ring-flash-green::after {
+      border-width: 2px;
+      border-color: #00CF00;
+      box-shadow:
+        0 0 3px 3px rgba(0, 207, 0, 0.45),
+        0 18px 40px -12px rgba(0, 0, 0, 0.38);
+    }
     /* Status dot → yellow while editing (not green — that reads as "posted") */
     .gcode:has(.surface-row.is-editing-banner) .status-dot {
       background: #FFCE1B !important;
@@ -1271,6 +1279,23 @@
       background: rgba(255, 255, 255, 0.18);
       color: #fff;
       border-color: transparent;
+    }
+    /* Open/download sit on white program field — force visible ink icons */
+    .gcode-bar .prog-actions .icon-btn {
+      background: transparent !important;
+      border: none !important;
+      color: var(--ink) !important;
+    }
+    .gcode-bar .prog-actions .icon-btn:hover:not(:disabled) {
+      background: var(--ink-08) !important;
+      color: var(--ink) !important;
+    }
+    .gcode-bar .prog-actions .icon-btn:disabled {
+      color: var(--ink-30) !important;
+      opacity: 0.45;
+    }
+    .gcode-bar .prog-clear {
+      color: var(--ink-50);
     }
 
     .prog-field {
@@ -2784,7 +2809,7 @@
          body fully disappears (header-only: calc + part ticker + chevron).
          Restore measured height on expand so calc↔HUD swap stays seamless. */
       if (on) {
-        /* Clear residual inline styles so CSS 1500ms grid transition can run */
+        /* Clear residual inline styles so CSS 750ms grid transition can run */
         hudBody.style.minHeight = '';
         hudBody.style.transition = '';
         hudBody.style.height = '';
@@ -4196,6 +4221,7 @@
           setOutEdit(false);
           setTab('output');
           showToast('Output ready');
+          flashRingGreen();
         }
       });
 
@@ -4229,12 +4255,24 @@
 
       /* PROCESS handled on stageAction click */
 
+      /* Outer-ring green success flash (~1s) — works collapsed or expanded */
+      var ringFlashTimer = null;
+      function flashRingGreen() {
+        panel.classList.add('ring-flash-green');
+        if (ringFlashTimer) clearTimeout(ringFlashTimer);
+        ringFlashTimer = setTimeout(function () {
+          panel.classList.remove('ring-flash-green');
+          ringFlashTimer = null;
+        }, 1000);
+      }
+
       btnPost.addEventListener('click', function () {
         if (!bounds || btnPost.disabled) return;
         posted = true;
         setStatus('posted');
         syncPartGroup();
         showToast('Part posted');
+        flashRingGreen();
       });
 
       function downloadOut() {
