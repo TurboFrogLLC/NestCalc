@@ -1271,7 +1271,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       z-index: -1;
       transition: border-color 180ms var(--ease), box-shadow 180ms var(--ease);
     }
-    /* R8: 1500ms outer-ring green flash on post (authority ccfb0c5e / 7cd2fa9e) */
+    /* R8: 2200ms outer-ring green flash on post (authority ccfb0c5e / 7cd2fa9e) */
     .gcode.is-post-flash::after {
       border-color: rgba(0, 180, 40, 0.85);
       box-shadow:
@@ -1772,7 +1772,8 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     }
     .gcode .part-group.is-connected .part-ticker[data-state="posted"]:not(.is-stale) {
       background: #7DDB8C;
-      box-shadow: var(--green-glow); /* green halo on post */
+      /* R8: inset — outer box-shadow is clipped by .part-group overflow:hidden */
+      box-shadow: inset 0 0 0 2.2px rgba(0, 160, 30, 0.75);
     }
     .gcode .part-group.is-connected .part-ticker.is-stale {
       background: var(--chip-gray);
@@ -4383,9 +4384,9 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
         setStatus('posted');
         syncPartGroup();
         showToast('Part posted');
-        /* R8: 1500ms outer-ring green flash (authority ccfb0c5e) */
+        /* R8: 2200ms outer-ring green flash — match toast duration (authority ccfb0c5e) */
         panel.classList.add('is-post-flash');
-        setTimeout(function () { panel.classList.remove('is-post-flash'); }, 1500);
+        setTimeout(function () { panel.classList.remove('is-post-flash'); }, 2200);
       });
 
       function downloadOut() {
