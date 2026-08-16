@@ -45,8 +45,8 @@ After every residual: record new commit SHA + blob SHA in this block.
             gray body, disabled chrome, yellow ring — not solid EDITING banner)
 
 ── OPEN residuals ───────────────────────────────────────────────────────────
-  R10  Green outer-ring flash on post (soft halo match yellow glow)
-       Authority: ccfb0c5e · 7cd2fa9e — soft 0 0 2px 2px @ 70% (yellow unchanged)
+  R10  Green outer-ring on Post + FLIP IT (1px solid green @ 90% + soft halo)
+       Authority: ccfb0c5e · 7cd2fa9e — match yellow thickness; yellow unchanged
   R9 closed series (do not reopen):
       6eed4c73  yellow OUTER shell glow; retire solid banner
       108c9e30  1px yellow outer ring + glow; surface grayscale-disabled; status-dot yellow
@@ -1275,11 +1275,11 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       z-index: -1;
       transition: border-color 180ms var(--ease), box-shadow 180ms var(--ease);
     }
-    /* R10b: green post flash — soft halo matched to yellow edit glow
-       Yellow stays LOCKED (1px + 0 0 2px 2px amber @ 55%).
-       Green glow/halo only → soft 0 0 2px 2px @ 70% green. Border 2px kept. */
+    /* R10c: green post/FLIP-IT flash — match yellow thickness
+       Border 1px solid green @ 90% + soft 0 0 2px 2px @ 70%.
+       Yellow edit ring UNCHANGED. Triggers: btn-post + stage FLIP IT. */
     .gcode.is-post-flash::after {
-      border-width: 2px;
+      border-width: 1px;
       border-color: rgba(0, 180, 40, 0.90);
       box-shadow:
         0 0 2px 2px rgba(0, 180, 40, 0.70),
@@ -3788,6 +3788,17 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
         }, 2200);
       }
 
+      /* R10c: outer-ring green flash — Post + FLIP IT (2200ms, matches toast) */
+      var postFlashTimer = null;
+      function flashGreenRing() {
+        panel.classList.add('is-post-flash');
+        if (postFlashTimer) clearTimeout(postFlashTimer);
+        postFlashTimer = setTimeout(function () {
+          panel.classList.remove('is-post-flash');
+          postFlashTimer = null;
+        }, 2200);
+      }
+
       /* --- highlighter --- */
       function escapeHtml(s) {
         return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -4415,6 +4426,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
           setOutEdit(false);
           setTab('output');
           showToast('Output ready');
+          flashGreenRing(); /* R10c: same green ring on FLIP IT as on Post */
         }
       });
 
@@ -4454,9 +4466,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
         setStatus('posted');
         syncPartGroup();
         showToast('Part posted');
-        /* R8: 2200ms outer-ring green flash — match toast duration (authority ccfb0c5e) */
-        panel.classList.add('is-post-flash');
-        setTimeout(function () { panel.classList.remove('is-post-flash'); }, 2200);
+        flashGreenRing(); /* R10c: 1px green @ 90% + soft halo */
       });
 
       function downloadOut() {
