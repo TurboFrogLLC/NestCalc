@@ -10,14 +10,14 @@ READ THIS BLOCK BEFORE ANY EDIT. Self-governing loop for Grok / Codex sessions.
 Branch:  docs/howmany-v3-decoder-lock
 Repo:    TurboFrogLLC/NestCalc
 Path:    docs/howmany-v3-components/COMPOSITION-HUD-DECODER-v3.html
-Tip (R14 closed — sandbox isolator):
-  commit  00b7975efea7a28ff60996b1dd09194ec0130234
-  blob    0158c636f1144770432bb792215b22df2cd135cc
-  msg     docs(howmany-v3): R14 sandbox isolator show/hide card
+Tip (R26 closed — child-spec copy + draggable):
+  commit  9d8cade5bb9cb108845f38f40d4f41fba5272207
+  blob    09e5448e54ed8a980b2b8d2258f879dc318849d8
+  msg     docs(howmany-v3): R26 child-spec copy rows + draggable panel
 
-Prior tip (R13 backplot):
-  commit  2fb32796297510f5d19d1fbc97918960d5172de6
-  blob    efcd1d59eabaf3ff72adb8c3856def85d7598bb5
+Prior tip (R17 content / pre-R26):
+  commit  f52aa3a9b8638e72497f5779bc139c4999034978
+  blob    72ff09381ba9d59ab49301246870bc68b5101385
 
 Before every residual: pull tip via GitHub connector and confirm blob SHA.
 After every residual: record new commit SHA + blob SHA in this block.
@@ -45,9 +45,11 @@ After every residual: record new commit SHA + blob SHA in this block.
             gray body, disabled chrome, yellow ring — not solid EDITING banner)
 
 ── OPEN residuals ───────────────────────────────────────────────────────────
-  R17  toolPath open from FLiPIT tool-strip (waypoints icon · Source + Output)
+  (none — R26 closed this cycle)
 
 ── CLOSED (do not reopen without human OK) ──────────────────────────────────
+  R26 closed @ 9d8cade5  child-spec Lucide copy per row + free-draggable panel
+  R17 closed series  toolPath open from FLiPIT strip · strip unlock · black icons
   R16 closed series  toolPath card polish · header icons · READY amber · popovers
   R15 closed  faux-bed blank child-spec table on surface click
 
@@ -89,11 +91,11 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     "file": "docs/howmany-v3-components/COMPOSITION-HUD-DECODER-v3.html",
     "branch": "docs/howmany-v3-decoder-lock",
     "repo": "TurboFrogLLC/NestCalc",
-    "tip_commit": "00b7975efea7a28ff60996b1dd09194ec0130234",
-    "tip_blob": "0158c636f1144770432bb792215b22df2cd135cc",
-    "prior_tip_commit": "2fb32796297510f5d19d1fbc97918960d5172de6",
-    "prior_tip_blob": "efcd1d59eabaf3ff72adb8c3856def85d7598bb5",
-    "open_residuals": ["R17"],
+    "tip_commit": "9d8cade5bb9cb108845f38f40d4f41fba5272207",
+    "tip_blob": "09e5448e54ed8a980b2b8d2258f879dc318849d8",
+    "prior_tip_commit": "f52aa3a9b8638e72497f5779bc139c4999034978",
+    "prior_tip_blob": "72ff09381ba9d59ab49301246870bc68b5101385",
+    "open_residuals": [],
     "rules": [
       "one residual at a time",
       "read tip blob + authority SHA before fix",
@@ -302,17 +304,20 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       outline: 1.5px dashed rgba(83, 139, 236, 0.55);
       outline-offset: 2px;
     }
+    /* R19: composition note — bottom of stage, behind surfaces (not up-front) */
     .comp-note {
       position: fixed;
-      top: 11px;
-      left: 11px; /* top-left — clear of de-coder pin */
+      left: 16px;
+      bottom: 16px;
+      top: auto;
+      right: auto;
       transform: none;
-      z-index: 50;
+      z-index: 5; /* sit on grid, behind HUD / FLiPIT / toolPath */
       font-size: 12.1px;
       font-weight: 600;
-      color: rgba(26,20,40,0.55);
-      background: rgba(216,214,226,0.9);
-      border: 1.1px solid rgba(26,20,40,0.12);
+      color: rgba(26,20,40,0.45);
+      background: rgba(216,214,226,0.72);
+      border: 1.1px solid rgba(26,20,40,0.10);
       border-radius: 8.8px;
       padding: 6.6px 13.2px;
       pointer-events: none;
@@ -322,7 +327,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
        Pure left/top (no right:) so pointer-drag scripts own position after first move.
        HUD always up-front (z above de-coder). */
     .keypad {
-      /* centered on load via JS (pixel left/top) — no CSS transform */
+      /* R18: docked top-left 16px on load / collapse — JS owns left/top */
       z-index: 40;
       touch-action: none;
     }
@@ -3367,6 +3372,8 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       calc: false,
       collapsed: false,
       drag: null,
+      /* R18: position memory for collapse dock / expand restore */
+      preCollapsePos: null, /* { left, top } px or null */
       units: 'in',
       blankW: 12,
       blankH: 8,
@@ -3514,22 +3521,47 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       }
     }
 
-    function centerHud() {
-      /* Pixel left/top only — never CSS transform (breaks fixed popovers) */
+    /* R18: dock inset matches flipIT first-open gap (.gcode top/right 16px) */
+    var HUD_DOCK_INSET = 16;
+
+    function dockHudCorner() {
+      /* Top-left dock — same padding family as flipIT first open */
       hud.style.transform = 'none';
-      const w = hud.offsetWidth;
-      const h = hud.offsetHeight;
-      const x = Math.max(0, Math.round((window.innerWidth - w) / 2));
-      const y = Math.max(0, Math.round((window.innerHeight - h) / 2));
-      hud.style.left = x + 'px';
-      hud.style.top = y + 'px';
+      hud.style.right = 'auto';
+      hud.style.bottom = 'auto';
+      hud.style.left = HUD_DOCK_INSET + 'px';
+      hud.style.top = HUD_DOCK_INSET + 'px';
     }
-    centerHud();
+
+    function captureHudPos() {
+      var r = hud.getBoundingClientRect();
+      return { left: Math.round(r.left), top: Math.round(r.top) };
+    }
+
+    function restoreHudPos(pos) {
+      if (!pos) {
+        dockHudCorner();
+        return;
+      }
+      hud.style.transform = 'none';
+      hud.style.right = 'auto';
+      hud.style.bottom = 'auto';
+      hud.style.left = pos.left + 'px';
+      hud.style.top = pos.top + 'px';
+    }
+
+    /* Load: expanded HUD starts top-left (not center) */
+    dockHudCorner();
     window.addEventListener('resize', function () {
-      if (!state.drag) centerHud();
+      /* Only re-dock when collapsed; expanded keeps user drag position */
+      if (!state.drag && state.collapsed) dockHudCorner();
     });
 
     function setCollapsed(on) {
+      if (on && !state.collapsed) {
+        /* About to collapse — remember expanded position for restore */
+        state.preCollapsePos = captureHudPos();
+      }
       state.collapsed = on;
       hud.classList.toggle('collapsed', on);
       btnChevron.setAttribute('aria-expanded', on ? 'false' : 'true');
@@ -3544,12 +3576,16 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       if (on) {
         hudBody.style.minHeight = '';
         closeAllParamPopovers();
+        /* R18: dock collapsed HUD to top-left corner (out of the way) */
+        dockHudCorner();
       } else {
         /* restore measured height when expanding */
         const hudH = parseFloat(hudBody.dataset.hudH || '0');
         const calcH = parseFloat(hudBody.dataset.calcH || '0');
         if (state.calc && calcH) hudBody.style.minHeight = calcH + 'px';
         else if (hudH) hudBody.style.minHeight = hudH + 'px';
+        /* R18: restore pre-collapse position (or stay docked if never moved) */
+        restoreHudPos(state.preCollapsePos);
       }
       applyModeVisibility();
     }
@@ -3560,10 +3596,8 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       calcToggle.classList.toggle('active-calc', on);
       calcToggle.setAttribute('aria-pressed', on ? 'true' : 'false');
       if (on && state.collapsed) {
-        state.collapsed = false;
-        hud.classList.remove('collapsed');
-        btnChevron.setAttribute('aria-expanded', 'true');
-        btnChevron.title = 'Collapse';
+        /* Expand via calc — use setCollapsed so R18 position restore runs */
+        setCollapsed(false);
       }
       if (on) closeAllParamPopovers();
       applyModeVisibility();
