@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>toolPath — NC fixture backplot</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23fbbf24'/%3E%3Cpath d='M8 9h16v14H8z' fill='none' stroke='%2318181b' stroke-width='2'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --ink: #f4f4f5;
+      --muted: #a1a1aa;
+      --panel: #18181b;
+      --panel-2: #27272a;
+      --line: #3f3f46;
+      --accent: #f59e0b;
+      --accent-2: #fbbf24;
+      --rapid: #71717a;
+      --cut: #18181b;
+      --manifest: #ef4444;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 0%, rgb(245 158 11 / 10%), transparent 32rem),
+        #09090b;
+    }
+
+    button { font: inherit; }
+
+    .shell {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 36px;
+    }
+
+    header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 20px;
+    }
+
+    .wordmark {
+      margin: 0;
+      font-size: clamp(2rem, 7vw, 3.25rem);
+      font-weight: 800;
+      letter-spacing: -0.065em;
+      line-height: 0.9;
+    }
+
+    .wordmark .tool { color: #fafafa; }
+    .wordmark .path { color: var(--accent-2); }
+
+    .eyebrow {
+      margin: 9px 0 0;
+      color: var(--muted);
+      font: 600 0.72rem/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .lab-badge {
+      border: 1px solid #713f12;
+      border-radius: 999px;
+      padding: 7px 10px;
+      color: #fcd34d;
+      background: #422006;
+      font: 700 0.72rem/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: 0.09em;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 14px 14px 0 0;
+      background: var(--panel);
+    }
+
+    .fixture-list { display: flex; gap: 8px; }
+
+    .fixture-button,
+    .refresh-button {
+      min-height: 38px;
+      border: 1px solid #52525b;
+      border-radius: 8px;
+      padding: 0 13px;
+      color: #e4e4e7;
+      background: var(--panel-2);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .fixture-button:hover,
+    .refresh-button:hover { border-color: #a1a1aa; }
+
+    .fixture-button[aria-pressed="true"] {
+      border-color: var(--accent);
+      color: #18181b;
+      background: var(--accent-2);
+      font-weight: 800;
+    }
+
+    .fixture-button:focus-visible,
+    .refresh-button:focus-visible {
+      outline: 3px solid rgb(251 191 36 / 42%);
+      outline-offset: 2px;
+    }
+
+    .refresh-button {
+      margin-left: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .refresh-button svg { width: 16px; height: 16px; }
+
+    .viewfinder {
+      position: relative;
+      min-height: 560px;
+      overflow: hidden;
+      border: 1px solid #d4d4d8;
+      border-top: 0;
+      border-radius: 0 0 14px 14px;
+      background: #fff;
+      box-shadow: 0 22px 70px rgb(0 0 0 / 35%);
+    }
+
+    #plot {
+      display: block;
+      width: 100%;
+      min-height: 560px;
+      background: #fff;
+    }
+
+    .grid-line { stroke: #e4e4e7; stroke-width: 1; vector-effect: non-scaling-stroke; }
+    .axis-line { stroke: #a1a1aa; stroke-width: 1; vector-effect: non-scaling-stroke; }
+    .manifest-box {
+      fill: rgb(239 68 68 / 4%);
+      stroke: var(--manifest);
+      stroke-width: 1.5;
+      stroke-dasharray: 7 5;
+      vector-effect: non-scaling-stroke;
+    }
+    .motion {
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vector-effect: non-scaling-stroke;
+    }
+    .motion.rapid { stroke: var(--rapid); stroke-width: 1.5; stroke-dasharray: 7 6; opacity: 0.72; }
+    .motion.cut { stroke: var(--cut); stroke-width: 2.5; }
+
+    .loading,
+    .error {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 32px;
+      text-align: center;
+      color: #3f3f46;
+      background: rgb(255 255 255 / 92%);
+      font-weight: 700;
+    }
+    .error { color: #991b1b; }
+    [hidden] { display: none !important; }
+
+    .readout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .datum {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 11px 12px;
+      background: var(--panel);
+    }
+
+    .datum dt {
+      margin-bottom: 5px;
+      color: var(--muted);
+      font: 700 0.67rem/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .datum dd {
+      margin: 0;
+      overflow-wrap: anywhere;
+      color: #e4e4e7;
+      font: 600 0.78rem/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    .datum.status dd { color: #86efac; }
+    .datum.status.mismatch dd { color: #fca5a5; }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin: 14px 2px 0;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+    .key { display: inline-flex; align-items: center; gap: 7px; }
+    .swatch { width: 24px; border-top: 2px solid #fff; }
+    .swatch.rapid { border-color: var(--rapid); border-top-style: dashed; }
+    .swatch.cut { border-color: #fafafa; }
+    .swatch.manifest { border-color: var(--manifest); border-top-style: dashed; }
+
+    @media (max-width: 700px) {
+      .shell { width: min(100% - 20px, 1120px); padding-top: 20px; }
+      header { align-items: start; }
+      .viewfinder, #plot { min-height: 460px; }
+      .readout { grid-template-columns: 1fr; }
+      .datum.status { grid-column: auto; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <h1 class="wordmark"><span class="tool">tool</span><span class="path">Path</span></h1>
+        <p class="eyebrow">NC fixture backplot</p>
+      </div>
+      <span class="lab-badge">L2 LAB ONLY</span>
+    </header>
+
+    <section aria-label="Fixture backplot">
+      <div class="toolbar">
+        <div class="fixture-list" id="fixture-list" aria-label="Fixture picker"></div>
+        <button class="refresh-button" id="refresh" type="button" aria-label="Refresh current fixture">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M20 6v5h-5"></path><path d="M4 18v-5h5"></path>
+            <path d="M18.5 9a7 7 0 0 0-11.8-2.6L4 11M20 13l-2.7 4.6A7 7 0 0 1 5.5 15"></path>
+          </svg>
+          Refresh
+        </button>
+      </div>
+
+      <div class="viewfinder" id="viewfinder">
+        <svg id="plot" role="img" aria-labelledby="plot-title plot-description"></svg>
+        <div class="loading" id="loading" role="status">Loading fixture…</div>
+        <div class="error" id="error" role="alert" hidden></div>
+      </div>
+
+      <dl class="readout">
+        <div class="datum"><dt>Computed AABB</dt><dd id="computed">—</dd></div>
+        <div class="datum"><dt>Manifest AABB</dt><dd id="expected">—</dd></div>
+        <div class="datum status" id="status-box"><dt>Comparison</dt><dd id="status">—</dd></div>
+      </dl>
+
+      <div class="legend" aria-label="Plot legend">
+        <span class="key"><span class="swatch rapid"></span>G0 rapid</span>
+        <span class="key"><span class="swatch cut"></span>G1/G2/G3 cut</span>
+        <span class="key"><span class="swatch manifest"></span>manifest AABB</span>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const EPSILON = 1e-7;
+      const SVG_NS = 'http://www.w3.org/2000/svg';
+      const CARDINAL_ANGLES = [0, Math.PI / 2, Math.PI, 3 * Math.PI / 2];
+      const LABELS = {
+        'F1-rectangle-outer': 'F1',
+        'F2-circle-ij': 'F2',
+        'F3-circle-r': 'F3',
+        'F4-outer-inner-laser-tokens': 'F4',
+        'F6-rectangle-0deg': 'F6-0°',
+        'F6-rectangle-90deg': 'F6-90°',
+      };
+
+      const elements = {
+        list: document.querySelector('#fixture-list'),
+        refresh: document.querySelector('#refresh'),
+        viewfinder: document.querySelector('#viewfinder'),
+        plot: document.querySelector('#plot'),
+        loading: document.querySelector('#loading'),
+        error: document.querySelector('#error'),
+        computed: document.querySelector('#computed'),
+        expected: document.querySelector('#expected'),
+        status: document.querySelector('#status'),
+        statusBox: document.querySelector('#status-box'),
+      };
+
+      let manifest;
+      let selected;
+      let currentPlot;
+
+      const normalizeAngle = (angle) => ((angle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+
+      const traveledAngle = (start, candidate, clockwise) => clockwise
+        ? normalizeAngle(start - candidate)
+        : normalizeAngle(candidate - start);
+
+      const arcSpan = (start, end, clockwise, fullCircle = false) => fullCircle
+        ? Math.PI * 2
+        : traveledAngle(start, end, clockwise);
+
+      const containsAngle = (start, end, clockwise, candidate, fullCircle = false) =>
+        traveledAngle(start, candidate, clockwise) <= arcSpan(start, end, clockwise, fullCircle) + EPSILON;
+
+      function stripComments(rawLine) {
+        return rawLine.replace(/\([^)]*\)/g, ' ').replace(/;.*/, ' ').trim().toUpperCase();
+      }
+
+      function wordsFor(line) {
+        const words = {};
+        for (const match of line.matchAll(/([A-Z])\s*([+-]?(?:\d+(?:\.\d*)?|\.\d+))/g)) {
+          const letter = match[1];
+          const value = Number(match[2]);
+          if (!words[letter]) words[letter] = [];
+          words[letter].push(value);
+        }
+        return words;
+      }
+
+      function resolveRadiusCenter(start, end, signedRadius, clockwise) {
+        const dx = end.x - start.x;
+        const dy = end.y - start.y;
+        const chord = Math.hypot(dx, dy);
+        const radius = Math.abs(signedRadius);
+        if (chord < EPSILON || radius < EPSILON || chord > 2 * radius + EPSILON) {
+          throw new Error(`Invalid R arc: chord ${formatNumber(chord)} cannot use R${signedRadius}`);
+        }
+
+        const midpoint = { x: (start.x + end.x) / 2, y: (start.y + end.y) / 2 };
+        const height = Math.sqrt(Math.max(0, radius * radius - chord * chord / 4));
+        if (height < EPSILON) return midpoint;
+
+        const perpendicular = { x: -dy / chord, y: dx / chord };
+        const candidates = [1, -1].map((sign) => ({
+          x: midpoint.x + sign * height * perpendicular.x,
+          y: midpoint.y + sign * height * perpendicular.y,
+        }));
+        const wantsMajor = signedRadius < 0;
+        const matching = candidates.filter((center) => {
+          const startAngle = Math.atan2(start.y - center.y, start.x - center.x);
+          const endAngle = Math.atan2(end.y - center.y, end.x - center.x);
+          const span = arcSpan(startAngle, endAngle, clockwise);
+          return wantsMajor ? span >= Math.PI - EPSILON : span <= Math.PI + EPSILON;
+        });
+        if (matching.length !== 1) throw new Error(`Ambiguous R arc: R${signedRadius}`);
+        return matching[0];
+      }
+
+      function parseProgram(program) {
+        let current = { x: 0, y: 0 };
+        let modalMotion = null;
+        const segments = [];
+
+        for (const [index, rawLine] of program.split(/\r?\n/).entries()) {
+          const line = stripComments(rawLine);
+          if (!line) continue;
+          const words = wordsFor(line);
+          const motionWord = (words.G || []).find((value) => [0, 1, 2, 3].includes(value));
+          if (motionWord !== undefined) modalMotion = motionWord;
+
+          const hasGeometryWord = ['X', 'Y', 'I', 'J', 'R'].some((letter) => words[letter]);
+          if (modalMotion === null || !hasGeometryWord) continue;
+
+          const end = {
+            x: words.X ? words.X.at(-1) : current.x,
+            y: words.Y ? words.Y.at(-1) : current.y,
+          };
+          const segment = { motion: modalMotion, start: { ...current }, end, sourceLine: index + 1 };
+
+          if (modalMotion === 2 || modalMotion === 3) {
+            segment.clockwise = modalMotion === 2;
+            if (words.I || words.J) {
+              segment.center = {
+                x: current.x + (words.I ? words.I.at(-1) : 0),
+                y: current.y + (words.J ? words.J.at(-1) : 0),
+              };
+              segment.radiusWord = null;
+            } else if (words.R) {
+              segment.radiusWord = words.R.at(-1);
+              segment.center = resolveRadiusCenter(current, end, segment.radiusWord, segment.clockwise);
+            } else {
+              throw new Error(`Line ${index + 1}: G${modalMotion} needs I/J or R`);
+            }
+            segment.radius = Math.hypot(current.x - segment.center.x, current.y - segment.center.y);
+            if (segment.radius < EPSILON) throw new Error(`Line ${index + 1}: arc radius is zero`);
+            const endRadius = Math.hypot(end.x - segment.center.x, end.y - segment.center.y);
+            if (Math.abs(segment.radius - endRadius) > Math.max(EPSILON, segment.radius * 1e-5)) {
+              throw new Error(`Line ${index + 1}: arc endpoints disagree on radius`);
+            }
+            segment.fullCircle = Math.hypot(end.x - current.x, end.y - current.y) < EPSILON;
+          }
+
+          segments.push(segment);
+          current = end;
+        }
+
+        if (!segments.length) throw new Error('No G0/G1/G2/G3 XY motion found');
+        return segments;
+      }
+
+      function computeBounds(segments) {
+        const points = [];
+        const include = (point) => points.push(point);
+        for (const segment of segments) {
+          include(segment.start);
+          include(segment.end);
+          if (segment.motion !== 2 && segment.motion !== 3) continue;
+          const startAngle = Math.atan2(segment.start.y - segment.center.y, segment.start.x - segment.center.x);
+          const endAngle = Math.atan2(segment.end.y - segment.center.y, segment.end.x - segment.center.x);
+          for (const angle of CARDINAL_ANGLES) {
+            if (containsAngle(startAngle, endAngle, segment.clockwise, angle, segment.fullCircle)) {
+              include({
+                x: segment.center.x + segment.radius * Math.cos(angle),
+                y: segment.center.y + segment.radius * Math.sin(angle),
+              });
+            }
+          }
+        }
+        const xs = points.map((point) => point.x);
+        const ys = points.map((point) => point.y);
+        return { min_x: Math.min(...xs), min_y: Math.min(...ys), max_x: Math.max(...xs), max_y: Math.max(...ys) };
+      }
+
+      const unionBounds = (a, b) => ({
+        min_x: Math.min(a.min_x, b.min_x),
+        min_y: Math.min(a.min_y, b.min_y),
+        max_x: Math.max(a.max_x, b.max_x),
+        max_y: Math.max(a.max_y, b.max_y),
+      });
+
+      const svgElement = (name, attributes = {}) => {
+        const node = document.createElementNS(SVG_NS, name);
+        for (const [key, value] of Object.entries(attributes)) node.setAttribute(key, value);
+        return node;
+      };
+
+      function draw(plot) {
+        currentPlot = plot;
+        const width = Math.max(320, elements.viewfinder.clientWidth);
+        const height = Math.max(460, elements.viewfinder.clientHeight);
+        const padding = Math.max(36, Math.min(width, height) * 0.09);
+        const fit = unionBounds(plot.computed, plot.fixture.expected_aabb);
+        const spanX = Math.max(EPSILON, fit.max_x - fit.min_x);
+        const spanY = Math.max(EPSILON, fit.max_y - fit.min_y);
+        const scale = Math.min((width - padding * 2) / spanX, (height - padding * 2) / spanY);
+        const usedWidth = spanX * scale;
+        const usedHeight = spanY * scale;
+        const offsetX = (width - usedWidth) / 2 - fit.min_x * scale;
+        const offsetY = (height - usedHeight) / 2 + fit.max_y * scale;
+        const map = (point) => ({ x: offsetX + point.x * scale, y: offsetY - point.y * scale });
+
+        elements.plot.replaceChildren();
+        elements.plot.setAttribute('viewBox', `0 0 ${width} ${height}`);
+        const title = svgElement('title', { id: 'plot-title' });
+        title.textContent = `${plot.fixture.id} backplot`;
+        const description = svgElement('desc', { id: 'plot-description' });
+        description.textContent = 'Dashed gray rapid moves, solid black cut moves, and a dashed red manifest bounding box.';
+        elements.plot.append(title, description);
+
+        const origin = map({ x: 0, y: 0 });
+        if (origin.x >= 0 && origin.x <= width) elements.plot.append(svgElement('line', { x1: origin.x, y1: 0, x2: origin.x, y2: height, class: 'axis-line' }));
+        if (origin.y >= 0 && origin.y <= height) elements.plot.append(svgElement('line', { x1: 0, y1: origin.y, x2: width, y2: origin.y, class: 'axis-line' }));
+
+        const expectedTopLeft = map({ x: plot.fixture.expected_aabb.min_x, y: plot.fixture.expected_aabb.max_y });
+        const manifestBox = svgElement('rect', {
+          x: expectedTopLeft.x,
+          y: expectedTopLeft.y,
+          width: (plot.fixture.expected_aabb.max_x - plot.fixture.expected_aabb.min_x) * scale,
+          height: (plot.fixture.expected_aabb.max_y - plot.fixture.expected_aabb.min_y) * scale,
+          class: 'manifest-box',
+        });
+
+        for (const segment of plot.segments) {
+          const start = map(segment.start);
+          const end = map(segment.end);
+          let d = `M ${start.x} ${start.y}`;
+          if (segment.motion === 2 || segment.motion === 3) {
+            const radius = segment.radius * scale;
+            const startAngle = Math.atan2(segment.start.y - segment.center.y, segment.start.x - segment.center.x);
+            const endAngle = Math.atan2(segment.end.y - segment.center.y, segment.end.x - segment.center.x);
+            const span = arcSpan(startAngle, endAngle, segment.clockwise, segment.fullCircle);
+            const sweep = segment.clockwise ? 1 : 0;
+            if (segment.fullCircle) {
+              const oppositeModel = { x: 2 * segment.center.x - segment.start.x, y: 2 * segment.center.y - segment.start.y };
+              const opposite = map(oppositeModel);
+              d += ` A ${radius} ${radius} 0 0 ${sweep} ${opposite.x} ${opposite.y}`;
+              d += ` A ${radius} ${radius} 0 0 ${sweep} ${end.x} ${end.y}`;
+            } else {
+              d += ` A ${radius} ${radius} 0 ${span > Math.PI + EPSILON ? 1 : 0} ${sweep} ${end.x} ${end.y}`;
+            }
+          } else {
+            d += ` L ${end.x} ${end.y}`;
+          }
+          elements.plot.append(svgElement('path', { d, class: `motion ${segment.motion === 0 ? 'rapid' : 'cut'}` }));
+        }
+        elements.plot.append(manifestBox);
+      }
+
+      function formatNumber(value) {
+        const normalized = Math.abs(value) < EPSILON ? 0 : value;
+        return Number(normalized.toFixed(5)).toString();
+      }
+
+      const formatBounds = (bounds) =>
+        `[${formatNumber(bounds.min_x)}, ${formatNumber(bounds.min_y)}] → [${formatNumber(bounds.max_x)}, ${formatNumber(bounds.max_y)}]`;
+
+      function compareBounds(computed, expected) {
+        const keys = ['min_x', 'min_y', 'max_x', 'max_y'];
+        const maxDelta = Math.max(...keys.map((key) => Math.abs(computed[key] - expected[key])));
+        return { matches: maxDelta <= EPSILON, maxDelta };
+      }
+
+      function setBusy(isBusy) {
+        elements.loading.hidden = !isBusy;
+        elements.refresh.disabled = isBusy;
+        for (const button of elements.list.querySelectorAll('button')) button.disabled = isBusy;
+      }
+
+      function showError(error) {
+        elements.error.textContent = location.protocol === 'file:'
+          ? 'Sibling files cannot be fetched from file://. Serve this directory over HTTP; see README.md.'
+          : error instanceof Error ? error.message : String(error);
+        elements.error.hidden = false;
+      }
+
+      async function loadFixture(fixture, cacheBust = false) {
+        selected = fixture;
+        elements.error.hidden = true;
+        setBusy(true);
+        for (const button of elements.list.querySelectorAll('button')) {
+          button.setAttribute('aria-pressed', button.dataset.id === fixture.id ? 'true' : 'false');
+        }
+        try {
+          const suffix = cacheBust ? `?refresh=${Date.now()}` : '';
+          const response = await fetch(`${fixture.file}${suffix}`, { cache: 'no-store' });
+          if (!response.ok) throw new Error(`Could not load ${fixture.file}: HTTP ${response.status}`);
+          const program = await response.text();
+          const segments = parseProgram(program);
+          const computed = computeBounds(segments);
+          const comparison = compareBounds(computed, fixture.expected_aabb);
+          elements.computed.textContent = `${formatBounds(computed)} ${fixture.units}`;
+          elements.expected.textContent = `${formatBounds(fixture.expected_aabb)} ${fixture.units}`;
+          elements.status.textContent = comparison.matches
+            ? `MATCH · Δmax ${formatNumber(comparison.maxDelta)} ${fixture.units}`
+            : `MISMATCH · Δmax ${formatNumber(comparison.maxDelta)} ${fixture.units}`;
+          elements.statusBox.classList.toggle('mismatch', !comparison.matches);
+          draw({ fixture, segments, computed, comparison });
+        } catch (error) {
+          showError(error);
+        } finally {
+          setBusy(false);
+        }
+      }
+
+      function buildPicker(fixtures) {
+        const supported = fixtures.filter((fixture) => LABELS[fixture.id]);
+        if (supported.length !== Object.keys(LABELS).length) throw new Error('manifest.json is missing a toolPath fixture');
+        for (const fixture of supported) {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'fixture-button';
+          button.dataset.id = fixture.id;
+          button.textContent = LABELS[fixture.id];
+          button.setAttribute('aria-pressed', 'false');
+          button.title = fixture.notes;
+          button.addEventListener('click', () => loadFixture(fixture));
+          elements.list.append(button);
+        }
+        return supported;
+      }
+
+      async function start() {
+        try {
+          const response = await fetch('manifest.json', { cache: 'no-store' });
+          if (!response.ok) throw new Error(`Could not load manifest.json: HTTP ${response.status}`);
+          manifest = await response.json();
+          const fixtures = buildPicker(manifest.fixtures || []);
+          elements.refresh.addEventListener('click', () => selected && loadFixture(selected, true));
+          new ResizeObserver(() => currentPlot && draw(currentPlot)).observe(elements.viewfinder);
+          await loadFixture(fixtures[0]);
+        } catch (error) {
+          setBusy(false);
+          showError(error);
+        }
+      }
+
+      window.toolPathLab = { parseProgram, computeBounds, compareBounds };
+      start();
+    })();
+  </script>
+</body>
+</html>
