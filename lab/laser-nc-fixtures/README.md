@@ -41,9 +41,9 @@ F6 records a rectangle at 0 degrees and its 90-degree counter-clockwise twin
 about origin. Their dimensions exchange and the rotated AABB becomes
 `[-20, 0]` to `[0, 40]`, as expected.
 
-## toolPath L2 backplot
+## toolPath L3 round hex inset pair
 
-`toolPath.html` is a dependency-free lab viewer for the six fixtures in this
+`toolPath.html` is a dependency-free lab viewer for the seven fixtures in this
 directory. It fetches `manifest.json` and the selected sibling `.nc` file, so
 serve the directory over HTTP rather than opening the page with `file://`:
 
@@ -51,9 +51,18 @@ serve the directory over HTTP rather than opening the page with `file://`:
 python3 -m http.server 4173 --directory lab/laser-nc-fixtures
 ```
 
-Then open <http://127.0.0.1:4173/toolPath.html>. The fixture buttons load F1,
-F2, F3, F4, and both F6 orientations; **Refresh** fetches and redraws the
-current selection without reloading the page.
+Then open <http://127.0.0.1:4173/toolPath.html>. The default view is the L3
+round **hex inset pair** with `R = 10 mm` and `g = 2 mm`. The fixture buttons
+still load F1–F4, the fixed F5 golden round pair, and both F6 orientations; **Refresh** redraws the
+current round layout or fetches the current fixture without reloading the page.
+
+For round parts, `R` is the outer radius, `g` is a required positive perimeter
+gap, and `p = 2R + g` is the center distance. The first center is `(0, 0)`;
+the default inset second center is `(p/2, p*sqrt(3)/2)`. The clearly labelled
+optional **row compare** places its second center at `(p, 0)`. The readout
+reports `R`, `g`, `p`, `dx`, `dy`, center distance, and the combined AABB.
+The page packs washers on their OD only; a washer ID hole, if introduced in a
+future lab fixture, is draw-only and never changes the layout calculation.
 
 ### L2 proof checklist
 
@@ -66,6 +75,17 @@ current selection without reloading the page.
 - Every fixture reports `MATCH` with a near-zero maximum AABB delta, and the
   dashed manifest outline overlays the computed path bounds.
 - G0 motion is dim/dashed; G1/G2/G3 motion is solid.
+
+### L3 proof checklist
+
+- Default `R = 10 mm`, `g = 2 mm` hex inset shows two circles with center
+  distance `p = 22 mm`, `dx = 11 mm`, and `dy = 11*sqrt(3) mm`.
+- A positive `g` leaves a visible OD-to-OD gap; zero and negative gaps are
+  rejected.
+- **Single circle** shows only the origin-centered OD. **Row compare** is an
+  optional comparison only and places its second center at `(p, 0)`.
+- `F5-round-hex-inset-r10-g2.nc` is the deterministic golden fixture for the
+  default round layout; its manifest row records the combined arc-aware AABB.
 
 ### Parser walls
 
@@ -82,3 +102,5 @@ current selection without reloading the page.
   production controller policy.
 - Nothing in this page connects to HowMany, NestCalc product code, the
   calculator, bridge/host surfaces, Clerk, PWA, routes, or deployment.
+- This is not a multi-part shape nesting lab, a full-sheet nest, AutoNest, or
+  a FlipIt host change. It does not prescribe controller output.

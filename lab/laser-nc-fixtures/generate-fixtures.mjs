@@ -3,6 +3,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { aabbForProgram } from './bounds.mjs';
+import { roundLayout, roundProgram } from './round-layout.mjs';
 
 const root = dirname(fileURLToPath(import.meta.url));
 const header = ['(LAB FIXTURE ONLY - NOT LIVE CONTROLLER OUTPUT)', 'G21', 'G90', 'G17'];
@@ -18,6 +19,7 @@ const fixtures = [
   { id: 'F2-circle-ij', file: 'F2-circle-ij.nc', profile_count: 1, notes: 'Two CCW I/J semicircles; bounds include arc extrema, not the endpoint chord box.', body: ['G0 X10 Y0', 'G3 X-10 Y0 I-10 J0', 'G3 X10 Y0 I10 J0'] },
   { id: 'F3-circle-r', file: 'F3-circle-r.nc', profile_count: 1, notes: 'Two CCW R10 semicircles; see README caveat for R-word 180-degree arcs.', body: ['G0 X10 Y0', 'G3 X-10 Y0 R10', 'G3 X10 Y0 R10'] },
   { id: 'F4-outer-inner-laser-tokens', file: 'F4-outer-inner-laser-tokens.nc', profile_count: 2, notes: 'Outer profile precedes inner hole; M3/M4/S tokens are fixture text only.', body: ['G0 X0 Y0', 'M3 S500', ...rectangle(60, 40).slice(1), 'M5', 'G0 X36 Y20', 'M4 S250', 'G3 X24 Y20 I-6 J0', 'G3 X36 Y20 I6 J0', 'M5'] },
+  { id: 'F5-round-hex-inset-r10-g2', file: 'F5-round-hex-inset-r10-g2.nc', profile_count: 2, notes: 'L3 round OD hex inset pair: R10 mm, g2 mm, p22 mm.', contents: roundProgram(roundLayout({ radius: 10, gap: 2, mode: 'inset' })) },
   { id: 'F6-rectangle-0deg', file: 'F6-rectangle-0deg.nc', profile_count: 1, notes: '0 degree twin about origin.', body: rectangle(40, 20) },
   { id: 'F6-rectangle-90deg', file: 'F6-rectangle-90deg.nc', profile_count: 1, notes: '90 degree counter-clockwise twin about origin.', body: ['G0 X0 Y0', 'G1 X0 Y0', 'G1 X0 Y40', 'G1 X-20 Y40', 'G1 X-20 Y0', 'G1 X0 Y0'] },
 ];
@@ -29,7 +31,7 @@ const sha256 = (value) => createHash('sha256').update(value).digest('hex');
 await mkdir(root, { recursive: true });
 const manifestFixtures = [];
 for (const fixture of fixtures) {
-  const contents = program(fixture.body);
+  const contents = fixture.contents ?? program(fixture.body);
   const expected_aabb = aabb(aabbForProgram(contents));
   if (Object.values(expected_aabb).some((number) => !Number.isFinite(number))) throw new Error(`${fixture.id} has an empty AABB`);
   await writeFile(join(root, fixture.file), contents, 'utf8');

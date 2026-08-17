@@ -59,6 +59,20 @@
       "notes": "Outer profile precedes inner hole; M3/M4/S tokens are fixture text only."
     },
     {
+      "id": "F5-round-hex-inset-r10-g2",
+      "file": "F5-round-hex-inset-r10-g2.nc",
+      "units": "mm",
+      "expected_aabb": {
+        "min_x": -10,
+        "min_y": -10,
+        "max_x": 21,
+        "max_y": 29.052559
+      },
+      "profile_count": 2,
+      "sha256": "551a3de4b928d9798b900134457b1be2387c27e3b27c57119d4f2eaa14212705",
+      "notes": "L3 round OD hex inset pair: R10 mm, g2 mm, p22 mm."
+    },
+    {
       "id": "F6-rectangle-0deg",
       "file": "F6-rectangle-0deg.nc",
       "units": "mm",

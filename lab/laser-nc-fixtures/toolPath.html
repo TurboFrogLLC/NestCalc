@@ -88,6 +88,39 @@
       background: var(--panel);
     }
 
+    .round-controls {
+      display: grid;
+      grid-template-columns: 1.3fr repeat(2, minmax(92px, 0.6fr));
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-top: 0;
+      background: #111113;
+    }
+
+    .control-label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font: 700 0.67rem/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .control-label select,
+    .control-label input {
+      width: 100%;
+      min-height: 38px;
+      border: 1px solid #52525b;
+      border-radius: 8px;
+      padding: 0 10px;
+      color: var(--ink);
+      background: var(--panel-2);
+      font: 600 0.82rem/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    .round-note { margin: 0; color: var(--muted); font-size: 0.75rem; }
+
     .fixture-list { display: flex; gap: 8px; }
 
     .fixture-button,
@@ -241,7 +274,7 @@
         <h1 class="wordmark"><span class="tool">tool</span><span class="path">Path</span></h1>
         <p class="eyebrow">NC fixture backplot</p>
       </div>
-      <span class="lab-badge">L2 LAB ONLY</span>
+      <span class="lab-badge">L3 LAB ONLY</span>
     </header>
 
     <section aria-label="Fixture backplot">
@@ -256,6 +289,19 @@
         </button>
       </div>
 
+      <div class="round-controls" aria-label="Round outer-diameter layout controls">
+        <label class="control-label">Mode
+          <select id="round-mode">
+            <option value="single">Single circle</option>
+            <option value="inset" selected>Hex inset pair</option>
+            <option value="row">Row compare (optional)</option>
+          </select>
+        </label>
+        <label class="control-label">R (mm)<input id="round-radius" type="number" min="0.001" step="any" value="10"></label>
+        <label class="control-label">g (mm)<input id="round-gap" type="number" min="0.001" step="any" value="2"></label>
+        <p class="round-note">Round OD only. The optional row compare places its second center at (p, 0).</p>
+      </div>
+
       <div class="viewfinder" id="viewfinder">
         <svg id="plot" role="img" aria-labelledby="plot-title plot-description"></svg>
         <div class="loading" id="loading" role="status">Loading fixture…</div>
@@ -263,20 +309,23 @@
       </div>
 
       <dl class="readout">
+        <div class="datum"><dt>Round layout</dt><dd id="round-readout">—</dd></div>
         <div class="datum"><dt>Computed AABB</dt><dd id="computed">—</dd></div>
-        <div class="datum"><dt>Manifest AABB</dt><dd id="expected">—</dd></div>
+        <div class="datum"><dt>Reference AABB</dt><dd id="expected">—</dd></div>
         <div class="datum status" id="status-box"><dt>Comparison</dt><dd id="status">—</dd></div>
       </dl>
 
       <div class="legend" aria-label="Plot legend">
         <span class="key"><span class="swatch rapid"></span>G0 rapid</span>
         <span class="key"><span class="swatch cut"></span>G1/G2/G3 cut</span>
-        <span class="key"><span class="swatch manifest"></span>manifest AABB</span>
+        <span class="key"><span class="swatch manifest"></span>reference AABB</span>
       </div>
     </section>
   </main>
 
-  <script>
+  <script type="module">
+    import { roundLayout, roundProgram } from './round-layout.mjs';
+
     (() => {
       'use strict';
 
@@ -288,6 +337,7 @@
         'F2-circle-ij': 'F2',
         'F3-circle-r': 'F3',
         'F4-outer-inner-laser-tokens': 'F4',
+        'F5-round-hex-inset-r10-g2': 'F5 gold',
         'F6-rectangle-0deg': 'F6-0°',
         'F6-rectangle-90deg': 'F6-90°',
       };
@@ -303,11 +353,16 @@
         expected: document.querySelector('#expected'),
         status: document.querySelector('#status'),
         statusBox: document.querySelector('#status-box'),
+        roundMode: document.querySelector('#round-mode'),
+        roundRadius: document.querySelector('#round-radius'),
+        roundGap: document.querySelector('#round-gap'),
+        roundReadout: document.querySelector('#round-readout'),
       };
 
       let manifest;
       let selected;
       let currentPlot;
+      let reloadCurrent;
 
       const normalizeAngle = (angle) => ((angle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
 
@@ -474,7 +529,7 @@
         const title = svgElement('title', { id: 'plot-title' });
         title.textContent = `${plot.fixture.id} backplot`;
         const description = svgElement('desc', { id: 'plot-description' });
-        description.textContent = 'Dashed gray rapid moves, solid black cut moves, and a dashed red manifest bounding box.';
+        description.textContent = 'Dashed gray rapid moves, solid black cut moves, and a dashed red reference bounding box.';
         elements.plot.append(title, description);
 
         const origin = map({ x: 0, y: 0 });
@@ -536,6 +591,48 @@
         for (const button of elements.list.querySelectorAll('button')) button.disabled = isBusy;
       }
 
+      function updateRoundReadout(layout, mode) {
+        const centerDistance = layout.centers.length === 2 ? layout.p : 0;
+        const label = mode === 'row' ? 'row compare' : mode === 'inset' ? 'hex inset' : 'single';
+        elements.roundReadout.textContent = `${label} · R ${formatNumber(layout.R)} · g ${formatNumber(layout.g)} · p ${formatNumber(layout.p)} · dx ${formatNumber(layout.dx)} · dy ${formatNumber(layout.dy)} · center distance ${formatNumber(centerDistance)} · ${formatBounds(layout.bounds)} mm`;
+      }
+
+      function loadRoundLayout() {
+        elements.error.hidden = true;
+        setBusy(true);
+        try {
+          const mode = elements.roundMode.value;
+          const layout = roundLayout({
+            radius: elements.roundRadius.value,
+            gap: elements.roundGap.value,
+            mode,
+          });
+          const segments = parseProgram(roundProgram(layout));
+          const computed = computeBounds(segments);
+          const comparison = compareBounds(computed, layout.bounds);
+          const fixture = {
+            id: mode === 'row' ? 'Round OD row compare' : mode === 'inset' ? 'Round OD hex inset pair' : 'Round OD single',
+            units: 'mm',
+            expected_aabb: layout.bounds,
+          };
+          selected = fixture;
+          elements.computed.textContent = `${formatBounds(computed)} mm`;
+          elements.expected.textContent = `${formatBounds(layout.bounds)} mm`;
+          elements.status.textContent = comparison.matches
+            ? `MATCH · Δmax ${formatNumber(comparison.maxDelta)} mm`
+            : `MISMATCH · Δmax ${formatNumber(comparison.maxDelta)} mm`;
+          elements.statusBox.classList.toggle('mismatch', !comparison.matches);
+          updateRoundReadout(layout, mode);
+          draw({ fixture, segments, computed, comparison });
+          reloadCurrent = loadRoundLayout;
+          for (const button of elements.list.querySelectorAll('button')) button.setAttribute('aria-pressed', 'false');
+        } catch (error) {
+          showError(error);
+        } finally {
+          setBusy(false);
+        }
+      }
+
       function showError(error) {
         elements.error.textContent = location.protocol === 'file:'
           ? 'Sibling files cannot be fetched from file://. Serve this directory over HTTP; see README.md.'
@@ -565,6 +662,8 @@
             : `MISMATCH · Δmax ${formatNumber(comparison.maxDelta)} ${fixture.units}`;
           elements.statusBox.classList.toggle('mismatch', !comparison.matches);
           draw({ fixture, segments, computed, comparison });
+          elements.roundReadout.textContent = 'Fixture gallery selection; round controls remain available above.';
+          reloadCurrent = () => loadFixture(fixture, true);
         } catch (error) {
           showError(error);
         } finally {
@@ -594,10 +693,14 @@
           const response = await fetch('manifest.json', { cache: 'no-store' });
           if (!response.ok) throw new Error(`Could not load manifest.json: HTTP ${response.status}`);
           manifest = await response.json();
-          const fixtures = buildPicker(manifest.fixtures || []);
-          elements.refresh.addEventListener('click', () => selected && loadFixture(selected, true));
+          buildPicker(manifest.fixtures || []);
+          elements.refresh.addEventListener('click', () => reloadCurrent && reloadCurrent());
+          for (const control of [elements.roundMode, elements.roundRadius, elements.roundGap]) {
+            control.addEventListener('input', loadRoundLayout);
+            control.addEventListener('change', loadRoundLayout);
+          }
           new ResizeObserver(() => currentPlot && draw(currentPlot)).observe(elements.viewfinder);
-          await loadFixture(fixtures[0]);
+          loadRoundLayout();
         } catch (error) {
           setBusy(false);
           showError(error);
