@@ -4,8 +4,8 @@
 **Composition HTML:** `COMPOSITION-HUD-DECODER-v3.html`  
 **Branch:** `docs/howmany-v3-decoder-lock`  
 **Repo:** `TurboFrogLLC/NestCalc`  
-**Branch tip:** `f83981763acdf2b5e28feaba0f80fe2781f7ddc2`  
-**HTML blob (tip):** `261541362edfa0cc18c5d9215f12e233de5a3098`  
+**Branch tip:** `8947924c93d945f1476c39c0ac9578929565602f`  
+**HTML blob (tip):** `2639273234502f4cff43a7e82412bebc47abd23a`  
 **OPEN residuals:** R21 · R22 · R23 · R24 · R25 · R28  
 **Class:** Exploratory composition only — not a product GOAL  
 
@@ -31,6 +31,7 @@
 | 2026-08-16 | **0b779cab** | **R27 PASS** | toolPath default-hidden on load · open only via FLiPIT strip waypoints or isolator · isolator toolPath starts unchecked |
 | 2026-08-16 | **fb011e6b** | **R20 PASS** | HUD fonts: `.hud-ctl` / `.param-label` / `.pop-title` → Wordmark (`var(--font)`); numbers/tickers/editor stay mono (`var(--font-mono)`); child-spec REG tokens updated |
 | 2026-08-17 | **f8398176** | **R29 PASS** | Bed = real LaserBed SVG (authority LASER-BED-v3-v1) under `.bed-stage` · isolator Child-spec mute (target `#child-spec` + hard display/visibility) · top readout + bottom notes removed · reparent retired |
+| 2026-08-17 | **8947924c** | **R30 PASS** | HUD position hold: collapse/expand keeps current left/top (no dock-to-corner, no pre-collapse restore). Load still docks top-left 16px once. |
 
 ---
 
@@ -75,17 +76,16 @@ Waypoints control opens/closes toolPath from Source and Output strips. No blue e
 
 HUD · FLiPIT · toolPath: `::after` 2px solid ink @ 0.22 · offset 8px · drop shadow `0 18px 40px -12px`.
 
-## HUD dock (R18–R19)
+## HUD position (R18–R19 + R30)
 
 | Behavior | Rule |
 |----------|------|
-| Load | Expanded HUD starts top-left at **16px** inset (matches FLiPIT first-open gap) |
-| Collapse | Saves current left/top → docks to top-left **16px** |
-| Expand | Restores pre-collapse left/top (or stays docked if never moved) |
+| Load | Expanded HUD starts top-left at **16px** inset (matches FLiPIT first-open gap) — once only |
+| Collapse / Expand | **R30:** keeps current left/top (no dock-to-corner, no pre-collapse restore) |
 | Drag | Free after load; user can move anywhere |
-| Resize | Re-docks only while collapsed |
+| Resize | Does not re-dock |
 
-`.comp-note` moved to bottom-left (`left:16px; bottom:16px; z-index:5`) — sits on grid behind surfaces.
+`.comp-note` removed with R29 cleanup.
 
 ## Sandbox tools (not product)
 
@@ -114,4 +114,4 @@ Fixed BR card · toggles HUD / FLiPIT / **toolPath** / LaserBed / **Child-spec**
 | **R25** | Minor FLiPIT polish |
 | **R28** | Minor toolPath polish |
 
-R29 (LaserBed + isolator Child-spec mute) closed @ f8398176.
+R29 + R30 closed.
