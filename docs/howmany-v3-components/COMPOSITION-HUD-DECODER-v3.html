@@ -5343,7 +5343,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     flipit: document.getElementById('gcode'),
     backplot: document.getElementById('backplot'),
     bed: document.querySelector('.bed-stage'),
-    childspec: document.getElementById('child-spec-host') || document.getElementById('child-spec')
+    childspec: document.getElementById('child-spec')
   };
   function apply(key, on) {
     var el = map[key];
@@ -5356,6 +5356,19 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
         if (el.classList.contains('is-open')) el.style.display = 'flex';
         /* if closed, leave display as script manages */
       } else {
+        el.style.visibility = 'hidden';
+        el.style.pointerEvents = 'none';
+      }
+      return;
+    }
+    if (key === 'childspec') {
+      /* panel uses display:flex; hide hard so reparent / drag cannot leave it visible */
+      if (on) {
+        el.style.removeProperty('display');
+        el.style.removeProperty('visibility');
+        el.style.removeProperty('pointer-events');
+      } else {
+        el.style.display = 'none';
         el.style.visibility = 'hidden';
         el.style.pointerEvents = 'none';
       }
@@ -5820,13 +5833,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     iso.setAttribute('data-child-spec', 'sandbox-iso');
   }
 
-  /* R26: reparent child-spec under bed-stage so absolute coords are stage-relative */
-  (function () {
-    var stage = document.querySelector('.bed-stage');
-    if (stage && panel.parentElement !== stage) {
-      stage.appendChild(panel);
-    }
-  })();
+  /* R26 reparent retired — panel already under .bed-stage via #child-spec-host (R29) */
 
   /* R26: copy row → "key: value" */
   panel.addEventListener('click', function (e) {
