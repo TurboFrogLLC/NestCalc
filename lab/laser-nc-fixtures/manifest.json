@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "generated_by": "node lab/laser-nc-fixtures/generate-fixtures.mjs",
+  "fixtures": [
+    {
+      "id": "F1-rectangle-outer",
+      "file": "F1-rectangle-outer.nc",
+      "units": "mm",
+      "expected_aabb": {
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 40,
+        "max_y": 20
+      },
+      "profile_count": 1,
+      "sha256": "cc57417fb9e3792d2d34cdd7cc7f1b5eaae1e758b0d2cc2e5b19de36d7e434e4",
+      "notes": "Closed G0/G1 outer rectangle."
+    },
+    {
+      "id": "F2-circle-ij",
+      "file": "F2-circle-ij.nc",
+      "units": "mm",
+      "expected_aabb": {
+        "min_x": -10,
+        "min_y": -10,
+        "max_x": 10,
+        "max_y": 10
+      },
+      "profile_count": 1,
+      "sha256": "3f2f6617855879ec6aa8822a657481a098309e30da6800621fec857e69f5d990",
+      "notes": "Two CCW I/J semicircles; bounds include arc extrema, not the endpoint chord box."
+    },
+    {
+      "id": "F3-circle-r",
+      "file": "F3-circle-r.nc",
+      "units": "mm",
+      "expected_aabb": {
+        "min_x": -10,
+        "min_y": -10,
+        "max_x": 10,
+        "max_y": 10
+      },
+      "profile_count": 1,
+      "sha256": "9e575f98770452d8c6336b02c19c171557bf13b1e7b929040d33a779b419d25e",
+      "notes": "Two CCW R10 semicircles; see README caveat for R-word 180-degree arcs."
+    },
+    {
+      "id": "F4-outer-inner-laser-tokens",
+      "file": "F4-outer-inner-laser-tokens.nc",
+      "units": "mm",
+      "expected_aabb": {
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 60,
+        "max_y": 40
+      },
+      "profile_count": 2,
+      "sha256": "f7e51c2d761d3aa728a93b16f272344817ad624ff9075542b135eab6d6c7c3af",
+      "notes": "Outer profile precedes inner hole; M3/M4/S tokens are fixture text only."
+    },
+    {
+      "id": "F6-rectangle-0deg",
+      "file": "F6-rectangle-0deg.nc",
+      "units": "mm",
+      "expected_aabb": {
+        "min_x": 0,
+        "min_y": 0,
+        "max_x": 40,
+        "max_y": 20
+      },
+      "profile_count": 1,
+      "sha256": "cc57417fb9e3792d2d34cdd7cc7f1b5eaae1e758b0d2cc2e5b19de36d7e434e4",
+      "notes": "0 degree twin about origin."
+    },
+    {
+      "id": "F6-rectangle-90deg",
+      "file": "F6-rectangle-90deg.nc",
+      "units": "mm",
+      "expected_aabb": {
+        "min_x": -20,
+        "min_y": 0,
+        "max_x": 0,
+        "max_y": 40
+      },
+      "profile_count": 1,
+      "sha256": "fc1f2e7aaf4177ea01fbc11125b7601f12b7442d4f5469d8ee949d74d8c78663",
+      "notes": "90 degree counter-clockwise twin about origin."
+    }
+  ]
+}
