@@ -117,6 +117,7 @@ Never set `display` on `#hud-body` (breaks grid collapse).
 - **Position hold:** collapse / expand keeps the exact left/top. No dock to corner, no restore memory. Drag freely; collapse stays put; expand reopens in the same place.
 - Calculator mode swaps body content; expands if collapsed; does not open a separate window.
 - Tickers open popovers; popovers sit outside the HUD and avoid other surfaces when present.
+- Link-button chrome (`.active` + `aria-pressed` on `[data-part-link]` / `[data-blank-link]` / `[data-gap-link]`) syncs from `paramState.*.linked` on popover open and close-X restore.
 - Clear × on fields blanks for re-type (does not force 0.000).
 - Drag is on the entire header (buttons stay clickable).
 - Footer AUTO-SIZE / FLiPIT are visual chrome only in standalone (bridges live in composition).

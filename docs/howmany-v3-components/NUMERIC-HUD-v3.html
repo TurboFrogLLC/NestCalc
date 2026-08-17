@@ -657,7 +657,6 @@ NO bed · NO FLiPIT panel · NO toolPath · NO isolator · NO child-spec
   }
 
   function applyModeVisibility() {
-    hudBody.style.display = '';
     if (state.collapsed) return;
     if (state.calc) { classicEl.style.display = 'flex'; hudMode.style.display = 'none'; }
     else { classicEl.style.display = 'none'; hudMode.style.display = 'flex'; }
@@ -869,6 +868,8 @@ NO bed · NO FLiPIT panel · NO toolPath · NO isolator · NO child-spec
           paramState.blank.x = s.x; paramState.blank.y = s.y; paramState.blank.linked = s.linked;
           const ix = document.querySelector('[data-blank="x"]'), iy = document.querySelector('[data-blank="y"]');
           if (ix) ix.value = fmt3(s.x); if (iy) iy.value = fmt3(s.y);
+          const bl = document.querySelector('[data-blank-link]');
+          if (bl) { bl.classList.toggle('active', s.linked); bl.setAttribute('aria-pressed', s.linked ? 'true' : 'false'); }
         } else if (key === 'gap') {
           paramState.gap.x = s.x; paramState.gap.y = s.y; paramState.gap.linked = s.linked;
           const ix = document.querySelector('[data-gap="x"]'), iy = document.querySelector('[data-gap="y"]');
@@ -909,9 +910,29 @@ NO bed · NO FLiPIT panel · NO toolPath · NO isolator · NO child-spec
     pop.style.position = 'fixed';
     pop.style.right = 'auto'; pop.style.bottom = 'auto';
     const pw = pop.offsetWidth || 286, ph = pop.offsetHeight || 140;
-    let left = hudRect.right + gap;
-    let top = Math.max(edge, Math.min(rowRect.top, vh - edge - ph));
-    if (left + pw > vw - edge) left = Math.max(edge, hudRect.left - gap - pw);
+    const clampX = function (x) { return Math.max(edge, Math.min(x, vw - edge - pw)); };
+    const clampY = function (y) { return Math.max(edge, Math.min(y, vh - edge - ph)); };
+    const rightLeft = hudRect.right + gap;
+    const leftLeft = hudRect.left - gap - pw;
+    const bottomTop = hudRect.bottom + gap;
+    const topTop = hudRect.top - gap - ph;
+    let left, top;
+    if (rightLeft + pw <= vw - edge) {
+      left = rightLeft;
+      top = clampY(rowRect.top);
+    } else if (leftLeft >= edge) {
+      left = leftLeft;
+      top = clampY(rowRect.top);
+    } else if (bottomTop + ph <= vh - edge) {
+      left = clampX(hudRect.left);
+      top = bottomTop;
+    } else if (topTop >= edge) {
+      left = clampX(hudRect.left);
+      top = topTop;
+    } else {
+      left = clampX(hudRect.left);
+      top = clampY(topTop);
+    }
     pop.style.left = Math.round(left) + 'px';
     pop.style.top = Math.round(top) + 'px';
   }
@@ -952,9 +973,13 @@ NO bed · NO FLiPIT panel · NO toolPath · NO isolator · NO child-spec
     } else if (key === 'blank') {
       const ix = document.querySelector('[data-blank="x"]'), iy = document.querySelector('[data-blank="y"]');
       if (ix) ix.value = fmt3(paramState.blank.x); if (iy) iy.value = fmt3(paramState.blank.y);
+      const bl = document.querySelector('[data-blank-link]');
+      if (bl) { bl.classList.toggle('active', !!paramState.blank.linked); bl.setAttribute('aria-pressed', paramState.blank.linked ? 'true' : 'false'); }
     } else if (key === 'gap') {
       const ix = document.querySelector('[data-gap="x"]'), iy = document.querySelector('[data-gap="y"]');
       if (ix) ix.value = fmt3(paramState.gap.x); if (iy) iy.value = fmt3(paramState.gap.y);
+      const gl = document.querySelector('[data-gap-link]');
+      if (gl) { gl.classList.toggle('active', !!paramState.gap.linked); gl.setAttribute('aria-pressed', paramState.gap.linked ? 'true' : 'false'); }
     } else if (key === 'margin') {
       ['l','r','t','b'].forEach(function (k) {
         const el = document.querySelector('[data-m="' + k + '"]');
@@ -1131,7 +1156,6 @@ NO bed · NO FLiPIT panel · NO toolPath · NO isolator · NO child-spec
     hud.classList.remove('collapsed');
     classicEl.style.display = 'flex';
     hudMode.style.display = 'none';
-    hudBody.style.display = 'flex';
     hudBody.style.minHeight = '';
     requestAnimationFrame(function () {
       const calcH = classicEl.offsetHeight;
