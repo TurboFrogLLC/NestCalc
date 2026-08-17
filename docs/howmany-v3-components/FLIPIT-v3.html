@@ -1,0 +1,2050 @@
+<!DOCTYPE html>
+<!--
+═══════════════════════════════════════════════════════════════════════════════
+FLIPIT-v3 — Individual component lock
+Extracted from composition tip fb011e6b230b5f7b4d28751554257782cf9c1b51
+(last completed state BEFORE R29 LaserBed surface)
+
+Authority: pre-LaserBed advanced FLiPIT panel
+  · dark 44px header · 15.4px radius · R20 Wordmark/mono
+  · FLiP white + IT amber wordmark · program field white
+  · surface-row · Source/Output tabs · tool-strip (waypoints no-op)
+  · part-group (detect · ticker · post) · stage chips
+  · yellow outer ring on edit · green post/FLIP-IT flash (R10)
+  · position memory R11 (lastGcodePos)
+  · READY = amber · DONE = green
+
+NO bed · NO Numeric HUD · NO toolPath card · NO isolator · NO child-spec
+Standalone opens expanded by default so chrome is immediately visible.
+═══════════════════════════════════════════════════════════════════════════════
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>HowMany V3 — FLiPIT (standalone · pre-LaserBed)</title>
+  <style>
+    :root {
+      --font: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --frost: #D8D6E2;
+      --frost-blue: #E8EEF8;
+      --ink: #1A1428;
+      --ink-50: rgba(26, 20, 40, 0.50);
+      --ink-30: rgba(26, 20, 40, 0.30);
+      --ink-22: rgba(26, 20, 40, 0.22);
+      --ink-15: rgba(26, 20, 40, 0.15);
+      --ink-08: rgba(26, 20, 40, 0.08);
+      --white: #ffffff;
+      --white-70: rgba(255, 255, 255, 0.70);
+      --white-55: rgba(255, 255, 255, 0.55);
+      --white-40: rgba(255, 255, 255, 0.40);
+      --blue: #538BEC;
+      --blue-22: rgba(83, 139, 236, 0.22);
+      --blue-28: rgba(83, 139, 236, 0.28);
+      --blue-42: rgba(83, 139, 236, 0.42);
+      --blue-dark: #2F6FED;
+      --blue-border: rgba(47, 111, 237, 0.85);
+      --blue-glow: 0 0 0 2.2px rgba(47, 111, 237, 0.45);
+      --status-none: #DC143C;
+      --status-ready: #00CF00;
+      --status-posted: #7DDB8C;
+      --green: #00CF00;
+      --green-border: rgba(0, 140, 30, 0.70);
+      --green-glow: 0 0 0 2.2px rgba(0, 180, 40, 0.45);
+      --chip-gray: rgba(26, 20, 40, 0.10);
+      --gc-g: #FF00FF;
+      --gc-comment: #00CF00;
+      --gc-m: #FF8380;
+      --gc-fs: #F86400;
+      --gc-t: #538BEC;
+      --gc-n: #D3D3D3;
+      --accept: #22A06B;
+      --cancel: #DC143C;
+      --panel-w: 418px;
+      --bar-h: 44px;
+      --radius: 15.4px;
+      --chip-r: 6.6px;
+      --ease: cubic-bezier(0.4, 0, 0.2, 1);
+      --dur: 240ms;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      height: 100%;
+      font-family: var(--font);
+      color: var(--ink);
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+      background: #F4F4F6;
+    }
+    body {
+      background:
+        linear-gradient(rgba(0,0,0,0.04) 1.1px, transparent 1.1px),
+        linear-gradient(90deg, rgba(0,0,0,0.04) 1.1px, transparent 1.1px),
+        #F4F4F6;
+      background-size: 26.4px 26.4px, 26.4px 26.4px, auto;
+    }
+    .stage-note {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 5;
+      font-size: 12.1px;
+      font-weight: 600;
+      color: rgba(26,20,40,0.45);
+      background: rgba(216,214,226,0.72);
+      border: 1.1px solid rgba(26,20,40,0.10);
+      border-radius: 8.8px;
+      padding: 6.6px 13.2px;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    /* ── FLiPIT shell ── */
+    .gcode {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      left: auto;
+      width: var(--panel-w);
+      min-width: 418px;
+      max-width: 568px;
+      display: flex;
+      flex-direction: column;
+      background: var(--frost);
+      color: var(--ink);
+      font-family: var(--font);
+      border-radius: var(--radius);
+      box-shadow:
+        0 0 0 1.1px rgba(255, 255, 255, 0.55),
+        0 0 0 1.1px rgba(83, 139, 236, 0.22);
+      overflow: visible;
+      z-index: 30;
+      height: auto;
+      touch-action: none;
+    }
+    .gcode::after {
+      content: "";
+      position: absolute;
+      top: -8px; right: -8px; bottom: -8px; left: -8px;
+      border: 2px solid rgba(26, 20, 40, 0.22);
+      border-radius: calc(var(--radius) + 8px);
+      box-shadow: 0 18px 40px -12px rgba(0, 0, 0, 0.38);
+      pointer-events: none;
+      z-index: -1;
+      transition: border-color 180ms var(--ease), box-shadow 180ms var(--ease);
+    }
+    .gcode.is-post-flash::after {
+      border-width: 1px;
+      border-color: rgba(0, 180, 40, 0.90);
+      box-shadow:
+        0 0 2px 2px rgba(0, 180, 40, 0.70),
+        0 18px 40px -12px rgba(0, 0, 0, 0.38);
+    }
+    .gcode:has(.surface-row.is-editing-banner)::after {
+      border-width: 1px;
+      border-color: #FFCE1B;
+      box-shadow:
+        0 0 2px 2px rgba(255, 206, 27, 0.55),
+        0 18px 40px -12px rgba(0, 0, 0, 0.38);
+    }
+    .gcode:has(.surface-row.is-editing-banner) .status-dot {
+      background: #FFCE1B !important;
+    }
+    .gcode:has(.surface-row.is-editing-banner) .action-row .stage-action,
+    .gcode:has(.surface-row.is-editing-banner) .action-row .stage-status,
+    .gcode:has(.surface-row.is-editing-banner) .action-row .rot-chip,
+    .gcode:has(.surface-row.is-editing-banner) .action-row .btn-collapse {
+      filter: grayscale(1) !important;
+      opacity: 0.55 !important;
+      pointer-events: none !important;
+      box-shadow: none !important;
+      border-color: rgba(26, 20, 40, 0.14) !important;
+      cursor: default !important;
+      transform: none !important;
+    }
+    .gcode:has(.surface-row.is-editing-banner) .action-row .stage-action,
+    .gcode:has(.surface-row.is-editing-banner) .action-row .stage-status {
+      background: var(--chip-gray) !important;
+      color: var(--ink-50) !important;
+      border: 1.1px solid rgba(26, 20, 40, 0.14) !important;
+    }
+    .gcode:has(.surface-row.is-editing-banner) .tool-strip .icon-btn {
+      filter: grayscale(1) !important;
+      opacity: 0.45 !important;
+      pointer-events: none !important;
+      box-shadow: none !important;
+      border-color: rgba(26, 20, 40, 0.12) !important;
+      background: var(--white-40) !important;
+      color: var(--ink-30) !important;
+      cursor: default !important;
+      transform: none !important;
+    }
+    .gcode:has(.surface-row.is-editing-banner) .tool-strip .unit-switch {
+      filter: grayscale(1) !important;
+      opacity: 0.45 !important;
+      pointer-events: none !important;
+    }
+    .gcode:has(.surface-row.is-editing-banner) .btn-detect,
+    .gcode:has(.surface-row.is-editing-banner) .part-group .btn-detect,
+    .gcode:has(.surface-row.is-editing-banner) .part-group .btn-post,
+    .gcode:has(.surface-row.is-editing-banner) .part-group .part-ticker {
+      box-shadow: none !important;
+      border-color: rgba(26, 20, 40, 0.12) !important;
+      border-width: 1.1px !important;
+      background: var(--white-40) !important;
+    }
+    .gcode:has(.surface-row.is-editing-banner) .part-group.is-connected {
+      border-color: rgba(26, 20, 40, 0.12) !important;
+      box-shadow: none !important;
+      background: var(--white-40) !important;
+    }
+    .gcode:has(.surface-row.is-editing-banner) .part-group.is-connected .btn-detect,
+    .gcode:has(.surface-row.is-editing-banner) .part-group.is-connected .btn-post,
+    .gcode:has(.surface-row.is-editing-banner) .part-group.is-connected .part-ticker {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+
+    .gcode-toast {
+      position: absolute;
+      left: 50%; top: 50%;
+      transform: translate(-50%, -50%) scale(0.96);
+      min-width: 132px;
+      max-width: calc(100% - 17.6px);
+      padding: 8.8px 15.4px;
+      border-radius: 8.8px;
+      background: rgba(26, 20, 40, 0.60);
+      color: #FFCE1B;
+      font-size: 12.1px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      text-align: center;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 40;
+      box-shadow: 0 11px 26.4px -10px rgba(0,0,0,0.50);
+      transition: opacity 180ms var(--ease), transform 180ms var(--ease);
+    }
+    .gcode-toast.is-on {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    /* Header — dark ink shell */
+    .gcode-bar {
+      flex: 0 0 var(--bar-h);
+      height: var(--bar-h);
+      display: flex;
+      align-items: center;
+      gap: 6.6px;
+      padding: 0 7.7px;
+      border-bottom: 1.1px solid rgba(255, 255, 255, 0.10);
+      cursor: grab;
+      box-sizing: border-box;
+      min-width: 0;
+      position: relative;
+      z-index: 1;
+      border-radius: var(--radius) var(--radius) 0 0;
+      background: rgba(26, 20, 40, 0.82);
+    }
+    .gcode.is-dragging .gcode-bar { cursor: grabbing; }
+    .gcode-bar .mark {
+      width: 28.6px; height: 28.6px;
+      border-radius: var(--chip-r);
+      background: rgba(255, 255, 255, 0.12);
+      border: 1.1px solid rgba(255, 255, 255, 0.18);
+      color: #ffffff;
+      display: inline-flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .gcode-bar .mark svg { display: block; }
+    .gcode-bar .surface-label-slot {
+      flex: 1 1 auto;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding-left: 10px;
+    }
+    .gcode-bar .surface-label {
+      font-family: var(--font);
+      font-size: 19.8px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+      user-select: none;
+      line-height: 1;
+    }
+    .gcode-bar .surface-label .label-flip {
+      color: #ffffff;
+      text-transform: none;
+    }
+    .gcode-bar .surface-label .label-it {
+      color: #FFCE1B;
+      font-weight: 800;
+      text-transform: none;
+    }
+
+    .prog-field {
+      position: relative;
+      flex: 0 0 auto;
+      width: 184.8px;
+      max-width: 184.8px;
+      min-width: 0;
+      height: 28.6px;
+      margin-left: 0;
+    }
+    .prog-name {
+      width: 100%;
+      height: 28.6px;
+      padding: 0 79.2px 0 8.8px;
+      border: 1.1px solid transparent;
+      border-radius: var(--chip-r);
+      background: #fff;
+      color: var(--ink);
+      font-size: 12.1px;
+      font-weight: 600;
+      font-family: inherit;
+      outline: none;
+      text-align: right;
+    }
+    .prog-name::placeholder { color: var(--ink-30); font-weight: 500; }
+    .prog-name:focus {
+      background: #fff;
+      border-color: rgba(83, 139, 236, 0.45);
+      box-shadow: 0 0 0 2.2px var(--blue-22);
+    }
+    .prog-actions {
+      position: absolute;
+      right: 3.3px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: inline-flex;
+      align-items: center;
+      gap: 2.2px;
+    }
+    .prog-actions .icon-btn {
+      width: 24.2px;
+      height: 24.2px;
+      min-width: 24.2px;
+      min-height: 24.2px;
+      border: none;
+      border-radius: var(--chip-r);
+      background: transparent;
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 0;
+      overflow: visible;
+      flex-shrink: 0;
+      box-shadow: none;
+      outline: none;
+      color: var(--ink);
+    }
+    .prog-actions .icon-btn svg {
+      display: block;
+      flex-shrink: 0;
+      margin: 0;
+      overflow: visible;
+      pointer-events: none;
+    }
+    .prog-actions .icon-btn:hover {
+      background: var(--ink-08);
+      border: none;
+      box-shadow: none;
+    }
+    .prog-actions .icon-btn:disabled { opacity: 0.4; }
+    .prog-clear {
+      width: 19.8px;
+      height: 19.8px;
+      border: none;
+      border-radius: 4.4px;
+      background: transparent;
+      color: var(--ink-50);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+    }
+    .prog-field.is-focus .prog-clear { display: inline-flex; }
+    .prog-clear:hover { color: var(--ink); background: var(--ink-08); }
+    .prog-clear svg { display: block; pointer-events: none; }
+
+    .status-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: var(--status-none);
+      box-shadow: 0 0 0 2.2px rgba(255,255,255,0.45);
+      transition: background var(--dur) var(--ease);
+    }
+    .status-dot[data-state="ready"] { background: var(--status-ready); }
+    .status-dot[data-state="posted"] { background: var(--status-posted); }
+
+    .icon-btn {
+      width: 28.6px;
+      height: 28.6px;
+      min-width: 28.6px;
+      min-height: 28.6px;
+      border: 1.1px solid rgba(26, 20, 40, 0.22);
+      border-radius: var(--chip-r);
+      background: var(--white-70);
+      color: var(--ink);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      margin: 0;
+      flex-shrink: 0;
+      box-sizing: border-box;
+      line-height: 0;
+      overflow: visible;
+    }
+    .icon-btn:hover:not(:disabled):not(.is-editing) { background: var(--white); border-color: rgba(26, 20, 40, 0.35); }
+    .icon-btn:active:not(:disabled):not(.is-editing) { transform: scale(0.94); }
+    .icon-btn:disabled {
+      opacity: 0.4;
+      cursor: default;
+      transform: none !important;
+      pointer-events: none;
+    }
+    .icon-btn svg {
+      display: block;
+      flex-shrink: 0;
+      margin: 0;
+      overflow: visible;
+      pointer-events: none;
+    }
+    .icon-btn.is-on {
+      background: var(--blue-dark);
+      border-color: var(--blue-dark);
+      color: var(--white);
+    }
+    .icon-btn.is-editing {
+      background: rgba(26, 20, 40, 0.10);
+      border-color: rgba(26, 20, 40, 0.14);
+      color: var(--ink-30);
+      cursor: default;
+      transform: none !important;
+      pointer-events: none;
+    }
+    .gcode-bar .icon-btn.close {
+      background: transparent;
+      border: 1.1px solid rgba(255, 255, 255, 0.22);
+      color: #ffffff;
+    }
+    .gcode-bar .icon-btn.close:hover,
+    .gcode-bar .icon-btn.close:hover:not(:disabled):not(.is-editing) {
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.35);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    /* Surface row */
+    .surface-row {
+      display: flex;
+      align-items: center;
+      gap: 4.4px;
+      padding: 8.8px 11px;
+      flex-shrink: 0;
+      border-bottom: 1.1px solid transparent;
+      min-width: 0;
+      overflow: hidden;
+      position: relative;
+    }
+    .surface-editing-banner { display: none !important; }
+    .surface-row.is-editing-banner {
+      background: transparent;
+      border-bottom-color: var(--ink-15);
+    }
+    .surface-row.is-editing-banner > *:not(.surface-editing-banner) {
+      opacity: 0.7;
+      filter: grayscale(1);
+      pointer-events: none;
+    }
+    .gcode.is-expanded .surface-row {
+      border-bottom: 1.1px solid var(--ink-15);
+      padding-bottom: 8.8px;
+    }
+    .surface-spacer { flex: 1 1 auto; min-width: 4.4px; }
+
+    .btn-gc0de {
+      height: 28.6px;
+      padding: 0 11px;
+      border: none;
+      border-radius: var(--chip-r);
+      background: var(--blue-22);
+      color: var(--ink);
+      font-size: 12.1px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.25);
+    }
+    .btn-gc0de:hover { background: var(--blue-28); }
+    .btn-gc0de:active { transform: scale(0.98); }
+    .gcode.is-expanded .btn-gc0de { display: none; }
+
+    .gcode .part-group {
+      display: inline-flex;
+      align-items: stretch;
+      gap: 4.4px;
+      height: 28.6px;
+      flex-shrink: 0;
+      min-width: 0;
+      width: auto;
+      border: none;
+      background: transparent;
+      overflow: visible;
+    }
+    .gcode .part-group.is-connected {
+      gap: 0;
+      border-radius: var(--chip-r);
+      border: 1.1px solid rgba(26, 20, 40, 0.22);
+      background: var(--white-70);
+      overflow: hidden;
+      box-shadow: none;
+    }
+
+    .btn-detect {
+      height: 28.6px;
+      padding: 0 11px;
+      border: 1.1px solid rgba(26, 20, 40, 0.22);
+      border-radius: var(--chip-r);
+      background: var(--white-70);
+      color: var(--ink);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      cursor: pointer;
+      flex-shrink: 0;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.25);
+      transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+    }
+    .btn-detect:hover:not(:disabled) { background: var(--white); }
+    .btn-detect .icon-hat { display: none; }
+    .btn-detect .label-detect { display: inline; }
+    .gcode.is-expanded .btn-detect { width: 28.6px; padding: 0; }
+    .gcode.is-expanded .btn-detect .label-detect { display: none; }
+    .gcode.is-expanded .btn-detect .icon-hat { display: block; }
+    .btn-detect:disabled {
+      opacity: 0.4;
+      cursor: default;
+      color: var(--ink);
+      box-shadow: none;
+    }
+    .btn-detect.is-armed:not(:disabled) {
+      background: var(--white-40);
+      border: 1.65px solid var(--blue-border);
+      color: var(--ink);
+      box-shadow: var(--blue-glow);
+    }
+    .btn-detect.is-armed:not(:disabled):hover { background: var(--white-55); }
+    .gcode .part-group.is-connected .btn-detect {
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      height: 100%;
+      opacity: 1;
+    }
+    .gcode .part-group.is-connected .btn-detect:disabled {
+      opacity: 0.4;
+      background: transparent;
+    }
+    .gcode .part-group.is-connected .btn-detect.is-armed:not(:disabled) {
+      background: var(--blue-22);
+      border: none;
+      box-shadow: none;
+      color: var(--ink);
+      opacity: 1;
+    }
+    .gcode .part-group.is-connected .btn-detect:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.55);
+    }
+    .gcode .part-group.is-connected .btn-detect.is-armed:not(:disabled):hover {
+      background: var(--blue-28);
+    }
+
+    .part-ticker {
+      flex: 0 1 auto;
+      width: max-content;
+      max-width: min(184.8px, 100%);
+      min-width: 0;
+      height: 28.6px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 8.8px;
+      border-radius: var(--chip-r);
+      background: var(--white-40);
+      border: 1.1px solid rgba(26, 20, 40, 0.16);
+      box-sizing: border-box;
+      transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+    }
+    .part-ticker[data-state="ready"] {
+      background: var(--chip-gray);
+      border: 1.65px solid var(--blue-border);
+      box-shadow: var(--blue-glow);
+    }
+    .part-ticker[data-state="posted"] {
+      background: #7DDB8C;
+      border: 1.1px solid rgba(26, 20, 40, 0.28);
+      box-shadow: var(--green-glow);
+    }
+    .part-ticker.is-stale[data-state="ready"],
+    .part-ticker.is-stale[data-state="posted"] {
+      background: var(--chip-gray);
+      box-shadow: none;
+    }
+    .part-ticker.is-stale[data-state="ready"] {
+      border: 1.65px solid var(--blue-border);
+    }
+    .part-ticker.is-stale[data-state="posted"] {
+      border: 1.1px solid rgba(26, 20, 40, 0.28);
+    }
+    .gcode .part-group.is-connected .part-ticker {
+      border: none;
+      border-radius: 0;
+      background: var(--chip-gray);
+      box-shadow: none;
+      height: 100%;
+      max-width: 198px;
+    }
+    .gcode .part-group.is-connected .part-ticker[data-state="ready"]:not(.is-stale) {
+      background: var(--chip-gray);
+      box-shadow: inset 0 0 0 1.65px var(--blue-border);
+    }
+    .gcode .part-group.is-connected .part-ticker[data-state="posted"]:not(.is-stale) {
+      background: #7DDB8C;
+      box-shadow: inset 0 0 0 2.4px rgba(0, 160, 30, 0.90);
+    }
+    .gcode .part-group.is-connected .part-ticker.is-stale {
+      background: var(--chip-gray);
+      box-shadow: none;
+    }
+    .part-ticker .readout {
+      flex: 1 1 auto;
+      min-width: 0;
+      font-family: var(--font-mono);
+      font-size: 12.1px;
+      font-weight: 650;
+      font-variant-numeric: tabular-nums;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .part-ticker[data-state="posted"] .readout { color: var(--ink); }
+    .part-ticker.is-stale .readout { color: var(--ink); }
+    .part-ticker .readout.is-empty { color: var(--ink-50); }
+
+    .btn-post {
+      width: 28.6px;
+      height: 28.6px;
+      border: 1.1px solid rgba(26, 20, 40, 0.22);
+      border-radius: var(--chip-r);
+      background: var(--white-70);
+      color: var(--ink);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      flex-shrink: 0;
+      box-sizing: border-box;
+    }
+    .btn-post:hover:not(:disabled) {
+      background: var(--white);
+      border-color: rgba(26, 20, 40, 0.35);
+      color: var(--ink);
+    }
+    .btn-post:disabled {
+      opacity: 0.4;
+      cursor: default;
+      color: var(--ink);
+    }
+    .btn-post svg { display: block; pointer-events: none; }
+    .gcode .part-group.is-connected .btn-post {
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      height: 100%;
+      width: 30.8px;
+    }
+    .gcode .part-group.is-connected .btn-post:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.55);
+    }
+    .gcode .part-group.is-connected .btn-post:disabled { opacity: 0.35; }
+
+    .gcode .part-sep {
+      display: none;
+      width: 1.1px;
+      flex: 0 0 1.1px;
+      background: rgba(26, 20, 40, 0.18);
+      align-self: stretch;
+    }
+    .gcode .part-group.is-connected .part-sep { display: block; }
+
+    .btn-surface-chevron {
+      display: none;
+      width: 28.6px;
+      height: 28.6px;
+      min-width: 28.6px;
+      min-height: 28.6px;
+      margin: 0;
+      padding: 0;
+      border: 1.1px solid rgba(26, 20, 40, 0.22);
+      border-radius: var(--chip-r);
+      background: transparent;
+      color: var(--ink-50);
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      box-sizing: border-box;
+      line-height: 0;
+      overflow: visible;
+    }
+    .btn-surface-chevron svg {
+      display: block;
+      flex-shrink: 0;
+      margin: 0;
+      overflow: visible;
+      pointer-events: none;
+    }
+    .gcode.is-expanded .btn-surface-chevron { display: inline-flex; }
+    .btn-surface-chevron:hover {
+      color: var(--ink);
+      border-color: rgba(26, 20, 40, 0.35);
+      background: transparent;
+    }
+    .btn-surface-chevron:active { transform: scale(0.94); }
+
+    .io-tabs {
+      display: none;
+      align-items: center;
+      gap: 2.2px;
+      flex-shrink: 0;
+    }
+    .gcode.is-expanded .io-tabs { display: inline-flex; }
+    .io-tab {
+      height: 28.6px;
+      padding: 0 6.6px;
+      border: none;
+      border-radius: var(--chip-r);
+      background: transparent;
+      color: var(--ink-50);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 2.2px;
+    }
+    .io-tab:hover { color: var(--ink); }
+    .io-tab.is-on {
+      background: var(--blue-22);
+      color: var(--ink);
+      box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.25);
+    }
+    .io-tab svg { flex-shrink: 0; }
+
+    /* Expandable body */
+    .gcode-body {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows var(--dur) var(--ease);
+    }
+    .gcode.is-expanded .gcode-body {
+      grid-template-rows: 1fr;
+    }
+    .gcode-body-inner {
+      overflow: hidden;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .io-panel {
+      margin: 8.8px 11px 0;
+      border: 1.1px solid rgba(26, 20, 40, 0.22);
+      border-radius: 8.8px;
+      background: var(--white);
+      overflow: hidden;
+      display: none;
+      flex-direction: column;
+    }
+    .io-panel.is-on { display: flex; }
+
+    .tool-strip {
+      display: flex;
+      align-items: center;
+      gap: 4.4px;
+      padding: 6.6px 8.8px;
+      background: var(--white-70);
+      border-bottom: 1.1px solid var(--ink-15);
+      flex-shrink: 0;
+    }
+    .tool-strip .spacer { flex: 1; }
+    .tool-strip .icon-btn:not(:disabled) {
+      background: var(--white-70);
+      border: 1.1px solid rgba(26, 20, 40, 0.22);
+      color: var(--ink);
+    }
+    .tool-strip .icon-btn:not(:disabled):hover {
+      background: rgba(26, 20, 40, 0.08);
+      border-color: rgba(26, 20, 40, 0.40);
+      color: var(--ink);
+    }
+    .tool-strip .icon-btn:not(:disabled):active {
+      transform: scale(0.94);
+      background: rgba(26, 20, 40, 0.12);
+      color: var(--ink);
+    }
+
+    .unit-switch {
+      position: relative;
+      display: inline-grid;
+      grid-template-columns: 1fr 1fr;
+      height: 28.6px;
+      width: 70.4px;
+      padding: 2.2px;
+      border-radius: 8.8px;
+      background: rgba(26, 20, 40, 0.16);
+      flex-shrink: 0;
+    }
+    .unit-switch .thumb {
+      position: absolute;
+      top: 2.2px; left: 2.2px;
+      width: calc(50% - 2.2px);
+      height: calc(100% - 4.4px);
+      border-radius: var(--chip-r);
+      background: var(--blue-22);
+      box-shadow: 0 1.1px 2.2px rgba(0,0,0,0.10);
+      transition: transform var(--dur) var(--ease);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .unit-switch[data-unit="mm"] .thumb { transform: translateX(100%); }
+    .unit-switch button {
+      position: relative;
+      z-index: 1;
+      border: none;
+      background: transparent;
+      color: var(--ink-50);
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0;
+      transition: color var(--dur) var(--ease);
+    }
+    .unit-switch button.is-on { color: var(--ink); }
+
+    .code-shell {
+      position: relative;
+      width: 100%;
+      height: 176px;
+      min-height: 110px;
+      max-height: 308px;
+      resize: vertical;
+      overflow: hidden;
+      background: var(--white);
+      transition: background var(--dur) var(--ease);
+    }
+    .code-shell.is-editing { background: var(--frost-blue); }
+
+    .code-area {
+      width: 100%;
+      height: 100%;
+      resize: none;
+      overflow: auto;
+      border: none;
+      background: transparent;
+      color: var(--ink);
+      font-family: var(--font-mono);
+      font-size: 12.1px;
+      line-height: 1.45;
+      padding: 11px;
+      outline: none;
+      box-sizing: border-box;
+      white-space: pre;
+      tab-size: 2;
+    }
+    .code-area::placeholder { color: var(--ink-30); }
+    .code-area:focus { box-shadow: inset 0 0 0 2.2px var(--blue-22); }
+    .code-area[readonly] { cursor: default; }
+
+    .code-hl {
+      display: none;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: auto;
+      padding: 11px;
+      font-family: var(--font-mono);
+      font-size: 12.1px;
+      line-height: 1.45;
+      white-space: pre;
+      tab-size: 2;
+      color: var(--ink);
+      background: transparent;
+      box-sizing: border-box;
+      user-select: text;
+    }
+    .code-shell.is-hl .code-hl { display: block; }
+    .code-shell.is-hl .code-area { display: none; }
+
+    .edit-actions {
+      position: absolute;
+      top: 6.6px;
+      right: 18px;
+      display: none;
+      align-items: center;
+      gap: 4.4px;
+      z-index: 2;
+    }
+    .code-shell.is-editing .edit-actions { display: inline-flex; }
+    .edit-actions .btn-accept,
+    .edit-actions .btn-cancel {
+      width: 24.2px;
+      height: 24.2px;
+      border: none;
+      border-radius: 4.4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      background: rgba(255,255,255,0.85);
+      box-shadow: 0 1.1px 3.3px rgba(0,0,0,0.12);
+    }
+    .edit-actions .btn-accept { color: var(--accept); }
+    .edit-actions .btn-accept:hover { background: #fff; }
+    .edit-actions .btn-cancel { color: var(--cancel); }
+    .edit-actions .btn-cancel:hover { background: #fff; }
+    .edit-actions svg { display: block; pointer-events: none; }
+
+    .tok-c { color: var(--gc-comment); }
+    .tok-g { color: var(--gc-g); font-weight: 600; }
+    .tok-m { color: var(--gc-m); font-weight: 600; }
+    .tok-fs { color: var(--gc-fs); font-weight: 600; }
+    .tok-t { color: var(--gc-t); font-weight: 600; }
+    .tok-n { color: var(--gc-n); }
+
+    /* Action / stage footer */
+    .action-row {
+      display: flex;
+      align-items: center;
+      padding: 8.8px 8.8px 11px 11px;
+      flex-shrink: 0;
+      min-height: 46.2px;
+      box-sizing: border-box;
+      gap: 11px;
+    }
+    .action-main {
+      flex: 1 1 auto;
+      min-width: 0;
+      display: grid;
+      grid-template-columns: 85.8px 1fr 85.8px;
+      column-gap: 11px;
+      align-items: center;
+    }
+
+    .stage-action,
+    .stage-status {
+      height: 28.6px;
+      width: 85.8px;
+      min-width: 85.8px;
+      max-width: 85.8px;
+      padding: 0 6.6px;
+      box-sizing: border-box;
+      white-space: nowrap;
+      border: 1.1px solid rgba(26, 20, 40, 0.14);
+      border-radius: var(--chip-r);
+      background: var(--white-40);
+      color: var(--ink-30);
+      font-size: 9.9px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: default;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease), color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+    }
+    .stage-action[data-state="process"]:not(:disabled) {
+      background: var(--chip-gray);
+      border: 1.65px solid var(--blue-border);
+      color: var(--ink);
+      box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.25), var(--blue-glow);
+      cursor: pointer;
+      pointer-events: auto;
+    }
+    .stage-action[data-state="process"]:not(:disabled):hover {
+      background: rgba(26, 20, 40, 0.14);
+    }
+    .stage-action[data-state="process"]:not(:disabled):active {
+      transform: scale(0.98);
+    }
+    .stage-action[data-state="start"]:not(:disabled) {
+      background: var(--chip-gray);
+      border: 1.65px solid var(--blue-border);
+      color: var(--ink);
+      cursor: pointer;
+      pointer-events: auto;
+      box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.25), var(--blue-glow);
+    }
+    .stage-action[data-state="start"]:not(:disabled):hover {
+      background: rgba(26, 20, 40, 0.14);
+    }
+    .stage-status[data-state="ready"],
+    .stage-status[data-state="ready"]:disabled {
+      background: var(--chip-gray);
+      border: 1.65px solid rgba(255, 206, 27, 0.85);
+      color: var(--ink);
+      cursor: default;
+      pointer-events: none;
+      box-shadow:
+        0 0.5px 1px rgba(0, 0, 0, 0.25),
+        0 0 0 2.2px rgba(255, 206, 27, 0.45);
+    }
+    .stage-status[data-state="done"],
+    .stage-status[data-state="done"]:disabled {
+      background: var(--chip-gray);
+      border: 1.65px solid var(--green-border);
+      color: var(--ink);
+      cursor: default;
+      pointer-events: none;
+      box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.25), var(--green-glow);
+    }
+    .stage-action:disabled,
+    .stage-action[data-state="idle"],
+    .stage-action[data-state="idle"]:disabled,
+    .stage-status[data-state="idle"],
+    .stage-status[data-state="idle"]:disabled {
+      background: var(--white-40);
+      border-color: rgba(26, 20, 40, 0.14);
+      color: var(--ink-30);
+      cursor: default;
+      pointer-events: none;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .rot-row {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      height: 28.6px;
+      width: 100%;
+      min-width: 0;
+      border-radius: var(--chip-r);
+      border: 1.1px solid rgba(26, 20, 40, 0.22);
+      background: var(--white-70);
+      overflow: hidden;
+      flex-shrink: 1;
+    }
+    .rot-chip {
+      flex: 1 1 0;
+      min-width: 0;
+      height: 100%;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      color: var(--ink);
+      font-size: 11px;
+      font-weight: 650;
+      cursor: pointer;
+      padding: 0 1.1px;
+    }
+    .rot-chip:hover { background: rgba(255, 255, 255, 0.55); }
+    .rot-chip.is-on {
+      background: var(--blue-22);
+      color: var(--ink);
+    }
+    .rot-sep {
+      width: 1.1px;
+      flex: 0 0 1.1px;
+      background: rgba(26, 20, 40, 0.18);
+      align-self: stretch;
+    }
+
+    .btn-collapse {
+      width: 28.6px;
+      height: 28.6px;
+      min-width: 28.6px;
+      min-height: 28.6px;
+      margin: 0;
+      border: 1.1px solid rgba(26, 20, 40, 0.22);
+      border-radius: var(--chip-r);
+      background: var(--white-70);
+      color: var(--ink);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      padding: 0;
+      box-sizing: border-box;
+      line-height: 0;
+      overflow: visible;
+    }
+    .btn-collapse svg {
+      display: block;
+      flex-shrink: 0;
+      margin: 0;
+      overflow: visible;
+      pointer-events: none;
+    }
+    .btn-collapse:hover { background: var(--white); border-color: rgba(26, 20, 40, 0.35); }
+    .btn-collapse:active { transform: scale(0.94); }
+
+    .gcode-resize {
+      position: absolute;
+      z-index: 5;
+      background: transparent;
+    }
+    .gcode-resize-e {
+      top: 12px;
+      right: -4px;
+      width: 10px;
+      bottom: 18px;
+      cursor: ew-resize;
+    }
+    .gcode-resize-s {
+      left: 12px;
+      right: 18px;
+      bottom: -4px;
+      height: 10px;
+      cursor: ns-resize;
+    }
+    .gcode-resize-se {
+      right: -2px;
+      bottom: -2px;
+      width: 18px;
+      height: 18px;
+      cursor: nwse-resize;
+    }
+  </style>
+</head>
+<body>
+  <div class="stage-note">FLiPIT standalone · extracted from fb011e6b (pre-R29) · position memory R11 held</div>
+
+  <aside class="gcode is-open is-expanded" id="gcode" style="--panel-w: 418px; display: flex;" aria-hidden="false">
+    <div class="gcode-toast" id="gcode-toast" role="status" aria-live="polite"></div>
+    <div class="gcode-resize gcode-resize-e" data-dir="e" aria-hidden="true"></div>
+    <div class="gcode-resize gcode-resize-s" data-dir="s" aria-hidden="true"></div>
+    <div class="gcode-resize gcode-resize-se" data-dir="se" aria-hidden="true"></div>
+
+    <div class="gcode-bar" id="gcode-drag">
+      <div class="mark" aria-hidden="true">
+        <svg width="17.6" height="17.6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="14" width="4.4" height="6.6" rx="2"/><rect x="6" y="4" width="4.4" height="6.6" rx="2"/><path d="M6 20h4"/><path d="M14 10h4"/><path d="M6 14h2v6"/><path d="M14 4h2v6"/></svg>
+      </div>
+      <div class="surface-label-slot">
+        <span class="surface-label"><span class="label-flip">FLiP</span><span class="label-it">IT</span></span>
+      </div>
+
+      <div class="prog-field" id="prog-field">
+        <input class="prog-name" id="prog-name" type="text" placeholder="Program name" spellcheck="false" autocomplete="off" />
+        <div class="prog-actions">
+          <button type="button" class="icon-btn" id="btn-open" title="Open program" aria-label="Open program">
+            <svg width="14.3" height="14.3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.55 6a2 2 0 0 1-1.94 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"/></svg>
+          </button>
+          <button type="button" class="icon-btn" id="btn-save" title="Save program (from Output)" aria-label="Save program" disabled>
+            <svg width="14.3" height="14.3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+          </button>
+          <button type="button" class="prog-clear" id="prog-clear" title="Clear name" aria-label="Clear program name">
+            <svg width="12.1" height="12.1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="status-dot" id="status-dot" data-state="none" title="No part size" aria-label="Part size status"></div>
+
+      <button type="button" class="icon-btn close" id="btn-close" title="Close" aria-label="Close">
+        <svg width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="surface-row" id="surface-row">
+      <div class="surface-editing-banner" aria-live="polite">EDITING</div>
+      <button type="button" class="btn-gc0de" id="btn-expand" title="Expand G-code" aria-label="Expand G-code" aria-expanded="true">GC0DE</button>
+
+      <button type="button" class="btn-surface-chevron" id="btn-surface-chevron" title="Collapse G-code" aria-label="Collapse G-code">
+        <svg width="14.3" height="14.3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+
+      <div class="io-tabs" id="io-tabs" role="tablist">
+        <button type="button" class="io-tab is-on" role="tab" aria-selected="true" data-tab="source" id="tab-source">
+          <svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>
+          Source
+        </button>
+        <button type="button" class="io-tab" role="tab" aria-selected="false" data-tab="output" id="tab-output">
+          <svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h10"/><path d="M6 12h9"/><path d="M11 18h7"/></svg>
+          Output
+        </button>
+      </div>
+
+      <div class="surface-spacer" aria-hidden="true"></div>
+
+      <div class="part-group" id="part-group" role="group" aria-label="Part size controls">
+        <button type="button" class="btn-detect" id="btn-detect" disabled title="Auto-Size part from source" aria-label="Auto-Size part">
+          <span class="label-detect">Auto-Size</span>
+          <svg class="icon-hat" width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.42" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 18a2 2 0 0 0-4 0"/><path d="m19 11-2.11-6.657a2 2 0 0 0-2.752-1.148l-1.276.61A2 2 0 0 1 12 4H8.5a2 2 0 0 0-1.925 1.456L5 11"/><path d="M2 11h20"/><circle cx="17" cy="18" r="3"/><circle cx="7" cy="18" r="3"/></svg>
+        </button>
+        <span class="part-sep" aria-hidden="true"></span>
+        <div class="part-ticker" id="part-ticker" data-state="none" title="Part size">
+          <span class="readout is-empty" id="part-readout">—</span>
+        </div>
+        <span class="part-sep" aria-hidden="true"></span>
+        <button type="button" class="btn-post" id="btn-post" disabled title="Post part size" aria-label="Post part size">
+          <svg width="14.3" height="14.3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="gcode-body" id="gcode-body">
+      <div class="gcode-body-inner">
+        <div class="io-panel is-on" role="tabpanel" data-panel="source" id="panel-source">
+          <div class="tool-strip">
+            <button type="button" class="icon-btn" id="btn-undo-src" title="Undo (Cmd/Ctrl+Z)" aria-label="Undo">
+              <svg width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            </button>
+            <button type="button" class="icon-btn" id="btn-redo-src" title="Redo (Shift+Cmd/Ctrl+Z)" aria-label="Redo">
+              <svg width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+            </button>
+            <div class="spacer"></div>
+            <button type="button" class="icon-btn" id="btn-toolpath-src" title="toolPath (standalone no-op)" aria-label="toolPath" aria-pressed="false">
+              <svg width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4.5" r="2.5"/><path d="m10.2 6.3-3.9 3.9"/><circle cx="4.5" cy="12" r="2.5"/><path d="M7 12h10"/><circle cx="19.5" cy="12" r="2.5"/><path d="m13.8 17.7 3.9-3.9"/><circle cx="12" cy="19.5" r="2.5"/></svg>
+            </button>
+            <button type="button" class="icon-btn" id="btn-clear" title="Clear source" aria-label="Clear source">
+              <svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4L13.3 3c1-1 2.5-1 3.4 0l4.3 4.3c1 1 1 2.5 0 3.4L10.4 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>
+            </button>
+            <div class="unit-switch" id="unit-switch" data-unit="in" role="group" aria-label="Units">
+              <div class="thumb" aria-hidden="true"></div>
+              <button type="button" class="is-on" data-unit="in" aria-pressed="true">IN</button>
+              <button type="button" data-unit="mm" aria-pressed="false">MM</button>
+            </div>
+          </div>
+          <div class="code-shell is-hl" id="source-shell">
+            <pre class="code-hl" id="source-hl" aria-hidden="true"></pre>
+            <textarea class="code-area" id="source" spellcheck="false" placeholder="Paste G-code here"></textarea>
+            <div class="edit-actions">
+              <button type="button" class="btn-accept" id="btn-accept-src" title="Accept source edits (does not process)" aria-label="Accept source edits">
+                <svg width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg>
+              </button>
+              <button type="button" class="btn-cancel" id="btn-cancel-src" title="Cancel — discard edits" aria-label="Cancel edits">
+                <svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="io-panel" role="tabpanel" data-panel="output" id="panel-output" hidden>
+          <div class="tool-strip">
+            <button type="button" class="icon-btn" id="btn-undo-out" title="Undo (Cmd/Ctrl+Z)" aria-label="Undo">
+              <svg width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            </button>
+            <button type="button" class="icon-btn" id="btn-redo-out" title="Redo (Shift+Cmd/Ctrl+Z)" aria-label="Redo">
+              <svg width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+            </button>
+            <div class="spacer"></div>
+            <button type="button" class="icon-btn" id="btn-toolpath-out" title="toolPath (standalone no-op)" aria-label="toolPath" aria-pressed="false">
+              <svg width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4.5" r="2.5"/><path d="m10.2 6.3-3.9 3.9"/><circle cx="4.5" cy="12" r="2.5"/><path d="M7 12h10"/><circle cx="19.5" cy="12" r="2.5"/><path d="m13.8 17.7 3.9-3.9"/><circle cx="12" cy="19.5" r="2.5"/></svg>
+            </button>
+            <button type="button" class="icon-btn" id="btn-edit-out" title="Edit output" aria-label="Edit output">
+              <svg width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/></svg>
+            </button>
+            <button type="button" class="icon-btn" id="btn-copy" title="Copy" aria-label="Copy" disabled>
+              <svg width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><rect width="15.4" height="15.4" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            </button>
+            <button type="button" class="icon-btn" id="btn-dl" title="Download" aria-label="Download" disabled>
+              <svg width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+            </button>
+          </div>
+          <div class="code-shell is-hl" id="output-shell">
+            <pre class="code-hl" id="output-hl" aria-hidden="true"></pre>
+            <textarea class="code-area" id="output" spellcheck="false" placeholder="Applied code appears here" readonly></textarea>
+            <div class="edit-actions">
+              <button type="button" class="btn-accept" id="btn-accept-out" title="Accept output edits (updates in place)" aria-label="Accept output edits">
+                <svg width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg>
+              </button>
+              <button type="button" class="btn-cancel" id="btn-cancel-out" title="Cancel — discard edits" aria-label="Cancel edits">
+                <svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-row">
+          <div class="action-main">
+            <button type="button" class="stage-action" id="stage-action" data-state="idle" disabled title="Flip Source to Output">FLIP IT</button>
+            <div class="rot-row" role="group" aria-label="Rotation">
+              <button type="button" class="rot-chip is-on" data-rot="0">0°</button>
+              <div class="rot-sep" aria-hidden="true"></div>
+              <button type="button" class="rot-chip" data-rot="90">90°</button>
+              <div class="rot-sep" aria-hidden="true"></div>
+              <button type="button" class="rot-chip" data-rot="-90">−90°</button>
+              <div class="rot-sep" aria-hidden="true"></div>
+              <button type="button" class="rot-chip" data-rot="180">180°</button>
+            </div>
+            <button type="button" class="stage-status" id="stage-status" data-state="idle" disabled title="Not ready">NOT READY</button>
+          </div>
+          <button type="button" class="btn-collapse" id="btn-collapse" title="Collapse G-code" aria-label="Collapse G-code">
+            <svg width="17.6" height="17.6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <script>
+/* ── FLiPIT standalone script (authority fb011e6b) ── */
+(function () {
+  var SAMPLE =
+    'O1001\n' +
+    '(BRACKET PLATE - SAMPLE)\n' +
+    'N10 G90 G17 G20\n' +
+    'N20 G0 X0. Y0. Z1.\n' +
+    'N30 T1 M6\n' +
+    'N40 M3 S2400\n' +
+    'N50 G1 Z-0.125 F12.0\n' +
+    'N60 G1 X82.398 F18.0\n' +
+    'N70 Y92.396\n' +
+    'N80 X0.\n' +
+    'N90 Y0.\n' +
+    'N100 G0 Z1.\n' +
+    'N110 M5\n' +
+    'N120 M30\n';
+
+  var panel = document.getElementById('gcode');
+  var toastEl = document.getElementById('gcode-toast');
+  var source = document.getElementById('source');
+  var sourceHl = document.getElementById('source-hl');
+  var sourceShell = document.getElementById('source-shell');
+  var output = document.getElementById('output');
+  var outputHl = document.getElementById('output-hl');
+  var outputShell = document.getElementById('output-shell');
+  var progName = document.getElementById('prog-name');
+  var progField = document.getElementById('prog-field');
+  var statusDot = document.getElementById('status-dot');
+  var partGroup = document.getElementById('part-group');
+  var partTicker = document.getElementById('part-ticker');
+  var partReadout = document.getElementById('part-readout');
+  var btnPost = document.getElementById('btn-post');
+  var stageAction = document.getElementById('stage-action');
+  var stageStatus = document.getElementById('stage-status');
+  var btnCopy = document.getElementById('btn-copy');
+  var btnDl = document.getElementById('btn-dl');
+  var btnSave = document.getElementById('btn-save');
+  var btnEditOut = document.getElementById('btn-edit-out');
+  var btnExpand = document.getElementById('btn-expand');
+  var btnCollapse = document.getElementById('btn-collapse');
+  var ioTabs = document.getElementById('io-tabs');
+  var unitSwitch = document.getElementById('unit-switch');
+  var dragBar = document.getElementById('gcode-drag');
+  var btnDetect = document.getElementById('btn-detect');
+
+  var unit = 'in';
+  var rot = 0;
+  var bounds = null;
+  var posted = false;
+  var outEdit = false;
+  var srcEdit = false;
+  var srcSnapshot = '';
+  var outSnapshot = '';
+  var processDone = false;
+  var sizedClean = false;
+  var toastTimer = null;
+  var lastGcodePos = null; /* R11 position memory */
+
+  function showToast(msg) {
+    if (!msg) return;
+    toastEl.textContent = String(msg).toUpperCase();
+    toastEl.classList.add('is-on');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+      toastEl.classList.remove('is-on');
+      toastTimer = null;
+    }, 2200);
+  }
+
+  var postFlashTimer = null;
+  function flashGreenRing() {
+    panel.classList.add('is-post-flash');
+    if (postFlashTimer) clearTimeout(postFlashTimer);
+    postFlashTimer = setTimeout(function () {
+      panel.classList.remove('is-post-flash');
+      postFlashTimer = null;
+    }, 2200);
+  }
+
+  function escapeHtml(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  function highlight(text) {
+    if (!text) return '';
+    return text.split('\n').map(function (line) {
+      var out = '';
+      var i = 0;
+      while (i < line.length) {
+        if (line[i] === '(') {
+          var end = line.indexOf(')', i);
+          if (end === -1) end = line.length - 1;
+          out += '<span class="tok-c">' + escapeHtml(line.slice(i, end + 1)) + '</span>';
+          i = end + 1;
+          continue;
+        }
+        if (line[i] === ';') {
+          out += '<span class="tok-c">' + escapeHtml(line.slice(i)) + '</span>';
+          break;
+        }
+        var m = line.slice(i).match(/^([A-Za-z])([-+]?\d*\.?\d*)/);
+        if (m) {
+          var letter = m[1].toUpperCase();
+          var word = m[0];
+          var cls = '';
+          if (letter === 'G') cls = 'tok-g';
+          else if (letter === 'M') cls = 'tok-m';
+          else if (letter === 'F' || letter === 'S') cls = 'tok-fs';
+          else if (letter === 'T') cls = 'tok-t';
+          else if (letter === 'N') cls = 'tok-n';
+          if (cls) out += '<span class="' + cls + '">' + escapeHtml(word) + '</span>';
+          else out += escapeHtml(word);
+          i += word.length;
+          continue;
+        }
+        out += escapeHtml(line[i]);
+        i += 1;
+      }
+      return out;
+    }).join('\n');
+  }
+  function renderSourceHl() { sourceHl.innerHTML = highlight(source.value); }
+  function renderOutputHl() { outputHl.innerHTML = highlight(output.value); }
+
+  function makeHistory(el, limit) {
+    limit = limit || 40;
+    var stack = [el.value];
+    var idx = 0;
+    var quiet = false;
+    el.addEventListener('input', function () {
+      if (quiet) return;
+      stack.length = idx + 1;
+      stack.push(el.value);
+      if (stack.length > limit) stack.shift();
+      idx = stack.length - 1;
+    });
+    return {
+      undo: function () {
+        if (idx <= 0) return;
+        quiet = true; idx -= 1; el.value = stack[idx];
+        el.dispatchEvent(new Event('input', { bubbles: true })); quiet = false;
+      },
+      redo: function () {
+        if (idx >= stack.length - 1) return;
+        quiet = true; idx += 1; el.value = stack[idx];
+        el.dispatchEvent(new Event('input', { bubbles: true })); quiet = false;
+      },
+      reset: function (v) {
+        quiet = true; el.value = v; stack.length = 0; stack.push(v); idx = 0; quiet = false;
+      },
+      push: function (v) {
+        quiet = true; el.value = v; stack.length = idx + 1; stack.push(v);
+        if (stack.length > limit) stack.shift(); idx = stack.length - 1; quiet = false;
+      }
+    };
+  }
+  var histSrc = makeHistory(source);
+  var histOut = makeHistory(output);
+
+  histSrc.reset('');
+  histOut.reset('');
+  renderSourceHl();
+  renderOutputHl();
+  btnCopy.disabled = true;
+  btnDl.disabled = true;
+  btnSave.disabled = true;
+
+  function hasSource() { return source.value.trim().length > 0; }
+  function hasOutput() { return output.value.trim().length > 0; }
+
+  function syncProcessState() {
+    var on = hasSource();
+    var editing = srcEdit || outEdit;
+    if (editing) {
+      stageAction.disabled = true;
+      stageStatus.disabled = true;
+      stageAction.title = 'Finish edit to continue';
+      stageStatus.title = 'Editing';
+      return;
+    }
+    if (processDone && hasOutput()) {
+      stageAction.disabled = false;
+      stageAction.setAttribute('data-state', 'start');
+      stageAction.textContent = 'START OVER';
+      stageAction.title = 'Clear Output and start over';
+      stageStatus.disabled = true;
+      stageStatus.setAttribute('data-state', 'done');
+      stageStatus.textContent = 'DONE';
+      stageStatus.title = 'Output is current';
+      return;
+    }
+    if (on) {
+      stageAction.disabled = false;
+      stageAction.setAttribute('data-state', 'process');
+      stageAction.textContent = 'FLIP IT';
+      stageAction.title = 'Flip Source to Output';
+      stageStatus.disabled = true;
+      stageStatus.setAttribute('data-state', 'ready');
+      stageStatus.textContent = 'READY';
+      stageStatus.title = 'Ready — hit Flip IT';
+      return;
+    }
+    processDone = false;
+    stageAction.disabled = true;
+    stageAction.setAttribute('data-state', 'idle');
+    stageAction.textContent = 'FLIP IT';
+    stageAction.title = 'Flip Source to Output';
+    stageStatus.disabled = true;
+    stageStatus.setAttribute('data-state', 'idle');
+    stageStatus.textContent = 'NOT READY';
+    stageStatus.title = 'Not ready — load source';
+  }
+
+  function syncDetectArm() {
+    if (!hasSource()) {
+      btnDetect.disabled = true;
+      btnDetect.classList.remove('is-armed');
+      btnDetect.title = 'Auto-Size part from source';
+      syncPartGroup();
+      return;
+    }
+    if (sizedClean) {
+      btnDetect.disabled = true;
+      btnDetect.classList.remove('is-armed');
+      btnDetect.title = 'Part already sized — edit source to re-size';
+      syncPartGroup();
+      return;
+    }
+    btnDetect.disabled = false;
+    btnDetect.classList.add('is-armed');
+    btnDetect.title = 'Auto-Size part from source — ready';
+    syncPartGroup();
+  }
+  function syncPartGroup() {
+    if (!partGroup) return;
+    partGroup.classList.toggle('is-connected', !!bounds);
+  }
+  function syncSourceChrome() {
+    syncDetectArm();
+    syncProcessState();
+  }
+
+  function detectPart() {
+    if (!hasSource()) return false;
+    setBounds(82.398, 92.396);
+    sizedClean = true;
+    syncDetectArm();
+    return true;
+  }
+
+  function loadSourceText(text, name) {
+    histSrc.reset(String(text || ''));
+    renderSourceHl();
+    if (name && !progName.value) {
+      progName.value = name;
+      syncProgClear();
+    }
+    processDone = false;
+    clearBounds();
+    histOut.reset('');
+    renderOutputHl();
+    setOutEnabled(false);
+    syncSourceChrome();
+    setTab('source');
+  }
+  function loadSampleProgram() {
+    loadSourceText(SAMPLE, 'BRACKET_PLATE');
+  }
+
+  function setStatus(state) {
+    statusDot.setAttribute('data-state', state);
+    partTicker.setAttribute('data-state', state);
+    var titles = {
+      none: 'No part size',
+      ready: 'Part size ready — not posted',
+      posted: 'Part size posted'
+    };
+    statusDot.title = titles[state] || '';
+    statusDot.setAttribute('aria-label', titles[state] || 'Status');
+  }
+  function setBounds(x, y) {
+    bounds = { x: x, y: y };
+    posted = false;
+    partReadout.textContent = x.toFixed(3) + ' × ' + y.toFixed(3);
+    partReadout.classList.remove('is-empty');
+    partTicker.classList.remove('is-stale');
+    btnPost.disabled = false;
+    setStatus('ready');
+    syncDetectArm();
+    syncPartGroup();
+  }
+  function clearBounds() {
+    bounds = null;
+    posted = false;
+    sizedClean = false;
+    partReadout.textContent = '—';
+    partReadout.classList.add('is-empty');
+    partTicker.classList.remove('is-stale');
+    btnPost.disabled = true;
+    setStatus('none');
+    syncDetectArm();
+    syncPartGroup();
+  }
+
+  var btnSurfaceChevron = document.getElementById('btn-surface-chevron');
+  function setExpanded(on) {
+    panel.classList.toggle('is-expanded', on);
+    btnExpand.setAttribute('aria-expanded', on ? 'true' : 'false');
+    btnExpand.title = on ? 'G-code expanded' : 'Expand G-code';
+  }
+  function collapseGcode() {
+    setExpanded(false);
+    if (srcEdit) exitSrcEdit(true);
+    if (outEdit) {
+      histOut.push(output.value);
+      setOutEdit(false);
+    }
+  }
+  btnExpand.addEventListener('click', function () {
+    if (panel.classList.contains('is-expanded')) return;
+    setExpanded(true);
+  });
+  btnCollapse.addEventListener('click', collapseGcode);
+  if (btnSurfaceChevron) {
+    btnSurfaceChevron.addEventListener('click', collapseGcode);
+  }
+
+  function syncProgClear() {
+    progField.classList.toggle('has-value', progName.value.length > 0);
+  }
+  progName.addEventListener('input', syncProgClear);
+  progName.addEventListener('focus', function () { progField.classList.add('is-focus'); });
+  progName.addEventListener('blur', function () { progField.classList.remove('is-focus'); });
+  document.getElementById('prog-clear').addEventListener('click', function () {
+    progName.value = '';
+    syncProgClear();
+    progName.focus();
+  });
+  syncProgClear();
+
+  /* Drag + R11 position memory */
+  (function () {
+    var dragging = false, sx, sy, ol, ot, pid = null;
+    dragBar.addEventListener('pointerdown', function (e) {
+      if (e.button != null && e.button !== 0) return;
+      if (e.target.closest('button, input')) return;
+      dragging = true;
+      panel.classList.add('is-dragging');
+      sx = e.clientX; sy = e.clientY;
+      var r = panel.getBoundingClientRect();
+      ol = r.left; ot = r.top;
+      panel.style.left = ol + 'px';
+      panel.style.top = ot + 'px';
+      panel.style.right = 'auto';
+      pid = e.pointerId;
+      try { dragBar.setPointerCapture(e.pointerId); } catch (_) {}
+      e.preventDefault();
+    });
+    dragBar.addEventListener('pointermove', function (e) {
+      if (!dragging) return;
+      panel.style.left = Math.min(window.innerWidth - 44, Math.max(-panel.offsetWidth + 44, ol + e.clientX - sx)) + 'px';
+      panel.style.top = Math.min(window.innerHeight - 44, Math.max(0, ot + e.clientY - sy)) + 'px';
+    });
+    function end(e) {
+      if (!dragging) return;
+      dragging = false;
+      panel.classList.remove('is-dragging');
+      try { if (pid != null) dragBar.releasePointerCapture(pid); } catch (_) {}
+      pid = null;
+      /* capture for R11 */
+      var r = panel.getBoundingClientRect();
+      lastGcodePos = { left: Math.round(r.left), top: Math.round(r.top) };
+    }
+    dragBar.addEventListener('pointerup', end);
+    dragBar.addEventListener('pointercancel', end);
+  })();
+
+  function openGcode(expanded) {
+    panel.classList.add('is-open');
+    panel.setAttribute('aria-hidden', 'false');
+    panel.style.display = 'flex';
+    if (lastGcodePos) {
+      panel.style.left = lastGcodePos.left + 'px';
+      panel.style.top = lastGcodePos.top + 'px';
+      panel.style.right = 'auto';
+    } else {
+      panel.style.top = '16px';
+      panel.style.right = '16px';
+      panel.style.left = 'auto';
+    }
+    setExpanded(!!expanded);
+  }
+  function closeGcode() {
+    if (panel.classList.contains('is-open') && panel.style.display !== 'none') {
+      var r = panel.getBoundingClientRect();
+      lastGcodePos = {
+        left: Math.round(r.left),
+        top: Math.round(r.top)
+      };
+    }
+    panel.classList.remove('is-open');
+    panel.setAttribute('aria-hidden', 'true');
+    panel.style.display = 'none';
+    setExpanded(false);
+  }
+  document.getElementById('btn-close').addEventListener('click', closeGcode);
+
+  /* Resize */
+  (function () {
+    var MIN_W = 418, MAX_W = 568;
+    var MIN_SHELL = 110, MAX_SHELL = 308;
+    var shells = panel.querySelectorAll('.code-shell');
+    function shellH() {
+      var s = panel.querySelector('.io-panel.is-on .code-shell') || panel.querySelector('.code-shell');
+      return s ? s.getBoundingClientRect().height : 176;
+    }
+    function setShellH(h) {
+      h = Math.max(MIN_SHELL, Math.min(MAX_SHELL, h));
+      shells.forEach(function (s) { s.style.height = h + 'px'; });
+    }
+    panel.querySelectorAll('.gcode-resize').forEach(function (handle) {
+      handle.addEventListener('pointerdown', function (e) {
+        if (e.button != null && e.button !== 0) return;
+        e.preventDefault();
+        e.stopPropagation();
+        var dir = handle.getAttribute('data-dir');
+        var startX = e.clientX, startY = e.clientY;
+        var rect = panel.getBoundingClientRect();
+        var startW = rect.width;
+        var startLeft = rect.left;
+        var startShell = shellH();
+        if (dir === 'e' || dir === 'se') {
+          panel.style.left = startLeft + 'px';
+          panel.style.right = 'auto';
+        }
+        var pid = e.pointerId;
+        try { handle.setPointerCapture(pid); } catch (_) {}
+        function move(ev) {
+          if (dir === 'e' || dir === 'se') {
+            var dw = ev.clientX - startX;
+            var nw = Math.max(MIN_W, Math.min(MAX_W, startW + dw));
+            panel.style.width = nw + 'px';
+            panel.style.setProperty('--panel-w', nw + 'px');
+          }
+          if (dir === 's' || dir === 'se') {
+            var dh = ev.clientY - startY;
+            setShellH(startShell + dh);
+          }
+        }
+        function end() {
+          handle.removeEventListener('pointermove', move);
+          handle.removeEventListener('pointerup', end);
+          handle.removeEventListener('pointercancel', end);
+          try { handle.releasePointerCapture(pid); } catch (_) {}
+        }
+        handle.addEventListener('pointermove', move);
+        handle.addEventListener('pointerup', end);
+        handle.addEventListener('pointercancel', end);
+      });
+    });
+  })();
+
+  unitSwitch.querySelectorAll('button').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      unit = btn.getAttribute('data-unit');
+      unitSwitch.setAttribute('data-unit', unit);
+      unitSwitch.querySelectorAll('button').forEach(function (b) {
+        var on = b === btn;
+        b.classList.toggle('is-on', on);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+    });
+  });
+
+  document.querySelectorAll('[data-rot]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      rot = parseInt(btn.getAttribute('data-rot'), 10);
+      document.querySelectorAll('[data-rot]').forEach(function (b) {
+        b.classList.toggle('is-on', b === btn);
+      });
+      if (processDone) {
+        processDone = false;
+        syncProcessState();
+        showToast('Source changed — flip again');
+      }
+    });
+  });
+
+  function setTab(key) {
+    ioTabs.querySelectorAll('.io-tab').forEach(function (t) {
+      var on = t.getAttribute('data-tab') === key;
+      t.classList.toggle('is-on', on);
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    document.querySelectorAll('.io-panel').forEach(function (p) {
+      var on = p.getAttribute('data-panel') === key;
+      p.classList.toggle('is-on', on);
+      if (on) p.removeAttribute('hidden'); else p.setAttribute('hidden', '');
+    });
+    panel.classList.toggle('is-source-tab', key === 'source');
+  }
+  ioTabs.querySelectorAll('.io-tab').forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      setTab(tab.getAttribute('data-tab'));
+    });
+  });
+  panel.classList.add('is-source-tab');
+
+  var surfaceRow = document.getElementById('surface-row');
+  function syncEditingBanner() {
+    if (!surfaceRow) return;
+    surfaceRow.classList.toggle('is-editing-banner', !!(srcEdit || outEdit));
+  }
+  function enterSrcEdit() {
+    srcEdit = true;
+    srcSnapshot = source.value;
+    sourceShell.classList.remove('is-hl');
+    sourceShell.classList.add('is-editing');
+    source.focus();
+    syncEditingBanner();
+    syncProcessState();
+  }
+  function exitSrcEdit(commit) {
+    if (commit) {
+      histSrc.push(source.value);
+    } else {
+      source.value = srcSnapshot;
+      histSrc.push(srcSnapshot);
+    }
+    srcEdit = false;
+    sourceShell.classList.remove('is-editing');
+    renderSourceHl();
+    sourceShell.classList.add('is-hl');
+    source.blur();
+    syncEditingBanner();
+    syncProcessState();
+  }
+  source.addEventListener('focus', function () {
+    if (!sourceShell.classList.contains('is-editing')) enterSrcEdit();
+  });
+  sourceHl.addEventListener('click', function () { enterSrcEdit(); });
+  source.addEventListener('input', function () {
+    renderSourceHl();
+    if (processDone) {
+      processDone = false;
+      showToast('Source changed — flip again');
+    }
+    if (sizedClean || bounds) {
+      sizedClean = false;
+      if (bounds) partTicker.classList.add('is-stale');
+    }
+    syncDetectArm();
+    syncPartGroup();
+    syncSourceChrome();
+    syncProcessState();
+  });
+  document.getElementById('btn-accept-src').addEventListener('click', function (e) {
+    e.stopPropagation();
+    exitSrcEdit(true);
+  });
+  document.getElementById('btn-cancel-src').addEventListener('click', function (e) {
+    e.stopPropagation();
+    exitSrcEdit(false);
+  });
+
+  function setOutEdit(on) {
+    outEdit = on;
+    btnEditOut.classList.toggle('is-on', on);
+    btnEditOut.classList.toggle('is-editing', on);
+    if (on) {
+      outSnapshot = output.value;
+      outputShell.classList.remove('is-hl');
+      outputShell.classList.add('is-editing');
+      output.readOnly = false;
+      output.focus();
+    } else {
+      outputShell.classList.remove('is-editing');
+      renderOutputHl();
+      outputShell.classList.add('is-hl');
+      output.readOnly = true;
+    }
+    syncEditingBanner();
+    syncProcessState();
+  }
+  btnEditOut.addEventListener('click', function () {
+    if (!outEdit && hasOutput()) setOutEdit(true);
+  });
+  document.getElementById('btn-accept-out').addEventListener('click', function (e) {
+    e.stopPropagation();
+    var changed = output.value !== outSnapshot;
+    histOut.push(output.value);
+    renderOutputHl();
+    setOutEdit(false);
+    setOutEnabled(output.value.trim().length > 0);
+    if (changed) {
+      showToast('Output updated');
+      if (hasOutput()) {
+        processDone = true;
+        syncProcessState();
+      }
+    }
+  });
+  document.getElementById('btn-cancel-out').addEventListener('click', function (e) {
+    e.stopPropagation();
+    output.value = outSnapshot;
+    renderOutputHl();
+    setOutEdit(false);
+  });
+  output.addEventListener('input', function () {
+    if (outEdit) renderOutputHl();
+  });
+
+  function setOutEnabled(on) {
+    btnCopy.disabled = !on;
+    btnDl.disabled = !on;
+    btnSave.disabled = !on;
+    btnEditOut.disabled = !on;
+  }
+
+  stageAction.addEventListener('click', function () {
+    if (srcEdit || outEdit) return;
+    var state = stageAction.getAttribute('data-state');
+    if (state === 'start') {
+      histOut.reset('');
+      renderOutputHl();
+      setOutEnabled(false);
+      processDone = false;
+      syncProcessState();
+      setTab('source');
+      showToast('Output cleared');
+      return;
+    }
+    if (state === 'process') {
+      if (!hasSource()) return;
+      detectPart();
+      var header = '; ' + (progName.value.trim() || 'untitled') +
+        ' · rotation ' + rot + '° · ' + unit + '\n';
+      if (rot !== 0) header += '; (demo) rotation transform applied\n';
+      histOut.push(header + source.value.trim());
+      renderOutputHl();
+      setOutEnabled(true);
+      processDone = true;
+      syncProcessState();
+      setOutEdit(false);
+      setTab('output');
+      showToast('Output ready');
+      flashGreenRing();
+    }
+  });
+
+  document.getElementById('btn-undo-src').addEventListener('click', function () { histSrc.undo(); });
+  document.getElementById('btn-redo-src').addEventListener('click', function () { histSrc.redo(); });
+  document.getElementById('btn-undo-out').addEventListener('click', function () {
+    histOut.undo(); renderOutputHl(); setOutEnabled(output.value.trim().length > 0);
+  });
+  document.getElementById('btn-redo-out').addEventListener('click', function () {
+    histOut.redo(); renderOutputHl(); setOutEnabled(output.value.trim().length > 0);
+  });
+
+  document.getElementById('btn-clear').addEventListener('click', function () {
+    histSrc.reset('');
+    clearBounds();
+    histOut.reset('');
+    renderSourceHl();
+    renderOutputHl();
+    setOutEnabled(false);
+    setOutEdit(false);
+    exitSrcEdit(false);
+    processDone = false;
+    syncSourceChrome();
+  });
+
+  btnDetect.addEventListener('click', function () {
+    if (detectPart()) showToast('Part sized');
+    syncDetectArm();
+  });
+
+  btnPost.addEventListener('click', function () {
+    if (!bounds || btnPost.disabled) return;
+    posted = true;
+    setStatus('posted');
+    syncPartGroup();
+    showToast('Part posted');
+    flashGreenRing();
+  });
+
+  function downloadOut() {
+    if (!output.value.trim()) return;
+    var name = (progName.value.trim() || 'program').replace(/[^\w.\-]+/g, '_');
+    var blob = new Blob([output.value], { type: 'text/plain' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name + '.nc';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+  btnCopy.addEventListener('click', function () {
+    if (!btnCopy.disabled && navigator.clipboard) navigator.clipboard.writeText(output.value);
+  });
+  btnDl.addEventListener('click', downloadOut);
+  btnSave.addEventListener('click', downloadOut);
+
+  document.getElementById('btn-open').addEventListener('click', loadSampleProgram);
+
+  /* toolPath buttons are no-ops in standalone */
+  ['btn-toolpath-src', 'btn-toolpath-out'].forEach(function (id) {
+    var b = document.getElementById(id);
+    if (b) b.addEventListener('click', function (e) {
+      e.stopPropagation();
+      showToast('toolPath not in this extract');
+    });
+  });
+
+  setExpanded(true);
+  setStatus('none');
+  setOutEnabled(false);
+  syncSourceChrome();
+  syncPartGroup();
+})();
+  </script>
+</body>
+</html>
