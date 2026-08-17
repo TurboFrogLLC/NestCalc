@@ -4,8 +4,8 @@
 **HTML:** `docs/howmany-v3-components/LASER-BED-v3.html`  
 **Branch:** `docs/howmany-v3-decoder-lock`  
 **Repo:** `TurboFrogLLC/NestCalc`  
-**Tip commit:** `4776519dc2ad3c410860c15eba785ff1f8d3249c`  
-**Tip blob:** `0f193a4a4c277146cd157b5a7603cd1c4d058c0f`  
+**Tip commit:** `40224e6899c33675c6c9a37c1b681fd4088d0174`  
+**Tip blob:** `067477dd84eaafdd1d332feac6514388e27b25da`  
 **Authority:** `LASER-BED-v3-v1.html` · sha256 prefix `408ce4470f2c9d4d`  
 **Composition wire:** R29 @ `6a9acc76` / `f8398176` (bed under `.bed-stage`)  
 **Class:** Exploratory component only · not product GOAL · not bridge  
@@ -33,7 +33,7 @@ Not a floating card. Not frost chrome. Pure B&W.
 | Camera | `#camera` group · translate + scale(s, −s) · origin BL |
 | Bed size | **48 × 48** in |
 | Fit pad | 36px inset when computing fitted scale |
-| Default blank | **12 × 8** in · snap **0.125** |
+| Default blank | **12 × 8** in · snap **0.125** (boot only) |
 
 ## Bed geometry
 
@@ -81,7 +81,7 @@ Not a floating card. Not frost chrome. Pure B&W.
 - **Resize Y** — drag top hit (Y grows upward in world coords)
 - **Resize XY** — drag free corner
 - **Wheel zoom** — toward cursor · zoom clamp 0.35–12
-- **Fit** — Scan button · zoom 1 · center 48×48 only (blank size unchanged)
+- **Fit** — Scan button · zoom 1 · center 48×48 **only** (blank size unchanged)
 - **Zoom ±** — 1.25× steps
 
 ## Behavior locks
@@ -89,6 +89,7 @@ Not a floating card. Not frost chrome. Pure B&W.
 - Origin stays bottom-left in world space (camera Y is flipped).
 - One free-corner indicator only — no four-corner handles.
 - Progressive labels only; never dense 1-inch numbers at low zoom.
+- Fit never resets blank size (boot default 12×8 only).
 - Composition hosts a subset under `.bed-stage`; this file is the full standalone authority.
 
 ## Blank ticker (R31 residual · lives in this package)
@@ -121,7 +122,7 @@ top  = (panY - blankH * s) - 34 - 10
 ## How to use
 
 1. Open `LASER-BED-v3.html` alone in the browser.
-2. Verify: BL origin, 48×48 fit, blank 12×8 with free corner, progressive rulers, zoom tools depressed press, pan/resize/wheel, ticker right-pin 20px, amber readout, white calc icon, snap 0.125.
+2. Verify: BL origin, 48×48 fit, blank 12×8 with free corner, progressive rulers, zoom tools depressed press, pan/resize/wheel, ticker right-pin 20px, amber readout, white calc icon, snap 0.125, Fit preserves blank size.
 3. Any residual that changes numbers or structure → update this SPEC tip fields + Changelog after PASS.
 4. Do not re-introduce multi-handle boxes into this file.
 
@@ -137,6 +138,7 @@ top  = (panY - blankH * s) - 34 - 10
 |------|-----|--------|
 | 2026-08-17 | `bc247c1b` | Individual package from locked `LASER-BED-v3-v1` authority. |
 | 2026-08-17 | `4776519d` | Blank ticker residual absorbed under correct name **LASER-BED-v3.html**. Right-pin 20px · no HUD · shell = HUD popover `rgba(26,20,40,0.82)` · readout amber `#FFCE1B` · calc Lucide stays white · blank snap **0.125**. |
+| 2026-08-17 | `40224e68` | Fit (Scan) no longer resets blank — zoom 1 + center 48×48 only. HTML blob `067477dd`. |
 
 ---
 
