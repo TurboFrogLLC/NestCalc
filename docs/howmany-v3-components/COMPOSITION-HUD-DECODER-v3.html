@@ -10,14 +10,14 @@ READ THIS BLOCK BEFORE ANY EDIT. Self-governing loop for Grok / Codex sessions.
 Branch:  docs/howmany-v3-decoder-lock
 Repo:    TurboFrogLLC/NestCalc
 Path:    docs/howmany-v3-components/COMPOSITION-HUD-DECODER-v3.html
-Tip (R20 closed — Wordmark fonts + REG):
+Tip (last known origin — R29/R30 local pending push):
+  commit  f83981763acdf2b5e28feaba0f80fe2781f7ddc2
+  blob    261541362edfa0cc18c5d9215f12e233de5a3098
+  msg     docs(howmany-v3): fix isolator Child-spec mute (target panel, drop reparent)
+
+Prior tip (R20 content):
   commit  fb011e6b230b5f7b4d28751554257782cf9c1b51
   blob    69d0bd9a17e9c10cc716f604726c8cdeea678772
-  msg     docs(howmany-v3): R20 child-spec REG tokens match Wordmark CSS
-
-Prior tip (R27 content):
-  commit  0b779cabd9adac4c2329a0a4df3ccfc95a66b049
-  blob    cc9ed3f8a6f11b240dcf2cb422e89599cd53e15e
 
 Before every residual: pull tip via GitHub connector and confirm blob SHA.
 After every residual: record new commit SHA + blob SHA in this block.
@@ -46,6 +46,7 @@ After every residual: record new commit SHA + blob SHA in this block.
 
 ── OPEN residuals ───────────────────────────────────────────────────────────
   R29  Bed grid surface — LaserBed v1 under composition (this residual)
+  R30  Position hold — collapse/expand keeps current left/top (no dock/restore)
   R21  Global button chrome unification
   R22  Global icon system unification
   R23  Global color / token unification
@@ -100,11 +101,11 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     "file": "docs/howmany-v3-components/COMPOSITION-HUD-DECODER-v3.html",
     "branch": "docs/howmany-v3-decoder-lock",
     "repo": "TurboFrogLLC/NestCalc",
-    "tip_commit": "fb011e6b230b5f7b4d28751554257782cf9c1b51",
-    "tip_blob": "69d0bd9a17e9c10cc716f604726c8cdeea678772",
-    "prior_tip_commit": "0b779cabd9adac4c2329a0a4df3ccfc95a66b049",
-    "prior_tip_blob": "cc9ed3f8a6f11b240dcf2cb422e89599cd53e15e",
-    "open_residuals": ["R29","R21","R22","R23","R24","R25","R28"],
+    "tip_commit": "f83981763acdf2b5e28feaba0f80fe2781f7ddc2",
+    "tip_blob": "261541362edfa0cc18c5d9215f12e233de5a3098",
+    "prior_tip_commit": "fb011e6b230b5f7b4d28751554257782cf9c1b51",
+    "prior_tip_blob": "69d0bd9a17e9c10cc716f604726c8cdeea678772",
+    "open_residuals": ["R29","R30","R21","R22","R23","R24","R25","R28"],
     "rules": [
       "one residual at a time",
       "read tip blob + authority SHA before fix",
@@ -343,7 +344,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
        Pure left/top (no right:) so pointer-drag scripts own position after first move.
        HUD always up-front (z above de-coder). */
     .keypad {
-      /* R18: docked top-left 16px on load / collapse — JS owns left/top */
+      /* R30: load dock top-left 16px only — collapse/expand holds place; JS owns left/top */
       z-index: 40;
       touch-action: none;
     }
@@ -3412,8 +3413,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       calc: false,
       collapsed: false,
       drag: null,
-      /* R18: position memory for collapse dock / expand restore */
-      preCollapsePos: null, /* { left, top } px or null */
+      /* R30: no position memory — collapse/expand holds current left/top */
       units: 'in',
       blankW: 12,
       blankH: 8,
@@ -3561,11 +3561,11 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       }
     }
 
-    /* R18: dock inset matches flipIT first-open gap (.gcode top/right 16px) */
+    /* R30: load dock only — collapse/expand holds current left/top (no memory) */
     var HUD_DOCK_INSET = 16;
 
     function dockHudCorner() {
-      /* Top-left dock — same padding family as flipIT first open */
+      /* Load only: top-left 16px (matches flipIT first-open gap) */
       hud.style.transform = 'none';
       hud.style.right = 'auto';
       hud.style.bottom = 'auto';
@@ -3573,35 +3573,10 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       hud.style.top = HUD_DOCK_INSET + 'px';
     }
 
-    function captureHudPos() {
-      var r = hud.getBoundingClientRect();
-      return { left: Math.round(r.left), top: Math.round(r.top) };
-    }
-
-    function restoreHudPos(pos) {
-      if (!pos) {
-        dockHudCorner();
-        return;
-      }
-      hud.style.transform = 'none';
-      hud.style.right = 'auto';
-      hud.style.bottom = 'auto';
-      hud.style.left = pos.left + 'px';
-      hud.style.top = pos.top + 'px';
-    }
-
-    /* Load: expanded HUD starts top-left (not center) */
+    /* Load: expanded HUD starts top-left (not center). Never re-dock after that. */
     dockHudCorner();
-    window.addEventListener('resize', function () {
-      /* Only re-dock when collapsed; expanded keeps user drag position */
-      if (!state.drag && state.collapsed) dockHudCorner();
-    });
 
     function setCollapsed(on) {
-      if (on && !state.collapsed) {
-        /* About to collapse — remember expanded position for restore */
-        state.preCollapsePos = captureHudPos();
-      }
       state.collapsed = on;
       hud.classList.toggle('collapsed', on);
       btnChevron.setAttribute('aria-expanded', on ? 'false' : 'true');
@@ -3616,16 +3591,14 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       if (on) {
         hudBody.style.minHeight = '';
         closeAllParamPopovers();
-        /* R18: dock collapsed HUD to top-left corner (out of the way) */
-        dockHudCorner();
+        /* R30: stay where the user left it — no dock to corner */
       } else {
         /* restore measured height when expanding */
         const hudH = parseFloat(hudBody.dataset.hudH || '0');
         const calcH = parseFloat(hudBody.dataset.calcH || '0');
         if (state.calc && calcH) hudBody.style.minHeight = calcH + 'px';
         else if (hudH) hudBody.style.minHeight = hudH + 'px';
-        /* R18: restore pre-collapse position (or stay docked if never moved) */
-        restoreHudPos(state.preCollapsePos);
+        /* R30: stay where the user left it — no restore of pre-collapse pos */
       }
       applyModeVisibility();
     }
@@ -3636,7 +3609,6 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       calcToggle.classList.toggle('active-calc', on);
       calcToggle.setAttribute('aria-pressed', on ? 'true' : 'false');
       if (on && state.collapsed) {
-        /* Expand via calc — use setCollapsed so R18 position restore runs */
         setCollapsed(false);
       }
       if (on) closeAllParamPopovers();
