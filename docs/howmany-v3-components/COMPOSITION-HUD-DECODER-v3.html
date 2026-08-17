@@ -170,22 +170,6 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       flex-shrink: 0;
       pointer-events: none;
     }
-    .bed-stage .lb-readout {
-      position: absolute;
-      top: 12px;
-      left: 12px;
-      font-size: 11px;
-      font-variant-numeric: tabular-nums;
-      letter-spacing: 0.02em;
-      color: #000;
-      background: rgba(255,255,255,0.94);
-      padding: 5px 9px;
-      border: 1px solid #000;
-      border-radius: 2px;
-      z-index: 15;
-      pointer-events: none;
-      font-family: var(--font-mono, ui-monospace, Menlo, monospace);
-    }
     body.lb-dragging-x { cursor: ew-resize; }
     body.lb-dragging-y { cursor: ns-resize; }
     body.lb-dragging-xy { cursor: nesw-resize; }
@@ -354,25 +338,6 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     [data-child-spec].cs-armed {
       outline: 1.5px dashed rgba(83, 139, 236, 0.55);
       outline-offset: 2px;
-    }
-    /* R19: composition note — bottom of stage, behind surfaces (not up-front) */
-    .comp-note {
-      position: fixed;
-      left: 16px;
-      bottom: 16px;
-      top: auto;
-      right: auto;
-      transform: none;
-      z-index: 5; /* sit on grid, behind HUD / FLiPIT / toolPath */
-      font-size: 12.1px;
-      font-weight: 600;
-      color: rgba(26,20,40,0.45);
-      background: rgba(216,214,226,0.72);
-      border: 1.1px solid rgba(26,20,40,0.10);
-      border-radius: 8.8px;
-      padding: 6.6px 13.2px;
-      pointer-events: none;
-      white-space: nowrap;
     }
     /* Initial placement only — no !important so drag can write inline left/top.
        Pure left/top (no right:) so pointer-drag scripts own position after first move.
@@ -2643,16 +2608,6 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     .btn-collapse:active { transform: scale(0.94); }
     .btn-collapse svg { display: block; pointer-events: none; }
 
-    .demo-note {
-      position: absolute;
-      right: 17.6px;
-      bottom: 17.6px;
-      color: rgba(0,0,0,0.35);
-      font-size: 12.1px;
-      max-width: 396px;
-      line-height: 1.4;
-      pointer-events: none;
-    }
 
     /* ── R16b: toolPath card — outer halo · frost shell · white grid viewfinder · muted header icons ──
        Product name case-sensitive: toolPath. Non-modal. No resize. z-index 20. */
@@ -2967,7 +2922,6 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
         </svg>
       </button>
     </div>
-    <div class="lb-readout" id="lb-readout">blank 12.00 × 8.00 in · bed 48×48 · snap 0.25</div>
     <!-- R15+R26 child-spec — free-draggable; host no longer a fixed blank box -->
     <div class="child-spec-host" id="child-spec-host">
       <div class="child-spec is-empty" id="child-spec" aria-live="polite">
@@ -2984,7 +2938,6 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
       </div>
     </div>
   </div>
-  <div class="comp-note">Composition · both components live · S1/S2/S3 architecture reference</div>
 
   <div id="stage">
 <div id="hint">NumericHUD simplified · Part · Blank · Gap · Margin tickers · click ticker → popover</div>
@@ -3418,10 +3371,6 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
 
   </div>
 
-  <div class="demo-note">
-    Empty → separate · Has dims → connected 3-seg · blue ring only on ticker · darker gray fill<br>
-    Hat armed (re-size) = Source blue · posted = green ticker · toolPath non-modal card (R16)
-  </div>
 
   <!-- R14: Sandbox isolator — bottom-right · NOT production -->
   <div class="sandbox-iso" id="sandbox-iso" role="group" aria-label="Sandbox show hide surfaces">
@@ -3440,6 +3389,9 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     </div>
     <div class="si-row" data-si="bed">
       <label><input type="checkbox" id="si-bed" checked /> LaserBed</label>
+    </div>
+    <div class="si-row" data-si="childspec">
+      <label><input type="checkbox" id="si-childspec" checked /> Child spec</label>
     </div>
     <div class="si-note">Local only · hide surfaces to inspect one at a time · not product chrome</div>
   </div>
@@ -5390,7 +5342,8 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
     hud: document.getElementById('hud'),
     flipit: document.getElementById('gcode'),
     backplot: document.getElementById('backplot'),
-    bed: document.querySelector('.bed-stage')
+    bed: document.querySelector('.bed-stage'),
+    childspec: document.getElementById('child-spec-host') || document.getElementById('child-spec')
   };
   function apply(key, on) {
     var el = map[key];
@@ -5426,6 +5379,7 @@ DE-CODER-v3-LOCKED.html (layout/behavior). Composition may diverge on chrome.
   wire('si-flipit', 'flipit');
   wire('si-backplot', 'backplot');
   wire('si-bed', 'bed');
+  wire('si-childspec', 'childspec');
 })();
   </script>
 
