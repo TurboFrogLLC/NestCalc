@@ -1,10 +1,22 @@
-# FLiPIT-v3 — Living SPEC (collapsed + expanded)
+# FLiPIT-v3 — Living SPEC
 
 **Status:** Living (tip-sync after PASS)  
 **Product name:** **FLiPIT** (case-sensitive — not flipIT)  
-**Composition HTML tip:** `fb011e6b230b5f7b4d28751554257782cf9c1b51`  
-**HTML blob:** `69d0bd9a17e9c10cc716f604726c8cdeea678772`  
-**OPEN residuals:** _(none)_
+**HTML:** `docs/howmany-v3-components/FLIPIT-v3.html`  
+**Branch:** `docs/howmany-v3-decoder-lock`  
+**Repo:** `TurboFrogLLC/NestCalc`  
+**Tip commit:** `37d628e970ff3f2a4d6eed189528d7a2fd23fc02`  
+**Tip blob:** `c156815a6c0b98f1d3c509abfd4c5a8452e0c500`  
+**Authority (source composition):** `fb011e6b230b5f7b4d28751554257782cf9c1b51` · blob `69d0bd9a17e9c10cc716f604726c8cdeea678772`  
+**Class:** Exploratory component only · not product GOAL · not bridge  
+
+**Authority note**  
+Standalone extract from composition tip **fb011e6b** (pre-R29). This SPEC’s **identity** is the standalone HTML tip above — not the composition blob.  
+Composition-only bridges (waypoints → toolPath, child-spec marks, `elementsFromPoint`) are absent in this file by design.
+
+NO bed · NO Numeric HUD · NO toolPath card · NO isolator · NO child-spec marks in this package.
+
+---
 
 ## Shell
 
@@ -15,7 +27,8 @@
 | Fill | `#D8D6E2` |
 | Outer ring | hairline + green/yellow flash states |
 | z-index | 30 |
-| Position memory | R11 `lastGcodePos` |
+| Position memory | R11 `lastGcodePos` (close/reopen; standalone has no Re-open control) |
+| Resize | live in HTML (E/S/SE handles · width 418–568 · shell height 110–308) — documented residual |
 
 ## Header
 
@@ -23,9 +36,9 @@
 |-------|-------|
 | Fill | `rgba(26,20,40,0.82)` |
 | Left mark | bordered chip · white icon |
-| Wordmark | **FLiP** white + **IT** amber · 19.8px · weight 700 · letter-spacing -0.02em |
+| Wordmark | **FLiP** white weight **700** + **IT** amber weight **800** · 19.8px · letter-spacing -0.02em |
 | Wordmark align | flex-start · **10px** gap after mark (parity with toolPath) |
-| Close (X) | same header icon system as toolPath: transparent · white icon · hover fill white@0.12 |
+| Close (X) | transparent · white icon · hover fill white@0.12 · hides panel (`display: none`) |
 
 Stage action button copy: `FLIP IT` (uppercase UI string).
 
@@ -35,8 +48,8 @@ Present on **Source** and **Output** panels (same row pattern).
 
 | Control | Notes |
 |---------|-------|
-| Undo / Redo | live when not editing |
-| **Waypoints** (`btn-toolpath-src` / `btn-toolpath-out`) | Lucide waypoints · toggles toolPath open/close · `data-child-spec="flipit-toolpath"` |
+| Undo / Redo | live when not editing (titles mention Cmd/Ctrl+Z; no keydown in standalone) |
+| **Waypoints** | Lucide waypoints · **composition-only** bridge to toolPath · standalone toast no-op |
 | Clear (Source) / Edit · Copy · Download (Output) | existing |
 | Unit switch (Source) | IN / MM |
 
@@ -48,28 +61,25 @@ Present on **Source** and **Output** panels (same row pattern).
 | Hover | ink @ 0.40 | `rgba(26,20,40,0.08)` | ink |
 | Active press | — | ink @ 0.12 | ink · scale 0.94 |
 
-**No blue engaged paint** on waypoints (parity with pencil / copy / download).  
-`aria-pressed` tracks open/closed only.
+**No blue engaged paint** on waypoints. `aria-pressed` tracks open/closed only in composition.
 
 ### Edit lock
 
 `.gcode:has(.surface-row.is-editing-banner) .tool-strip .icon-btn` → grayscale + `pointer-events: none`.  
-Unit switch same parent scope. Accept/cancel in `.edit-actions` stay live.
+Accept/cancel in `.edit-actions` stay live.
 
 ## Footer stage chips
 
 | Chip | State | Border | Glow |
 |------|-------|--------|------|
-| FLIP IT / START OVER | process / start | 1.65px blue-border | soft lift + `--blue-glow` (`0 0 0 2.2px` blue @ 0.45) |
-| **READY** | ready | 1.65px **amber** `#FFCE1B` @ 0.85 | soft lift + `0 0 0 2.2px` amber @ 0.45 |
-| **DONE** | done | 1.65px green-border | soft lift + `--green-glow` (`0 0 0 2.2px` green @ 0.45) |
+| FLIP IT / START OVER | process / start | 1.65px blue-border | soft lift + `--blue-glow` |
+| **READY** | ready | 1.65px **amber** `#FFCE1B` @ 0.85 | soft lift + amber glow |
+| **DONE** | done | 1.65px green-border | soft lift + `--green-glow` |
 | Idle / NOT READY | idle | 1.1px muted | none |
-
-`--green-glow` weight matches `--blue-glow` (single ring — not double 3px+6px).
 
 ## Edit chrome
 
-Accept / cancel (`.edit-actions`): `top: 6.6px` · **`right: 18px`** (inset past scrollbar).
+Accept / cancel (`.edit-actions`): `top: 6.6px` · **`right: 18px`**.
 
 ## Rings (shell)
 
@@ -78,8 +88,25 @@ Accept / cancel (`.edit-actions`): `top: 6.6px` · **`right: 18px`** (inset past
 | Edit | 1px `#FFCE1B` | soft 2px @ 55% |
 | Post / process flash | 1px green @ 90% | soft 2px @ 70% · 2200ms |
 
-## Child-spec marks (R15 + R17)
+## Composition-only (not in this standalone HTML)
 
-`flipit-header` · `flipit-prog` · `flipit-status-dot` · `flipit-close` · `flipit-gc0de` · `flipit-part-group` · `flipit-detect` · `part-ticker` · `flipit-post` · `flipit-io-tabs` · `flipit-tool-strip` · **`flipit-toolpath`** · `flipit-code-shell` · `flipit-stage-action` · `flipit-stage-status` · `flipit-rot` · `flipit-collapse` · `flipit-shell`
+These live in the composition host only — do not expect them in `FLIPIT-v3.html`:
 
-Disabled controls hydrate via `elementsFromPoint`.
+- Child-spec marks (`flipit-header` … `flipit-toolpath` …)
+- `elementsFromPoint` hydrate for disabled controls
+- Waypoints toggle of toolPath card
+- Isolator / child-spec panel
+
+## Out of scope for this file
+
+- LaserBed / blank surface
+- Numeric HUD
+- toolPath card body
+- Product G-code execution
+
+## Changelog
+
+| Date | Tip | Change |
+|------|-----|--------|
+| 2026-08-17 | `37d628e9` | Individual package from composition tip `fb011e6b`. Standalone blob `c156815a`. |
+| 2026-08-17 | — | SPEC identity retargeted to standalone tip (was composition blob). Wordmark IT weight **800** aligned to HTML. Child-spec / elementsFromPoint / waypoints→toolPath marked composition-only. Resize documented as live residual. |
