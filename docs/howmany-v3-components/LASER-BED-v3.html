@@ -316,7 +316,7 @@ NO HUD panel · NO FLiPIT · NO toolPath · NO isolator · NO child-spec
 
   document.getElementById('lb-zoom-in').onclick = function () { state.zoom = Math.min(12, state.zoom * 1.25); render(); };
   document.getElementById('lb-zoom-out').onclick = function () { state.zoom = Math.max(0.35, state.zoom / 1.25); render(); };
-  document.getElementById('lb-fit').onclick = function () { state.blankW = 12; state.blankH = 8; fitBed(); render(); };
+  document.getElementById('lb-fit').onclick = function () { fitBed(); render(); };
   window.addEventListener('resize', function () { fitBed(); render(); });
 
   fitBed(); render();

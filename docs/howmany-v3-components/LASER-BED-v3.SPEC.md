@@ -81,7 +81,7 @@ Not a floating card. Not frost chrome. Pure B&W.
 - **Resize Y** — drag top hit (Y grows upward in world coords)
 - **Resize XY** — drag free corner
 - **Wheel zoom** — toward cursor · zoom clamp 0.35–12
-- **Fit** — Scan button · zoom 1 · center 48×48
+- **Fit** — Scan button · zoom 1 · center 48×48 only (blank size unchanged)
 - **Zoom ±** — 1.25× steps
 
 ## Behavior locks
