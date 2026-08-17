@@ -56,7 +56,7 @@ Composition bridges (FLiPIT tool-strip / isolator) are **absent** in this standa
 |-------|-------|
 | Fill | `rgba(26,20,40,0.82)` |
 | Left mark | Lucide **waypoints** · 28.6sq chip · white@0.12 fill · white@0.18 border · icon white |
-| Wordmark | **tool** white + **Path** amber · 19.8px · weight 700 · letter-spacing -0.02em · `var(--font)` |
+| Wordmark | **tool** white weight **700** + **Path** amber weight **800** · 19.8px · letter-spacing -0.02em · `var(--font)` |
 | Wordmark align | flex-start · **10px** gap after mark |
 | Trailing | refresh-ccw · X · class `tp-head-btn` |
 
@@ -117,6 +117,7 @@ Composition bridges (FLiPIT tool-strip / isolator) are **absent** in this standa
 | Date | Tip | Change |
 |------|-----|--------|
 | 2026-08-17 | `2e9e2ace` | Individual package first created from composition tip `fb011e6b` (pre-R29). Surgical extract of R16/R27 toolPath card. Standalone opens visible for inspection. HTML blob `1ed50d65`. |
+| 2026-08-17 | — | Wordmark **Path** weight aligned to HTML **800** (was SPEC 700). |
 
 ---
 
