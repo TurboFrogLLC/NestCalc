@@ -7,7 +7,7 @@
 **Branch:** `docs/howmany-v3-decoder-lock`  
 **Repo:** `TurboFrogLLC/NestCalc`  
 **Tip commit:** `2e9e2aceb59acec4d2e7dea490c577c380c12346`  
-**Tip blob:** `1ed50d650a06c260dcf135e75286adf5cdf54c10`  
+**Tip blob:** `ebf8d53e59cfce97bab2e5ced80324b4c3b26010` (post-naming HTML)  
 **Authority (source composition):** `fb011e6b230b5f7b4d28751554257782cf9c1b51` · blob `69d0bd9a17e9c10cc716f604726c8cdeea678772`  
 **Class:** Exploratory component only · not product GOAL · not bridge  
 
@@ -118,9 +118,10 @@ Composition bridges (FLiPIT tool-strip / isolator) are **absent** in this standa
 
 | Date | Tip | Change |
 |------|-----|--------|
-| 2026-08-17 | `2e9e2ace` | Individual package first created from composition tip `fb011e6b` (pre-R29). Surgical extract of R16/R27 toolPath card. Standalone opens visible for inspection. HTML blob `1ed50d65`. |
+| 2026-08-17 | `2e9e2ace` | Individual package first created from composition tip `fb011e6b` (pre-R29). Surgical extract of R16/R27 toolPath card. Standalone opens visible for inspection. |
 | 2026-08-17 | — | Wordmark **Path** weight aligned to HTML **800** (was SPEC 700). |
 | 2026-08-17 | — | naming unify FlipIt product · strip decoder/decalc labels |
+| 2026-08-17 | tip-sync | **Tip blob** advanced to post-naming HTML `ebf8d53e…` (Codex P2). |
 
 ---
 

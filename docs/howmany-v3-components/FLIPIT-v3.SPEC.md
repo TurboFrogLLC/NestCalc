@@ -7,7 +7,7 @@
 **Branch:** `docs/howmany-v3-decoder-lock`  
 **Repo:** `TurboFrogLLC/NestCalc`  
 **Tip commit:** `37d628e970ff3f2a4d6eed189528d7a2fd23fc02`  
-**Tip blob:** `c156815a6c0b98f1d3c509abfd4c5a8452e0c500`  
+**Tip blob:** `8922424c516335441e18853e2093ee6d457da57a` (post-naming HTML)  
 **Authority (source composition):** `fb011e6b230b5f7b4d28751554257782cf9c1b51` · blob `69d0bd9a17e9c10cc716f604726c8cdeea678772`  
 **Class:** Exploratory component only · not product GOAL · not bridge  
 
@@ -109,6 +109,7 @@ These live in the composition host only — do not expect them in `FLIPIT-v3.htm
 
 | Date | Tip | Change |
 |------|-----|--------|
-| 2026-08-17 | `37d628e9` | Individual package from composition tip `fb011e6b`. Standalone blob `c156815a`. |
+| 2026-08-17 | `37d628e9` | Individual package from composition tip `fb011e6b`. |
 | 2026-08-17 | — | SPEC identity retargeted to standalone tip (was composition blob). Wordmark IT weight **800** aligned to HTML. Child-spec / elementsFromPoint / waypoints→toolPath marked composition-only. Resize documented as live residual. |
 | 2026-08-17 | — | naming unify FlipIt product · strip decoder/decalc labels |
+| 2026-08-17 | tip-sync | **Tip blob** advanced to post-naming HTML `8922424c…` (Codex P2). |

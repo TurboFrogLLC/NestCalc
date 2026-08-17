@@ -6,8 +6,8 @@
 **HTML:** `docs/howmany-v3-components/NUMERIC-HUD-v3.html`  
 **Branch:** `docs/howmany-v3-decoder-lock`  
 **Repo:** `TurboFrogLLC/NestCalc`  
-**Tip commit:** `bec93ffa2872155d293b9e7ff8424250c1e45c98`  
-**Tip blob:** `20de911fad14ed40cad3443d6102bf716c7985ff`  
+**Tip commit:** `bec93ffa2872155d293b9e7ff8424250c1e45c98` (P0 pack)  
+**Tip blob:** `d8a701b903480c66ebf54621684eff1cddc29bd5` (post-naming HTML)  
 **Authority (source composition):** `fb011e6b230b5f7b4d28751554257782cf9c1b51` · blob `69d0bd9a17e9c10cc716f604726c8cdeea678772`  
 **Class:** Exploratory component only · not product GOAL · not bridge  
 
@@ -147,8 +147,9 @@ Never set `display` on `#hud-body` (breaks grid collapse).
 | 2026-08-16 | — | Individual package first created from older thin lock (`NUMERIC-HUD-v3-LOCKED.html`). |
 | 2026-08-17 | — | **Re-locked to advanced pre-LaserBed authority** `fb011e6b`. SPEC rewritten to match dark 44px header · 15.4px radius · 600ms collapse · Auto-Size/FLiPIT footer · R20 type. |
 | 2026-08-17 | `092777a5` | **Position hold** — collapse/expand keeps exact left/top. Removed R18 dock-to-corner + restore memory. Initial placement only (16,16). HTML blob `221fb75e`. |
-| 2026-08-17 | `bec93ffa` | **P0 pack** — never `display` on `#hud-body`; popover placement right → left → bottom → top; blank/gap link chrome sync on open + close-X. HTML blob `20de911f`. |
+| 2026-08-17 | `bec93ffa` | **P0 pack** — never `display` on `#hud-body`; popover placement right → left → bottom → top; blank/gap link chrome sync on open + close-X. |
 | 2026-08-17 | — | naming unify FlipIt product · strip decoder/decalc labels |
+| 2026-08-17 | tip-sync | **Tip blob** advanced to post-naming HTML `d8a701b9…` (Codex P2). |
 
 ---
 

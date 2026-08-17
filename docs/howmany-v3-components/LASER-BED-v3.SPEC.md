@@ -7,8 +7,8 @@
 **Branch:** `docs/howmany-v3-decoder-lock`  
 **Repo:** `TurboFrogLLC/NestCalc`  
 **Tip commit:** `40224e6899c33675c6c9a37c1b681fd4088d0174`  
-**Tip blob:** `067477dd84eaafdd1d332feac6514388e27b25da`  
-**Authority:** `LASER-BED-v3-v1.html` · sha256 prefix `408ce4470f2c9d4d`  
+**Tip blob:** `60ca551c34a5f1e36fee8e9498fdc8302256ea52` (post-naming HTML)  
+**Authority:** prior `LASER-BED-v3-v1` checksum lineage · sha256 prefix `408ce4470f2c9d4d`  
 **Composition wire:** R29 @ `6a9acc76` / `f8398176` (bed under `.bed-stage`)  
 **Class:** Exploratory component only · not product GOAL · not bridge  
 
@@ -131,7 +131,7 @@ top  = (panY - blankH * s) - 34 - 10
 ## Connections
 
 - Composition index: `COMPOSITION-HUD-DECODER-v3.SPEC.md` (R29 bed under `.bed-stage`).
-- Prior lock file kept for checksum: `LASER-BED-v3-v1.html`.
+- Living lock is `LASER-BED-v3.html` (this package).
 - Shared with other individuals only at composition assembly time.
 
 ## Changelog
@@ -140,8 +140,9 @@ top  = (panY - blankH * s) - 34 - 10
 |------|-----|--------|
 | 2026-08-17 | `bc247c1b` | Individual package from locked `LASER-BED-v3-v1` authority. |
 | 2026-08-17 | `4776519d` | Blank ticker residual absorbed under correct name **LASER-BED-v3.html**. Right-pin 20px · no HUD · shell = HUD popover `rgba(26,20,40,0.82)` · readout amber `#FFCE1B` · calc Lucide stays white · blank snap **0.125**. |
-| 2026-08-17 | `40224e68` | Fit (Scan) no longer resets blank — zoom 1 + center 48×48 only. HTML blob `067477dd`. |
+| 2026-08-17 | `40224e68` | Fit (Scan) no longer resets blank — zoom 1 + center 48×48 only. |
 | 2026-08-17 | — | naming unify FlipIt product · strip decoder/decalc labels |
+| 2026-08-17 | tip-sync | **Tip blob** advanced to post-naming HTML `60ca551c…` (Codex P2). |
 
 ---
 
