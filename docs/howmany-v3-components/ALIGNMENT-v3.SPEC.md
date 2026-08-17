@@ -1,17 +1,18 @@
-# HowMany V3 — Alignment Contract (copy-paste only)
+# FlipIt — Alignment Contract (copy-paste only)
 
 **Status:** Living contract · not a runtime package  
+**Product:** **FlipIt**  
 **Source:** `docs/audits/HOWMANY-V3-INDIVIDUALS-AUDIT-2026-08-17.md`  
 **Class:** Exploratory docs only · not product GOAL · not a shared JS/CSS import  
 
-**Rule:** Each individual HTML stays **standalone**. This contract is documentation + paste targets. Do **not** add `howmany-v3-align.js` or `@import` into the four tips.
+**Rule:** Each individual HTML stays **standalone**. This contract is documentation + paste targets. Do **not** add `flipit-v3-align.js` or `@import` into the four tips.
 
 Surfaces covered:
 
 | Surface | HTML | Tip (at contract write) |
 |---------|------|-------------------------|
-| NUMERIC-HUD-v3 | `NUMERIC-HUD-v3.html` | `bec93ffa` |
-| FLIPIT-v3 | `FLIPIT-v3.html` | `37d628e9` |
+| Numeric HUD | `NUMERIC-HUD-v3.html` | `bec93ffa` |
+| FLiPIT | `FLIPIT-v3.html` | `37d628e9` |
 | toolPath | `TOOLPATH-v3.html` | `2e9e2ace` |
 | LaserBed | `LASER-BED-v3.html` | `40224e68` |
 
@@ -126,7 +127,7 @@ function snap(v, step) { return Math.round(v / step) * step; }
 
 ## 8. Explicitly NOT in this contract
 
-- Runtime shared file / build step / `window.HowManyV3`
+- Runtime shared file / build step / `window.FlipItV3`
 - DOM ids, Lucide paths, markup
 - Child-spec / isolator / `elementsFromPoint`
 - G-code highlighter / history
@@ -151,3 +152,4 @@ function snap(v, step) { return Math.round(v / step) * step; }
 | Date | Change |
 |------|--------|
 | 2026-08-17 | First contract from individuals audit. Copy-paste only. Z-index scale + tokens + wordmark 800 + hide/position policies. |
+| 2026-08-17 | naming unify FlipIt product · strip decoder/decalc labels |

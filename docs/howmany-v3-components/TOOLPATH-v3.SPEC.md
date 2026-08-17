@@ -1,6 +1,8 @@
-# toolPath V3 — Living SPEC
+# FlipIt — toolPath — Living SPEC
 
 **Status:** Living (tip-sync after PASS)  
+**Product:** **FlipIt**  
+**Surface name:** **toolPath** (case-sensitive)  
 **HTML:** `docs/howmany-v3-components/TOOLPATH-v3.html`  
 **Branch:** `docs/howmany-v3-decoder-lock`  
 **Repo:** `TurboFrogLLC/NestCalc`  
@@ -93,7 +95,7 @@ Composition bridges (FLiPIT tool-strip / isolator) are **absent** in this standa
 
 - LaserBed / blank surface
 - Numeric HUD
-- FLiPIT / de-coder panel
+- FLiPIT panel
 - Sandbox isolator
 - Child-spec panel
 - Real path geometry (demo fixture only)
@@ -118,6 +120,7 @@ Composition bridges (FLiPIT tool-strip / isolator) are **absent** in this standa
 |------|-----|--------|
 | 2026-08-17 | `2e9e2ace` | Individual package first created from composition tip `fb011e6b` (pre-R29). Surgical extract of R16/R27 toolPath card. Standalone opens visible for inspection. HTML blob `1ed50d65`. |
 | 2026-08-17 | — | Wordmark **Path** weight aligned to HTML **800** (was SPEC 700). |
+| 2026-08-17 | — | naming unify FlipIt product · strip decoder/decalc labels |
 
 ---
 

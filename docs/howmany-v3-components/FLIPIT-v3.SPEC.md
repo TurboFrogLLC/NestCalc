@@ -1,7 +1,8 @@
-# FLiPIT-v3 — Living SPEC
+# FlipIt — FLiPIT — Living SPEC
 
 **Status:** Living (tip-sync after PASS)  
-**Product name:** **FLiPIT** (case-sensitive — not flipIT)  
+**Product:** **FlipIt**  
+**Surface name:** **FLiPIT** (case-sensitive — not flipIT)  
 **HTML:** `docs/howmany-v3-components/FLIPIT-v3.html`  
 **Branch:** `docs/howmany-v3-decoder-lock`  
 **Repo:** `TurboFrogLLC/NestCalc`  
@@ -110,3 +111,4 @@ These live in the composition host only — do not expect them in `FLIPIT-v3.htm
 |------|-----|--------|
 | 2026-08-17 | `37d628e9` | Individual package from composition tip `fb011e6b`. Standalone blob `c156815a`. |
 | 2026-08-17 | — | SPEC identity retargeted to standalone tip (was composition blob). Wordmark IT weight **800** aligned to HTML. Child-spec / elementsFromPoint / waypoints→toolPath marked composition-only. Resize documented as live residual. |
+| 2026-08-17 | — | naming unify FlipIt product · strip decoder/decalc labels |

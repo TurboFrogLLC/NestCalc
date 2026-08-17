@@ -1,6 +1,8 @@
-# LaserBed V3 — Living SPEC
+# FlipIt — LaserBed — Living SPEC
 
 **Status:** Living (tip-sync after PASS)  
+**Product:** **FlipIt**  
+**Surface name:** **LaserBed**  
 **HTML:** `docs/howmany-v3-components/LASER-BED-v3.html`  
 **Branch:** `docs/howmany-v3-decoder-lock`  
 **Repo:** `TurboFrogLLC/NestCalc`  
@@ -139,6 +141,7 @@ top  = (panY - blankH * s) - 34 - 10
 | 2026-08-17 | `bc247c1b` | Individual package from locked `LASER-BED-v3-v1` authority. |
 | 2026-08-17 | `4776519d` | Blank ticker residual absorbed under correct name **LASER-BED-v3.html**. Right-pin 20px · no HUD · shell = HUD popover `rgba(26,20,40,0.82)` · readout amber `#FFCE1B` · calc Lucide stays white · blank snap **0.125**. |
 | 2026-08-17 | `40224e68` | Fit (Scan) no longer resets blank — zoom 1 + center 48×48 only. HTML blob `067477dd`. |
+| 2026-08-17 | — | naming unify FlipIt product · strip decoder/decalc labels |
 
 ---
 

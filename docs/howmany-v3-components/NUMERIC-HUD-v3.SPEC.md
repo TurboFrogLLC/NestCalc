@@ -1,6 +1,8 @@
-# NUMERIC-HUD-v3 — Living SPEC
+# FlipIt — Numeric HUD — Living SPEC
 
 **Status:** Living (tip-sync after PASS)  
+**Product:** **FlipIt**  
+**Surface name:** **Numeric HUD**  
 **HTML:** `docs/howmany-v3-components/NUMERIC-HUD-v3.html`  
 **Branch:** `docs/howmany-v3-decoder-lock`  
 **Repo:** `TurboFrogLLC/NestCalc`  
@@ -125,7 +127,7 @@ Never set `display` on `#hud-body` (breaks grid collapse).
 ## Out of scope for this file
 
 - LaserBed / blank-tied floating ticker (R31+)
-- FLiPIT / de-coder panel (own package)
+- FLiPIT panel (own package)
 - toolPath / backplot (own package)
 - Sandbox isolator
 - Child-spec panel
@@ -146,12 +148,13 @@ Never set `display` on `#hud-body` (breaks grid collapse).
 | 2026-08-17 | — | **Re-locked to advanced pre-LaserBed authority** `fb011e6b`. SPEC rewritten to match dark 44px header · 15.4px radius · 600ms collapse · Auto-Size/FLiPIT footer · R20 type. |
 | 2026-08-17 | `092777a5` | **Position hold** — collapse/expand keeps exact left/top. Removed R18 dock-to-corner + restore memory. Initial placement only (16,16). HTML blob `221fb75e`. |
 | 2026-08-17 | `bec93ffa` | **P0 pack** — never `display` on `#hud-body`; popover placement right → left → bottom → top; blank/gap link chrome sync on open + close-X. HTML blob `20de911f`. |
+| 2026-08-17 | — | naming unify FlipIt product · strip decoder/decalc labels |
 
 ---
 
 **Next individual packages (suggested order)**  
 1. NUMERIC-HUD-v3 ← **this** (advanced extract)  
-2. FLiPIT / de-coder  
+2. FLiPIT  
 3. toolPath / backplot  
 4. LaserBed-v3  
 5. Composition shell (re-assemble only after individuals are stable)
