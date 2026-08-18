@@ -27,6 +27,9 @@ Bridges in this host:
   · R2  AUTO-SIZE opens FLiPIT collapsed only · 2nd click detects
         #bt-calc: collapsed → expand params · expanded → toggle calc
         HUD height follows active mode · tighter popover edge clamp
+  · R3  #bt-calc collapsed → params only (no stale calc display)
+        FLiPIT chip: closed→expand · collapsed-open→expand · expanded→close
+        Source Clear + program-name X fully unload the program
 
 Not wired: sandbox isolator · child-spec · Post → HUD/bed hydrate.
 Prior composition/lock archives stay on disk.
@@ -841,7 +844,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       cursor: pointer;
       padding: 0;
     }
-    .prog-field.is-focus .prog-clear { display: inline-flex; }
+    .prog-field.is-focus .prog-clear,
+    .prog-field.has-value .prog-clear { display: inline-flex; }
     .prog-clear:hover { color: var(--ink); background: var(--ink-08); }
     .prog-clear svg { display: block; pointer-events: none; }
 
@@ -2050,7 +2054,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
           <button type="button" class="icon-btn" id="btn-save" title="Save program (from Output)" aria-label="Save program" disabled>
             <svg width="14.3" height="14.3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
           </button>
-          <button type="button" class="prog-clear" id="prog-clear" title="Clear name" aria-label="Clear program name">
+          <button type="button" class="prog-clear" id="prog-clear" title="Unload program" aria-label="Unload program">
             <svg width="12.1" height="12.1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
           </button>
         </div>
@@ -2114,7 +2118,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
             <button type="button" class="icon-btn" id="btn-toolpath-src" title="Show toolPath" aria-label="toolPath" aria-pressed="false">
               <svg width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4.5" r="2.5"/><path d="m10.2 6.3-3.9 3.9"/><circle cx="4.5" cy="12" r="2.5"/><path d="M7 12h10"/><circle cx="19.5" cy="12" r="2.5"/><path d="m13.8 17.7 3.9-3.9"/><circle cx="12" cy="19.5" r="2.5"/></svg>
             </button>
-            <button type="button" class="icon-btn" id="btn-clear" title="Clear source" aria-label="Clear source">
+            <button type="button" class="icon-btn" id="btn-clear" title="Unload program" aria-label="Unload program">
               <svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4L13.3 3c1-1 2.5-1 3.4 0l4.3 4.3c1 1 1 2.5 0 3.4L10.4 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>
             </button>
             <div class="unit-switch" id="unit-switch" data-unit="in" role="group" aria-label="Units">
@@ -2479,9 +2483,15 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     updateSaveDirty();
   }
 
+  function isHudCollapsed() {
+    return !!(state.collapsed || hud.classList.contains('collapsed'));
+  }
+
   function applyModeVisibility() {
-    if (state.collapsed) return;
-    if (state.calc) { classicEl.style.display = 'flex'; hudMode.style.display = 'none'; }
+    /* Never leave classic-calc display:flex after collapse — that stale
+       inline style is what made #bt-calc appear to "enter calc" on expand. */
+    const showCalc = !!(state.calc && !isHudCollapsed());
+    if (showCalc) { classicEl.style.display = 'flex'; hudMode.style.display = 'none'; }
     else { classicEl.style.display = 'none'; hudMode.style.display = 'flex'; }
   }
 
@@ -3053,9 +3063,14 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   window.__hudToggleCalc = function () { setCalc(!state.calc); };
   window.__hudExitCalc = function () { if (state.calc) setCalc(false); };
   window.__hudFromBedCalc = function () {
-    if (state.collapsed) {
-      setCalc(false);
+    if (isHudCollapsed()) {
+      state.calc = false;
+      hud.classList.remove('calc-mode');
+      calcToggle.classList.remove('active-calc');
+      calcToggle.setAttribute('aria-pressed', 'false');
       setCollapsed(false);
+      applyModeVisibility();
+      applyBodyHeight();
       return;
     }
     setCalc(!state.calc);
@@ -3410,6 +3425,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     panel.classList.toggle('is-expanded', on);
     btnExpand.setAttribute('aria-expanded', on ? 'true' : 'false');
     btnExpand.title = on ? 'G-code expanded' : 'Expand G-code';
+    if (typeof syncHudFlipitChrome === 'function') syncHudFlipitChrome();
   }
   function collapseGcode() {
     setExpanded(false);
@@ -3434,10 +3450,38 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   progName.addEventListener('input', syncProgClear);
   progName.addEventListener('focus', function () { progField.classList.add('is-focus'); });
   progName.addEventListener('blur', function () { progField.classList.remove('is-focus'); });
-  document.getElementById('prog-clear').addEventListener('click', function () {
+  function unloadProgram() {
+    srcEdit = false;
+    outEdit = false;
+    srcSnapshot = '';
+    outSnapshot = '';
+    if (sourceShell) {
+      sourceShell.classList.remove('is-editing');
+      sourceShell.classList.add('is-hl');
+    }
+    if (outputShell) {
+      outputShell.classList.remove('is-editing');
+      outputShell.classList.add('is-hl');
+    }
+    if (output) output.readOnly = true;
+    if (btnEditOut) btnEditOut.classList.remove('is-on', 'is-editing');
+    histSrc.reset('');
+    histOut.reset('');
+    renderSourceHl();
+    renderOutputHl();
     progName.value = '';
     syncProgClear();
-    progName.focus();
+    processDone = false;
+    sizedClean = false;
+    posted = false;
+    clearBounds();
+    setOutEnabled(false);
+    setTab('source');
+    syncEditingBanner();
+    syncSourceChrome();
+  }
+  document.getElementById('prog-clear').addEventListener('click', function () {
+    unloadProgram();
   });
   syncProgClear();
 
@@ -3481,12 +3525,16 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   function isGcodeOpen() {
     return panel.classList.contains('is-open') && panel.style.display !== 'none';
   }
+  function isGcodeExpanded() {
+    return isGcodeOpen() && panel.classList.contains('is-expanded');
+  }
   function syncHudFlipitChrome() {
     var btn = document.getElementById('btn-gcode');
     if (!btn) return;
-    var on = isGcodeOpen();
-    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-    btn.title = on ? 'Close FLiPIT' : 'Open FLiPIT';
+    var open = isGcodeOpen();
+    var expanded = open && panel.classList.contains('is-expanded');
+    btn.setAttribute('aria-pressed', expanded ? 'true' : 'false');
+    btn.title = !open ? 'Open FLiPIT' : (expanded ? 'Close FLiPIT' : 'Expand FLiPIT');
   }
   function openGcode(expanded) {
     panel.classList.add('is-open');
@@ -3519,8 +3567,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     syncHudFlipitChrome();
   }
   function toggleGcode() {
-    if (isGcodeOpen()) closeGcode();
-    else openGcode(true);
+    if (!isGcodeOpen()) openGcode(true);
+    else if (!isGcodeExpanded()) openGcode(true);
+    else closeGcode();
   }
   document.getElementById('btn-close').addEventListener('click', closeGcode);
 
@@ -3777,16 +3826,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   });
 
   document.getElementById('btn-clear').addEventListener('click', function () {
-    histSrc.reset('');
-    clearBounds();
-    histOut.reset('');
-    renderSourceHl();
-    renderOutputHl();
-    setOutEnabled(false);
-    setOutEdit(false);
-    exitSrcEdit(false);
-    processDone = false;
-    syncSourceChrome();
+    unloadProgram();
   });
 
   btnDetect.addEventListener('click', function () {
@@ -3954,16 +3994,16 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 })();
 </script>
 <script>
-/* ── Host residual R1/R2 — LaserBed calc chip → HUD ── */
+/* ── Host residual R1–R3 — LaserBed calc chip → HUD ── */
 (function () {
   var btCalc = document.getElementById('bt-calc');
   if (!btCalc) return;
   btCalc.addEventListener('click', function (e) {
     e.preventDefault();
     e.stopPropagation();
+    if (e.stopImmediatePropagation) e.stopImmediatePropagation();
     if (typeof window.__hudFromBedCalc === 'function') window.__hudFromBedCalc();
-    else if (typeof window.__hudToggleCalc === 'function') window.__hudToggleCalc();
-  });
+  }, true);
 })();
 </script>
 </body>

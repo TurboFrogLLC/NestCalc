@@ -1,12 +1,12 @@
 # FlipIt — Composition host — Living SPEC
 
-**Status:** Living (residual R2 — collapsed AUTO-SIZE + HUD height + clamp)  
+**Status:** Living (residual R3 — bed-calc params, FLiPIT cycle, full unload)  
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
 **Branch:** `docs/flipit-v3-refinements`  
-**Trace:** `NC-FLIPIT-20260817-R2`  
-**Host tip blob:** `4782dbc56b627be98556ac187193865decc8388f`  
+**Trace:** `NC-FLIPIT-20260817-R3`  
+**Host tip blob:** `0db7a06c1ae11a7738a81c827238bcde5de43a49`  
 **Class:** Exploratory composition host only · not product GOAL · not a shared import  
 
 **Host rule**  
@@ -45,6 +45,7 @@ Wordmarks stay as locked: **FLiP** white 700 + **IT** amber 800 · **tool** whit
 | **R30** | HUD position hold | from Numeric HUD tip (collapse/expand never writes left/top) · never set `display` on `#hud-body` |
 | **R1** | Boot HUD open / FLiPIT closed · HUD ↔ FLiPIT chrome · AUTO-SIZE from HUD + calc paths · real local file open · popover clamp | hide primitive `display:none` + `is-open` on `#gcode` · `#btn-gcode` toggles · `#btn-auto-size` + `#btn-detect` run Auto-Size · `#bt-calc` toggles HUD calculator · `#flipit-file-input` accepts `.txt` / `.nc` / `.cnc` / `text/plain` |
 | **R2** | AUTO-SIZE opens FLiPIT **collapsed only** · 2nd click detects · `#bt-calc` expand-to-params when HUD collapsed · HUD body height matches active mode · tighter popover inset | `openGcode(false)` from `#btn-auto-size` · detect only when already open+collapsed · `__hudFromBedCalc` · `applyBodyHeight()` · popover edge **16px** / FlipIt avoid **12px** |
+| **R3** | `#bt-calc` from collapsed expands to **params only** (clear stale calc display) · HUD FLiPIT 3-step cycle · source Clear + name X fully unload | `applyModeVisibility` never leaves classic-calc `display:flex` while collapsed · `toggleGcode` closed→expand / open-collapsed→expand / expanded→close · `unloadProgram()` |
 
 Hide primitives stay surface-owned (`ALIGNMENT-v3` §4). Host does not invent a shared hide API.
 
@@ -53,12 +54,13 @@ Hide primitives stay surface-owned (`ALIGNMENT-v3` §4). Host does not invent a 
 | Control | Host behavior |
 |---------|----------------|
 | Load | Numeric HUD open at (16,16). FLiPIT closed (`display: none`, no `is-open`). toolPath hidden (R27). |
-| HUD **FLiPIT** (`#btn-gcode`) | Toggle FLiPIT open/close. `aria-pressed` + title sync. |
+| HUD **FLiPIT** (`#btn-gcode`) | Closed → open **expanded**. Open + collapsed (e.g. after AUTO-SIZE) → **expand** (do not close). Open + expanded → **close**. X closes from any state. |
 | HUD **AUTO-SIZE** (`#btn-auto-size`) | Open FLiPIT **collapsed** (never expanded). Center toast kept. No source → `LOAD A PROGRAM TO AUTO-SIZE`. If FLiPIT is already open **and** collapsed, a second click runs detect (same as `#btn-detect` when a program is loaded). Footer chips stay mounted in HUD calculator mode. Label stays **AUTO-SIZE**. |
 | FLiPIT Auto-Size (`#btn-detect`) | Existing in-panel detect. Expand/collapse chrome unchanged. Arms after a real file load. |
 | FLiPIT close (`#btn-close`) | `closeGcode()` + R11 `lastGcodePos`. |
-| LaserBed calc chip (`#bt-calc`) | HUD collapsed → expand to **param** mode only (do not enter calculator). HUD already expanded → toggle calculator. After exit / collapse / expand, `#hud-body` height matches the active mode. |
+| LaserBed calc chip (`#bt-calc`) | HUD collapsed → expand to **param** mode only (do not enter calculator; clear leftover classic-calc `display`). HUD already expanded → toggle calculator. After exit / collapse / expand, `#hud-body` height matches the active mode. |
 | FLiPIT Open (`#btn-open`) | Native local file picker. Accept `.txt`, `.nc`, `.cnc`, and `text/plain`. Load into Source. **No sample / BRACKET_PLATE fallback.** |
+| Source **Clear** (`#btn-clear`) and program-name **X** (`#prog-clear`) | Full unload: empty source + output, no bounds, status none, detect unarmed, process idle, program name cleared. Not name-only. |
 | HUD popovers | Keep ALIGNMENT z 50. Placement/clamp only: prefer right → left → bottom → top, then shift so the popover does not cover an open FLiPIT card or the active `#lb-blank`. Viewport inset **16px** (not flush to the edge). |
 
 ---
@@ -96,7 +98,7 @@ Do not require `file://`.
 1. Open the composition URL above.
 2. Verify LaserBed fills the viewport (BL origin, 48×48 fit, blank 12×8, right-pin ticker, Fit does not reset blank).
 3. Verify Numeric HUD (16,16) is the only card open. FLiPIT and toolPath are absent.
-4. HUD **FLiPIT** opens FLiPIT (top-right, expanded). X closes it. Chip toggles again.
+4. HUD **FLiPIT** opens FLiPIT expanded. If FlipIt is already open and collapsed, FLiPIT expands it. If expanded, FLiPIT closes it. X closes from any state.
 5. HUD **AUTO-SIZE** opens FLiPIT **collapsed** and toasts if no program. A second click while collapsed runs detect. `#btn-detect` and expand/collapse stay in-panel. Same chips stay live in HUD calculator mode.
 6. FLiPIT Open picks a real local `.txt` / `.nc` / `.cnc` file and loads Source. No sample program.
 7. HUD tickers open popovers; placement stays outside the HUD and clamps off open FLiPIT and the bed blank. Collapse/expand holds left/top (R30).
@@ -112,3 +114,4 @@ Do not require `file://`.
 | 2026-08-17 | First FlipIt composition host. Inline four locked individuals. R17 waypoints↔toolPath · R27 toolPath hidden · R29 LaserBed canvas · R30 HUD hold from tip. Toast z 35. Isolator/child-spec omitted. |
 | 2026-08-17 | **R1** `NC-FLIPIT-20260817-R1`. Boot HUD-only. HUD ↔ FLiPIT chrome. AUTO-SIZE from HUD + calculator paths. Real local file open (no sample). Popover clamp avoids FLiPIT + bed blank. Calc chip → HUD calculator. |
 | 2026-08-17 | **R2** `NC-FLIPIT-20260817-R2`. AUTO-SIZE opens FLiPIT collapsed only; 2nd click detects. `#bt-calc` expands collapsed HUD to params (toggle calc only when already expanded). `#hud-body` height follows param/calc. Popover inset 16px. |
+| 2026-08-17 | **R3** `NC-FLIPIT-20260817-R3`. `#bt-calc` from collapsed shows params only (no stale calc body). FLiPIT chip: closed→expand · collapsed-open→expand · expanded→close. Source Clear + name X fully unload. |
