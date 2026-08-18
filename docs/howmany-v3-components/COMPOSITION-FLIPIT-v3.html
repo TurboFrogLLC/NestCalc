@@ -30,6 +30,8 @@ Bridges in this host:
   · R3  #bt-calc collapsed → params only (no stale calc display)
         FLiPIT chip: closed→expand · collapsed-open→expand · expanded→close
         Source Clear + program-name X fully unload the program
+  · R4  AUTO-SIZE 2nd click closes collapsed FlipIt (no re-detect)
+        Output tab gated until Flip IT · READY/DONE inset status chrome
 
 Not wired: sandbox isolator · child-spec · Post → HUD/bed hydrate.
 Prior composition/lock archives stay on disk.
@@ -1241,6 +1243,18 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       color: var(--ink);
       box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.25);
     }
+    .io-tab[data-tab="output"].is-gated,
+    .io-tab[data-tab="output"][aria-disabled="true"] {
+      color: var(--ink-22);
+      cursor: default;
+      pointer-events: none;
+      background: transparent;
+      box-shadow: none;
+    }
+    .io-tab[data-tab="output"].is-gated:hover,
+    .io-tab[data-tab="output"][aria-disabled="true"]:hover {
+      color: var(--ink-22);
+    }
     .io-tab svg { flex-shrink: 0; }
 
     /* Expandable body */
@@ -1498,12 +1512,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     .stage-status[data-state="ready"]:disabled {
       background: var(--chip-gray);
       border: 1.65px solid rgba(255, 206, 27, 0.85);
-      color: var(--ink);
+      color: var(--ink-30);
       cursor: default;
       pointer-events: none;
       box-shadow:
-        0 0.5px 1px rgba(0, 0, 0, 0.25),
-        0 0 0 2.2px rgba(255, 206, 27, 0.45);
+        inset 0 1px 2px rgba(26, 20, 40, 0.20),
+        0 0 0 1.7px rgba(255, 206, 27, 0.38);
     }
     .stage-status[data-state="done"],
     .stage-status[data-state="done"]:disabled {
@@ -1512,7 +1526,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       color: var(--ink);
       cursor: default;
       pointer-events: none;
-      box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.25), var(--green-glow);
+      box-shadow:
+        inset 0 1px 2px rgba(26, 20, 40, 0.20),
+        0 0 0 1.7px rgba(0, 180, 40, 0.38);
     }
     .stage-action:disabled,
     .stage-action[data-state="idle"],
@@ -2080,7 +2096,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
           <svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>
           Source
         </button>
-        <button type="button" class="io-tab" role="tab" aria-selected="false" data-tab="output" id="tab-output">
+        <button type="button" class="io-tab is-gated" role="tab" aria-selected="false" data-tab="output" id="tab-output" aria-disabled="true" tabindex="-1">
           <svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h10"/><path d="M6 12h9"/><path d="M11 18h7"/></svg>
           Output
         </button>
@@ -3655,6 +3671,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   });
 
   function setTab(key) {
+    if (key === 'output' && !hasOutput()) return;
     ioTabs.querySelectorAll('.io-tab').forEach(function (t) {
       var on = t.getAttribute('data-tab') === key;
       t.classList.toggle('is-on', on);
@@ -3667,9 +3684,20 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     });
     panel.classList.toggle('is-source-tab', key === 'source');
   }
+  function syncOutputTab() {
+    var tab = document.getElementById('tab-output');
+    if (!tab) return;
+    var live = hasOutput();
+    tab.classList.toggle('is-gated', !live);
+    tab.setAttribute('aria-disabled', live ? 'false' : 'true');
+    tab.tabIndex = live ? 0 : -1;
+    if (!live && tab.classList.contains('is-on')) setTab('source');
+  }
   ioTabs.querySelectorAll('.io-tab').forEach(function (tab) {
     tab.addEventListener('click', function () {
-      setTab(tab.getAttribute('data-tab'));
+      var key = tab.getAttribute('data-tab');
+      if (key === 'output' && !hasOutput()) return;
+      setTab(key);
     });
   });
   panel.classList.add('is-source-tab');
@@ -3783,6 +3811,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     btnDl.disabled = !on;
     btnSave.disabled = !on;
     btnEditOut.disabled = !on;
+    syncOutputTab();
   }
 
   stageAction.addEventListener('click', function () {
@@ -3867,12 +3896,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   window.__flipitAutoSize = function () {
     var wasOpen = isGcodeOpen();
     var wasCollapsed = wasOpen && !panel.classList.contains('is-expanded');
-    openGcode(false);
     if (wasOpen && wasCollapsed) {
-      if (detectPart()) showToast('Part sized');
-      else showToast('Load a program to Auto-Size');
-      return !!bounds;
+      closeGcode();
+      return false;
     }
+    openGcode(false);
     if (!hasSource()) showToast('Load a program to Auto-Size');
     return false;
   };
