@@ -32,6 +32,8 @@ Bridges in this host:
         Source Clear + program-name X fully unload the program
   · R4  AUTO-SIZE 2nd click closes collapsed FlipIt (no re-detect)
         Output tab gated until Flip IT · READY/DONE inset status chrome
+  · R5  HUD motion matches FlipIt 240ms grid ease (no minHeight snap)
+        Bed blank → HUD Blank ticker live · #bt-calc floats outside ticker pill
 
 Not wired: sandbox isolator · child-spec · Post → HUD/bed hydrate.
 Prior composition/lock archives stay on disk.
@@ -75,21 +77,29 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   body.lb-panning { cursor: grab; }
   body.lb-panning.lb-dragging { cursor: grabbing; }
 
-  /* Blank ticker — right-pinned to blank */
-  .blank-ticker {
+  /* Blank ticker cluster — pill + disconnected calc, right-pinned together */
+  .blank-ticker-cluster {
     position: fixed;
     z-index: 22;
     height: 34px;
-    min-height: 34px;
     display: none;
     align-items: center;
-    gap: 8px;
-    padding: 0 6px 0 12px;
+    gap: 6px;
+    pointer-events: none;
+  }
+  .blank-ticker-cluster.is-on { display: inline-flex; }
+  .blank-ticker {
+    height: 34px;
+    min-height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12px;
     box-sizing: border-box;
     border-radius: 6.6px;
     border: 1.1px solid rgba(255, 255, 255, 0.12);
-    background: rgba(26, 20, 40, 0.82); /* HUD popover transparent black */
-    color: #FFCE1B; /* system amber */
+    background: rgba(26, 20, 40, 0.82);
+    color: #FFCE1B;
     font-family: var(--font-mono);
     font-size: 12.1px;
     font-weight: 650;
@@ -100,21 +110,22 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     user-select: none;
     touch-action: none;
   }
-  .blank-ticker.is-on { display: inline-flex; }
   .blank-ticker .bt-readout { line-height: 1; letter-spacing: 0.01em; }
-  .blank-ticker .bt-calc {
+  .blank-ticker-cluster .bt-calc {
     width: 26px; height: 26px; min-width: 26px; min-height: 26px;
     margin: 0; padding: 0;
     border: 1.1px solid rgba(255, 255, 255, 0.18);
     border-radius: 6.6px;
-    background: rgba(255, 255, 255, 0.12);
-    color: #ffffff; /* Lucide icon stays white */
+    background: rgba(26, 20, 40, 0.82);
+    color: #ffffff;
     display: inline-flex; align-items: center; justify-content: center;
     cursor: pointer; flex-shrink: 0; line-height: 0;
+    pointer-events: auto;
+    box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.25);
   }
-  .blank-ticker .bt-calc:hover { background: rgba(255,255,255,0.22); color: #ffffff; }
-  .blank-ticker .bt-calc:active { transform: scale(0.94); }
-  .blank-ticker .bt-calc svg { display: block; width: 15px; height: 15px; pointer-events: none; }
+  .blank-ticker-cluster .bt-calc:hover { background: rgba(26, 20, 40, 0.92); color: #ffffff; }
+  .blank-ticker-cluster .bt-calc:active { transform: scale(0.94); }
+  .blank-ticker-cluster .bt-calc svg { display: block; width: 15px; height: 15px; pointer-events: none; }
 
 /* ── Numeric HUD (NUMERIC-HUD-v3) ── */
 :root {
@@ -148,9 +159,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
       --ease-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
       --ease-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
-      --motion-collapse: 600ms;
-      --motion-expand: 560ms;
-      --motion-mode: 420ms;
+      --motion-collapse: 240ms;
+      --motion-expand: 240ms;
+      --motion-mode: 240ms;
       --motion-popover: 180ms;
       --motion-popover-out: 145ms;
     }
@@ -284,7 +295,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       grid-template-rows: 1fr;
       overflow: hidden;
       min-height: 0;
-      transition: grid-template-rows var(--motion-collapse) var(--ease);
+      transition:
+        grid-template-rows var(--motion-collapse) var(--ease),
+        min-height var(--motion-collapse) var(--ease);
     }
     #hud-body-inner {
       overflow: hidden;
@@ -296,6 +309,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       padding: 13.2px 7.7px;
       border-radius: 0 0 var(--radius) var(--radius);
       background: var(--frost);
+      transition: padding var(--motion-collapse) var(--ease);
     }
     .keypad.collapsed #hud-body {
       grid-template-rows: 0fr;
@@ -1882,9 +1896,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       <button type="button" id="lb-fit" title="Fit"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg></button>
     </div>
 
-    <!-- Blank ticker — right edge of blank -->
-    <div class="blank-ticker" id="blank-ticker" aria-label="Blank size">
-      <span class="bt-readout" id="bt-readout">12.000 × 8.000</span>
+    <!-- Blank ticker cluster — pill + disconnected calc, right-pinned -->
+    <div class="blank-ticker-cluster" id="blank-ticker-cluster">
+      <div class="blank-ticker" id="blank-ticker" aria-label="Blank size">
+        <span class="bt-readout" id="bt-readout">12.000 × 8.000</span>
+      </div>
       <button type="button" class="bt-calc" id="bt-calc" title="Calculator" aria-label="Calculator">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
           <rect width="16" height="20" x="4" y="2" rx="2"/>
@@ -2275,6 +2291,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   var bedRulers = document.getElementById('lb-bed-rulers');
   var majorGrid = document.getElementById('lb-major-grid');
   var blankTicker = document.getElementById('blank-ticker');
+  var blankCluster = document.getElementById('blank-ticker-cluster');
   var btReadout = document.getElementById('bt-readout');
   if (!svg || !camera || !blank) return;
 
@@ -2360,24 +2377,26 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
   /* Right-pin residual: 20px from blank right · 10px above blank top */
   function positionBlankTicker() {
-    if (!blankTicker) return;
+    var pin = blankCluster || blankTicker;
+    if (!pin) return;
     var s = pxPerInch();
-    var screenLeft = state.panX;
     var screenRight = state.panX + state.blankW * s;
     var screenTop = state.panY - state.blankH * s;
 
-    blankTicker.classList.add('is-on');
+    pin.classList.add('is-on');
     var txt = state.blankW.toFixed(3) + ' × ' + state.blankH.toFixed(3);
     if (btReadout) btReadout.textContent = txt;
 
-    /* measure after text update */
-    var tw = blankTicker.offsetWidth || 140;
-    blankTicker.style.left = Math.round(screenRight - tw - GAP_RIGHT) + 'px';
-    blankTicker.style.top = Math.round(screenTop - TICKER_H - GAP_TOP) + 'px';
+    var tw = pin.offsetWidth || 140;
+    pin.style.left = Math.round(screenRight - tw - GAP_RIGHT) + 'px';
+    pin.style.top = Math.round(screenTop - TICKER_H - GAP_TOP) + 'px';
+  }
+  function syncHudBlankFromBed() {
+    if (typeof window.__hudSyncBlank === 'function') window.__hudSyncBlank(state.blankW, state.blankH);
   }
 
   function render() {
-    layoutBlank(); applyCamera(); drawBedRulers(); positionBlankTicker();
+    layoutBlank(); applyCamera(); drawBedRulers(); positionBlankTicker(); syncHudBlankFromBed();
   }
   function fitBed() {
     state.zoom = 1;
@@ -2520,16 +2539,19 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     hud.style.top = '16px';
   })();
 
+  function hudMotion() {
+    return 'grid-template-rows var(--motion-collapse) var(--ease), min-height var(--motion-collapse) var(--ease)';
+  }
   function applyBodyHeight() {
     if (!hudBody) return;
     if (state.collapsed) {
-      hudBody.style.minHeight = '';
+      hudBody.style.minHeight = '0px';
       return;
     }
     const hudH = parseFloat(hudBody.dataset.hudH || '0');
     const calcH = parseFloat(hudBody.dataset.calcH || '0');
     const h = state.calc ? calcH : hudH;
-    hudBody.style.minHeight = h ? (h + 'px') : '';
+    hudBody.style.minHeight = h ? (h + 'px') : '0px';
   }
 
   function setCollapsed(on) {
@@ -3059,6 +3081,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   function lockBodyHeight() {
     const wasCollapsed = state.collapsed, wasCalc = state.calc;
     const inner = document.getElementById('hud-body-inner');
+    hudBody.style.transition = 'none';
     hud.classList.remove('collapsed');
     hudBody.style.minHeight = '';
     classicEl.style.display = 'flex';
@@ -3067,15 +3090,31 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     classicEl.style.display = 'none';
     hudMode.style.display = 'flex';
     const hudH = inner ? inner.offsetHeight : hudMode.offsetHeight;
-    hudBody.style.transition = 'none';
     hudBody.dataset.hudH = String(hudH);
     hudBody.dataset.calcH = String(calcH);
     state.calc = wasCalc; state.collapsed = wasCollapsed;
     hud.classList.toggle('collapsed', wasCollapsed);
     applyModeVisibility();
     applyBodyHeight();
+    void hudBody.offsetHeight;
+    hudBody.style.transition = hudMotion();
   }
 
+  window.__hudSyncBlank = function (w, h) {
+    if (!Number.isFinite(w) || !Number.isFinite(h)) return;
+    if (paramState.blank.x === w && paramState.blank.y === h) return;
+    paramState.blank.x = w;
+    paramState.blank.y = h;
+    if (paramState.open === 'blank' && paramState.snapshot) {
+      paramState.snapshot.x = w;
+      paramState.snapshot.y = h;
+    }
+    const ix = document.querySelector('[data-blank="x"]');
+    const iy = document.querySelector('[data-blank="y"]');
+    if (ix) ix.value = fmt3(w);
+    if (iy) iy.value = fmt3(h);
+    refreshTickers();
+  };
   window.__hudToggleCalc = function () { setCalc(!state.calc); };
   window.__hudExitCalc = function () { if (state.calc) setCalc(false); };
   window.__hudFromBedCalc = function () {
