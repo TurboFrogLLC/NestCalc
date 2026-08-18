@@ -20,9 +20,39 @@ Bridges in this host:
   · R27 toolPath boots hidden
   · R29 LaserBed under .bed-stage (full-viewport primary canvas)
   · R30 HUD position hold (from individual tip — not rewritten here)
+  · R1  Boot: HUD open · FLiPIT closed · HUD ↔ FLiPIT chrome
+        HUD AUTO-SIZE + FLiPIT chips · calc-mode keeps chips
+        LaserBed calc chip → HUD calculator · real local file open
+        Popover clamp avoids open FLiPIT + active bed blank
+  · R2  AUTO-SIZE opens FLiPIT collapsed only · 2nd click detects
+        #bt-calc: collapsed → expand params · expanded → toggle calc
+        HUD height follows active mode · tighter popover edge clamp
+  · R3  #bt-calc collapsed → params only (no stale calc display)
+        FLiPIT chip: closed→expand · collapsed-open→expand · expanded→close
+        Source Clear + program-name X fully unload the program
+  · R4  AUTO-SIZE 2nd click closes collapsed FlipIt (no re-detect)
+        Output tab gated until Flip IT · READY/DONE inset status chrome
+  · R5  HUD motion matches FlipIt 240ms grid ease (no minHeight snap)
+        Bed blank → HUD Blank ticker live · #bt-calc floats outside ticker pill
+  · R6  HUD param↔calc stacked crossfade + header radius synced to 0fr end
+  · R7  Collapsed ticker fades after settle · FlipIt surface fade
+        Blank+ticker above HUD · square #bt-calc · outside-arc corner grab
+  · R8  Bigger free-corner arc · ticker fade as collapse ends
+        toolPath open-space + multi-card arrange · blank body behind cards
+        Resize glow on blank · lock + HUD-sized calc · unit align · popover presets
+  · R9  Remove blank lock · calc = ticker height · glow −60% bed-only
+        Top-band equal cards · zoom chrome front · preset chips + toast
+        Two-line margin height · frost-blue ruler rails
+  · R10 Calc hover stays visible · glow −50% again · rails past grid
+        Y rail outside numbers · preset Confirm/Cancel · 3-card re-apply
+  · R11 Preset edit mode (load vs write) · rails origin-to-end filled
+  · R12 Compact HUD height · 4-side bed frame · card glide
+        Token-aware NC highlight · default part 1.250×3.375 + Flip visual
+  · R13 Preset write-mode + OK applies live fields to HUD/bed
+        Single frost-blue bed rail · XYZR 4dp black · front surface
 
-Not wired: HUD footer AUTO-SIZE / FLiPIT chips · LaserBed calc chip ·
-sandbox isolator · child-spec. Prior composition/lock archives stay on disk.
+Not wired: sandbox isolator · child-spec · Post → HUD/bed hydrate.
+Prior composition/lock archives stay on disk.
 ═══════════════════════════════════════════════════════════════════════════════
 -->
 <html lang="en">
@@ -49,7 +79,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   .bed-stage { position: fixed; inset: 0; background: #fff; overflow: hidden; z-index: 0; }
   .lb-world { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
   .lb-chrome {
-    position: absolute; top: 12px; right: 12px; display: flex; gap: 6px; z-index: 15;
+    position: absolute; top: 12px; right: 12px; display: flex; gap: 6px; z-index: 82;
   }
   .lb-chrome button {
     width: 28px; height: 28px; padding: 0; border: 1px solid #a2a2a2; border-radius: 4px;
@@ -63,21 +93,58 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   body.lb-panning { cursor: grab; }
   body.lb-panning.lb-dragging { cursor: grabbing; }
 
-  /* Blank ticker — right-pinned to blank */
-  .blank-ticker {
+  /* Blank ticker cluster — pill + disconnected calc, right-pinned together */
+  .lb-blank-layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    z-index: 10;
+    pointer-events: none;
+    overflow: visible;
+  }
+  #lb-hit-right, #lb-hit-top, #lb-hit-corner { pointer-events: auto; }
+  #lb-corner-arc {
+    fill: none;
+    stroke: #000;
+    stroke-width: 2;
+    stroke-linecap: round;
+    pointer-events: none;
+  }
+  body.lb-dragging-xy #lb-corner-arc {
+    stroke: #16a34a;
+  }
+  body.lb-dragging-x #lb-blank,
+  body.lb-dragging-y #lb-blank,
+  body.lb-dragging-xy #lb-blank {
+    stroke: #16a34a;
+    filter: drop-shadow(0 0 0.6px rgba(0, 180, 40, 0.14));
+  }
+
+  .blank-ticker-cluster {
     position: fixed;
-    z-index: 22;
+    z-index: 82;
     height: 34px;
-    min-height: 34px;
     display: none;
     align-items: center;
-    gap: 8px;
-    padding: 0 6px 0 12px;
+    gap: 3px;
+    pointer-events: none;
+    isolation: isolate;
+  }
+  .blank-ticker-cluster.is-on { display: inline-flex; }
+  .blank-ticker {
+    height: 34px;
+    min-height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12px;
     box-sizing: border-box;
     border-radius: 6.6px;
     border: 1.1px solid rgba(255, 255, 255, 0.12);
-    background: rgba(26, 20, 40, 0.82); /* HUD popover transparent black */
-    color: #FFCE1B; /* system amber */
+    background: rgba(26, 20, 40, 0.82);
+    color: #FFCE1B;
     font-family: var(--font-mono);
     font-size: 12.1px;
     font-weight: 650;
@@ -88,21 +155,37 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     user-select: none;
     touch-action: none;
   }
-  .blank-ticker.is-on { display: inline-flex; }
   .blank-ticker .bt-readout { line-height: 1; letter-spacing: 0.01em; }
-  .blank-ticker .bt-calc {
-    width: 26px; height: 26px; min-width: 26px; min-height: 26px;
+  .blank-ticker-cluster .bt-calc {
+    width: 34px; height: 34px; min-width: 34px; min-height: 34px;
     margin: 0; padding: 0;
-    border: 1.1px solid rgba(255, 255, 255, 0.18);
+    border: 1.1px solid rgba(255, 255, 255, 0.22);
     border-radius: 6.6px;
-    background: rgba(255, 255, 255, 0.12);
-    color: #ffffff; /* Lucide icon stays white */
+    background: rgba(26, 20, 40, 0.82);
+    color: #ffffff;
     display: inline-flex; align-items: center; justify-content: center;
     cursor: pointer; flex-shrink: 0; line-height: 0;
+    pointer-events: auto;
+    box-sizing: border-box;
+    overflow: visible;
+    transform-origin: center center;
+    position: relative;
+    z-index: 1;
+    opacity: 1;
   }
-  .blank-ticker .bt-calc:hover { background: rgba(255,255,255,0.22); color: #ffffff; }
-  .blank-ticker .bt-calc:active { transform: scale(0.94); }
-  .blank-ticker .bt-calc svg { display: block; width: 15px; height: 15px; pointer-events: none; }
+  .blank-ticker-cluster .bt-calc:hover,
+  .blank-ticker-cluster .bt-calc:focus,
+  .blank-ticker-cluster .bt-calc:focus-visible {
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.35);
+    background: rgba(48, 42, 64, 0.94);
+    opacity: 1;
+  }
+  .blank-ticker-cluster .bt-calc:active { transform: scale(0.94); }
+  .blank-ticker-cluster .bt-calc svg {
+    display: block; width: 22px; height: 22px; pointer-events: none;
+    transform: translateY(0.5px);
+  }
 
 /* ── Numeric HUD (NUMERIC-HUD-v3) ── */
 :root {
@@ -136,11 +219,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
       --ease-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
       --ease-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
-      --motion-collapse: 600ms;
-      --motion-expand: 560ms;
-      --motion-mode: 420ms;
+      --motion-collapse: 240ms;
+      --motion-expand: 240ms;
+      --motion-mode: 240ms;
       --motion-popover: 180ms;
       --motion-popover-out: 145ms;
+      --motion-glide: 420ms;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
@@ -148,6 +232,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     
     
 
+    .keypad.is-gliding {
+      transition: left var(--motion-glide) var(--ease), top var(--motion-glide) var(--ease);
+    }
+    .keypad.is-dragging { transition: none; }
     .keypad {
       position: absolute;
       top: 0; left: 0;
@@ -162,7 +250,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       box-shadow:
         0 0 0 1.1px rgba(255, 255, 255, 0.55),
         0 0 0 1.1px rgba(83, 139, 236, 0.22);
-      z-index: 40;
+      z-index: 80;
       display: flex;
       flex-direction: column;
       overflow: visible;
@@ -198,6 +286,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       z-index: 1;
       border-radius: var(--radius) var(--radius) 0 0;
       background: rgba(26, 20, 40, 0.82);
+      transition:
+        border-radius var(--motion-collapse) var(--ease),
+        border-bottom-color var(--motion-collapse) var(--ease);
     }
     .keypad-header:active { cursor: grabbing; }
     .keypad-header .tool {
@@ -258,12 +349,35 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       flex: 1; min-width: 0;
       display: flex; align-items: center; justify-content: center;
     }
-    .keypad .header-part-ticker { display: none; pointer-events: none; }
-    .keypad.collapsed .header-part-ticker {
+    .keypad .header-part-ticker {
       display: flex;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: none;
+    }
+    .keypad:not(.collapsed) .header-part-ticker {
+      position: absolute;
+      width: 0;
+      height: 0;
+      overflow: hidden;
+    }
+    .keypad.collapsed .header-part-ticker {
+      position: static;
+      width: auto;
+      height: auto;
+      overflow: visible;
       background: linear-gradient(var(--blue-28), var(--blue-28)), #ffffff;
       border: 1.1px solid rgba(83, 139, 236, 0.35);
       color: var(--ink);
+      transition:
+        opacity var(--motion-collapse) var(--ease) 160ms,
+        visibility var(--motion-collapse) var(--ease) 160ms;
+    }
+    .keypad.collapsed.is-settled .header-part-ticker {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
     }
 
     #hud-body {
@@ -284,6 +398,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       padding: 13.2px 7.7px;
       border-radius: 0 0 var(--radius) var(--radius);
       background: var(--frost);
+      transition: padding var(--motion-collapse) var(--ease);
     }
     .keypad.collapsed #hud-body {
       grid-template-rows: 0fr;
@@ -294,12 +409,35 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       padding-bottom: 0;
     }
     .keypad.collapsed .keypad-header {
-      border-bottom: none;
+      border-bottom-color: transparent;
       border-radius: var(--radius);
     }
 
-    #hud-mode { display: flex; flex-direction: column; gap: 4.4px; }
-    .keypad.calc-mode #hud-mode { display: none; }
+    .hud-stage {
+      position: relative;
+      overflow: hidden;
+      flex: 0 0 auto;
+      width: 100%;
+      transition: height var(--motion-mode) var(--ease);
+    }
+    #hud-mode,
+    .classic-calc {
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+      width: 100%;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--motion-mode) var(--ease);
+    }
+    #hud-mode { gap: 4.4px; opacity: 1; pointer-events: auto; }
+    .keypad.calc-mode #hud-mode { opacity: 0; pointer-events: none; }
+    .keypad.calc-mode .classic-calc { opacity: 1; pointer-events: auto; }
+    /* Calculator path: footer chips stay available while params hide */
 
     .param-rows { display: flex; flex-direction: column; gap: 8.8px; margin-top: 0; }
     .param-row {
@@ -333,8 +471,18 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       line-height: 1.25; text-align: center;
       box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.25);
     }
+    .param-row[data-param="margin"] {
+      min-height: 28.6px;
+      align-items: center;
+    }
     .param-row[data-param="margin"] .param-ticker {
-      height: auto; min-height: 28.6px; padding: 3.3px;
+      height: 28.6px; min-height: 28.6px; padding: 0 3.3px;
+    }
+    .param-row[data-param="margin"] .param-ticker:has(.m-line) {
+      height: auto;
+      min-height: 40px;
+      padding-top: 4.4px;
+      padding-bottom: 4.4px;
     }
     .param-ticker:hover {
       background: rgba(83, 139, 236, 0.32);
@@ -381,7 +529,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       position: absolute;
       z-index: 50;
       width: 286px;
-      padding: 11px;
+      padding: 11px 11px 22px;
       border-radius: var(--chip-r);
       box-sizing: border-box;
       background: rgba(26, 20, 40, 0.82);
@@ -399,20 +547,141 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }
     .param-popover .pop-head {
       display: flex; align-items: center; justify-content: space-between;
-      gap: 8.8px; margin-bottom: 8.8px;
+      gap: 6.6px; margin-bottom: 8.8px;
     }
     .param-popover .pop-title {
       font-family: var(--font); font-size: 11px; font-weight: 650;
       text-transform: uppercase; letter-spacing: 0.04em; color: #FFCE1B; margin: 0;
+      flex: 0 0 auto;
+    }
+    .param-popover .pop-presets {
+      flex: 1 1 auto;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-evenly;
+      gap: 6.6px;
+    }
+    .param-popover .pop-pre {
+      height: 19.8px;
+      min-width: 28.6px;
+      padding: 0 7.7px;
+      border: none;
+      border-radius: 4.4px;
+      background: rgba(255, 255, 255, 0.78);
+      color: #1A1428;
+      font-family: var(--font);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: pointer;
+      line-height: 1;
+      flex: 0 0 auto;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.92),
+        0 0.5px 1px rgba(0, 0, 0, 0.25);
+    }
+    .param-popover .pop-pre:hover { background: rgba(255, 255, 255, 0.92); color: #1A1428; }
+    .param-popover .pop-pre.is-filled { background: rgba(255, 255, 255, 0.88); color: #1A1428; }
+    .param-popover .pop-pre.is-armed {
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.95),
+        0 0 0 1.5px #FFCE1B,
+        0 0.5px 1px rgba(0, 0, 0, 0.25);
+      background: rgba(255, 255, 255, 0.95);
+      color: #1A1428;
+    }
+    .param-popover .pop-pre-confirm {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 6.6px;
+      margin: 0 0 8.8px;
+    }
+    .param-popover.is-editing .pop-pre-confirm { display: flex; }
+    .param-popover.is-editing .pop-pre {
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.92),
+        0 0 0 1.2px rgba(255, 206, 27, 0.55),
+        0 0.5px 1px rgba(0, 0, 0, 0.25);
+    }
+    .param-popover.is-editing .pop-title::after {
+      content: "write";
+      margin-left: 6px;
+      font-size: 9px;
+      letter-spacing: 0.06em;
+      color: #FFCE1B;
+      opacity: 0.85;
+    }
+    .param-popover .pop-edit.is-on {
+      background: rgba(255, 206, 27, 0.38);
+      color: #FFCE1B;
+      box-shadow: 0 0 0 1.2px rgba(255, 206, 27, 0.70);
+    }
+    .param-popover .pop-pre-ok,
+    .param-popover .pop-pre-cancel {
+      height: 18px;
+      padding: 0 8px;
+      border: none;
+      border-radius: 4.4px;
+      font-family: var(--font);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .param-popover .pop-pre-ok {
+      background: rgba(255, 255, 255, 0.90);
+      color: #1A1428;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.95),
+        0 0.5px 1px rgba(0, 0, 0, 0.22);
+    }
+    .param-popover .pop-pre-ok:hover:not(:disabled) { background: #ffffff; }
+    .param-popover .pop-pre-ok:disabled {
+      opacity: 0.38;
+      cursor: default;
+    }
+    .param-popover .pop-pre-cancel {
+      background: rgba(255, 255, 255, 0.14);
+      color: #FFCE1B;
+    }
+    .param-popover .pop-pre-cancel:hover { background: rgba(255, 255, 255, 0.22); }
+    .param-popover .pop-toast {
+      position: absolute;
+      left: 50%;
+      bottom: 7px;
+      transform: translateX(-50%) translateY(4px);
+      padding: 3px 8px;
+      border-radius: 4.4px;
+      background: rgba(255, 255, 255, 0.92);
+      color: #1A1428;
+      font-family: var(--font);
+      font-size: 10px;
+      font-weight: 650;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      opacity: 0;
+      pointer-events: none;
+      box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.22);
+      transition: opacity 180ms ease, transform 180ms ease;
+      white-space: nowrap;
+    }
+    .param-popover .pop-toast.is-on {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
     }
     .param-popover .pop-actions { display: flex; align-items: center; gap: 4.4px; flex-shrink: 0; }
-    .param-popover .pop-close, .param-popover .pop-save {
+    .param-popover .pop-close, .param-popover .pop-save, .param-popover .pop-edit {
       width: 19.8px; height: 19.8px; border: none; border-radius: 4.4px;
       background: rgba(255, 255, 255, 0.12); color: #FFCE1B;
       display: inline-flex; align-items: center; justify-content: center;
       cursor: pointer; padding: 0; flex-shrink: 0;
     }
-    .param-popover .pop-close:hover, .param-popover .pop-save:hover {
+    .param-popover .pop-close:hover, .param-popover .pop-save:hover, .param-popover .pop-edit:hover {
       background: rgba(255, 255, 255, 0.22); color: #FFCE1B;
     }
     .param-popover .pop-save.is-dirty { background: rgba(255, 255, 255, 0.12); color: #16A34A; }
@@ -491,8 +760,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       padding: 0; caret-color: var(--ink); overflow: hidden; white-space: nowrap;
     }
 
-    .classic-calc { display: none; flex-direction: column; gap: 6.6px; }
-    .keypad.calc-mode .classic-calc { display: flex; }
+    .classic-calc { gap: 6.6px; }
     .classic-lcd {
       height: 52.8px; border-radius: 11px; border: 1.65px solid var(--ink);
       background: #fff; color: var(--ink); font-family: var(--font-mono);
@@ -541,10 +809,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       --chip-gray: rgba(26, 20, 40, 0.10);
       --gc-g: #FF00FF;
       --gc-comment: #00CF00;
-      --gc-m: #FF8380;
-      --gc-fs: #F86400;
-      --gc-t: #538BEC;
-      --gc-n: #D3D3D3;
+      --gc-m: #E85AD0;
+      --gc-fs: #C8E800;
+      --gc-t: #7A66FF;
+      --gc-n: #9A8AA8;
+      --gc-xyz: #C44ED4;
       --accept: #22A06B;
       --cancel: #DC143C;
       --panel-w: 418px;
@@ -560,6 +829,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     
 
     /* ── FLiPIT shell ── */
+    .gcode.is-gliding {
+      transition: left 420ms cubic-bezier(0.4, 0, 0.2, 1), top 420ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .gcode.is-dragging { transition: none; }
     .gcode {
       position: absolute;
       top: 16px;
@@ -833,7 +1106,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       cursor: pointer;
       padding: 0;
     }
-    .prog-field.is-focus .prog-clear { display: inline-flex; }
+    .prog-field.is-focus .prog-clear,
+    .prog-field.has-value .prog-clear { display: inline-flex; }
     .prog-clear:hover { color: var(--ink); background: var(--ink-08); }
     .prog-clear svg { display: block; pointer-events: none; }
 
@@ -937,6 +1211,32 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }
     .surface-spacer { flex: 1 1 auto; min-width: 4.4px; }
 
+    .surface-lead {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      min-height: 28.6px;
+      flex-shrink: 0;
+    }
+    .surface-expanded-chrome {
+      display: inline-flex;
+      align-items: center;
+      gap: 4.4px;
+      opacity: 0;
+      pointer-events: none;
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      transition: opacity var(--dur) var(--ease);
+    }
+    .gcode.is-expanded .surface-expanded-chrome {
+      position: static;
+      transform: none;
+      opacity: 1;
+      pointer-events: auto;
+    }
+
     .btn-gc0de {
       height: 28.6px;
       padding: 0 11px;
@@ -954,10 +1254,15 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       align-items: center;
       justify-content: center;
       box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.25);
+      transition: opacity var(--dur) var(--ease);
     }
     .btn-gc0de:hover { background: var(--blue-28); }
     .btn-gc0de:active { transform: scale(0.98); }
-    .gcode.is-expanded .btn-gc0de { display: none; }
+    .gcode.is-expanded .btn-gc0de {
+      opacity: 0;
+      pointer-events: none;
+      position: absolute;
+    }
 
     .gcode .part-group {
       display: inline-flex;
@@ -1166,7 +1471,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     .gcode .part-group.is-connected .part-sep { display: block; }
 
     .btn-surface-chevron {
-      display: none;
+      display: inline-flex;
       width: 28.6px;
       height: 28.6px;
       min-width: 28.6px;
@@ -1192,7 +1497,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       overflow: visible;
       pointer-events: none;
     }
-    .gcode.is-expanded .btn-surface-chevron { display: inline-flex; }
     .btn-surface-chevron:hover {
       color: var(--ink);
       border-color: rgba(26, 20, 40, 0.35);
@@ -1201,12 +1505,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     .btn-surface-chevron:active { transform: scale(0.94); }
 
     .io-tabs {
-      display: none;
+      display: inline-flex;
       align-items: center;
       gap: 2.2px;
       flex-shrink: 0;
     }
-    .gcode.is-expanded .io-tabs { display: inline-flex; }
     .io-tab {
       height: 28.6px;
       padding: 0 6.6px;
@@ -1228,6 +1531,18 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       background: var(--blue-22);
       color: var(--ink);
       box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.25);
+    }
+    .io-tab[data-tab="output"].is-gated,
+    .io-tab[data-tab="output"][aria-disabled="true"] {
+      color: var(--ink-22);
+      cursor: default;
+      pointer-events: none;
+      background: transparent;
+      box-shadow: none;
+    }
+    .io-tab[data-tab="output"].is-gated:hover,
+    .io-tab[data-tab="output"][aria-disabled="true"]:hover {
+      color: var(--ink-22);
     }
     .io-tab svg { flex-shrink: 0; }
 
@@ -1288,12 +1603,14 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       position: relative;
       display: inline-grid;
       grid-template-columns: 1fr 1fr;
+      align-items: stretch;
       height: 28.6px;
       width: 70.4px;
       padding: 2.2px;
       border-radius: 8.8px;
       background: rgba(26, 20, 40, 0.16);
       flex-shrink: 0;
+      box-sizing: border-box;
     }
     .unit-switch .thumb {
       position: absolute;
@@ -1318,6 +1635,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       font-weight: 700;
       cursor: pointer;
       padding: 0;
+      margin: 0;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
       transition: color var(--dur) var(--ease);
     }
     .unit-switch button.is-on { color: var(--ink); }
@@ -1412,6 +1735,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     .tok-fs { color: var(--gc-fs); font-weight: 600; }
     .tok-t { color: var(--gc-t); font-weight: 600; }
     .tok-n { color: var(--gc-n); }
+    .tok-xyz { color: var(--gc-xyz); }
+    .tok-axis { color: #000000; }
 
     /* Action / stage footer */
     .action-row {
@@ -1486,12 +1811,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     .stage-status[data-state="ready"]:disabled {
       background: var(--chip-gray);
       border: 1.65px solid rgba(255, 206, 27, 0.85);
-      color: var(--ink);
+      color: var(--ink-30);
       cursor: default;
       pointer-events: none;
       box-shadow:
-        0 0.5px 1px rgba(0, 0, 0, 0.25),
-        0 0 0 2.2px rgba(255, 206, 27, 0.45);
+        inset 0 1px 2px rgba(26, 20, 40, 0.20),
+        0 0 0 1.7px rgba(255, 206, 27, 0.38);
     }
     .stage-status[data-state="done"],
     .stage-status[data-state="done"]:disabled {
@@ -1500,7 +1825,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       color: var(--ink);
       cursor: default;
       pointer-events: none;
-      box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.25), var(--green-glow);
+      box-shadow:
+        inset 0 1px 2px rgba(26, 20, 40, 0.20),
+        0 0 0 1.7px rgba(0, 180, 40, 0.38);
     }
     .stage-action:disabled,
     .stage-action[data-state="idle"],
@@ -1643,6 +1970,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     
 
     /* ── toolPath card (R16b) ── */
+    .toolpath.is-gliding {
+      transition: left 420ms cubic-bezier(0.4, 0, 0.2, 1), top 420ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .toolpath.is-dragging { transition: none; }
     .toolpath {
       position: absolute;
       left: 52.8px;
@@ -1832,6 +2163,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         <pattern id="lb-grid-1" width="1" height="1" patternUnits="userSpaceOnUse">
           <rect width="1" height="1" fill="#ffffff"/>
         </pattern>
+        <clipPath id="lb-bed-clip">
+          <rect x="0" y="0" width="48" height="48"/>
+        </clipPath>
       </defs>
       <g id="lb-camera">
         <rect id="lb-bed-fill" x="0" y="0" width="48" height="48" fill="url(#lb-grid-1)"/>
@@ -1840,12 +2174,20 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         <line id="lb-edge-x" x1="0" y1="0" x2="48" y2="0" stroke="#000000" stroke-opacity="0.50" stroke-width="1.75" vector-effect="non-scaling-stroke"/>
         <line id="lb-edge-y" x1="0" y1="0" x2="0" y2="48" stroke="#000000" stroke-opacity="0.50" stroke-width="1.75" vector-effect="non-scaling-stroke"/>
         <circle cx="0" cy="0" r="0.12" fill="#000000"/>
+        <rect id="lb-blank" x="0" y="0" width="12" height="8" fill="#ffffff" fill-opacity="0.80" stroke="#000000" stroke-width="1.25" vector-effect="non-scaling-stroke" clip-path="url(#lb-bed-clip)" style="pointer-events:none"/>
+        <rect id="lb-nest-box" x="0.25" y="0.25" width="11.5" height="7.5" fill="none" stroke="#538BEC" stroke-opacity="0.50" stroke-width="1" stroke-dasharray="3 2.4" vector-effect="non-scaling-stroke" clip-path="url(#lb-bed-clip)" style="pointer-events:none"/>
+        <g id="lb-part-g" clip-path="url(#lb-bed-clip)" style="pointer-events:none">
+          <rect id="lb-part" x="0" y="0" width="1.250" height="3.375" fill="rgba(83,139,236,0.22)" stroke="#538BEC" stroke-width="1.15" vector-effect="non-scaling-stroke"/>
+        </g>
         <g id="lb-bed-rulers"></g>
-        <rect id="lb-blank" x="0" y="0" width="12" height="8" fill="#ffffff" fill-opacity="0.80" stroke="#000000" stroke-width="1.25" vector-effect="non-scaling-stroke"/>
-        <rect id="lb-free-corner" x="11.72" y="7.72" width="0.28" height="0.28" fill="rgba(0,0,0,0.14)" stroke="#000000" stroke-width="1.25" vector-effect="non-scaling-stroke" style="pointer-events:none"/>
+      </g>
+    </svg>
+    <svg class="lb-blank-layer" id="lb-blank-layer" xmlns="http://www.w3.org/2000/svg">
+      <g id="lb-blank-cam">
+        <path id="lb-corner-arc" d="M 12.58 8 A 0.58 0.58 0 0 1 12 8.58" vector-effect="non-scaling-stroke"/>
+        <circle id="lb-hit-corner" cx="12.41" cy="8.41" r="0.5" fill="transparent" style="cursor:nesw-resize; pointer-events:all"/>
         <rect id="lb-hit-right"  x="11.65" y="0"    width="0.7" height="8"  fill="transparent" style="cursor:ew-resize"/>
         <rect id="lb-hit-top"    x="0"     y="7.65" width="12"  height="0.7" fill="transparent" style="cursor:ns-resize"/>
-        <rect id="lb-hit-corner" x="11.4"  y="7.4"  width="1.1" height="1.1" fill="transparent" style="cursor:nesw-resize"/>
       </g>
     </svg>
     <div class="lb-chrome">
@@ -1854,16 +2196,18 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       <button type="button" id="lb-fit" title="Fit"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg></button>
     </div>
 
-    <!-- Blank ticker — right edge of blank -->
-    <div class="blank-ticker" id="blank-ticker" aria-label="Blank size">
-      <span class="bt-readout" id="bt-readout">12.000 × 8.000</span>
+    <!-- Blank ticker cluster — pill + disconnected calc, right-pinned -->
+    <div class="blank-ticker-cluster" id="blank-ticker-cluster">
+      <div class="blank-ticker" id="blank-ticker" aria-label="Blank size">
+        <span class="bt-readout" id="bt-readout">12.000 × 8.000</span>
+      </div>
       <button type="button" class="bt-calc" id="bt-calc" title="Calculator" aria-label="Calculator">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-          <rect width="16" height="20" x="4" y="2" rx="2"/>
-          <line x1="8" x2="16" y1="6" y2="6"/>
-          <line x1="16" x2="16" y1="14" y2="18"/>
-          <path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/>
-          <path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="17.6" height="22" x="3.2" y="1" rx="2"/>
+          <line x1="7.2" x2="16.8" y1="5.2" y2="5.2"/>
+          <line x1="16.8" x2="16.8" y1="14" y2="18.4"/>
+          <path d="M16.8 9.6h.01"/><path d="M12 9.6h.01"/><path d="M7.2 9.6h.01"/>
+          <path d="M12 14h.01"/><path d="M7.2 14h.01"/><path d="M12 18.4h.01"/><path d="M7.2 18.4h.01"/>
         </svg>
       </button>
     </div>
@@ -1881,7 +2225,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         </svg>
       </button>
       <div class="header-spacer" id="drag-handle" aria-hidden="true">
-        <div class="param-ticker header-part-ticker" data-ticker="part-collapsed">80.342 × 40.000</div>
+        <div class="param-ticker header-part-ticker" data-ticker="part-collapsed">1.250 × 3.375</div>
       </div>
       <button type="button" class="tool press chevron-btn" id="btn-chevron" title="Collapse" aria-label="Collapse HUD" aria-expanded="true">
         <svg width="16.5" height="16.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round">
@@ -1892,11 +2236,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
     <div id="hud-body">
       <div id="hud-body-inner">
+        <div class="hud-stage" id="hud-stage">
         <div id="hud-mode">
           <div class="param-rows">
             <div class="param-row" data-param="part">
               <span class="param-label">Part size</span>
-              <div class="param-ticker" data-ticker="part" data-open="part" tabindex="0">80.342 × 40.000</div>
+              <div class="param-ticker" data-ticker="part" data-open="part" tabindex="0">1.250 × 3.375</div>
               <div class="param-popover" data-pop="part">
                 <div class="pop-head">
                   <div class="pop-title">Part size</div>
@@ -1906,11 +2251,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
                   </div>
                 </div>
                 <div class="pop-xy">
-                  <div class="pop-half"><span>X</span><input data-part="x" type="text" inputmode="decimal" value="80.342" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+                  <div class="pop-half"><span>X</span><input data-part="x" type="text" inputmode="decimal" value="1.250" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
                   <div class="pop-sep"></div>
                   <button type="button" class="pop-swap press" data-part-swap title="Swap X &amp; Y" aria-label="Swap X and Y"><svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg></button>
                   <div class="pop-sep"></div>
-                  <div class="pop-half"><span>Y</span><input data-part="y" type="text" inputmode="decimal" value="40.000" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+                  <div class="pop-half"><span>Y</span><input data-part="y" type="text" inputmode="decimal" value="3.375" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
                   <div class="pop-sep"></div>
                   <button type="button" class="pop-link" data-part-link title="Link X &amp; Y" aria-pressed="false"><svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>
                 </div>
@@ -1923,11 +2268,21 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
               <div class="param-popover" data-pop="blank">
                 <div class="pop-head">
                   <div class="pop-title">Blank size</div>
+                  <div class="pop-presets" data-presets="blank">
+                    <button type="button" class="pop-pre" data-pre="A" aria-pressed="false" title="Preset A">A</button>
+                    <button type="button" class="pop-pre" data-pre="B" aria-pressed="false" title="Preset B">B</button>
+                  </div>
                   <div class="pop-actions">
+                    <button type="button" class="pop-edit" data-pre-edit title="Edit presets" aria-label="Edit presets" aria-pressed="false"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button>
                     <button type="button" class="pop-save" data-pop-save title="Save" aria-label="Save changes"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg></button>
                     <button type="button" class="pop-close" data-pop-close title="Close" aria-label="Close"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
                   </div>
                 </div>
+                <div class="pop-pre-confirm">
+                  <button type="button" class="pop-pre-ok" data-pre-ok>Confirm</button>
+                  <button type="button" class="pop-pre-cancel" data-pre-cancel>Cancel</button>
+                </div>
+                <div class="pop-toast" aria-live="polite"></div>
                 <div class="pop-xy">
                   <div class="pop-half"><span>X</span><input data-blank="x" type="text" inputmode="decimal" value="12.000" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
                   <div class="pop-sep"></div>
@@ -1946,11 +2301,21 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
               <div class="param-popover" data-pop="gap">
                 <div class="pop-head">
                   <div class="pop-title">Gap</div>
+                  <div class="pop-presets" data-presets="gap">
+                    <button type="button" class="pop-pre" data-pre="A" aria-pressed="false" title="Preset A">A</button>
+                    <button type="button" class="pop-pre" data-pre="B" aria-pressed="false" title="Preset B">B</button>
+                  </div>
                   <div class="pop-actions">
+                    <button type="button" class="pop-edit" data-pre-edit title="Edit presets" aria-label="Edit presets" aria-pressed="false"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button>
                     <button type="button" class="pop-save" data-pop-save title="Save" aria-label="Save changes"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg></button>
                     <button type="button" class="pop-close" data-pop-close title="Close" aria-label="Close"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
                   </div>
                 </div>
+                <div class="pop-pre-confirm">
+                  <button type="button" class="pop-pre-ok" data-pre-ok>Confirm</button>
+                  <button type="button" class="pop-pre-cancel" data-pre-cancel>Cancel</button>
+                </div>
+                <div class="pop-toast" aria-live="polite"></div>
                 <div class="pop-xy">
                   <div class="pop-half"><span>X</span><input data-gap="x" type="text" inputmode="decimal" value="0.375" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
                   <div class="pop-sep"></div>
@@ -1967,11 +2332,21 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
               <div class="param-popover" data-pop="margin">
                 <div class="pop-head">
                   <div class="pop-title">Margin</div>
+                  <div class="pop-presets" data-presets="margin">
+                    <button type="button" class="pop-pre" data-pre="A" aria-pressed="false" title="Preset A">A</button>
+                    <button type="button" class="pop-pre" data-pre="B" aria-pressed="false" title="Preset B">B</button>
+                  </div>
                   <div class="pop-actions">
+                    <button type="button" class="pop-edit" data-pre-edit title="Edit presets" aria-label="Edit presets" aria-pressed="false"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button>
                     <button type="button" class="pop-save" data-pop-save title="Save" aria-label="Save changes"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg></button>
                     <button type="button" class="pop-close" data-pop-close title="Close" aria-label="Close"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
                   </div>
                 </div>
+                <div class="pop-pre-confirm">
+                  <button type="button" class="pop-pre-ok" data-pre-ok>Confirm</button>
+                  <button type="button" class="pop-pre-cancel" data-pre-cancel>Cancel</button>
+                </div>
+                <div class="pop-toast" aria-live="polite"></div>
                 <div class="pop-margins">
                   <label class="pop-m-field"><span>L</span><input data-m="l" type="text" inputmode="decimal" value="0.250" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></label>
                   <label class="pop-m-field"><span>R</span><input data-m="r" type="text" inputmode="decimal" value="0.250" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></label>
@@ -1982,11 +2357,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
             </div>
           </div>
 
-          <div class="hud-footer-sep" aria-hidden="true"></div>
-          <div class="hud-controls">
-            <button type="button" class="hud-ctl" id="btn-auto-size" title="FLiPIT is a separate component">AUTO-SIZE</button>
-            <button type="button" class="hud-ctl" id="btn-gcode" title="FLiPIT is a separate component"><span class="label-flip">FLiP</span><span class="label-it">IT</span></button>
-          </div>
         </div>
 
         <div class="classic-calc" id="classic-calc">
@@ -2013,11 +2383,19 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
             <button type="button" class="ckey op press" data-k="=">=</button>
           </div>
         </div>
+        </div>
+
+        <div class="hud-footer-sep" aria-hidden="true"></div>
+        <div class="hud-controls">
+          <button type="button" class="hud-ctl" id="btn-auto-size" title="Auto-Size part in FLiPIT">AUTO-SIZE</button>
+          <button type="button" class="hud-ctl" id="btn-gcode" title="Open FLiPIT" aria-pressed="false"><span class="label-flip">FLiP</span><span class="label-it">IT</span></button>
+        </div>
       </div>
     </div>
   </div>
     <!-- FLiPIT (lock: FLIPIT-v3) -->
-<aside class="gcode is-open is-expanded" id="gcode" style="--panel-w: 418px; display: flex;" aria-hidden="false">
+<input type="file" id="flipit-file-input" accept=".txt,.nc,.cnc,text/plain" hidden />
+<aside class="gcode is-expanded" id="gcode" style="--panel-w: 418px; display: none;" aria-hidden="true">
     <div class="gcode-toast" id="gcode-toast" role="status" aria-live="polite"></div>
     <div class="gcode-resize gcode-resize-e" data-dir="e" aria-hidden="true"></div>
     <div class="gcode-resize gcode-resize-s" data-dir="s" aria-hidden="true"></div>
@@ -2040,7 +2418,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
           <button type="button" class="icon-btn" id="btn-save" title="Save program (from Output)" aria-label="Save program" disabled>
             <svg width="14.3" height="14.3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
           </button>
-          <button type="button" class="prog-clear" id="prog-clear" title="Clear name" aria-label="Clear program name">
+          <button type="button" class="prog-clear" id="prog-clear" title="Unload program" aria-label="Unload program">
             <svg width="12.1" height="12.1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
           </button>
         </div>
@@ -2055,21 +2433,23 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
     <div class="surface-row" id="surface-row">
       <div class="surface-editing-banner" aria-live="polite">EDITING</div>
+      <div class="surface-lead">
       <button type="button" class="btn-gc0de" id="btn-expand" title="Expand G-code" aria-label="Expand G-code" aria-expanded="true">GC0DE</button>
-
+      <div class="surface-expanded-chrome">
       <button type="button" class="btn-surface-chevron" id="btn-surface-chevron" title="Collapse G-code" aria-label="Collapse G-code">
         <svg width="14.3" height="14.3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
       </button>
-
       <div class="io-tabs" id="io-tabs" role="tablist">
         <button type="button" class="io-tab is-on" role="tab" aria-selected="true" data-tab="source" id="tab-source">
           <svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>
           Source
         </button>
-        <button type="button" class="io-tab" role="tab" aria-selected="false" data-tab="output" id="tab-output">
+        <button type="button" class="io-tab is-gated" role="tab" aria-selected="false" data-tab="output" id="tab-output" aria-disabled="true" tabindex="-1">
           <svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h10"/><path d="M6 12h9"/><path d="M11 18h7"/></svg>
           Output
         </button>
+      </div>
+      </div>
       </div>
 
       <div class="surface-spacer" aria-hidden="true"></div>
@@ -2104,7 +2484,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
             <button type="button" class="icon-btn" id="btn-toolpath-src" title="Show toolPath" aria-label="toolPath" aria-pressed="false">
               <svg width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4.5" r="2.5"/><path d="m10.2 6.3-3.9 3.9"/><circle cx="4.5" cy="12" r="2.5"/><path d="M7 12h10"/><circle cx="19.5" cy="12" r="2.5"/><path d="m13.8 17.7 3.9-3.9"/><circle cx="12" cy="19.5" r="2.5"/></svg>
             </button>
-            <button type="button" class="icon-btn" id="btn-clear" title="Clear source" aria-label="Clear source">
+            <button type="button" class="icon-btn" id="btn-clear" title="Unload program" aria-label="Unload program">
               <svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4L13.3 3c1-1 2.5-1 3.4 0l4.3 4.3c1 1 1 2.5 0 3.4L10.4 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>
             </button>
             <div class="unit-switch" id="unit-switch" data-unit="in" role="group" aria-label="Units">
@@ -2233,22 +2613,32 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 /* LaserBed host + blank ticker right-pin residual */
 (function () {
   var BED = 48;
-  var state = { blankW: 12, blankH: 8, snap: 0.125, zoom: 1, panX: 0, panY: 0, dragging: null, start: null };
+  var state = {
+    blankW: 12, blankH: 8, snap: 0.125, zoom: 1, panX: 0, panY: 0, dragging: null, start: null,
+    partW: 1.250, partH: 3.375, partRot: 0,
+    margin: { l: 0.25, r: 0.25, t: 0.25, b: 0.25 }
+  };
 
   var svg = document.getElementById('lb-world');
+  var blankLayer = document.getElementById('lb-blank-layer');
   var camera = document.getElementById('lb-camera');
+  var blankCam = document.getElementById('lb-blank-cam');
   var blank = document.getElementById('lb-blank');
-  var freeCorner = document.getElementById('lb-free-corner');
+  var nestBox = document.getElementById('lb-nest-box');
+  var partEl = document.getElementById('lb-part');
+  var partG = document.getElementById('lb-part-g');
+  var cornerArc = document.getElementById('lb-corner-arc');
   var hitRight = document.getElementById('lb-hit-right');
   var hitTop = document.getElementById('lb-hit-top');
   var hitCorner = document.getElementById('lb-hit-corner');
   var bedRulers = document.getElementById('lb-bed-rulers');
   var majorGrid = document.getElementById('lb-major-grid');
   var blankTicker = document.getElementById('blank-ticker');
+  var blankCluster = document.getElementById('blank-ticker-cluster');
   var btReadout = document.getElementById('bt-readout');
   if (!svg || !camera || !blank) return;
 
-  var PAD = 36;
+  var PAD = 48;
   var MIN_LABEL_PX = 36;
   var TICKER_H = 34;
   var GAP_TOP = 10;   /* px above blank top */
@@ -2270,18 +2660,44 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
   function applyCamera() {
     var s = pxPerInch();
-    camera.setAttribute('transform', 'translate(' + state.panX + ', ' + state.panY + ') scale(' + s + ', ' + (-s) + ')');
+    var t = 'translate(' + state.panX + ', ' + state.panY + ') scale(' + s + ', ' + (-s) + ')';
+    camera.setAttribute('transform', t);
+    if (blankCam) blankCam.setAttribute('transform', t);
   }
   function layoutBlank() {
-    var w = state.blankW, h = state.blankH, cs = 0.28;
+    var w = state.blankW, h = state.blankH;
     blank.setAttribute('width', w); blank.setAttribute('height', h);
-    freeCorner.setAttribute('x', w - cs); freeCorner.setAttribute('y', h - cs);
     hitRight.setAttribute('x', w - 0.35); hitRight.setAttribute('y', 0);
     hitRight.setAttribute('width', 0.7); hitRight.setAttribute('height', h);
     hitTop.setAttribute('x', 0); hitTop.setAttribute('y', h - 0.35);
     hitTop.setAttribute('width', w); hitTop.setAttribute('height', 0.7);
-    hitCorner.setAttribute('x', w - 0.55); hitCorner.setAttribute('y', h - 0.55);
-    hitCorner.setAttribute('width', 1.1); hitCorner.setAttribute('height', 1.1);
+    var s = pxPerInch();
+    var r = 18 / Math.max(s, 0.001);
+    var d = 'M ' + (w + r) + ' ' + h + ' A ' + r + ' ' + r + ' 0 0 1 ' + w + ' ' + (h + r);
+    if (cornerArc) cornerArc.setAttribute('d', d);
+    if (hitCorner) {
+      var mid = 0.70710678 * r;
+      hitCorner.setAttribute('cx', w + mid);
+      hitCorner.setAttribute('cy', h + mid);
+      hitCorner.setAttribute('r', 11 / Math.max(s, 0.001));
+    }
+    var m = state.margin || { l: 0.25, r: 0.25, t: 0.25, b: 0.25 };
+    var nx = Math.max(0, m.l);
+    var ny = Math.max(0, m.b);
+    var nw = Math.max(0.05, w - m.l - m.r);
+    var nh = Math.max(0.05, h - m.b - m.t);
+    if (nestBox) {
+      nestBox.setAttribute('x', nx);
+      nestBox.setAttribute('y', ny);
+      nestBox.setAttribute('width', nw);
+      nestBox.setAttribute('height', nh);
+    }
+    if (partEl && partG) {
+      partEl.setAttribute('width', state.partW);
+      partEl.setAttribute('height', state.partH);
+      var cx = state.partW / 2, cy = state.partH / 2;
+      partG.setAttribute('transform', 'translate(' + nx + ',' + ny + ') rotate(' + (state.partRot || 0) + ' ' + cx + ' ' + cy + ')');
+    }
   }
   function line(x1, y1, x2, y2, sw, color, opacity) {
     var n = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -2294,9 +2710,18 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   function label(x, y, text, size, anchor, baseline) {
     var n = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     n.setAttribute('x', x); n.setAttribute('y', y); n.setAttribute('font-size', size);
-    n.setAttribute('fill', '#000'); n.setAttribute('text-anchor', anchor); n.setAttribute('dominant-baseline', baseline);
+    n.setAttribute('fill', '#1A1428'); n.setAttribute('font-weight', '650');
+    n.setAttribute('text-anchor', anchor); n.setAttribute('dominant-baseline', baseline);
     n.setAttribute('transform', 'translate(' + x + ',' + y + ') scale(1,-1) translate(' + (-x) + ',' + (-y) + ')');
     n.textContent = text; return n;
+  }
+  function railRect(x, y, w, h, fill) {
+    var n = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    n.setAttribute('x', x); n.setAttribute('y', y);
+    n.setAttribute('width', w); n.setAttribute('height', h);
+    n.setAttribute('fill', fill);
+    n.setAttribute('class', 'lb-rail');
+    return n;
   }
   function drawMajorGrid(step) {
     majorGrid.innerHTML = '';
@@ -2313,6 +2738,14 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var s = pxPerInch(), L = labelStep(), T = tickStep(L);
     bedRulers.innerHTML = ''; drawMajorGrid(L);
     var fontWorld = 11 / s, tickOut = Math.max(0.4, 11 / s), gap = Math.max(0.12, 3 / s);
+    var railW = 36 / s;
+    var frameRun = BED + 2 * railW;
+    bedRulers.appendChild(railRect(-railW, -railW, frameRun, railW, '#E8EEF8'));
+    bedRulers.appendChild(railRect(-railW, BED, frameRun, railW, '#E8EEF8'));
+    bedRulers.appendChild(railRect(-railW, 0, railW, BED, '#E8EEF8'));
+    bedRulers.appendChild(railRect(BED, 0, railW, BED, '#E8EEF8'));
+    var numOff = Math.min(railW - fontWorld * 1.35, tickOut * 1.15 + gap + fontWorld * 0.4);
+    if (numOff < tickOut + gap + fontWorld * 0.2) numOff = tickOut + gap + fontWorld * 0.25;
     for (var i = 0; i <= BED; i += T) {
       var isLabel = (i % L === 0) && i !== 0, isMajor = (i % L === 0);
       var len = isMajor ? tickOut * 1.4 : tickOut * 0.75;
@@ -2321,34 +2754,60 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         bedRulers.appendChild(line(0, i, -len, i, 1, '#000', 0.30));
       }
       if (isLabel) {
-        bedRulers.appendChild(label(i, -(len + gap + fontWorld * 0.15), String(i), fontWorld, 'middle', 'hanging'));
-        bedRulers.appendChild(label(-(len + gap), i, String(i), fontWorld, 'end', 'middle'));
+        bedRulers.appendChild(label(i, -numOff, String(i), fontWorld, 'middle', 'middle'));
+        bedRulers.appendChild(label(-numOff, i, String(i), fontWorld, 'middle', 'middle'));
       }
     }
-    bedRulers.appendChild(label(-Math.max(0.65, 16 / s) * 0.55, -Math.max(0.65, 16 / s) * 0.55, '0', fontWorld, 'end', 'hanging'));
+    bedRulers.appendChild(label(-numOff * 0.72, -numOff * 0.72, '0', fontWorld, 'middle', 'middle'));
   }
 
   /* Right-pin residual: 20px from blank right · 10px above blank top */
   function positionBlankTicker() {
-    if (!blankTicker) return;
+    var pin = blankCluster || blankTicker;
+    if (!pin) return;
     var s = pxPerInch();
-    var screenLeft = state.panX;
     var screenRight = state.panX + state.blankW * s;
     var screenTop = state.panY - state.blankH * s;
 
-    blankTicker.classList.add('is-on');
+    pin.classList.add('is-on');
     var txt = state.blankW.toFixed(3) + ' × ' + state.blankH.toFixed(3);
     if (btReadout) btReadout.textContent = txt;
 
-    /* measure after text update */
-    var tw = blankTicker.offsetWidth || 140;
-    blankTicker.style.left = Math.round(screenRight - tw - GAP_RIGHT) + 'px';
-    blankTicker.style.top = Math.round(screenTop - TICKER_H - GAP_TOP) + 'px';
+    var tw = pin.offsetWidth || 140;
+    pin.style.left = Math.round(screenRight - tw - GAP_RIGHT) + 'px';
+    pin.style.top = Math.round(screenTop - TICKER_H - GAP_TOP) + 'px';
+  }
+  function syncHudBlankFromBed() {
+    if (typeof window.__hudSyncBlank === 'function') window.__hudSyncBlank(state.blankW, state.blankH);
   }
 
   function render() {
-    layoutBlank(); applyCamera(); drawBedRulers(); positionBlankTicker();
+    layoutBlank(); applyCamera(); drawBedRulers(); positionBlankTicker(); syncHudBlankFromBed();
   }
+  window.__bedSetBlank = function (w, h) {
+    var nw = Number.isFinite(w) ? w : state.blankW;
+    var nh = Number.isFinite(h) ? h : state.blankH;
+    if (state.blankW === nw && state.blankH === nh) return;
+    state.blankW = nw;
+    state.blankH = nh;
+    render();
+  };
+  window.__bedSetPart = function (w, h, rot) {
+    if (Number.isFinite(w)) state.partW = w;
+    if (Number.isFinite(h)) state.partH = h;
+    if (Number.isFinite(rot)) state.partRot = rot;
+    render();
+  };
+  window.__bedSetNest = function (m) {
+    if (!m) return;
+    state.margin = {
+      l: Number.isFinite(m.l) ? m.l : 0.25,
+      r: Number.isFinite(m.r) ? m.r : 0.25,
+      t: Number.isFinite(m.t) ? m.t : 0.25,
+      b: Number.isFinite(m.b) ? m.b : 0.25
+    };
+    render();
+  };
   function fitBed() {
     state.zoom = 1;
     var s = fittedScale();
@@ -2360,9 +2819,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
   function onPointerDown(e) {
     var t = e.target;
-    if (t === hitCorner || t.id === 'lb-hit-corner') { state.dragging = 'xy'; document.body.classList.add('lb-dragging-xy'); }
-    else if (t === hitRight || t.id === 'lb-hit-right') { state.dragging = 'x'; document.body.classList.add('lb-dragging-x'); }
-    else if (t === hitTop || t.id === 'lb-hit-top') { state.dragging = 'y'; document.body.classList.add('lb-dragging-y'); }
+    var id = t && t.id;
+    if (t === hitCorner || id === 'lb-hit-corner') { state.dragging = 'xy'; document.body.classList.add('lb-dragging-xy'); }
+    else if (t === hitRight || id === 'lb-hit-right') { state.dragging = 'x'; document.body.classList.add('lb-dragging-x'); }
+    else if (t === hitTop || id === 'lb-hit-top') { state.dragging = 'y'; document.body.classList.add('lb-dragging-y'); }
+    else if (e.currentTarget === blankLayer) return;
     else { state.dragging = 'pan'; document.body.classList.add('lb-panning', 'lb-dragging'); }
     state.start = { cx: e.clientX, cy: e.clientY, w: state.blankW, h: state.blankH, panX: state.panX, panY: state.panY };
     try { e.target.setPointerCapture(e.pointerId); } catch (_) {}
@@ -2386,6 +2847,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
 
   svg.addEventListener('pointerdown', onPointerDown);
+  if (blankLayer) blankLayer.addEventListener('pointerdown', onPointerDown);
   window.addEventListener('pointermove', onPointerMove);
   window.addEventListener('pointerup', onPointerUp);
   window.addEventListener('pointercancel', onPointerUp);
@@ -2420,21 +2882,163 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   const classicEl = document.getElementById('classic-calc');
   const hudMode = document.getElementById('hud-mode');
   const hudBody = document.getElementById('hud-body');
+  const hudStage = document.getElementById('hud-stage');
 
   const state = {
     calc: false, collapsed: false, drag: null,
     units: 'in', blankW: 12, blankH: 8,
-    partX: 80.342, partY: 40.0, partLinked: false,
+    partX: 1.250, partY: 3.375, partLinked: false,
     lcd: '0', acc: null, op: null, fresh: true
   };
 
   const paramState = {
-    part: { x: 80.342, y: 40.0, linked: false },
+    part: { x: 1.250, y: 3.375, linked: false },
     blank: { x: 12, y: 8, linked: false },
     gap: { x: 0.375, y: 0.125, linked: true },
     margin: { l: 0.25, r: 0.25, t: 0.25, b: 0.25 },
     open: null, snapshot: null
   };
+
+  const PRESET_KEYS = ['blank', 'gap', 'margin'];
+  const PRESET_STORE = 'howmany.flipit.v3.presets';
+  var presetState = {
+    blank: { A: null, B: null },
+    gap: { A: null, B: null },
+    margin: { A: null, B: null },
+    armed: { blank: null, gap: null, margin: null },
+    editing: { blank: false, gap: false, margin: false }
+  };
+  function clonePreset(v) {
+    return v ? JSON.parse(JSON.stringify(v)) : null;
+  }
+  function loadPresets() {
+    try {
+      var raw = localStorage.getItem(PRESET_STORE);
+      if (!raw) return;
+      var data = JSON.parse(raw);
+      PRESET_KEYS.forEach(function (key) {
+        if (!data[key]) return;
+        ['A', 'B'].forEach(function (slot) {
+          if (data[key][slot]) presetState[key][slot] = data[key][slot];
+        });
+      });
+    } catch (_) {}
+  }
+  function persistPresets() {
+    try {
+      var out = {};
+      PRESET_KEYS.forEach(function (key) {
+        out[key] = { A: presetState[key].A, B: presetState[key].B };
+      });
+      localStorage.setItem(PRESET_STORE, JSON.stringify(out));
+    } catch (_) {}
+  }
+  function paintPresetButtons(key) {
+    var wrap = document.querySelector('.pop-presets[data-presets="' + key + '"]');
+    if (!wrap) return;
+    wrap.querySelectorAll('.pop-pre').forEach(function (btn) {
+      var slot = btn.getAttribute('data-pre');
+      var filled = !!(presetState[key] && presetState[key][slot]);
+      var armed = presetState.armed[key] === slot;
+      btn.classList.toggle('is-filled', filled);
+      btn.classList.toggle('is-armed', armed);
+      btn.setAttribute('aria-pressed', armed ? 'true' : 'false');
+    });
+    var pop = document.querySelector('.param-popover[data-pop="' + key + '"]');
+    if (pop) {
+      var editing = !!presetState.editing[key];
+      pop.classList.toggle('is-editing', editing);
+      pop.classList.toggle('is-arming', editing && !!presetState.armed[key]);
+      var editBtn = pop.querySelector('[data-pre-edit]');
+      if (editBtn) {
+        editBtn.classList.toggle('is-on', editing);
+        editBtn.setAttribute('aria-pressed', editing ? 'true' : 'false');
+      }
+      var okBtn = pop.querySelector('[data-pre-ok]');
+      if (okBtn) okBtn.disabled = !(editing && !!presetState.armed[key]);
+    }
+  }
+  function parseLiveNumber(el) {
+    if (!el) return null;
+    var raw = String(el.value || '').trim();
+    if (raw === '' || raw === '.') return 0;
+    var n = parseFloat(raw);
+    return Number.isFinite(n) ? n : null;
+  }
+  function commitLiveFields(key) {
+    if (key === 'part' || key === 'blank' || key === 'gap') {
+      var bag = paramState[key];
+      if (!bag) return;
+      var ix = document.querySelector('[data-' + key + '="x"]');
+      var iy = document.querySelector('[data-' + key + '="y"]');
+      var nx = parseLiveNumber(ix);
+      var ny = parseLiveNumber(iy);
+      if (nx != null) bag.x = nx;
+      if (ny != null) bag.y = ny;
+      if (bag.linked) bag.y = bag.x;
+    } else if (key === 'margin') {
+      ['l', 'r', 't', 'b'].forEach(function (k) {
+        var n = parseLiveNumber(document.querySelector('[data-m="' + k + '"]'));
+        if (n != null) paramState.margin[k] = n;
+      });
+    }
+  }
+  function writeFieldsFromBag(key) {
+    if (key === 'blank') {
+      var bx = document.querySelector('[data-blank="x"]'), by = document.querySelector('[data-blank="y"]');
+      if (bx) bx.value = fmt3(paramState.blank.x); if (by) by.value = fmt3(paramState.blank.y);
+      var bl = document.querySelector('[data-blank-link]');
+      if (bl) { bl.classList.toggle('active', !!paramState.blank.linked); bl.setAttribute('aria-pressed', paramState.blank.linked ? 'true' : 'false'); }
+    } else if (key === 'gap') {
+      var gx = document.querySelector('[data-gap="x"]'), gy = document.querySelector('[data-gap="y"]');
+      if (gx) gx.value = fmt3(paramState.gap.x); if (gy) gy.value = fmt3(paramState.gap.y);
+      var gl = document.querySelector('[data-gap-link]');
+      if (gl) { gl.classList.toggle('active', !!paramState.gap.linked); gl.setAttribute('aria-pressed', paramState.gap.linked ? 'true' : 'false'); }
+    } else if (key === 'margin') {
+      ['l','r','t','b'].forEach(function (k) {
+        var el = document.querySelector('[data-m="' + k + '"]');
+        if (el) el.value = fmt3(paramState.margin[k]);
+      });
+    }
+    refreshTickers();
+    updateSaveDirty();
+  }
+  function applyPresetSlot(key, slot) {
+    var bag = presetState[key] && presetState[key][slot];
+    if (!bag) return false;
+    if (key === 'blank') {
+      paramState.blank.x = bag.x; paramState.blank.y = bag.y; paramState.blank.linked = !!bag.linked;
+    } else if (key === 'gap') {
+      paramState.gap.x = bag.x; paramState.gap.y = bag.y; paramState.gap.linked = !!bag.linked;
+    } else if (key === 'margin') {
+      paramState.margin.l = bag.l; paramState.margin.r = bag.r; paramState.margin.t = bag.t; paramState.margin.b = bag.b;
+    }
+    writeFieldsFromBag(key);
+    return true;
+  }
+  function saveArmedPreset(key) {
+    var slot = presetState.armed[key];
+    if (!slot || PRESET_KEYS.indexOf(key) === -1) return false;
+    presetState[key][slot] = takeSnapshot(key);
+    persistPresets();
+    presetState.armed[key] = null;
+    presetState.editing[key] = false;
+    paintPresetButtons(key);
+    return true;
+  }
+  function showPresetToast(pop) {
+    if (!pop) return;
+    var el = pop.querySelector('.pop-toast');
+    if (!el) return;
+    el.textContent = 'Preset saved';
+    el.classList.remove('is-on');
+    void el.offsetWidth;
+    el.classList.add('is-on');
+    clearTimeout(el._toastTimer);
+    el._toastTimer = setTimeout(function () { el.classList.remove('is-on'); }, 1400);
+  }
+  loadPresets();
+  PRESET_KEYS.forEach(paintPresetButtons);
 
   function fmt3(n) { return (Number.isFinite(n) ? n : 0).toFixed(3); }
 
@@ -2467,12 +3071,49 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     state.partX = p.x; state.partY = p.y; state.partLinked = !!p.linked;
     state.blankW = b.x; state.blankH = b.y;
     updateSaveDirty();
+    if (typeof window.__bedSetBlank === 'function') window.__bedSetBlank(b.x, b.y);
+    if (typeof window.__bedSetPart === 'function') window.__bedSetPart(p.x, p.y);
+    if (typeof window.__bedSetNest === 'function') window.__bedSetNest(m);
+    remasureHudStage();
+  }
+  function remasureHudStage() {
+    if (state.collapsed || !hudMode || !hudStage || !hudBody) return;
+    var prevPos = hudMode.style.position;
+    var prevOp = hudMode.style.opacity;
+    hudMode.style.position = 'static';
+    hudMode.style.opacity = '1';
+    var h = hudMode.offsetHeight;
+    hudMode.style.position = prevPos;
+    hudMode.style.opacity = prevOp;
+    if (!h) return;
+    var prev = parseFloat(hudBody.dataset.hudStageH || '0');
+    if (Math.abs(h - prev) > 0.5) {
+      hudBody.dataset.hudStageH = String(h);
+      hudBody.dataset.hudH = String(h);
+      applyBodyHeight();
+    }
+  }
+
+  function isHudCollapsed() {
+    return !!(state.collapsed || hud.classList.contains('collapsed'));
+  }
+
+  var motionTimer = null;
+  function motionMs() {
+    const raw = getComputedStyle(hud).getPropertyValue('--motion-mode').trim();
+    const n = parseFloat(raw);
+    return Number.isFinite(n) ? n : 240;
+  }
+  function clearMotionTimer() {
+    if (motionTimer) { clearTimeout(motionTimer); motionTimer = null; }
   }
 
   function applyModeVisibility() {
-    if (state.collapsed) return;
-    if (state.calc) { classicEl.style.display = 'flex'; hudMode.style.display = 'none'; }
-    else { classicEl.style.display = 'none'; hudMode.style.display = 'flex'; }
+    /* Class-only: never toggle display. Stacked opacity handles the swap. */
+    const showCalc = !!(state.calc && !isHudCollapsed());
+    hud.classList.toggle('calc-mode', showCalc);
+    if (hudMode) hudMode.setAttribute('aria-hidden', showCalc ? 'true' : 'false');
+    if (classicEl) classicEl.setAttribute('aria-hidden', showCalc ? 'false' : 'true');
   }
 
   /* Initial placement only — collapse/expand never moves left/top (position hold) */
@@ -2480,43 +3121,68 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     hud.style.transform = 'none';
     hud.style.right = 'auto';
     hud.style.bottom = 'auto';
-    hud.style.left = '16px';
-    hud.style.top = '16px';
+    hud.style.left = '25px';
+    hud.style.top = '25px';
   })();
 
+  function hudMotion() {
+    return 'grid-template-rows var(--motion-collapse) var(--ease)';
+  }
+  function applyBodyHeight() {
+    if (!hudStage) return;
+    if (state.collapsed) return;
+    const hudH = parseFloat(hudBody.dataset.hudStageH || hudBody.dataset.hudH || '0');
+    const calcH = parseFloat(hudBody.dataset.calcStageH || hudBody.dataset.calcH || '0');
+    const h = state.calc ? calcH : hudH;
+    hudStage.style.height = h ? (h + 'px') : '';
+    hudBody.style.minHeight = '';
+  }
+
+  var settledTimer = null;
   function setCollapsed(on) {
+    const wasCalc = state.calc;
     state.collapsed = on;
     hud.classList.toggle('collapsed', on);
+    hud.classList.toggle('is-settled', on);
+    if (settledTimer) { clearTimeout(settledTimer); settledTimer = null; }
     btnChevron.setAttribute('aria-expanded', on ? 'false' : 'true');
     btnChevron.title = on ? 'Expand' : 'Collapse';
-    if (on && state.calc) {
-      state.calc = false;
-      hud.classList.remove('calc-mode');
-      calcToggle.classList.remove('active-calc');
-      calcToggle.setAttribute('aria-pressed', 'false');
-    }
     if (on) {
-      hudBody.style.minHeight = '';
       closeAllParamPopovers();
-      /* position hold — leave left/top exactly where they are */
-    } else {
-      const hudH = parseFloat(hudBody.dataset.hudH || '0');
-      const calcH = parseFloat(hudBody.dataset.calcH || '0');
-      if (state.calc && calcH) hudBody.style.minHeight = calcH + 'px';
-      else if (hudH) hudBody.style.minHeight = hudH + 'px';
-      /* position hold — leave left/top exactly where they are */
+      /* is-settled is immediate; CSS 160ms delay starts the 240ms fade as 0fr ends. */
     }
-    applyModeVisibility();
+    applyBodyHeight();
+    if (on && wasCalc) {
+      clearMotionTimer();
+      motionTimer = setTimeout(function () {
+        motionTimer = null;
+        if (!state.collapsed) return;
+        state.calc = false;
+        calcToggle.classList.remove('active-calc');
+        calcToggle.setAttribute('aria-pressed', 'false');
+        applyModeVisibility();
+        if (hudStage) {
+          hudStage.style.transition = 'none';
+          const ph = parseFloat(hudBody.dataset.hudStageH || hudBody.dataset.hudH || '0');
+          hudStage.style.height = ph ? ph + 'px' : '';
+          void hudStage.offsetHeight;
+          hudStage.style.transition = 'height var(--motion-mode) var(--ease)';
+        }
+      }, motionMs());
+    } else {
+      applyModeVisibility();
+    }
   }
 
   function setCalc(on) {
+    clearMotionTimer();
     state.calc = on;
-    hud.classList.toggle('calc-mode', on);
     calcToggle.classList.toggle('active-calc', on);
     calcToggle.setAttribute('aria-pressed', on ? 'true' : 'false');
     if (on && state.collapsed) setCollapsed(false);
     if (on) closeAllParamPopovers();
     applyModeVisibility();
+    applyBodyHeight();
   }
 
   btnChevron.addEventListener('click', function () {
@@ -2533,7 +3199,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (e.button != null && e.button !== 0) return;
     if (e.target.closest && e.target.closest('button')) return;
     const r = hud.getBoundingClientRect();
-    state.drag = { ox: e.clientX - r.left, oy: e.clientY - r.top, pid: e.pointerId };
+    state.drag = { ox: e.clientX - r.left, oy: e.clientY - r.top, pid: e.pointerId, sl: r.left, st: r.top };
+    hud.classList.add('is-dragging');
+    hud.classList.remove('is-gliding');
     hud.style.transform = 'none';
     hud.style.left = r.left + 'px';
     hud.style.top = r.top + 'px';
@@ -2550,7 +3218,13 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
   function endHudDrag() {
     if (!state.drag) return;
+    var r = hud.getBoundingClientRect();
+    if (Math.abs(r.left - state.drag.sl) > 4 || Math.abs(r.top - state.drag.st) > 4) {
+      window.__cardUserDrag = window.__cardUserDrag || { hud: false, flipit: false, toolpath: false };
+      window.__cardUserDrag.hud = true;
+    }
     try { hudHeader.releasePointerCapture(state.drag.pid); } catch (_) {}
+    hud.classList.remove('is-dragging');
     state.drag = null;
   }
   hudHeader.addEventListener('pointerdown', beginHudDrag);
@@ -2635,6 +3309,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         }
         updateSaveDirty();
       });
+      inp.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter') return;
+        e.preventDefault();
+        e.stopPropagation();
+        inp.blur();
+      });
     });
     if (linkBtn) {
       linkBtn.addEventListener('click', function () {
@@ -2663,6 +3343,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     document.querySelectorAll('.param-row').forEach(function (row) {
       row.classList.remove('is-open', 'show-hover');
     });
+    remasureHudStage();
   }
 
   document.addEventListener('click', function (e) {
@@ -2705,10 +3386,57 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (saveBtn) {
       e.preventDefault(); e.stopPropagation();
       if (paramState.open) {
+        commitLiveFields(paramState.open);
         paramState.snapshot = takeSnapshot(paramState.open);
         refreshTickers();
         closeAllParamPopovers();
       }
+      return;
+    }
+    const preOk = e.target.closest('[data-pre-ok]');
+    if (preOk) {
+      e.preventDefault(); e.stopPropagation();
+      var okKey = paramState.open;
+      if (okKey) commitLiveFields(okKey);
+      if (okKey && saveArmedPreset(okKey)) {
+        showPresetToast(preOk.closest('.param-popover'));
+      }
+      return;
+    }
+    const preCancel = e.target.closest('[data-pre-cancel]');
+    if (preCancel) {
+      e.preventDefault(); e.stopPropagation();
+      var cancelKey = paramState.open;
+      if (cancelKey && PRESET_KEYS.indexOf(cancelKey) !== -1) {
+        presetState.armed[cancelKey] = null;
+        presetState.editing[cancelKey] = false;
+        paintPresetButtons(cancelKey);
+      }
+      return;
+    }
+    const editBtn = e.target.closest('[data-pre-edit]');
+    if (editBtn) {
+      e.preventDefault(); e.stopPropagation();
+      var editKey = paramState.open;
+      if (!editKey || PRESET_KEYS.indexOf(editKey) === -1) return;
+      presetState.editing[editKey] = !presetState.editing[editKey];
+      if (!presetState.editing[editKey]) presetState.armed[editKey] = null;
+      paintPresetButtons(editKey);
+      return;
+    }
+    const preBtn = e.target.closest('.pop-pre');
+    if (preBtn) {
+      e.preventDefault(); e.stopPropagation();
+      const wrap = preBtn.closest('.pop-presets');
+      const key = wrap && wrap.getAttribute('data-presets');
+      const slot = preBtn.getAttribute('data-pre');
+      if (!key || !slot || PRESET_KEYS.indexOf(key) === -1) return;
+      if (presetState.editing[key]) {
+        presetState.armed[key] = presetState.armed[key] === slot ? null : slot;
+        paintPresetButtons(key);
+        return;
+      }
+      if (presetState[key][slot]) applyPresetSlot(key, slot);
     }
   });
 
@@ -2719,35 +3447,84 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     const rowRect = openRow.getBoundingClientRect();
     const pop = openRow.querySelector('.param-popover');
     if (!pop) return;
-    const gap = 11, edge = 8, vw = window.innerWidth, vh = window.innerHeight;
+    const gap = 11, edge = 16, avoidPad = 12, vw = window.innerWidth, vh = window.innerHeight;
     pop.style.position = 'fixed';
     pop.style.right = 'auto'; pop.style.bottom = 'auto';
     const pw = pop.offsetWidth || 286, ph = pop.offsetHeight || 140;
     const clampX = function (x) { return Math.max(edge, Math.min(x, vw - edge - pw)); };
     const clampY = function (y) { return Math.max(edge, Math.min(y, vh - edge - ph)); };
-    const rightLeft = hudRect.right + gap;
-    const leftLeft = hudRect.left - gap - pw;
-    const bottomTop = hudRect.bottom + gap;
-    const topTop = hudRect.top - gap - ph;
-    let left, top;
-    if (rightLeft + pw <= vw - edge) {
-      left = rightLeft;
-      top = clampY(rowRect.top);
-    } else if (leftLeft >= edge) {
-      left = leftLeft;
-      top = clampY(rowRect.top);
-    } else if (bottomTop + ph <= vh - edge) {
-      left = clampX(hudRect.left);
-      top = bottomTop;
-    } else if (topTop >= edge) {
-      left = clampX(hudRect.left);
-      top = topTop;
-    } else {
-      left = clampX(hudRect.left);
-      top = clampY(topTop);
+    const boxAt = function (x, y) {
+      return { left: x, top: y, right: x + pw, bottom: y + ph };
+    };
+    const overlaps = function (a, b, pad) {
+      pad = pad || 0;
+      return !(a.right + pad <= b.left || a.left - pad >= b.right || a.bottom + pad <= b.top || a.top - pad >= b.bottom);
+    };
+    const avoidRects = [];
+    const gcode = document.getElementById('gcode');
+    if (gcode && gcode.classList.contains('is-open') && gcode.style.display !== 'none') {
+      avoidRects.push(gcode.getBoundingClientRect());
     }
-    pop.style.left = Math.round(left) + 'px';
-    pop.style.top = Math.round(top) + 'px';
+    const blank = document.getElementById('lb-blank');
+    if (blank) avoidRects.push(blank.getBoundingClientRect());
+    const hitsAvoid = function (box) {
+      for (let i = 0; i < avoidRects.length; i++) {
+        if (overlaps(box, avoidRects[i], avoidPad)) return true;
+      }
+      return false;
+    };
+    const onScreen = function (box) {
+      return box.left >= edge && box.top >= edge && box.right <= vw - edge && box.bottom <= vh - edge;
+    };
+    const candidates = [
+      { left: hudRect.right + gap, top: clampY(rowRect.top) },
+      { left: hudRect.left - gap - pw, top: clampY(rowRect.top) },
+      { left: clampX(hudRect.left), top: hudRect.bottom + gap },
+      { left: clampX(hudRect.left), top: hudRect.top - gap - ph },
+      { left: clampX(hudRect.right - pw), top: hudRect.bottom + gap },
+      { left: clampX(hudRect.right - pw), top: hudRect.top - gap - ph }
+    ];
+    let chosen = null;
+    for (let i = 0; i < candidates.length; i++) {
+      const c = candidates[i];
+      const box = boxAt(c.left, c.top);
+      if (onScreen(box) && !hitsAvoid(box)) { chosen = box; break; }
+    }
+    if (!chosen) {
+      /* Shift preferred on-screen candidate off FlipIt / blank, keep 16px inset. */
+      const fallback = boxAt(
+        clampX(hudRect.right + gap + pw <= vw - edge ? hudRect.right + gap : hudRect.left - gap - pw),
+        clampY(rowRect.top)
+      );
+      let left = fallback.left, top = fallback.top;
+      avoidRects.forEach(function (r) {
+        const trial = boxAt(left, top);
+        if (!overlaps(trial, r, avoidPad)) return;
+        const opts = [
+          { left: r.left - gap - pw, top: top },
+          { left: r.right + gap, top: top },
+          { left: left, top: r.top - gap - ph },
+          { left: left, top: r.bottom + gap }
+        ];
+        for (let i = 0; i < opts.length; i++) {
+          const box = boxAt(clampX(opts[i].left), clampY(opts[i].top));
+          if (onScreen(box) && !hitsAvoid(box)) { left = box.left; top = box.top; return; }
+        }
+      });
+      const shifted = boxAt(clampX(left), clampY(top));
+      if (onScreen(shifted) && !hitsAvoid(shifted)) chosen = shifted;
+    }
+    if (!chosen) {
+      for (let i = 0; i < candidates.length; i++) {
+        const box = boxAt(clampX(candidates[i].left), clampY(candidates[i].top));
+        if (onScreen(box) && !hitsAvoid(box)) { chosen = box; break; }
+      }
+    }
+    if (!chosen) {
+      chosen = boxAt(clampX(hudRect.left), clampY(hudRect.bottom + gap));
+    }
+    pop.style.left = Math.round(chosen.left) + 'px';
+    pop.style.top = Math.round(chosen.top) + 'px';
   }
 
   function takeSnapshot(key) {
@@ -2803,8 +3580,16 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     const row = document.querySelector('.param-row[data-param="' + key + '"]');
     if (!row) return;
     row.classList.add('is-open');
+    if (PRESET_KEYS.indexOf(key) !== -1) {
+      presetState.armed[key] = null;
+      presetState.editing[key] = false;
+      paintPresetButtons(key);
+    }
     updateSaveDirty();
-    requestAnimationFrame(function () { positionOutsideHUD(); positionOutsideHUD(); });
+    requestAnimationFrame(function () {
+      positionOutsideHUD(); positionOutsideHUD();
+      remasureHudStage();
+    });
   }
 
   hud.addEventListener('click', function (e) {
@@ -2882,6 +3667,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       inp.value = fmt3(n);
       refreshTickers();
     });
+    inp.addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter') return;
+      e.preventDefault();
+      e.stopPropagation();
+      inp.blur();
+    });
   });
 
   /* Margin */
@@ -2906,6 +3697,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       paramState.margin[inp.getAttribute('data-m')] = n;
       inp.value = fmt3(n);
       refreshTickers();
+    });
+    inp.addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter') return;
+      e.preventDefault();
+      e.stopPropagation();
+      inp.blur();
     });
   });
 
@@ -2966,30 +3763,78 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
   function lockBodyHeight() {
     const wasCollapsed = state.collapsed, wasCalc = state.calc;
-    hud.classList.remove('collapsed');
-    classicEl.style.display = 'flex';
-    hudMode.style.display = 'none';
+    if (!hudStage || !hudMode || !classicEl) return;
+    hudBody.style.transition = 'none';
+    hudStage.style.transition = 'none';
+    hud.classList.remove('collapsed', 'calc-mode');
     hudBody.style.minHeight = '';
-    requestAnimationFrame(function () {
-      const calcH = classicEl.offsetHeight;
-      classicEl.style.display = 'none';
-      hudMode.style.display = 'flex';
-      const hudH = hudMode.offsetHeight;
-      hudBody.style.transition = 'none';
-      hudBody.dataset.hudH = String(hudH);
-      hudBody.dataset.calcH = String(calcH);
-      hudBody.style.minHeight = (wasCalc ? calcH : hudH) + 'px';
-      state.calc = wasCalc; state.collapsed = wasCollapsed;
-      applyModeVisibility();
-    });
+    hudStage.style.height = 'auto';
+    classicEl.style.position = 'absolute';
+    classicEl.style.opacity = '0';
+    hudMode.style.position = 'static';
+    hudMode.style.opacity = '1';
+    const hudStageH = hudMode.offsetHeight;
+    hudMode.style.position = 'absolute';
+    hudMode.style.opacity = '0';
+    classicEl.style.position = 'static';
+    classicEl.style.opacity = '1';
+    const calcStageH = classicEl.offsetHeight;
+    hudMode.style.position = '';
+    hudMode.style.opacity = '';
+    classicEl.style.position = '';
+    classicEl.style.opacity = '';
+    hudBody.dataset.hudStageH = String(hudStageH);
+    hudBody.dataset.calcStageH = String(calcStageH);
+    hudBody.dataset.hudH = String(hudStageH);
+    hudBody.dataset.calcH = String(calcStageH);
+    state.calc = wasCalc; state.collapsed = wasCollapsed;
+    hud.classList.toggle('collapsed', wasCollapsed);
+    applyModeVisibility();
+    applyBodyHeight();
+    void hudBody.offsetHeight;
+    hudBody.style.transition = hudMotion();
+    hudStage.style.transition = 'height var(--motion-mode) var(--ease)';
   }
 
-  /* Footer chips are no-ops in standalone (FLiPIT is a separate component) */
+  window.__hudSyncBlank = function (w, h) {
+    if (!Number.isFinite(w) || !Number.isFinite(h)) return;
+    if (paramState.blank.x === w && paramState.blank.y === h) return;
+    paramState.blank.x = w;
+    paramState.blank.y = h;
+    if (paramState.open === 'blank' && paramState.snapshot) {
+      paramState.snapshot.x = w;
+      paramState.snapshot.y = h;
+    }
+    const ix = document.querySelector('[data-blank="x"]');
+    const iy = document.querySelector('[data-blank="y"]');
+    if (ix) ix.value = fmt3(w);
+    if (iy) iy.value = fmt3(h);
+    refreshTickers();
+  };
+  window.__hudToggleCalc = function () { setCalc(!state.calc); };
+  window.__hudExitCalc = function () { if (state.calc) setCalc(false); };
+  window.__hudFromBedCalc = function () {
+    if (isHudCollapsed()) {
+      clearMotionTimer();
+      state.calc = false;
+      calcToggle.classList.remove('active-calc');
+      calcToggle.setAttribute('aria-pressed', 'false');
+      setCollapsed(false);
+      applyModeVisibility();
+      applyBodyHeight();
+      return;
+    }
+    setCalc(!state.calc);
+  };
+
   document.getElementById('btn-auto-size').addEventListener('click', function () {
-    /* no-op — FLiPIT lives in its own component package */
+    closeAllParamPopovers();
+    if (typeof window.__hudExitCalc === 'function') window.__hudExitCalc();
+    if (typeof window.__flipitAutoSize === 'function') window.__flipitAutoSize();
   });
   document.getElementById('btn-gcode').addEventListener('click', function () {
-    /* no-op — FLiPIT lives in its own component package */
+    closeAllParamPopovers();
+    if (typeof window.__flipitToggle === 'function') window.__flipitToggle();
   });
 
   setCalc(false);
@@ -3002,24 +3847,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 </script>
 <script>
 /* ── FLiPIT ── */
-/* ── FLiPIT standalone script (authority fb011e6b) ── */
+/* ── FLiPIT host script (authority fb011e6b + R1 chrome) ── */
 (function () {
-  var SAMPLE =
-    'O1001\n' +
-    '(BRACKET PLATE - SAMPLE)\n' +
-    'N10 G90 G17 G20\n' +
-    'N20 G0 X0. Y0. Z1.\n' +
-    'N30 T1 M6\n' +
-    'N40 M3 S2400\n' +
-    'N50 G1 Z-0.125 F12.0\n' +
-    'N60 G1 X82.398 F18.0\n' +
-    'N70 Y92.396\n' +
-    'N80 X0.\n' +
-    'N90 Y0.\n' +
-    'N100 G0 Z1.\n' +
-    'N110 M5\n' +
-    'N120 M30\n';
-
   var panel = document.getElementById('gcode');
   var toastEl = document.getElementById('gcode-toast');
   var source = document.getElementById('source');
@@ -3102,17 +3931,27 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
           out += '<span class="tok-c">' + escapeHtml(line.slice(i)) + '</span>';
           break;
         }
-        var m = line.slice(i).match(/^([A-Za-z])([-+]?\d*\.?\d*)/);
+        var prev = i > 0 ? line[i - 1] : '';
+        var wordStart = !/[A-Za-z0-9_]/.test(prev);
+        var m = wordStart ? line.slice(i).match(/^([A-Za-z])([-+]?\d+\.?\d*)/) : null;
         if (m) {
           var letter = m[1].toUpperCase();
           var word = m[0];
           var cls = '';
+          var shown = word;
           if (letter === 'G') cls = 'tok-g';
           else if (letter === 'M') cls = 'tok-m';
           else if (letter === 'F' || letter === 'S') cls = 'tok-fs';
           else if (letter === 'T') cls = 'tok-t';
           else if (letter === 'N') cls = 'tok-n';
-          if (cls) out += '<span class="' + cls + '">' + escapeHtml(word) + '</span>';
+          else if ('XYZR'.indexOf(letter) !== -1) {
+            cls = 'tok-axis';
+            var axisN = parseFloat(m[2]);
+            if (Number.isFinite(axisN)) {
+              shown = m[1] + (m[2].charAt(0) === '+' && axisN >= 0 ? '+' : '') + axisN.toFixed(4);
+            }
+          } else if ('IJK'.indexOf(letter) !== -1) cls = 'tok-xyz';
+          if (cls) out += '<span class="' + cls + '">' + escapeHtml(shown) + '</span>';
           else out += escapeHtml(word);
           i += word.length;
           continue;
@@ -3267,8 +4106,44 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     syncSourceChrome();
     setTab('source');
   }
-  function loadSampleProgram() {
-    loadSourceText(SAMPLE, 'BRACKET_PLATE');
+  function acceptLocalFile(file) {
+    if (!file) return false;
+    var name = String(file.name || '');
+    var type = String(file.type || '');
+    if (/\.(txt|nc|cnc)$/i.test(name)) return true;
+    if (type === 'text/plain') return true;
+    if (!name && (type === '' || type === 'text/plain')) return true;
+    return false;
+  }
+  function programStem(name) {
+    return String(name || '').replace(/\.(txt|nc|cnc)$/i, '');
+  }
+  function handleLocalFile(file) {
+    if (!file) return;
+    if (!acceptLocalFile(file)) {
+      showToast('Use a .txt, .nc, or .cnc file');
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function () {
+      loadSourceText(String(reader.result || ''), programStem(file.name));
+      showToast('Program loaded — Auto-Size ready');
+    };
+    reader.onerror = function () { showToast('Could not read file'); };
+    reader.readAsText(file);
+  }
+  var fileInput = document.getElementById('flipit-file-input');
+  if (fileInput) {
+    fileInput.addEventListener('change', function () {
+      var file = fileInput.files && fileInput.files[0];
+      handleLocalFile(file);
+      fileInput.value = '';
+    });
+  }
+  function openLocalProgram() {
+    if (!fileInput) return;
+    fileInput.value = '';
+    fileInput.click();
   }
 
   function setStatus(state) {
@@ -3311,6 +4186,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     panel.classList.toggle('is-expanded', on);
     btnExpand.setAttribute('aria-expanded', on ? 'true' : 'false');
     btnExpand.title = on ? 'G-code expanded' : 'Expand G-code';
+    if (typeof syncHudFlipitChrome === 'function') syncHudFlipitChrome();
   }
   function collapseGcode() {
     setExpanded(false);
@@ -3335,10 +4211,38 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   progName.addEventListener('input', syncProgClear);
   progName.addEventListener('focus', function () { progField.classList.add('is-focus'); });
   progName.addEventListener('blur', function () { progField.classList.remove('is-focus'); });
-  document.getElementById('prog-clear').addEventListener('click', function () {
+  function unloadProgram() {
+    srcEdit = false;
+    outEdit = false;
+    srcSnapshot = '';
+    outSnapshot = '';
+    if (sourceShell) {
+      sourceShell.classList.remove('is-editing');
+      sourceShell.classList.add('is-hl');
+    }
+    if (outputShell) {
+      outputShell.classList.remove('is-editing');
+      outputShell.classList.add('is-hl');
+    }
+    if (output) output.readOnly = true;
+    if (btnEditOut) btnEditOut.classList.remove('is-on', 'is-editing');
+    histSrc.reset('');
+    histOut.reset('');
+    renderSourceHl();
+    renderOutputHl();
     progName.value = '';
     syncProgClear();
-    progName.focus();
+    processDone = false;
+    sizedClean = false;
+    posted = false;
+    clearBounds();
+    setOutEnabled(false);
+    setTab('source');
+    syncEditingBanner();
+    syncSourceChrome();
+  }
+  document.getElementById('prog-clear').addEventListener('click', function () {
+    unloadProgram();
   });
   syncProgClear();
 
@@ -3374,11 +4278,29 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       /* capture for R11 */
       var r = panel.getBoundingClientRect();
       lastGcodePos = { left: Math.round(r.left), top: Math.round(r.top) };
+      if (Math.abs(r.left - ol) > 4 || Math.abs(r.top - ot) > 4) {
+        window.__cardUserDrag = window.__cardUserDrag || { hud: false, flipit: false, toolpath: false };
+        window.__cardUserDrag.flipit = true;
+      }
     }
     dragBar.addEventListener('pointerup', end);
     dragBar.addEventListener('pointercancel', end);
   })();
 
+  function isGcodeOpen() {
+    return panel.classList.contains('is-open') && panel.style.display !== 'none';
+  }
+  function isGcodeExpanded() {
+    return isGcodeOpen() && panel.classList.contains('is-expanded');
+  }
+  function syncHudFlipitChrome() {
+    var btn = document.getElementById('btn-gcode');
+    if (!btn) return;
+    var open = isGcodeOpen();
+    var expanded = open && panel.classList.contains('is-expanded');
+    btn.setAttribute('aria-pressed', expanded ? 'true' : 'false');
+    btn.title = !open ? 'Open FLiPIT' : (expanded ? 'Close FLiPIT' : 'Expand FLiPIT');
+  }
   function openGcode(expanded) {
     panel.classList.add('is-open');
     panel.setAttribute('aria-hidden', 'false');
@@ -3388,11 +4310,13 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       panel.style.top = lastGcodePos.top + 'px';
       panel.style.right = 'auto';
     } else {
-      panel.style.top = '16px';
-      panel.style.right = '16px';
+      panel.style.top = '25px';
+      panel.style.right = '25px';
       panel.style.left = 'auto';
     }
     setExpanded(!!expanded);
+    syncHudFlipitChrome();
+    if (typeof window.__hostArrange === 'function') window.__hostArrange('flipit');
   }
   function closeGcode() {
     if (panel.classList.contains('is-open') && panel.style.display !== 'none') {
@@ -3406,6 +4330,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     panel.setAttribute('aria-hidden', 'true');
     panel.style.display = 'none';
     setExpanded(false);
+    syncHudFlipitChrome();
+  }
+  function toggleGcode() {
+    if (!isGcodeOpen()) openGcode(true);
+    else if (!isGcodeExpanded()) openGcode(true);
+    else closeGcode();
   }
   document.getElementById('btn-close').addEventListener('click', closeGcode);
 
@@ -3491,6 +4421,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   });
 
   function setTab(key) {
+    if (key === 'output' && !hasOutput()) return;
     ioTabs.querySelectorAll('.io-tab').forEach(function (t) {
       var on = t.getAttribute('data-tab') === key;
       t.classList.toggle('is-on', on);
@@ -3503,9 +4434,20 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     });
     panel.classList.toggle('is-source-tab', key === 'source');
   }
+  function syncOutputTab() {
+    var tab = document.getElementById('tab-output');
+    if (!tab) return;
+    var live = hasOutput();
+    tab.classList.toggle('is-gated', !live);
+    tab.setAttribute('aria-disabled', live ? 'false' : 'true');
+    tab.tabIndex = live ? 0 : -1;
+    if (!live && tab.classList.contains('is-on')) setTab('source');
+  }
   ioTabs.querySelectorAll('.io-tab').forEach(function (tab) {
     tab.addEventListener('click', function () {
-      setTab(tab.getAttribute('data-tab'));
+      var key = tab.getAttribute('data-tab');
+      if (key === 'output' && !hasOutput()) return;
+      setTab(key);
     });
   });
   panel.classList.add('is-source-tab');
@@ -3619,6 +4561,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     btnDl.disabled = !on;
     btnSave.disabled = !on;
     btnEditOut.disabled = !on;
+    syncOutputTab();
   }
 
   stageAction.addEventListener('click', function () {
@@ -3632,6 +4575,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       syncProcessState();
       setTab('source');
       showToast('Output cleared');
+      if (typeof window.__bedSetPart === 'function') window.__bedSetPart(undefined, undefined, 0);
       return;
     }
     if (state === 'process') {
@@ -3649,6 +4593,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       setTab('output');
       showToast('Output ready');
       flashGreenRing();
+      if (typeof window.__bedSetPart === 'function') window.__bedSetPart(undefined, undefined, rot);
     }
   });
 
@@ -3662,16 +4607,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   });
 
   document.getElementById('btn-clear').addEventListener('click', function () {
-    histSrc.reset('');
-    clearBounds();
-    histOut.reset('');
-    renderSourceHl();
-    renderOutputHl();
-    setOutEnabled(false);
-    setOutEdit(false);
-    exitSrcEdit(false);
-    processDone = false;
-    syncSourceChrome();
+    unloadProgram();
   });
 
   btnDetect.addEventListener('click', function () {
@@ -3704,7 +4640,22 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   btnDl.addEventListener('click', downloadOut);
   btnSave.addEventListener('click', downloadOut);
 
-  document.getElementById('btn-open').addEventListener('click', loadSampleProgram);
+  document.getElementById('btn-open').addEventListener('click', openLocalProgram);
+
+  window.__flipitOpen = function (expanded) { openGcode(expanded !== false); };
+  window.__flipitClose = closeGcode;
+  window.__flipitToggle = toggleGcode;
+  window.__flipitAutoSize = function () {
+    var wasOpen = isGcodeOpen();
+    var wasCollapsed = wasOpen && !panel.classList.contains('is-expanded');
+    if (wasOpen && wasCollapsed) {
+      closeGcode();
+      return false;
+    }
+    openGcode(false);
+    if (!hasSource()) showToast('Load a program to Auto-Size');
+    return false;
+  };
 
   /* R17 composition bridge — waypoints toggle toolPath */
   ['btn-toolpath-src', 'btn-toolpath-out'].forEach(function (id) {
@@ -3713,8 +4664,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       e.stopPropagation();
       var card = document.getElementById('backplot');
       if (!card) return;
-      var open = card.classList.contains('is-hidden');
-      if (open) {
+      var opening = card.classList.contains('is-hidden');
+      if (typeof window.__setToolpathOpen === 'function') {
+        window.__setToolpathOpen(opening);
+        return;
+      }
+      if (opening) {
         card.classList.remove('is-hidden');
         card.style.display = '';
       } else {
@@ -3728,7 +4683,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     });
   });
 
-  setExpanded(true);
+  closeGcode();
   setStatus('none');
   setOutEnabled(false);
   syncSourceChrome();
@@ -3775,6 +4730,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       card.classList.remove('is-dragging');
       try { if (pid != null) dragBar.releasePointerCapture(pid); } catch (_) {}
       pid = null;
+      var r = card.getBoundingClientRect();
+      if (Math.abs(r.left - ol) > 4 || Math.abs(r.top - ot) > 4) {
+        window.__cardUserDrag = window.__cardUserDrag || { hud: false, flipit: false, toolpath: false };
+        window.__cardUserDrag.toolpath = true;
+      }
     }
     dragBar.addEventListener('pointerup', end);
     dragBar.addEventListener('pointercancel', end);
@@ -3795,14 +4755,18 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (on) {
       card.classList.remove('is-hidden');
       card.style.display = '';
+      if (typeof window.__hostArrange === 'function') window.__hostArrange('toolpath');
     } else {
       card.classList.add('is-hidden');
+      window.__cardUserDrag = window.__cardUserDrag || { hud: false, flipit: false, toolpath: false };
+      window.__cardUserDrag.toolpath = false;
     }
     ['btn-toolpath-src', 'btn-toolpath-out'].forEach(function (wid) {
       var w = document.getElementById(wid);
       if (w) w.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
   }
+  window.__setToolpathOpen = setToolpathOpen;
 
   if (btnClose) {
     btnClose.addEventListener('click', function (e) {
@@ -3820,6 +4784,98 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
   /* R27 composition — default-hidden until FLiPIT waypoints */
   setToolpathOpen(false);
+})();
+</script>
+<script>
+/* ── Host residual R1–R8 — LaserBed calc chip → HUD + card arrange ── */
+(function () {
+  var btCalc = document.getElementById('bt-calc');
+  if (btCalc) {
+    btCalc.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+      if (typeof window.__hudFromBedCalc === 'function') window.__hudFromBedCalc();
+    }, true);
+  }
+
+  window.__cardUserDrag = window.__cardUserDrag || { hud: false, flipit: false, toolpath: false };
+
+  function overlaps(a, b, pad) {
+    pad = pad == null ? 12 : pad;
+    return !(a.right + pad <= b.left || a.left - pad >= b.right || a.bottom + pad <= b.top || a.top - pad >= b.bottom);
+  }
+  function placeCard(el, left, top) {
+    if (!el) return;
+    el.classList.remove('is-dragging');
+    el.classList.add('is-gliding');
+    el.style.left = Math.round(left) + 'px';
+    el.style.top = Math.round(top) + 'px';
+    el.style.right = 'auto';
+    el.style.transform = 'none';
+    clearTimeout(el._glideTimer);
+    el._glideTimer = setTimeout(function () { el.classList.remove('is-gliding'); }, 460);
+  }
+  var TOP_BAND = 25;
+  function findOpenSpace(el, avoids) {
+    var w = el.offsetWidth || 280;
+    var vw = window.innerWidth;
+    var top = TOP_BAND;
+    var gap = 16;
+    var candidates = [TOP_BAND];
+    avoids.forEach(function (a) {
+      if (a && Math.abs(a.top - top) < 90) candidates.push(Math.round(a.right + gap));
+    });
+    candidates.push(Math.max(TOP_BAND, Math.round((vw - w) / 2)));
+    candidates.push(Math.max(TOP_BAND, Math.round(vw - w - TOP_BAND)));
+    candidates.sort(function (a, b) { return a - b; });
+    for (var i = 0; i < candidates.length; i++) {
+      var left = candidates[i];
+      var box = { left: left, top: top, right: left + w, bottom: top + (el.offsetHeight || 220) };
+      if (box.left < 0 || box.right > vw) continue;
+      var hit = false;
+      for (var j = 0; j < avoids.length; j++) {
+        if (avoids[j] && overlaps(box, avoids[j], 12)) { hit = true; break; }
+      }
+      if (!hit) return { left: left, top: top };
+    }
+    return { left: TOP_BAND, top: top };
+  }
+
+  window.__hostArrange = function (reason) {
+    var hud = document.getElementById('hud');
+    var gcode = document.getElementById('gcode');
+    var tp = document.getElementById('backplot');
+    var flags = window.__cardUserDrag;
+    var flipitOpen = !!(gcode && gcode.classList.contains('is-open') && gcode.style.display !== 'none');
+    var tpOpen = !!(tp && !tp.classList.contains('is-hidden'));
+    var vw = window.innerWidth;
+    var top = TOP_BAND;
+
+    if (flipitOpen && hud) {
+      var gW = gcode.offsetWidth;
+      var hW = hud.offsetWidth;
+      var tW = tpOpen ? (tp.offsetWidth || 280) : 0;
+      placeCard(gcode, Math.max(TOP_BAND, (vw - gW) / 2), top);
+      placeCard(hud, Math.max(TOP_BAND, vw - hW - TOP_BAND), top);
+      if (tpOpen) {
+        var leftSlot = Math.max(TOP_BAND, ((vw - gW) / 2 - tW) / 2);
+        placeCard(tp, leftSlot, top);
+      }
+      flags.flipit = false;
+      flags.hud = false;
+      if (tpOpen) flags.toolpath = false;
+      return;
+    }
+
+    if (reason === 'toolpath' && tpOpen) {
+      var avoids = [];
+      if (hud) avoids.push(hud.getBoundingClientRect());
+      if (flipitOpen) avoids.push(gcode.getBoundingClientRect());
+      var pos = findOpenSpace(tp, avoids);
+      placeCard(tp, pos.left, pos.top);
+    }
+  };
 })();
 </script>
 </body>
