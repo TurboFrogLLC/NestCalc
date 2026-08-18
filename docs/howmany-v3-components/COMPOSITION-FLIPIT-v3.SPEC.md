@@ -1,12 +1,12 @@
 # FlipIt — Composition host — Living SPEC
 
-**Status:** Living (residual R8 — arc, fade timing, arrange, lock, presets)  
+**Status:** Living (residual R9 — lock off, top-band cards, glow, rails, presets)  
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
 **Branch:** `docs/flipit-v3-refinements`  
-**Trace:** `NC-FLIPIT-20260817-R8`  
-**Host tip blob:** `bbc2666328034bcd33b86b7af547cfa8bbc62313`  
+**Trace:** `NC-FLIPIT-20260817-R9`  
+**Host tip blob:** `90d213d6c9d282fb01c06d0c59cdb99fc16fa291`  
 **Class:** Exploratory composition host only · not product GOAL · not a shared import  
 
 **Host rule**  
@@ -22,7 +22,7 @@ Prior composition/lock archives (`COMPOSITION-HUD-DECODER-v3.*`, `DE-CODER-v3-LO
 |---------|---------------|-----------|--------:|
 | LaserBed world | `.bed-stage` · `#laser-bed-host` | `LASER-BED-v3.SPEC.md` · tip `40224e68` | 0 |
 | Blank body | `#lb-blank` (in `#lb-camera`) | host — sits on the bed, behind cards | **0** |
-| LaserBed chrome (zoom) | `.lb-chrome` | same | 15 |
+| LaserBed chrome (zoom) | `.lb-chrome` | host raise above cards | **80** |
 | Blank hits + arc overlay | `#lb-blank-layer` | grab targets only | **10** |
 | toolPath | `#backplot.toolpath` | `TOOLPATH-v3.SPEC.md` · tip `2e9e2ace` | 20 |
 | FLiPIT | `#gcode` · class `.gcode` | `FLIPIT-v3.SPEC.md` · tip `37d628e9` | 30 |
@@ -33,7 +33,7 @@ Prior composition/lock archives (`COMPOSITION-HUD-DECODER-v3.*`, `DE-CODER-v3-LO
 
 Z-index scale is from `ALIGNMENT-v3.SPEC.md`. Overlay cards sit **inside** `.bed-stage` so those bands share one stacking context.
 
-R8 z-order revise: blank **body** is back on the world (behind cards). Ticker cluster (lock + readout + calc) stays forward above HUD. Arc/hits stay on a low overlay so they remain grabable on the bed without covering cards.
+R8 z-order: blank **body** is back on the world (behind cards). Ticker cluster (readout + calc) stays forward above HUD. R9: zoom chrome **80** sits above HUD and other floating cards.
 
 Wordmarks stay as locked: **FLiP** white 700 + **IT** amber 800 · **tool** white 700 + **Path** amber 800.
 
@@ -54,7 +54,8 @@ Wordmarks stay as locked: **FLiP** white 700 + **IT** amber 800 · **tool** whit
 | **R5** | HUD motion matches FlipIt · bed blank → HUD Blank live · `#bt-calc` floats outside ticker | `--motion-collapse/expand/mode` **240ms** + `min-height` eased · `__hudSyncBlank(w,h)` from LaserBed `render()` · `#blank-ticker-cluster` |
 | **R6** | HUD param↔calc stacked opacity crossfade · header radius eases with 0fr · calc→collapse does not flash params | `#hud-stage` height 240ms · no `display` swap · header `border-radius` + `border-bottom-color` 240ms · defer `calc-mode` clear until collapse end |
 | **R7** | Collapsed HUD part ticker fade · FlipIt GC0DE↔tabs fade · square `#bt-calc` · outside-arc corner grab | `.is-settled` + 240ms fade · `.surface-lead` opacity · `#bt-calc` square / 3px gap · `#lb-corner-arc` 2px |
-| **R8** | Bigger arc · fade as collapse ends · toolPath open-space + multi-card arrange · blank body behind cards · resize glow · lock + HUD-sized calc · unit align · Blank/Gap/Margin presets | arc ~18px · ticker fade delay 160ms · `__hostArrange` · `#lb-blank` in world · `#bt-lock` · `#bt-calc` 28.6² · `localStorage` presets |
+| **R8** | Bigger arc · fade as collapse ends · toolPath open-space + multi-card arrange · blank body behind cards · resize glow · lock + HUD-sized calc · unit align · Blank/Gap/Margin presets | arc ~18px · ticker fade delay 160ms · `__hostArrange` · `#lb-blank` in world · `#bt-calc` 28.6² · `localStorage` presets |
+| **R9** | Remove blank lock · calc = ticker height · glow −60% bed-clipped · top-band equal cards · zoom front · preset chips + toast · two-line margin · frost-blue rails | no `#bt-lock` · `#bt-calc` 34² · bed `clipPath` · `__hostArrange` top 25 · `.lb-chrome` z **80** |
 
 Hide primitives stay surface-owned (`ALIGNMENT-v3` §4). Host does not invent a shared hide API.
 
@@ -62,13 +63,12 @@ Hide primitives stay surface-owned (`ALIGNMENT-v3` §4). Host does not invent a 
 
 | Control | Host behavior |
 |---------|----------------|
-| Load | Numeric HUD open at (16,16). FLiPIT closed (`display: none`, no `is-open`). toolPath hidden (R27). |
+| Load | Numeric HUD open at (25,25). FLiPIT closed (`display: none`, no `is-open`). toolPath hidden (R27). |
 | HUD **FLiPIT** (`#btn-gcode`) | Closed → open **expanded**. Open + collapsed (e.g. after AUTO-SIZE) → **expand** (do not close). Open + expanded → **close**. X closes from any state. |
 | HUD **AUTO-SIZE** (`#btn-auto-size`) | First click opens FLiPIT **collapsed** (never expanded). No source → toast `LOAD A PROGRAM TO AUTO-SIZE`. If FLiPIT is already open **and** collapsed, a second click **closes** it (does not re-run detect). In-panel `#btn-detect` still sizes. Footer chips stay mounted in HUD calculator mode. Label stays **AUTO-SIZE**. |
 | FLiPIT Auto-Size (`#btn-detect`) | Existing in-panel detect. Expand/collapse chrome unchanged. Arms after a real file load. |
 | FLiPIT close (`#btn-close`) | `closeGcode()` + R11 `lastGcodePos`. |
-| LaserBed calc chip (`#bt-calc`) | HUD collapsed → expand to **param** mode only (do not enter calculator; clear leftover classic-calc `display`). HUD already expanded → toggle calculator. After exit / collapse / expand, `#hud-body` height matches the active mode. **28.6²** (HUD header calc language). 3px gap. Icon 18.5px. |
-| Blank lock (`#bt-lock`) | Left of ticker, same 28.6 square + 3px gap. Lucide lock glyph. Engaged: blank cannot be resized; `#lb-blank` border blinks red twice. Toggle unlock restores resize. |
+| LaserBed calc chip (`#bt-calc`) | HUD collapsed → expand to **param** mode only (do not enter calculator; clear leftover classic-calc `display`). HUD already expanded → toggle calculator. After exit / collapse / expand, `#hud-body` height matches the active mode. Square side = blank ticker height (**34**). HUD header chrome language (radius / border / fill). Icon 22px. 3px gap. |
 | FLiPIT Open (`#btn-open`) | Native local file picker. Accept `.txt`, `.nc`, `.cnc`, and `text/plain`. Load into Source. **No sample / BRACKET_PLATE fallback.** |
 | Source **Clear** (`#btn-clear`) and program-name **X** (`#prog-clear`) | Full unload: empty source + output, no bounds, status none, detect unarmed, process idle, program name cleared. Not name-only. |
 | Output tab (`#tab-output`) | Gated (`is-gated`, `aria-disabled`) until Output has content after Flip IT. No hover, click does nothing, lighter gray than Source. Live after process. |
@@ -79,10 +79,13 @@ Hide primitives stay surface-owned (`ALIGNMENT-v3` §4). Host does not invent a 
 | Collapsed HUD part ticker | Hidden mid-close. Fade starts as 0fr finishes (`is-settled` immediate + **160ms** delay, then 240ms fade). Instant hide on expand (no mid-open flash). |
 | FlipIt surface lead | GC0DE ↔ chevron+Source/Output opacity fade (`var(--dur)`). R3/R4 open/close contracts unchanged. |
 | Blank z-order | `#lb-blank` lives in the world (behind cards). Ticker cluster **46** stays above HUD **40**. Overlay `#lb-blank-layer` **10** is arc + hits only. |
-| Free-corner grab | Outside quarter-arc (~18px, 2px stroke). `#lb-hit-corner` is a circle on the arc midpoint (XY resize). Green glow on arc **and blank outline** while any resize (`lb-dragging-x/y/xy`). |
-| toolPath spawn | On open, place in leftover space (not under HUD/FlipIt when avoidable). If FlipIt is also open: FlipIt center, toolPath left, HUD right when space allows. User drag (>4px) overrides after place. No permanent layout lock. |
+| Free-corner grab | Outside quarter-arc (~18px, 2px stroke). `#lb-hit-corner` is a circle on the arc midpoint (XY resize). Green stroke on arc while `lb-dragging-xy`. Blank outline glow is **−60%** of R8 and clipped to the bed (`#lb-bed-clip`) so rulers stay unlit. |
+| Card layout | Default top band **25px**. Open cards equally spaced horizontally (toolPath · FlipIt · HUD). FlipIt is the focus/middle slot when open. User drag (>4px) overrides after place. toolPath spawn prefers leftover space in the top band. |
+| Zoom chrome | `#lb-zoom-in` / `#lb-zoom-out` / `#lb-fit` z **80** — above HUD and other floating cards. |
 | FlipIt unit switch | IN/MM labels flex-centered to the track background. |
-| HUD presets | Blank, Gap, Margin only (not Part). Two chips (A / B) in the same top row as title + save/close, equally spaced. Light gray fill, amber label. Click arms; Save writes the armed slot. Click filled loads. `localStorage` key `howmany.flipit.v3.presets`. |
+| HUD presets | Blank, Gap, Margin only (not Part). Two chips (A / B) in the same top row as title + save/close. Light gray fill, **black** label, light reverse shadow. Click arms; armed Save stores, toasts `Preset saved`, stays in the popover. Unarmed Save commits and closes. Filled click loads. `localStorage` key `howmany.flipit.v3.presets`. |
+| Margin ticker | Two-line summary grows the ticker (`:has(.m-line)` min-height 40px) and remasures `#hud-stage` so the row is not clipped. Collapse timing unchanged. |
+| Ruler rails | Frost-blue bands outside the bed under the ticks. Numbers inset on the rail. Outer lip slightly darker. Tick strokes stay the primary read. |
 
 ---
 
@@ -123,7 +126,7 @@ Do not require `file://`.
 5. HUD **AUTO-SIZE** opens FLiPIT **collapsed** and toasts if no program. A second click while collapsed **closes** FlipIt. `#btn-detect` still sizes. HUD FLiPIT cycle from R3 is unchanged.
 6. FLiPIT Open picks a real local `.txt` / `.nc` / `.cnc` file and loads Source. No sample program.
 7. HUD tickers open popovers; placement stays outside the HUD and clamps off open FLiPIT and the bed blank. Collapse/expand holds left/top (R30).
-8. FLiPIT waypoints still toggle toolPath (R17 / R27). toolPath opens in leftover space; with FlipIt open the default profile is FlipIt center / toolPath left / HUD right.
+8. FLiPIT waypoints still toggle toolPath (R17 / R27). Open cards sit in a 25px top band and space equally (toolPath · FlipIt · HUD). User drag still wins after place.
 9. Any residual that changes a **surface** belongs in that surface’s individual package first; then re-assemble.
 
 ---
@@ -141,3 +144,4 @@ Do not require `file://`.
 | 2026-08-17 | **R6** `NC-FLIPIT-20260817-R6`. Snap/flash came from `display` toggles plus instant `calc-mode` teardown, and header radius flipped on class before 0fr finished. Stack modes and ease `#hud-stage` height; sync header radius; defer calc clear until collapse ends. |
 | 2026-08-17 | **R7** `NC-FLIPIT-20260817-R7`. Collapsed part ticker fades after settle. FlipIt surface chrome fades. Blank overlay + ticker above HUD. Square 34px `#bt-calc` at 3px. Inner free-corner square replaced by outside arc grab with drag glow. |
 | 2026-08-17 | **R8** `NC-FLIPIT-20260817-R8`. Larger outside arc. Ticker fade starts as collapse ends (160ms delay). toolPath open-space spawn + FlipIt-center / toolPath-left / HUD-right profile. Blank body back on the bed; ticker stays above HUD. Resize glow on blank outline. Lock button + HUD-sized calc. Unit switch labels centered to the track. Blank/Gap/Margin A/B presets. |
+| 2026-08-17 | **R9** `NC-FLIPIT-20260817-R9`. Removed blank lock. Calc button matches ticker height (34²) with HUD header chrome. Resize glow −60% and clipped to the bed. Cards top-aligned at 25px and equally spaced; FlipIt stays the focus slot. Zoom chrome z 80. Preset chips black + reverse shadow; armed Save toasts “Preset saved” inside the popover. Two-line margin ticker remasures HUD height. Frost-blue ruler rails under the ticks. |
