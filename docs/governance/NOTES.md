@@ -62,3 +62,5 @@ docs/templates/handoff.md.
 - Lab parser import.
 - Skill-registry build.
 - Sweep of every leftover Human string in older NestCalc governance contracts.
+- Ultra as a callable surface or orchestration option. Not used in NestCalc
+  or wReckless Toddler. Experimental elsewhere. Do not name it in handoffs.
