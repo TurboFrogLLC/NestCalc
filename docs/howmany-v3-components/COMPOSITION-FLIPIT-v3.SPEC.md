@@ -1,12 +1,12 @@
 # FlipIt — Composition host — Living SPEC
 
-**Status:** Living (residual R11 — preset edit mode, origin-to-end rails)  
+**Status:** Living (residual R12 — HUD height, frame, glide, highlight, default part)  
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
 **Branch:** `docs/flipit-v3-refinements`  
-**Trace:** `NC-FLIPIT-20260817-R11`  
-**Host tip blob:** `c71979667f35e0358648dac1607e99632783eb30`  
+**Trace:** `NC-FLIPIT-20260817-R12`  
+**Host tip blob:** `4809d348e7117005bdf830a81a909e3cdd4f2c86`  
 **Class:** Exploratory composition host only · not product GOAL · not a shared import  
 
 **Host rule**  
@@ -58,6 +58,7 @@ Wordmarks stay as locked: **FLiP** white 700 + **IT** amber 800 · **tool** whit
 | **R9** | Remove blank lock · calc = ticker height · glow −60% bed-clipped · top-band equal cards · zoom front · preset chips + toast · two-line margin · frost-blue rails | no `#bt-lock` · `#bt-calc` 34² · bed `clipPath` · `__hostArrange` top 25 · `.lb-chrome` z **80** |
 | **R10** | Calc hover stays visible · glow −50% again · rails past grid + Y outside numbers · preset Confirm/Cancel · 3-card layout re-applies on every complete set | hover fill opaque · glow 0.6px/0.14 · `__hostArrange` forces TP·FlipIt·HUD |
 | **R11** | Preset everyday load vs explicit edit/write · rails butted to origin, filled full length + far overhang | `[data-pre-edit]` · Confirm/Cancel only in edit · rails from 0,0 |
+| **R12** | Compact single-row HUD height · 4-side frost frame · FlipIt-center / HUD-right glide · token-aware highlight · default part 1.250×3.375 + Flip visual + nest box | remasure `offsetHeight` · 420ms glide · `G`+digits only · `#lb-part` / `#lb-nest-box` |
 
 Hide primitives stay surface-owned (`ALIGNMENT-v3` §4). Host does not invent a shared hide API.
 
@@ -82,12 +83,15 @@ Hide primitives stay surface-owned (`ALIGNMENT-v3` §4). Host does not invent a 
 | FlipIt surface lead | GC0DE ↔ chevron+Source/Output opacity fade (`var(--dur)`). R3/R4 open/close contracts unchanged. |
 | Blank z-order | `#lb-blank` lives in the world (behind cards). Ticker cluster **46** stays above HUD **40**. Overlay `#lb-blank-layer` **10** is arc + hits only. |
 | Free-corner grab | Outside quarter-arc (~18px, 2px stroke). `#lb-hit-corner` is a circle on the arc midpoint (XY resize). Green stroke on arc while `lb-dragging-xy`. Blank outline glow is **−50% of R9** (0.6px / 0.14) and clipped to the bed (`#lb-bed-clip`) so rulers stay unlit. |
-| Card layout | Default top band **25px**. Whenever toolPath + FlipIt + HUD are all open (HUD counts even if collapsed), force toolPath left · FlipIt center · HUD right with equal gaps. Re-apply every time that set becomes complete (open toolPath with others up, reopen FlipIt, etc.). User drag wins after place until the next full three-open rearrange. Two-card opens still equal-space in the top band; leftover toolPath spawn stays in-band. |
+| Card layout | FlipIt **always glides to viewport center** when opened (FLiPIT or AUTO-SIZE). HUD **always glides to the right slot** on that rearrange, even if toolPath is closed. All three: TP left · FlipIt center · HUD right, 25px top band. Travel is a 420ms ease glide (not a teleport). User drag still wins until the next open/rearrange. |
 | Zoom chrome | `#lb-zoom-in` / `#lb-zoom-out` / `#lb-fit` z **80** — above HUD and other floating cards. |
 | FlipIt unit switch | IN/MM labels flex-centered to the track background. |
 | HUD presets | Blank, Gap, Margin only (not Part). Everyday filled-chip click **loads only** (no arm, no save prompt). Pencil **Edit** enters write mode. Only then can a slot be armed; Confirm stores + toasts `Preset saved` and exits edit; Cancel exits without writing. Main Save/OK still commits live fields and never writes a preset. `localStorage` key `howmany.flipit.v3.presets`. |
 | Margin ticker | Two-line summary grows the ticker (`:has(.m-line)` min-height 40px) and remasures `#hud-stage` so the row is not clipped. Collapse timing unchanged. |
-| Ruler rails | Frost-blue rails **butt to the origin line** (X from x=0, Y from y=0), run the full bed length plus a small far-end overhang, and **fill the whole band** (no empty gap from origin to first tick). Numbers sit inset on the rail. Tick strokes stay themselves. Holds at fit and zoom. |
+| Ruler rails | Equal-width frost-blue **frame on all four sides**. Ticks/numbers remain only on bottom X and left Y, fully inside the blue (no hang-out). Origin-butted fill stays. ≥5px overhang past the far grid end. |
+| HUD height | Single-row Margin (`0.250 all`) uses the compact 28.6 ticker. Stage height is remasured from in-flow `offsetHeight` (not popover `scrollHeight`). Opening/closing a popover returns HUD to the current ticker-row height. Two-row margin still grows live. |
+| Source highlight | Token-aware: letter + digits, not in-word matches. `Go to part` / `PAR` stay uncolored. Magenta G + green comments; other NC letters derived from those. |
+| Bed part | Default **1.250 × 3.375**. `#lb-part` follows HUD part size. Flip IT rotates it on the bed. Dotted `#lb-nest-box` is the margin-inset reference nest. |
 
 ---
 
@@ -149,3 +153,4 @@ Do not require `file://`.
 | 2026-08-17 | **R9** `NC-FLIPIT-20260817-R9`. Removed blank lock. Calc button matches ticker height (34²) with HUD header chrome. Resize glow −60% and clipped to the bed. Cards top-aligned at 25px and equally spaced; FlipIt stays the focus slot. Zoom chrome z 80. Preset chips black + reverse shadow; armed Save toasts “Preset saved” inside the popover. Two-line margin ticker remasures HUD height. Frost-blue ruler rails under the ticks. |
 | 2026-08-17 | **R10** `NC-FLIPIT-20260817-R10`. `#bt-calc` hover keeps icon/chrome (lighten fill only). Glow cut another 50%. Rails extend past the grid and sit outside the numbers. Preset Confirm/Cancel is separate from main Save. Three-card top layout re-applies whenever TP+FlipIt+HUD become complete; drag wins until the next rearrange. |
 | 2026-08-17 | **R11** `NC-FLIPIT-20260817-R11`. Filled preset chips load only. Pencil Edit is required to write a slot via Confirm/Cancel. Rails start on the origin, fill the band, and overhang the far end only. |
+| 2026-08-17 | **R12** `NC-FLIPIT-20260817-R12`. Compact HUD height after popover close. Four-side frost frame; numbers inside the blue. FlipIt centers and HUD rights with a 420ms glide. Token-aware G-code highlight. Default part 1.250×3.375, Flip visual rotate, dotted nest box. |

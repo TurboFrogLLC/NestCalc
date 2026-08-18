@@ -46,6 +46,8 @@ Bridges in this host:
   · R10 Calc hover stays visible · glow −50% again · rails past grid
         Y rail outside numbers · preset Confirm/Cancel · 3-card re-apply
   · R11 Preset edit mode (load vs write) · rails origin-to-end filled
+  · R12 Compact HUD height · 4-side bed frame · card glide
+        Token-aware NC highlight · default part 1.250×3.375 + Flip visual
 
 Not wired: sandbox isolator · child-spec · Post → HUD/bed hydrate.
 Prior composition/lock archives stay on disk.
@@ -213,6 +215,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       --motion-mode: 240ms;
       --motion-popover: 180ms;
       --motion-popover-out: 145ms;
+      --motion-glide: 420ms;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
@@ -220,6 +223,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     
     
 
+    .keypad.is-gliding {
+      transition: left var(--motion-glide) var(--ease), top var(--motion-glide) var(--ease);
+    }
+    .keypad.is-dragging { transition: none; }
     .keypad {
       position: absolute;
       top: 0; left: 0;
@@ -460,9 +467,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       align-items: center;
     }
     .param-row[data-param="margin"] .param-ticker {
-      height: auto; min-height: 28.6px; padding: 3.3px;
+      height: 28.6px; min-height: 28.6px; padding: 0 3.3px;
     }
     .param-row[data-param="margin"] .param-ticker:has(.m-line) {
+      height: auto;
       min-height: 40px;
       padding-top: 4.4px;
       padding-bottom: 4.4px;
@@ -773,10 +781,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       --chip-gray: rgba(26, 20, 40, 0.10);
       --gc-g: #FF00FF;
       --gc-comment: #00CF00;
-      --gc-m: #FF8380;
-      --gc-fs: #F86400;
-      --gc-t: #538BEC;
-      --gc-n: #D3D3D3;
+      --gc-m: #E85AD0;
+      --gc-fs: #C8E800;
+      --gc-t: #7A66FF;
+      --gc-n: #9A8AA8;
+      --gc-xyz: #C44ED4;
       --accept: #22A06B;
       --cancel: #DC143C;
       --panel-w: 418px;
@@ -792,6 +801,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     
 
     /* ── FLiPIT shell ── */
+    .gcode.is-gliding {
+      transition: left 420ms cubic-bezier(0.4, 0, 0.2, 1), top 420ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .gcode.is-dragging { transition: none; }
     .gcode {
       position: absolute;
       top: 16px;
@@ -1694,6 +1707,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     .tok-fs { color: var(--gc-fs); font-weight: 600; }
     .tok-t { color: var(--gc-t); font-weight: 600; }
     .tok-n { color: var(--gc-n); }
+    .tok-xyz { color: var(--gc-xyz); }
 
     /* Action / stage footer */
     .action-row {
@@ -1927,6 +1941,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     
 
     /* ── toolPath card (R16b) ── */
+    .toolpath.is-gliding {
+      transition: left 420ms cubic-bezier(0.4, 0, 0.2, 1), top 420ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .toolpath.is-dragging { transition: none; }
     .toolpath {
       position: absolute;
       left: 52.8px;
@@ -2128,6 +2146,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         <line id="lb-edge-y" x1="0" y1="0" x2="0" y2="48" stroke="#000000" stroke-opacity="0.50" stroke-width="1.75" vector-effect="non-scaling-stroke"/>
         <circle cx="0" cy="0" r="0.12" fill="#000000"/>
         <rect id="lb-blank" x="0" y="0" width="12" height="8" fill="#ffffff" fill-opacity="0.80" stroke="#000000" stroke-width="1.25" vector-effect="non-scaling-stroke" clip-path="url(#lb-bed-clip)" style="pointer-events:none"/>
+        <rect id="lb-nest-box" x="0.25" y="0.25" width="11.5" height="7.5" fill="none" stroke="#538BEC" stroke-opacity="0.50" stroke-width="1" stroke-dasharray="3 2.4" vector-effect="non-scaling-stroke" clip-path="url(#lb-bed-clip)" style="pointer-events:none"/>
+        <g id="lb-part-g" clip-path="url(#lb-bed-clip)" style="pointer-events:none">
+          <rect id="lb-part" x="0" y="0" width="1.250" height="3.375" fill="rgba(83,139,236,0.22)" stroke="#538BEC" stroke-width="1.15" vector-effect="non-scaling-stroke"/>
+        </g>
         <g id="lb-bed-rulers"></g>
       </g>
     </svg>
@@ -2174,7 +2196,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         </svg>
       </button>
       <div class="header-spacer" id="drag-handle" aria-hidden="true">
-        <div class="param-ticker header-part-ticker" data-ticker="part-collapsed">80.342 × 40.000</div>
+        <div class="param-ticker header-part-ticker" data-ticker="part-collapsed">1.250 × 3.375</div>
       </div>
       <button type="button" class="tool press chevron-btn" id="btn-chevron" title="Collapse" aria-label="Collapse HUD" aria-expanded="true">
         <svg width="16.5" height="16.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round">
@@ -2190,7 +2212,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
           <div class="param-rows">
             <div class="param-row" data-param="part">
               <span class="param-label">Part size</span>
-              <div class="param-ticker" data-ticker="part" data-open="part" tabindex="0">80.342 × 40.000</div>
+              <div class="param-ticker" data-ticker="part" data-open="part" tabindex="0">1.250 × 3.375</div>
               <div class="param-popover" data-pop="part">
                 <div class="pop-head">
                   <div class="pop-title">Part size</div>
@@ -2200,11 +2222,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
                   </div>
                 </div>
                 <div class="pop-xy">
-                  <div class="pop-half"><span>X</span><input data-part="x" type="text" inputmode="decimal" value="80.342" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+                  <div class="pop-half"><span>X</span><input data-part="x" type="text" inputmode="decimal" value="1.250" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
                   <div class="pop-sep"></div>
                   <button type="button" class="pop-swap press" data-part-swap title="Swap X &amp; Y" aria-label="Swap X and Y"><svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg></button>
                   <div class="pop-sep"></div>
-                  <div class="pop-half"><span>Y</span><input data-part="y" type="text" inputmode="decimal" value="40.000" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+                  <div class="pop-half"><span>Y</span><input data-part="y" type="text" inputmode="decimal" value="3.375" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
                   <div class="pop-sep"></div>
                   <button type="button" class="pop-link" data-part-link title="Link X &amp; Y" aria-pressed="false"><svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>
                 </div>
@@ -2562,13 +2584,20 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 /* LaserBed host + blank ticker right-pin residual */
 (function () {
   var BED = 48;
-  var state = { blankW: 12, blankH: 8, snap: 0.125, zoom: 1, panX: 0, panY: 0, dragging: null, start: null };
+  var state = {
+    blankW: 12, blankH: 8, snap: 0.125, zoom: 1, panX: 0, panY: 0, dragging: null, start: null,
+    partW: 1.250, partH: 3.375, partRot: 0,
+    margin: { l: 0.25, r: 0.25, t: 0.25, b: 0.25 }
+  };
 
   var svg = document.getElementById('lb-world');
   var blankLayer = document.getElementById('lb-blank-layer');
   var camera = document.getElementById('lb-camera');
   var blankCam = document.getElementById('lb-blank-cam');
   var blank = document.getElementById('lb-blank');
+  var nestBox = document.getElementById('lb-nest-box');
+  var partEl = document.getElementById('lb-part');
+  var partG = document.getElementById('lb-part-g');
   var cornerArc = document.getElementById('lb-corner-arc');
   var hitRight = document.getElementById('lb-hit-right');
   var hitTop = document.getElementById('lb-hit-top');
@@ -2580,7 +2609,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   var btReadout = document.getElementById('bt-readout');
   if (!svg || !camera || !blank) return;
 
-  var PAD = 36;
+  var PAD = 48;
   var MIN_LABEL_PX = 36;
   var TICKER_H = 34;
   var GAP_TOP = 10;   /* px above blank top */
@@ -2623,6 +2652,23 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       hitCorner.setAttribute('cy', h + mid);
       hitCorner.setAttribute('r', 11 / Math.max(s, 0.001));
     }
+    var m = state.margin || { l: 0.25, r: 0.25, t: 0.25, b: 0.25 };
+    var nx = Math.max(0, m.l);
+    var ny = Math.max(0, m.b);
+    var nw = Math.max(0.05, w - m.l - m.r);
+    var nh = Math.max(0.05, h - m.b - m.t);
+    if (nestBox) {
+      nestBox.setAttribute('x', nx);
+      nestBox.setAttribute('y', ny);
+      nestBox.setAttribute('width', nw);
+      nestBox.setAttribute('height', nh);
+    }
+    if (partEl && partG) {
+      partEl.setAttribute('width', state.partW);
+      partEl.setAttribute('height', state.partH);
+      var cx = state.partW / 2, cy = state.partH / 2;
+      partG.setAttribute('transform', 'translate(' + nx + ',' + ny + ') rotate(' + (state.partRot || 0) + ' ' + cx + ' ' + cy + ')');
+    }
   }
   function line(x1, y1, x2, y2, sw, color, opacity) {
     var n = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -2663,18 +2709,25 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var s = pxPerInch(), L = labelStep(), T = tickStep(L);
     bedRulers.innerHTML = ''; drawMajorGrid(L);
     var fontWorld = 11 / s, tickOut = Math.max(0.4, 11 / s), gap = Math.max(0.12, 3 / s);
-    var railW = 28 / s;
-    var overshoot = 10 / s;
+    var railW = 36 / s;
+    var overshoot = Math.max(6 / s, 6 / s);
     var lip = 1.5 / s;
     var run = BED + overshoot;
+    var frame = BED + railW;
     bedRulers.appendChild(railRect(0, -railW, run, railW, '#E8EEF8'));
     bedRulers.appendChild(railRect(-railW, 0, railW, run, '#E8EEF8'));
+    bedRulers.appendChild(railRect(0, BED, run, railW, '#E8EEF8'));
+    bedRulers.appendChild(railRect(BED, 0, railW, run, '#E8EEF8'));
     bedRulers.appendChild(railRect(-railW, -railW, railW, railW, '#E2E8F2'));
+    bedRulers.appendChild(railRect(BED, -railW, railW, railW, '#E2E8F2'));
+    bedRulers.appendChild(railRect(-railW, BED, railW, railW, '#E2E8F2'));
+    bedRulers.appendChild(railRect(BED, BED, railW, railW, '#E2E8F2'));
     bedRulers.appendChild(railRect(0, -railW, run, lip, '#C5CDD8'));
     bedRulers.appendChild(railRect(-railW, 0, lip, run, '#C5CDD8'));
-    bedRulers.appendChild(railRect(-railW, -railW, railW, lip, '#C5CDD8'));
-    bedRulers.appendChild(railRect(-railW, -railW, lip, railW, '#C5CDD8'));
-    var numOff = Math.min(railW * 0.58, tickOut * 1.35 + gap + fontWorld * 0.35);
+    bedRulers.appendChild(railRect(0, frame - lip, run, lip, '#C5CDD8'));
+    bedRulers.appendChild(railRect(frame - lip, 0, lip, run, '#C5CDD8'));
+    var numOff = Math.min(railW - fontWorld * 1.35, tickOut * 1.15 + gap + fontWorld * 0.4);
+    if (numOff < tickOut + gap + fontWorld * 0.2) numOff = tickOut + gap + fontWorld * 0.25;
     for (var i = 0; i <= BED; i += T) {
       var isLabel = (i % L === 0) && i !== 0, isMajor = (i % L === 0);
       var len = isMajor ? tickOut * 1.4 : tickOut * 0.75;
@@ -2683,11 +2736,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         bedRulers.appendChild(line(0, i, -len, i, 1, '#000', 0.30));
       }
       if (isLabel) {
-        bedRulers.appendChild(label(i, -numOff, String(i), fontWorld, 'middle', 'hanging'));
-        bedRulers.appendChild(label(-numOff, i, String(i), fontWorld, 'end', 'middle'));
+        bedRulers.appendChild(label(i, -numOff, String(i), fontWorld, 'middle', 'middle'));
+        bedRulers.appendChild(label(-numOff, i, String(i), fontWorld, 'middle', 'middle'));
       }
     }
-    bedRulers.appendChild(label(-numOff * 0.72, -numOff * 0.72, '0', fontWorld, 'end', 'hanging'));
+    bedRulers.appendChild(label(-numOff * 0.72, -numOff * 0.72, '0', fontWorld, 'middle', 'middle'));
   }
 
   /* Right-pin residual: 20px from blank right · 10px above blank top */
@@ -2713,6 +2766,22 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   function render() {
     layoutBlank(); applyCamera(); drawBedRulers(); positionBlankTicker(); syncHudBlankFromBed();
   }
+  window.__bedSetPart = function (w, h, rot) {
+    if (Number.isFinite(w)) state.partW = w;
+    if (Number.isFinite(h)) state.partH = h;
+    if (Number.isFinite(rot)) state.partRot = rot;
+    render();
+  };
+  window.__bedSetNest = function (m) {
+    if (!m) return;
+    state.margin = {
+      l: Number.isFinite(m.l) ? m.l : 0.25,
+      r: Number.isFinite(m.r) ? m.r : 0.25,
+      t: Number.isFinite(m.t) ? m.t : 0.25,
+      b: Number.isFinite(m.b) ? m.b : 0.25
+    };
+    render();
+  };
   function fitBed() {
     state.zoom = 1;
     var s = fittedScale();
@@ -2792,12 +2861,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   const state = {
     calc: false, collapsed: false, drag: null,
     units: 'in', blankW: 12, blankH: 8,
-    partX: 80.342, partY: 40.0, partLinked: false,
+    partX: 1.250, partY: 3.375, partLinked: false,
     lcd: '0', acc: null, op: null, fresh: true
   };
 
   const paramState = {
-    part: { x: 80.342, y: 40.0, linked: false },
+    part: { x: 1.250, y: 3.375, linked: false },
     blank: { x: 12, y: 8, linked: false },
     gap: { x: 0.375, y: 0.125, linked: true },
     margin: { l: 0.25, r: 0.25, t: 0.25, b: 0.25 },
@@ -2949,14 +3018,22 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     state.partX = p.x; state.partY = p.y; state.partLinked = !!p.linked;
     state.blankW = b.x; state.blankH = b.y;
     updateSaveDirty();
-    syncStageToContent();
+    if (typeof window.__bedSetPart === 'function') window.__bedSetPart(p.x, p.y);
+    if (typeof window.__bedSetNest === 'function') window.__bedSetNest(m);
+    remasureHudStage();
   }
-  function syncStageToContent() {
-    if (state.collapsed || state.calc || !hudMode || !hudStage || !hudBody) return;
-    var h = hudMode.scrollHeight;
+  function remasureHudStage() {
+    if (state.collapsed || !hudMode || !hudStage || !hudBody) return;
+    var prevPos = hudMode.style.position;
+    var prevOp = hudMode.style.opacity;
+    hudMode.style.position = 'static';
+    hudMode.style.opacity = '1';
+    var h = hudMode.offsetHeight;
+    hudMode.style.position = prevPos;
+    hudMode.style.opacity = prevOp;
     if (!h) return;
     var prev = parseFloat(hudBody.dataset.hudStageH || '0');
-    if (Math.abs(h - prev) > 1) {
+    if (Math.abs(h - prev) > 0.5) {
       hudBody.dataset.hudStageH = String(h);
       hudBody.dataset.hudH = String(h);
       applyBodyHeight();
@@ -3069,6 +3146,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (e.target.closest && e.target.closest('button')) return;
     const r = hud.getBoundingClientRect();
     state.drag = { ox: e.clientX - r.left, oy: e.clientY - r.top, pid: e.pointerId, sl: r.left, st: r.top };
+    hud.classList.add('is-dragging');
+    hud.classList.remove('is-gliding');
     hud.style.transform = 'none';
     hud.style.left = r.left + 'px';
     hud.style.top = r.top + 'px';
@@ -3091,6 +3170,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       window.__cardUserDrag.hud = true;
     }
     try { hudHeader.releasePointerCapture(state.drag.pid); } catch (_) {}
+    hud.classList.remove('is-dragging');
     state.drag = null;
   }
   hudHeader.addEventListener('pointerdown', beginHudDrag);
@@ -3203,6 +3283,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     document.querySelectorAll('.param-row').forEach(function (row) {
       row.classList.remove('is-open', 'show-hover');
     });
+    remasureHudStage();
   }
 
   document.addEventListener('click', function (e) {
@@ -3443,7 +3524,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       paintPresetButtons(key);
     }
     updateSaveDirty();
-    requestAnimationFrame(function () { positionOutsideHUD(); positionOutsideHUD(); });
+    requestAnimationFrame(function () {
+      positionOutsideHUD(); positionOutsideHUD();
+      remasureHudStage();
+    });
   }
 
   hud.addEventListener('click', function (e) {
@@ -3773,7 +3857,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
           out += '<span class="tok-c">' + escapeHtml(line.slice(i)) + '</span>';
           break;
         }
-        var m = line.slice(i).match(/^([A-Za-z])([-+]?\d*\.?\d*)/);
+        var prev = i > 0 ? line[i - 1] : '';
+        var wordStart = !/[A-Za-z0-9_]/.test(prev);
+        var m = wordStart ? line.slice(i).match(/^([A-Za-z])([-+]?\d+\.?\d*)/) : null;
         if (m) {
           var letter = m[1].toUpperCase();
           var word = m[0];
@@ -3783,6 +3869,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
           else if (letter === 'F' || letter === 'S') cls = 'tok-fs';
           else if (letter === 'T') cls = 'tok-t';
           else if (letter === 'N') cls = 'tok-n';
+          else if ('XYZIJKR'.indexOf(letter) !== -1) cls = 'tok-xyz';
           if (cls) out += '<span class="' + cls + '">' + escapeHtml(word) + '</span>';
           else out += escapeHtml(word);
           i += word.length;
@@ -4407,6 +4494,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       syncProcessState();
       setTab('source');
       showToast('Output cleared');
+      if (typeof window.__bedSetPart === 'function') window.__bedSetPart(undefined, undefined, 0);
       return;
     }
     if (state === 'process') {
@@ -4424,6 +4512,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       setTab('output');
       showToast('Output ready');
       flashGreenRing();
+      if (typeof window.__bedSetPart === 'function') window.__bedSetPart(undefined, undefined, rot);
     }
   });
 
@@ -4637,10 +4726,14 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
   function placeCard(el, left, top) {
     if (!el) return;
+    el.classList.remove('is-dragging');
+    el.classList.add('is-gliding');
     el.style.left = Math.round(left) + 'px';
     el.style.top = Math.round(top) + 'px';
     el.style.right = 'auto';
     el.style.transform = 'none';
+    clearTimeout(el._glideTimer);
+    el._glideTimer = setTimeout(function () { el.classList.remove('is-gliding'); }, 460);
   }
   var TOP_BAND = 25;
   function findOpenSpace(el, avoids) {
@@ -4678,41 +4771,19 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var vw = window.innerWidth;
     var top = TOP_BAND;
 
-    var cards = [];
-    if (tpOpen) cards.push({ el: tp, w: tp.offsetWidth || 280, user: !!(flags.toolpath && reason !== 'toolpath') });
-    if (flipitOpen) cards.push({ el: gcode, w: gcode.offsetWidth, user: !!flags.flipit });
-    if (hud) cards.push({ el: hud, w: hud.offsetWidth, user: !!flags.hud });
-
-    if (tpOpen && flipitOpen && hud) {
-      var trio = [
-        { el: tp, w: tp.offsetWidth || 280 },
-        { el: gcode, w: gcode.offsetWidth },
-        { el: hud, w: hud.offsetWidth }
-      ];
-      var trioW = trio[0].w + trio[1].w + trio[2].w;
-      var trioGap = (vw - trioW) / 4;
-      if (trioGap < 16) trioGap = 16;
-      var tx = trioGap;
-      trio.forEach(function (c) {
-        placeCard(c.el, tx, top);
-        tx += c.w + trioGap;
-      });
-      flags.toolpath = false;
+    if (flipitOpen && hud) {
+      var gW = gcode.offsetWidth;
+      var hW = hud.offsetWidth;
+      var tW = tpOpen ? (tp.offsetWidth || 280) : 0;
+      placeCard(gcode, Math.max(TOP_BAND, (vw - gW) / 2), top);
+      placeCard(hud, Math.max(TOP_BAND, vw - hW - TOP_BAND), top);
+      if (tpOpen) {
+        var leftSlot = Math.max(TOP_BAND, ((vw - gW) / 2 - tW) / 2);
+        placeCard(tp, leftSlot, top);
+      }
       flags.flipit = false;
       flags.hud = false;
-      return;
-    }
-
-    if (cards.length >= 2) {
-      var totalW = 0;
-      cards.forEach(function (c) { totalW += c.w; });
-      var gap = (vw - totalW) / (cards.length + 1);
-      if (gap < 16) gap = 16;
-      var x = gap;
-      cards.forEach(function (c) {
-        if (!c.user) placeCard(c.el, x, top);
-        x += c.w + gap;
-      });
+      if (tpOpen) flags.toolpath = false;
       return;
     }
 
