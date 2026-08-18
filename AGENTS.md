@@ -7,237 +7,112 @@ differ from your training data. Read the relevant guide in
 notices.
 <!-- END:nextjs-agent-rules -->
 
-# AGENTS.md - NestCalc
+# AGENTS.md — NestCalc
 
-## Project Overview
+Repo name is NestCalc. Product name is FLiPIT.
+Next.js 16 web PWA. Clerk auth. Serwist/PWA. Vercel.
 
-HowMany is the product name for this Next.js 16 web PWA for fast rectangular
-nesting on shop-floor scraps and remnants. **NestCalc remains the repository
-name.** The full locked brand line is **HowMany by wReckless Toddler LLC**. It
-uses Clerk authentication, Serwist/PWA infrastructure, and Vercel deployment
-patterns. Keep it web/PWA first for now; future iOS work is out of scope unless
-a goal explicitly names it.
+Every surface output is a handoff. See `docs/templates/handoff.md`.
+Procedure lives in `docs/WORKFLOW.md`. Routing lives here.
 
-The product name, full brand line, and header wordmark are locked authority:
-the header is the left gradient square with its icon plus free-standing
-lowercase `h`, Lucide `CircleQuestionMark`, and `wMany`, with no surrounding
-pill, box, outline, or grouped text container. Do not change its icon, letter
-case, spacing, or structure without a new human decision. The accepted
-`docs/ui-shell` lineage (canonical source:
-`docs/nestcalc-ui-redesign-package/REFERENCE-PROTOTYPE-v2.html`) is the locked
-visual/structure authority for future wiring. It is protected from casual
-overwrite, replacement, or reinterpretation without a new human decision.
+## Commands
 
-## Core Authority And Reading Order
+Host first. Do not sandbox-first for npm, Playwright, git, or committed
+`scripts/*.py`.
 
-Read these first for significant goals or feature waves. Later items do not
-override earlier ones unless the active goal explicitly narrows product scope:
+```text
+npm run lint
+npm run build
+npm run test
+npm run test:unit
+npm run test:e2e
+npm run test:e2e:auth
+npm run governance:check
+npm run test:governance
+python3 scripts/nestcalc-governance.py check
+python3 scripts/nestcalc-governance.py validate-goal --goal GOAL.md
+```
 
-1. `AGENTS.md` (this file)
-2. `GOAL.md` when present — active scope authority for the current wave
+A script written in this step is not host-first until it is on HEAD and
+`python3 scripts/nestcalc-governance.py check` has been re-run from the host.
+
+Missing Clerk auth env is blocked proof, not a pass.
+
+## Boundaries
+
+### Always
+
+- One worktree + one branch per authorized scope.
+- Engine and chrome do not share a worktree unless the active GOAL names both.
+- Start-check match handoff Branch + Head. Create or switch, then continue.
+- Echo `flow_id` and `goal_sha256` every turn when a goal is on.
+- Preserve calculator math and AutoNest unless the active GOAL names them.
+- Preserve FLiPIT identity and V3 HTML + SPEC unless a new wReckless decision.
+- Keep secrets, `.env*`, and production credentials out of git.
+- Workers fail-closed on governance files. wReckless + SuperGrok may author them.
+
+### Never
+
+- Touch `main`.
+- Merge, Production, MODE, or identity without the wReckless gate.
+- Invent the next Surface.
+- Soft-infer across authorities.
+- Import NanoTate golden-pipeline, SBOM, or env-proxy as NestCalc continue-gates.
+- Mix engine and chrome in one worktree unless the active GOAL names both.
+- Sandbox-first the host-first list.
+
+### Corrective Action
+
+- **None** — no problem this step.
+- **Correction** — known predetermined fix. Worker applies it, records it on
+  the handoff, continues.
+- **Bent** — missed, new, or unknown-cause break. Continue. wReckless + SuperGrok
+  watch the flow and inspect prior waypoints. Harden later.
+- **Broken** — known hard gate. STOP. Problem only. No correction.
+
+Hard gates: `main`, Production, secrets, MODE, FLiPIT name, V3 authority.
+Wrong branch or worktree is Correction, not Broken.
+
+Elevated CA is wReckless + SuperGrok process harden. Workers do not open it.
+
+## Surfaces
+
+Surface = the step. Waypoint = the intersection. Handoff = the copyable block.
+The waypoint chooses the Surface. Preferred strengths are not walls.
+Any worker may receive any named task the handoff authorizes.
+Workers execute the received handoff. They do not invent the next Surface.
+
+| Surface | Role |
+| --- | --- |
+| wReckless | Gates: merge, Production, identity, MODE. Not an authority hop. |
+| SuperGrok | Orchestrator only. No product implement. |
+| Grok Build | Preferred implement / review+closeout when named. |
+| Codex App | Named implement when the handoff says so. |
+| Codex CLI | Named implement or escalate after no progress. |
+
+When independent review is named: B6 → B7 → B8 → B9.
+B6 waypoint change → stop; do not enter B7.
+B7 and B8 travel together. B8 is wReckless merge.
+B9 is post-merge. wReckless at B9 only if confidence or criteria are not met.
+Grok Build may do B6+B7 one pass on the same authorized head only when B6
+has no waypoint change.
+
+Escalate Grok Build → Codex CLI after real tries with no progress.
+Do not auto-spawn Codex.
+
+## Authority
+
+Read in this order. Later items do not override earlier ones unless the
+active GOAL narrows scope.
+
+1. This file
+2. Active `GOAL.md`
 3. `docs/WORKFLOW.md`
-4. `docs/governance/goal-lifecycle-contract.md` and `docs/governance/README.md`
-   when the goal or handoff path is in scope
-5. `LESSONS_LEARNED.md`
-6. `docs/architecture/ARCHITECTURE_REVIEW_TODO.md`
-7. `NestCalc_Build_Spec.md`
-8. `NestCalc_Build_Spec_V2.md`
-9. `NestCalc_Build_Spec_V3.md`
-10. `README.md`
+4. `LESSONS_LEARNED.md`
+5. V3 HTML + SPEC under `docs/howmany-v3-components/` and related docs packages
 
-`GOAL.md` must stay to one active objective and must not become an execution
-transcript. Soft inference is forbidden: if authority conflicts, stop and flag.
+Live GitHub wins mutable facts. Conversation memory is advisory.
+wReckless is a gate, not an authority hop. Soft inference is forbidden.
 
-Governance contracts are **enforce-grade**. `docs/governance/MODE` is
-`advisory` until promotion criteria in
-`docs/governance/GAP-AND-HARDENING.md` are met. MODE does not make contracts
-optional.
-
-## Role Separation
-
-### Chat Planning Layer
-
-- Planning, architecture decisions, workflow enforcement, prompt drafting,
-  review intake, and PR/Grok Build triage.
-- Creates or refines `GOAL.md` only when the goal workflow is explicitly in use.
-- Autonomous NestCalc goal prep **MUST** use `nestcalc-goal-grilling`.
-- Drafts thin Codex CLI `/goal` prompts when the human asks for CLI handoff.
-- Reviews implementation results, diffs, evidence, and follow-up risk.
-
-### Codex CLI / Grok Build CLI Execution Layer
-
-- Primary implementation surface for non-trivial product changes.
-- Reads active authority files first and treats the active goal as controlling
-  scope.
-- Runs B4-style preflight before first implementation edit (see WORKFLOW).
-- Runs local verification and reports exact evidence back to chat.
-- Does not expand scope into protected surfaces unless the active goal names
-  them.
-- Does not invent approvals, Flow-IDs mid-cycle, or merge authority.
-
-### Grok Build Review Layer
-
-- PR review and critique only unless the human explicitly directs otherwise.
-- Findings are brought back to chat, triaged, and converted into scoped follow-up
-  goals or commits.
-- PR closeout uses the global `pr-closeout-breakdown` skill: post the breakdown
-  comment with section 8 merge disposition, required Flow ID, validate with
-  `validate-closeout-breakdown`, and preview lesson persistence to the canonical
-  checkout.
-- NestCalc closeout stage codes: **B6** review, **B7** closeout, **B8** human
-  merge, **B9** post-merge. Do not invent conflicting stage codes.
-
-### Human
-
-- Provides final approval on major waves, goal confidence, workflow deviations,
-  merge readiness, deployment, and production decisions.
-- Supplies valid local Clerk/Vercel credentials when authenticated browser proof
-  is required.
-- Sole authority for MODE promotion and merge.
-
-## Workflow Rules (Fail-Closed)
-
-1. Discuss and select significant goals in chat before implementation.
-2. Keep any root `GOAL.md` to exactly one active goal.
-3. Commit goal-memory docs separately from implementation when using the goal
-   workflow.
-4. Hand non-trivial implementation to Codex CLI with a thin `/goal` prompt and a
-   durable B3-style execution handoff (`create-handoff`, prompt hash only).
-5. CLI execution **MUST** start from B4-style preflight: read authority files,
-   validate goal, confirm handoff/branch/lessons, choose the smallest useful
-   skill set, create a feature branch or worktree, keep implementation off local
-   `main`. Preflight failure → stop.
-6. After CLI execution, review `git status`, inspect scope, run or confirm
-   verification, then commit implementation separately.
-7. Completed implementation waves push a branch and open a ready-for-review
-   GitHub PR, not a draft PR, unless the human explicitly asks for draft.
-8. Required verification failures are blockers. Continue diagnosing in-scope
-   failures; do not close out with partial proof claimed as pass.
-9. Browser/PWA proof is required for UI work before calling it complete.
-10. After merge, sync `main`, prune stale refs, remove merged local branches or
-    obsolete worktrees, and persist approved lessons from PR closeout into
-    `LESSONS_LEARNED.md`.
-11. Architecture reviews, task lists, or PR closeout comments do not replace
-    durable repo authority files.
-12. Do not flip `docs/governance/MODE` outside a dedicated promotion goal that
-    meets `docs/governance/GAP-AND-HARDENING.md`.
-
-See `docs/WORKFLOW.md` for the full operating model.
-
-## Skill Routing
-
-Choose the smallest skill/plugin set needed for the active goal. Do not load
-every skill by default. Name material skills in `GOAL.md` or the CLI prompt.
-
-Default workflow skill order:
-
-- `codex-repo-hygiene-gate` before goal prep, implementation, PR closeout, or
-  cleanup. Unrelated dirty state → stop.
-- `ask-matt` only when the goal shape or skill path is genuinely unclear.
-- `nestcalc-goal-grilling` for autonomous NestCalc goal prep: evidence →
-  confidence → decision → residual risk / flagged decisions; read-only
-  sub-agents with `gpt-5.6-terra` at medium reasoning effort only;
-  orchestrator retains write authority; stop before commit or CLI prompt unless
-  the human asks.
-- `codex-goal-prep` for `GOAL.md` updates, separate goal-memory commits, and
-  thin `/goal` prompts when the human requests handoff.
-- `codex-pr-closeout`, `codex-grok-review-intake`, and
-  `codex-post-merge-cleanup` for PR lifecycle work.
-- `lessons-aware-plan-scanner` or direct `LESSONS_LEARNED.md` review before
-  implementation and PR closeout.
-
-Default web app skills/plugins:
-
-- `vercel-plugin:nextjs`, `vercel-plugin:react-best-practices`,
-  `vercel-plugin:next-best-practices`, and `vercel-plugin:verification` for
-  Next.js/React/Vercel implementation and verification.
-- `clerk` as the auth router skill. Use it to choose the specific Clerk skill.
-- `clerk-setup` for Clerk app/env setup, key pulls, and integration health
-  checks.
-- `clerk-nextjs-patterns` for `proxy.ts`, protected routes, server/client auth
-  APIs, route handlers, and caching behavior.
-- `clerk-custom-ui` for sign-in appearance, `<Show>`, and auth UI polish.
-- `clerk-testing` for Playwright/Cypress auth tests. It requires Clerk test keys
-  and usually `CLERK_TESTING_TOKEN`.
-- `clerk-cli` for Clerk CLI operations such as `clerk env pull`, `clerk doctor`,
-  app linking, and environment refreshes.
-- `playwright` or `playwright-interactive`, plus Browser plugin capabilities,
-  for browser proof.
-- `tdd` for test-first feature or bug work.
-- `diagnosing-bugs` for failing, broken, slow, or unexplained behavior.
-- `improve-codebase-architecture` and `codebase-design` for deep-module
-  refactors and architecture review.
-- `security-audit`, `security-threat-model`, and Codex security skills for
-  auth, secrets, PWA, deployment, or public request-access surfaces.
-
-Out of scope by default (hard wall unless the active goal names them):
-
-- iOS/SwiftUI/Xcode skills.
-- Parsing-lab, Borg/wiki, CadQuery, Obsidian, RESOLV, and ShopQuote-specific
-  skills.
-- NanoTate enterprise long-tail (SBOM, env-proxy, golden pipeline) as NestCalc
-  required gates.
-
-## Product Guardrails
-
-- Preserve calculator math unless the active goal explicitly changes it.
-- Preserve AutoNest packing ranking, counts, trim-edge policies, fallback
-  guards, and search budget unless the active goal explicitly changes them.
-- Preserve current Clerk auth policy, request-access policy, and route shape
-  unless the active goal explicitly changes them.
-- Preserve the locked HowMany identity, header wordmark, and `docs/ui-shell`
-  authority lineage unless a new human decision explicitly changes them.
-- Keep real secrets and production auth values out of committed files.
-- Keep PWA/service-worker changes narrow and verified with browser/PWA proof.
-- Keep the app small, fast, and shop-floor focused.
-
-## Verification Expectations
-
-Use the strongest verification practical for the active goal:
-
-- `npm run lint`
-- `npm run build`
-- `npm run test` or `npm run test:unit`
-- `npm run test:e2e` when valid Clerk publishable/secret keys are available
-- `npm run test:e2e:auth` when full Clerk E2E values are available
-- `npm run governance:check` and `npm run test:governance` for governance waves
-- Playwright browser proof for UI flows
-- PWA/offline-shell checks for PWA changes
-
-When valid Clerk environment values are unavailable, report authenticated or
-public Clerk-backed browser proof as **blocked**, never as a pass.
-
-## Protected Surfaces
-
-Do not touch these unless the active goal explicitly includes them:
-
-- calculator math and nesting behavior
-- AutoNest engine packing, ranking, counts, trim-edge policies, fallback guards,
-  and search budget
-- calculator UI layout and input behavior
-- Clerk production auth policy and request-access policy
-- app routes and sign-up behavior
-- secrets, `.env*`, deployment credentials, or Vercel project settings
-- PWA service-worker/runtime cache behavior
-- repository governance files outside the requested workflow scope
-- HowMany product identity, locked header wordmark, and `docs/ui-shell`
-  visual/structure authority lineage; changing these requires a new human
-  decision, not merely an active goal that names them
-- active product `GOAL.md` content during governance-only waves
-- `docs/governance/MODE` outside a dedicated promotion goal
-- native iOS companion app planning or implementation
-
-## Useful Files
-
-- `docs/WORKFLOW.md` — operating model and skill map
-- `docs/governance/goal-lifecycle-contract.md` — harden-grade lifecycle gates
-- `docs/governance/GAP-AND-HARDENING.md` — soft→hard record and MODE promotion
-- `docs/SKILL_AND_PLUGIN_RECOMMENDATIONS.md` — capability inventory and defaults
-- `docs/architecture/ARCHITECTURE_REVIEW_TODO.md` — architecture recommendations
-- `LESSONS_LEARNED.md` — reusable PR closeout lessons
-- `NestCalc_Build_Spec.md`, `NestCalc_Build_Spec_V2.md`, and
-  `NestCalc_Build_Spec_V3.md` — product direction
-- `README.md` — high-level project description
-
-Update this file when the project workflow, protected surfaces, or skill routing
-changes.
+`docs/governance/MODE` stays `advisory` until a dedicated wReckless promotion goal.
+Contracts still fail closed. MODE does not make them optional.
