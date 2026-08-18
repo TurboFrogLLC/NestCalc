@@ -43,6 +43,8 @@ Bridges in this host:
   · R9  Remove blank lock · calc = ticker height · glow −60% bed-only
         Top-band equal cards · zoom chrome front · preset chips + toast
         Two-line margin height · frost-blue ruler rails
+  · R10 Calc hover stays visible · glow −50% again · rails past grid
+        Y rail outside numbers · preset Confirm/Cancel · 3-card re-apply
 
 Not wired: sandbox isolator · child-spec · Post → HUD/bed hydrate.
 Prior composition/lock archives stay on disk.
@@ -112,7 +114,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   body.lb-dragging-y #lb-blank,
   body.lb-dragging-xy #lb-blank {
     stroke: #16a34a;
-    filter: drop-shadow(0 0 1.2px rgba(0, 180, 40, 0.28));
+    filter: drop-shadow(0 0 0.6px rgba(0, 180, 40, 0.14));
   }
 
   .blank-ticker-cluster {
@@ -165,7 +167,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   .blank-ticker-cluster .bt-calc:hover {
     color: #ffffff;
     border-color: rgba(255, 255, 255, 0.35);
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(48, 42, 64, 0.94);
   }
   .blank-ticker-cluster .bt-calc:active { transform: scale(0.94); }
   .blank-ticker-cluster .bt-calc svg {
@@ -572,6 +574,41 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       background: rgba(255, 255, 255, 0.95);
       color: #1A1428;
     }
+    .param-popover .pop-pre-confirm {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 6.6px;
+      margin: 0 0 8.8px;
+    }
+    .param-popover.is-arming .pop-pre-confirm { display: flex; }
+    .param-popover .pop-pre-ok,
+    .param-popover .pop-pre-cancel {
+      height: 18px;
+      padding: 0 8px;
+      border: none;
+      border-radius: 4.4px;
+      font-family: var(--font);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .param-popover .pop-pre-ok {
+      background: rgba(255, 255, 255, 0.90);
+      color: #1A1428;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.95),
+        0 0.5px 1px rgba(0, 0, 0, 0.22);
+    }
+    .param-popover .pop-pre-ok:hover { background: #ffffff; }
+    .param-popover .pop-pre-cancel {
+      background: rgba(255, 255, 255, 0.14);
+      color: #FFCE1B;
+    }
+    .param-popover .pop-pre-cancel:hover { background: rgba(255, 255, 255, 0.22); }
     .param-popover .pop-toast {
       position: absolute;
       left: 50%;
@@ -2184,6 +2221,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
                     <button type="button" class="pop-close" data-pop-close title="Close" aria-label="Close"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
                   </div>
                 </div>
+                <div class="pop-pre-confirm">
+                  <button type="button" class="pop-pre-ok" data-pre-ok>Confirm</button>
+                  <button type="button" class="pop-pre-cancel" data-pre-cancel>Cancel</button>
+                </div>
                 <div class="pop-toast" aria-live="polite"></div>
                 <div class="pop-xy">
                   <div class="pop-half"><span>X</span><input data-blank="x" type="text" inputmode="decimal" value="12.000" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
@@ -2212,6 +2253,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
                     <button type="button" class="pop-close" data-pop-close title="Close" aria-label="Close"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
                   </div>
                 </div>
+                <div class="pop-pre-confirm">
+                  <button type="button" class="pop-pre-ok" data-pre-ok>Confirm</button>
+                  <button type="button" class="pop-pre-cancel" data-pre-cancel>Cancel</button>
+                </div>
                 <div class="pop-toast" aria-live="polite"></div>
                 <div class="pop-xy">
                   <div class="pop-half"><span>X</span><input data-gap="x" type="text" inputmode="decimal" value="0.375" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
@@ -2237,6 +2282,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
                     <button type="button" class="pop-save" data-pop-save title="Save" aria-label="Save changes"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg></button>
                     <button type="button" class="pop-close" data-pop-close title="Close" aria-label="Close"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
                   </div>
+                </div>
+                <div class="pop-pre-confirm">
+                  <button type="button" class="pop-pre-ok" data-pre-ok>Confirm</button>
+                  <button type="button" class="pop-pre-cancel" data-pre-cancel>Cancel</button>
                 </div>
                 <div class="pop-toast" aria-live="polite"></div>
                 <div class="pop-margins">
@@ -2605,16 +2654,22 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   function drawBedRulers() {
     var s = pxPerInch(), L = labelStep(), T = tickStep(L);
     bedRulers.innerHTML = ''; drawMajorGrid(L);
-    var railW = 32 / s;
-    var lip = 1.6 / s;
-    bedRulers.appendChild(railRect(0, -railW, BED, railW, '#E8EEF8'));
-    bedRulers.appendChild(railRect(-railW, 0, railW, BED, '#E8EEF8'));
-    bedRulers.appendChild(railRect(-railW, -railW, railW, railW, '#E2E8F2'));
-    bedRulers.appendChild(railRect(0, -railW, BED, lip, '#C5CDD8'));
-    bedRulers.appendChild(railRect(-railW, 0, lip, BED, '#C5CDD8'));
-    bedRulers.appendChild(railRect(-railW, -railW, railW, lip, '#C5CDD8'));
-    bedRulers.appendChild(railRect(-railW, -railW, lip, railW, '#C5CDD8'));
     var fontWorld = 11 / s, tickOut = Math.max(0.4, 11 / s), gap = Math.max(0.12, 3 / s);
+    var numOff = tickOut * 1.45 + gap + fontWorld * 0.55;
+    var numClear = numOff + fontWorld * 0.85;
+    var railBand = 13 / s;
+    var overshoot = 14 / s;
+    var railInner = numClear;
+    var railOuter = numClear + railBand;
+    var lip = 1.5 / s;
+    var span = BED + overshoot * 2;
+    bedRulers.appendChild(railRect(-overshoot, -railOuter, span, railBand, '#E8EEF8'));
+    bedRulers.appendChild(railRect(-railOuter, -overshoot, railBand, span, '#E8EEF8'));
+    bedRulers.appendChild(railRect(-railOuter, -railOuter, railBand, railBand, '#E2E8F2'));
+    bedRulers.appendChild(railRect(-overshoot, -railOuter, span, lip, '#C5CDD8'));
+    bedRulers.appendChild(railRect(-railOuter, -overshoot, lip, span, '#C5CDD8'));
+    bedRulers.appendChild(railRect(-railOuter, -railOuter, railBand, lip, '#C5CDD8'));
+    bedRulers.appendChild(railRect(-railOuter, -railOuter, lip, railBand, '#C5CDD8'));
     for (var i = 0; i <= BED; i += T) {
       var isLabel = (i % L === 0) && i !== 0, isMajor = (i % L === 0);
       var len = isMajor ? tickOut * 1.4 : tickOut * 0.75;
@@ -2623,13 +2678,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         bedRulers.appendChild(line(0, i, -len, i, 1, '#000', 0.30));
       }
       if (isLabel) {
-        var inset = Math.min(railW * 0.58, len + gap + fontWorld * 0.35);
-        bedRulers.appendChild(label(i, -inset, String(i), fontWorld, 'middle', 'hanging'));
-        bedRulers.appendChild(label(-inset, i, String(i), fontWorld, 'end', 'middle'));
+        bedRulers.appendChild(label(i, -numOff, String(i), fontWorld, 'middle', 'hanging'));
+        bedRulers.appendChild(label(-numOff, i, String(i), fontWorld, 'end', 'middle'));
       }
     }
-    var originInset = Math.min(railW * 0.52, Math.max(0.65, 16 / s) * 0.55);
-    bedRulers.appendChild(label(-originInset, -originInset, '0', fontWorld, 'end', 'hanging'));
+    bedRulers.appendChild(label(-numOff * 0.72, -numOff * 0.72, '0', fontWorld, 'end', 'hanging'));
   }
 
   /* Right-pin residual: 20px from blank right · 10px above blank top */
@@ -2790,6 +2843,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       btn.classList.toggle('is-armed', armed);
       btn.setAttribute('aria-pressed', armed ? 'true' : 'false');
     });
+    var pop = document.querySelector('.param-popover[data-pop="' + key + '"]');
+    if (pop) pop.classList.toggle('is-arming', !!presetState.armed[key]);
   }
   function writeFieldsFromBag(key) {
     if (key === 'blank') {
@@ -3174,16 +3229,28 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (saveBtn) {
       e.preventDefault(); e.stopPropagation();
       if (paramState.open) {
-        var stored = saveArmedPreset(paramState.open);
-        if (stored) {
-          paramState.snapshot = takeSnapshot(paramState.open);
-          updateSaveDirty();
-          showPresetToast(saveBtn.closest('.param-popover'));
-          return;
-        }
         paramState.snapshot = takeSnapshot(paramState.open);
         refreshTickers();
         closeAllParamPopovers();
+      }
+      return;
+    }
+    const preOk = e.target.closest('[data-pre-ok]');
+    if (preOk) {
+      e.preventDefault(); e.stopPropagation();
+      var okKey = paramState.open;
+      if (okKey && saveArmedPreset(okKey)) {
+        showPresetToast(preOk.closest('.param-popover'));
+      }
+      return;
+    }
+    const preCancel = e.target.closest('[data-pre-cancel]');
+    if (preCancel) {
+      e.preventDefault(); e.stopPropagation();
+      var cancelKey = paramState.open;
+      if (cancelKey && PRESET_KEYS.indexOf(cancelKey) !== -1) {
+        presetState.armed[cancelKey] = null;
+        paintPresetButtons(cancelKey);
       }
       return;
     }
@@ -4584,6 +4651,26 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (tpOpen) cards.push({ el: tp, w: tp.offsetWidth || 280, user: !!(flags.toolpath && reason !== 'toolpath') });
     if (flipitOpen) cards.push({ el: gcode, w: gcode.offsetWidth, user: !!flags.flipit });
     if (hud) cards.push({ el: hud, w: hud.offsetWidth, user: !!flags.hud });
+
+    if (tpOpen && flipitOpen && hud) {
+      var trio = [
+        { el: tp, w: tp.offsetWidth || 280 },
+        { el: gcode, w: gcode.offsetWidth },
+        { el: hud, w: hud.offsetWidth }
+      ];
+      var trioW = trio[0].w + trio[1].w + trio[2].w;
+      var trioGap = (vw - trioW) / 4;
+      if (trioGap < 16) trioGap = 16;
+      var tx = trioGap;
+      trio.forEach(function (c) {
+        placeCard(c.el, tx, top);
+        tx += c.w + trioGap;
+      });
+      flags.toolpath = false;
+      flags.flipit = false;
+      flags.hud = false;
+      return;
+    }
 
     if (cards.length >= 2) {
       var totalW = 0;
