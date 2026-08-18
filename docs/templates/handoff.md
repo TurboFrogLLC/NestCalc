@@ -32,6 +32,22 @@ Pack `06` may carry extra routing-header fields (Worktree, Model, Effort,
 Orchestration, Session, Mode). This product file keeps the slimmer set.
 The three bands stay.
 
+## Orchestrator emission (two copy boxes)
+
+When SuperGrok (or another Orchestrator) hands work to a human for a host
+shell Surface, emit **two** separate copy boxes, in order:
+
+1. Terminal commands — `cd` into the NestCalc primary clone or named worktree,
+   fetch/checkout/branch as needed, short head check.
+2. The one handoff block above.
+
+Primary clone path:
+`/Users/computer/wrecklesstoddler/vibe/projects/nestcalc`
+
+Do not fold the terminal commands into the handoff body by default.
+When Branch is populated, the terminal box is required for Orchestrator
+human-facing output.
+
 ## Corrective Action line
 
 Values: None | Bent | Correction | Broken.
@@ -42,9 +58,9 @@ Values: None | Bent | Correction | Broken.
 
 Definitions live in AGENTS.md Boundaries. Do not restate them here.
 
-## Optional terminal check
+## Optional worker terminal check
 
-After the block, the Surface may add:
+After the handoff block, a worker Surface may add:
 
 ```text
 git rev-parse --abbrev-ref HEAD
