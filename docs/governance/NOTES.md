@@ -29,6 +29,8 @@ docs/templates/handoff.md.
 - Preferred AGENTS length 90–150. This draft is in that band including the
   Next.js rules header.
 - Escalation after no progress is named. Exact try-count is not locked.
+- B9 command list (exact fetch/prune/worktree delete order) is not restated
+  here. Old WORKFLOW had the long hygiene list; lean B9 names the outcome.
 
 ## Known drift this PR is meant to surface
 
@@ -45,6 +47,8 @@ docs/templates/handoff.md.
   governance README. Lean AGENTS shortens that list. Specs still exist.
 - Skill routing tables (Clerk, Vercel plugins, iOS wall) were removed from
   AGENTS. Inventory still lives in `docs/SKILL_AND_PLUGIN_RECOMMENDATIONS.md`.
+- Current main B9 is always post-merge hygiene. This draft: B6–B9 ladder;
+  Human at B9 only if confidence or criteria are not met.
 
 ## Out of this PR
 

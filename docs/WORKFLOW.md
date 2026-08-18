@@ -92,13 +92,16 @@ Missing Clerk auth env is blocked proof, not a pass.
 
 ## Land
 
-When independent review is named: B6 → B7 → B8.
+When independent review is named: B6 → B7 → B8 → B9.
 
-- B6 may emit a waypoint change → stop; do not enter B7.
-- B7 and B8 always travel together (closeout then Human merge).
+- B6 review. A waypoint change here → stop; do not enter B7.
+- B7 closeout and B8 Human merge always travel together.
+- B8 stays Human.
+- B9 post-merge: sync, prune, persist approved lessons, quiet archive
+  when that is the named work. Worker continues when confidence and
+  criteria are met. Human at B9 only if they are not.
 - Grok Build may do B6+B7 in one pass on the same authorized head
   only when B6 has no waypoint change.
-- B8 stays Human.
 
 Implementation waves push the branch and open a ready-for-review PR unless
 the Human asks for draft. This governance review PR is draft by request.

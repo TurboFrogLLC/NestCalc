@@ -90,9 +90,10 @@ Workers execute the received handoff. They do not invent the next Surface.
 | Codex App | Named implement when the handoff says so. |
 | Codex CLI | Named implement or escalate after no progress. |
 
-When independent review is named: B6 → B7 → B8.
+When independent review is named: B6 → B7 → B8 → B9.
 B6 waypoint change → stop; do not enter B7.
-B7 and B8 travel together. B8 is Human.
+B7 and B8 travel together. B8 is Human merge.
+B9 is post-merge. Human at B9 only if confidence or criteria are not met.
 Grok Build may do B6+B7 one pass on the same authorized head only when B6
 has no waypoint change.
 
