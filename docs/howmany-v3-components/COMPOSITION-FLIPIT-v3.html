@@ -20,9 +20,13 @@ Bridges in this host:
   · R27 toolPath boots hidden
   · R29 LaserBed under .bed-stage (full-viewport primary canvas)
   · R30 HUD position hold (from individual tip — not rewritten here)
+  · R1  Boot: HUD open · FLiPIT closed · HUD ↔ FLiPIT chrome
+        HUD AUTO-SIZE + FLiPIT chips · calc-mode keeps chips
+        LaserBed calc chip → HUD calculator · real local file open
+        Popover clamp avoids open FLiPIT + active bed blank
 
-Not wired: HUD footer AUTO-SIZE / FLiPIT chips · LaserBed calc chip ·
-sandbox isolator · child-spec. Prior composition/lock archives stay on disk.
+Not wired: sandbox isolator · child-spec · Post → HUD/bed hydrate.
+Prior composition/lock archives stay on disk.
 ═══════════════════════════════════════════════════════════════════════════════
 -->
 <html lang="en">
@@ -300,6 +304,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
     #hud-mode { display: flex; flex-direction: column; gap: 4.4px; }
     .keypad.calc-mode #hud-mode { display: none; }
+    /* Calculator path: footer chips stay available while params hide */
 
     .param-rows { display: flex; flex-direction: column; gap: 8.8px; margin-top: 0; }
     .param-row {
@@ -1982,11 +1987,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
             </div>
           </div>
 
-          <div class="hud-footer-sep" aria-hidden="true"></div>
-          <div class="hud-controls">
-            <button type="button" class="hud-ctl" id="btn-auto-size" title="FLiPIT is a separate component">AUTO-SIZE</button>
-            <button type="button" class="hud-ctl" id="btn-gcode" title="FLiPIT is a separate component"><span class="label-flip">FLiP</span><span class="label-it">IT</span></button>
-          </div>
         </div>
 
         <div class="classic-calc" id="classic-calc">
@@ -2013,11 +2013,18 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
             <button type="button" class="ckey op press" data-k="=">=</button>
           </div>
         </div>
+
+        <div class="hud-footer-sep" aria-hidden="true"></div>
+        <div class="hud-controls">
+          <button type="button" class="hud-ctl" id="btn-auto-size" title="Auto-Size part in FLiPIT">AUTO-SIZE</button>
+          <button type="button" class="hud-ctl" id="btn-gcode" title="Open FLiPIT" aria-pressed="false"><span class="label-flip">FLiP</span><span class="label-it">IT</span></button>
+        </div>
       </div>
     </div>
   </div>
     <!-- FLiPIT (lock: FLIPIT-v3) -->
-<aside class="gcode is-open is-expanded" id="gcode" style="--panel-w: 418px; display: flex;" aria-hidden="false">
+<input type="file" id="flipit-file-input" accept=".txt,.nc,.cnc,text/plain" hidden />
+<aside class="gcode is-expanded" id="gcode" style="--panel-w: 418px; display: none;" aria-hidden="true">
     <div class="gcode-toast" id="gcode-toast" role="status" aria-live="polite"></div>
     <div class="gcode-resize gcode-resize-e" data-dir="e" aria-hidden="true"></div>
     <div class="gcode-resize gcode-resize-s" data-dir="s" aria-hidden="true"></div>
@@ -2725,29 +2732,68 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     const pw = pop.offsetWidth || 286, ph = pop.offsetHeight || 140;
     const clampX = function (x) { return Math.max(edge, Math.min(x, vw - edge - pw)); };
     const clampY = function (y) { return Math.max(edge, Math.min(y, vh - edge - ph)); };
-    const rightLeft = hudRect.right + gap;
-    const leftLeft = hudRect.left - gap - pw;
-    const bottomTop = hudRect.bottom + gap;
-    const topTop = hudRect.top - gap - ph;
-    let left, top;
-    if (rightLeft + pw <= vw - edge) {
-      left = rightLeft;
-      top = clampY(rowRect.top);
-    } else if (leftLeft >= edge) {
-      left = leftLeft;
-      top = clampY(rowRect.top);
-    } else if (bottomTop + ph <= vh - edge) {
-      left = clampX(hudRect.left);
-      top = bottomTop;
-    } else if (topTop >= edge) {
-      left = clampX(hudRect.left);
-      top = topTop;
-    } else {
-      left = clampX(hudRect.left);
-      top = clampY(topTop);
+    const boxAt = function (x, y) {
+      return { left: x, top: y, right: x + pw, bottom: y + ph };
+    };
+    const overlaps = function (a, b, pad) {
+      pad = pad || 0;
+      return !(a.right + pad <= b.left || a.left - pad >= b.right || a.bottom + pad <= b.top || a.top - pad >= b.bottom);
+    };
+    const avoidRects = [];
+    const gcode = document.getElementById('gcode');
+    if (gcode && gcode.classList.contains('is-open') && gcode.style.display !== 'none') {
+      avoidRects.push(gcode.getBoundingClientRect());
     }
-    pop.style.left = Math.round(left) + 'px';
-    pop.style.top = Math.round(top) + 'px';
+    const blank = document.getElementById('lb-blank');
+    if (blank) avoidRects.push(blank.getBoundingClientRect());
+    const hitsAvoid = function (box) {
+      for (let i = 0; i < avoidRects.length; i++) {
+        if (overlaps(box, avoidRects[i], 8)) return true;
+      }
+      return false;
+    };
+    const onScreen = function (box) {
+      return box.left >= edge && box.top >= edge && box.right <= vw - edge && box.bottom <= vh - edge;
+    };
+    const candidates = [
+      { left: hudRect.right + gap, top: clampY(rowRect.top) },
+      { left: hudRect.left - gap - pw, top: clampY(rowRect.top) },
+      { left: clampX(hudRect.left), top: hudRect.bottom + gap },
+      { left: clampX(hudRect.left), top: hudRect.top - gap - ph },
+      { left: clampX(hudRect.right - pw), top: hudRect.bottom + gap },
+      { left: clampX(hudRect.right - pw), top: hudRect.top - gap - ph }
+    ];
+    let chosen = null;
+    for (let i = 0; i < candidates.length; i++) {
+      const c = candidates[i];
+      const box = boxAt(c.left, c.top);
+      if (onScreen(box) && !hitsAvoid(box)) { chosen = box; break; }
+    }
+    if (!chosen) {
+      /* Shift the preferred on-screen candidate off FlipIt / blank. */
+      const fallback = boxAt(
+        clampX(hudRect.right + gap <= vw - edge ? hudRect.right + gap : hudRect.left - gap - pw),
+        clampY(rowRect.top)
+      );
+      let left = fallback.left, top = fallback.top;
+      avoidRects.forEach(function (r) {
+        const trial = boxAt(left, top);
+        if (!overlaps(trial, r, 8)) return;
+        const opts = [
+          { left: r.left - gap - pw, top: top },
+          { left: r.right + gap, top: top },
+          { left: left, top: r.top - gap - ph },
+          { left: left, top: r.bottom + gap }
+        ];
+        for (let i = 0; i < opts.length; i++) {
+          const box = boxAt(clampX(opts[i].left), clampY(opts[i].top));
+          if (onScreen(box) && !hitsAvoid(box)) { left = box.left; top = box.top; return; }
+        }
+      });
+      chosen = boxAt(clampX(left), clampY(top));
+    }
+    pop.style.left = Math.round(chosen.left) + 'px';
+    pop.style.top = Math.round(chosen.top) + 'px';
   }
 
   function takeSnapshot(key) {
@@ -2966,30 +3012,34 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
   function lockBodyHeight() {
     const wasCollapsed = state.collapsed, wasCalc = state.calc;
+    const inner = document.getElementById('hud-body-inner');
     hud.classList.remove('collapsed');
+    hudBody.style.minHeight = '';
     classicEl.style.display = 'flex';
     hudMode.style.display = 'none';
-    hudBody.style.minHeight = '';
-    requestAnimationFrame(function () {
-      const calcH = classicEl.offsetHeight;
-      classicEl.style.display = 'none';
-      hudMode.style.display = 'flex';
-      const hudH = hudMode.offsetHeight;
-      hudBody.style.transition = 'none';
-      hudBody.dataset.hudH = String(hudH);
-      hudBody.dataset.calcH = String(calcH);
-      hudBody.style.minHeight = (wasCalc ? calcH : hudH) + 'px';
-      state.calc = wasCalc; state.collapsed = wasCollapsed;
-      applyModeVisibility();
-    });
+    const calcH = inner ? inner.offsetHeight : classicEl.offsetHeight;
+    classicEl.style.display = 'none';
+    hudMode.style.display = 'flex';
+    const hudH = inner ? inner.offsetHeight : hudMode.offsetHeight;
+    hudBody.style.transition = 'none';
+    hudBody.dataset.hudH = String(hudH);
+    hudBody.dataset.calcH = String(calcH);
+    hudBody.style.minHeight = (wasCalc ? calcH : hudH) + 'px';
+    state.calc = wasCalc; state.collapsed = wasCollapsed;
+    applyModeVisibility();
   }
 
-  /* Footer chips are no-ops in standalone (FLiPIT is a separate component) */
+  window.__hudToggleCalc = function () { setCalc(!state.calc); };
+  window.__hudExitCalc = function () { if (state.calc) setCalc(false); };
+
   document.getElementById('btn-auto-size').addEventListener('click', function () {
-    /* no-op — FLiPIT lives in its own component package */
+    closeAllParamPopovers();
+    if (typeof window.__hudExitCalc === 'function') window.__hudExitCalc();
+    if (typeof window.__flipitAutoSize === 'function') window.__flipitAutoSize();
   });
   document.getElementById('btn-gcode').addEventListener('click', function () {
-    /* no-op — FLiPIT lives in its own component package */
+    closeAllParamPopovers();
+    if (typeof window.__flipitToggle === 'function') window.__flipitToggle();
   });
 
   setCalc(false);
@@ -3002,24 +3052,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 </script>
 <script>
 /* ── FLiPIT ── */
-/* ── FLiPIT standalone script (authority fb011e6b) ── */
+/* ── FLiPIT host script (authority fb011e6b + R1 chrome) ── */
 (function () {
-  var SAMPLE =
-    'O1001\n' +
-    '(BRACKET PLATE - SAMPLE)\n' +
-    'N10 G90 G17 G20\n' +
-    'N20 G0 X0. Y0. Z1.\n' +
-    'N30 T1 M6\n' +
-    'N40 M3 S2400\n' +
-    'N50 G1 Z-0.125 F12.0\n' +
-    'N60 G1 X82.398 F18.0\n' +
-    'N70 Y92.396\n' +
-    'N80 X0.\n' +
-    'N90 Y0.\n' +
-    'N100 G0 Z1.\n' +
-    'N110 M5\n' +
-    'N120 M30\n';
-
   var panel = document.getElementById('gcode');
   var toastEl = document.getElementById('gcode-toast');
   var source = document.getElementById('source');
@@ -3267,8 +3301,44 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     syncSourceChrome();
     setTab('source');
   }
-  function loadSampleProgram() {
-    loadSourceText(SAMPLE, 'BRACKET_PLATE');
+  function acceptLocalFile(file) {
+    if (!file) return false;
+    var name = String(file.name || '');
+    var type = String(file.type || '');
+    if (/\.(txt|nc|cnc)$/i.test(name)) return true;
+    if (type === 'text/plain') return true;
+    if (!name && (type === '' || type === 'text/plain')) return true;
+    return false;
+  }
+  function programStem(name) {
+    return String(name || '').replace(/\.(txt|nc|cnc)$/i, '');
+  }
+  function handleLocalFile(file) {
+    if (!file) return;
+    if (!acceptLocalFile(file)) {
+      showToast('Use a .txt, .nc, or .cnc file');
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function () {
+      loadSourceText(String(reader.result || ''), programStem(file.name));
+      showToast('Program loaded — Auto-Size ready');
+    };
+    reader.onerror = function () { showToast('Could not read file'); };
+    reader.readAsText(file);
+  }
+  var fileInput = document.getElementById('flipit-file-input');
+  if (fileInput) {
+    fileInput.addEventListener('change', function () {
+      var file = fileInput.files && fileInput.files[0];
+      handleLocalFile(file);
+      fileInput.value = '';
+    });
+  }
+  function openLocalProgram() {
+    if (!fileInput) return;
+    fileInput.value = '';
+    fileInput.click();
   }
 
   function setStatus(state) {
@@ -3379,6 +3449,16 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     dragBar.addEventListener('pointercancel', end);
   })();
 
+  function isGcodeOpen() {
+    return panel.classList.contains('is-open') && panel.style.display !== 'none';
+  }
+  function syncHudFlipitChrome() {
+    var btn = document.getElementById('btn-gcode');
+    if (!btn) return;
+    var on = isGcodeOpen();
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    btn.title = on ? 'Close FLiPIT' : 'Open FLiPIT';
+  }
   function openGcode(expanded) {
     panel.classList.add('is-open');
     panel.setAttribute('aria-hidden', 'false');
@@ -3393,6 +3473,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       panel.style.left = 'auto';
     }
     setExpanded(!!expanded);
+    syncHudFlipitChrome();
   }
   function closeGcode() {
     if (panel.classList.contains('is-open') && panel.style.display !== 'none') {
@@ -3406,6 +3487,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     panel.setAttribute('aria-hidden', 'true');
     panel.style.display = 'none';
     setExpanded(false);
+    syncHudFlipitChrome();
+  }
+  function toggleGcode() {
+    if (isGcodeOpen()) closeGcode();
+    else openGcode(true);
   }
   document.getElementById('btn-close').addEventListener('click', closeGcode);
 
@@ -3704,7 +3790,17 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   btnDl.addEventListener('click', downloadOut);
   btnSave.addEventListener('click', downloadOut);
 
-  document.getElementById('btn-open').addEventListener('click', loadSampleProgram);
+  document.getElementById('btn-open').addEventListener('click', openLocalProgram);
+
+  window.__flipitOpen = function (expanded) { openGcode(expanded !== false); };
+  window.__flipitClose = closeGcode;
+  window.__flipitToggle = toggleGcode;
+  window.__flipitAutoSize = function () {
+    openGcode(true);
+    if (detectPart()) showToast('Part sized');
+    else showToast('Load a program to Auto-Size');
+    return !!bounds;
+  };
 
   /* R17 composition bridge — waypoints toggle toolPath */
   ['btn-toolpath-src', 'btn-toolpath-out'].forEach(function (id) {
@@ -3728,7 +3824,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     });
   });
 
-  setExpanded(true);
+  closeGcode();
   setStatus('none');
   setOutEnabled(false);
   syncSourceChrome();
@@ -3820,6 +3916,18 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
   /* R27 composition — default-hidden until FLiPIT waypoints */
   setToolpathOpen(false);
+})();
+</script>
+<script>
+/* ── Host residual R1 — LaserBed calc chip → HUD calculator ── */
+(function () {
+  var btCalc = document.getElementById('bt-calc');
+  if (!btCalc) return;
+  btCalc.addEventListener('click', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (typeof window.__hudToggleCalc === 'function') window.__hudToggleCalc();
+  });
 })();
 </script>
 </body>

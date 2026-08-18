@@ -38,5 +38,5 @@ Older filenames referenced in early docs (`LASER-BED-v3-v1.html`, `NUMERIC-HUD-v
 
 1. Load `ALIGNMENT-v3.SPEC.md` for shared tokens / z-index / hide policies
 2. Load each living `*.SPEC.md` + matching HTML as authority for that surface
-3. Load `COMPOSITION-FLIPIT-v3.html` for the assembled host + bridges (R17 / R27 / R29 / R30)
+3. Load `COMPOSITION-FLIPIT-v3.html` for the assembled host + bridges (R17 / R27 / R29 / R30 / R1 chrome)
 4. HTML wins on pixel/token conflicts vs SPEC
