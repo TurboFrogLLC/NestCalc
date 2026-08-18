@@ -45,6 +45,7 @@ Bridges in this host:
         Two-line margin height · frost-blue ruler rails
   · R10 Calc hover stays visible · glow −50% again · rails past grid
         Y rail outside numbers · preset Confirm/Cancel · 3-card re-apply
+  · R11 Preset edit mode (load vs write) · rails origin-to-end filled
 
 Not wired: sandbox isolator · child-spec · Post → HUD/bed hydrate.
 Prior composition/lock archives stay on disk.
@@ -581,7 +582,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       gap: 6.6px;
       margin: 0 0 8.8px;
     }
-    .param-popover.is-arming .pop-pre-confirm { display: flex; }
+    .param-popover.is-editing.is-arming .pop-pre-confirm { display: flex; }
+    .param-popover .pop-edit.is-on {
+      background: rgba(255, 206, 27, 0.22);
+      color: #FFCE1B;
+    }
     .param-popover .pop-pre-ok,
     .param-popover .pop-pre-cancel {
       height: 18px;
@@ -634,13 +639,13 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       transform: translateX(-50%) translateY(0);
     }
     .param-popover .pop-actions { display: flex; align-items: center; gap: 4.4px; flex-shrink: 0; }
-    .param-popover .pop-close, .param-popover .pop-save {
+    .param-popover .pop-close, .param-popover .pop-save, .param-popover .pop-edit {
       width: 19.8px; height: 19.8px; border: none; border-radius: 4.4px;
       background: rgba(255, 255, 255, 0.12); color: #FFCE1B;
       display: inline-flex; align-items: center; justify-content: center;
       cursor: pointer; padding: 0; flex-shrink: 0;
     }
-    .param-popover .pop-close:hover, .param-popover .pop-save:hover {
+    .param-popover .pop-close:hover, .param-popover .pop-save:hover, .param-popover .pop-edit:hover {
       background: rgba(255, 255, 255, 0.22); color: #FFCE1B;
     }
     .param-popover .pop-save.is-dirty { background: rgba(255, 255, 255, 0.12); color: #16A34A; }
@@ -2217,6 +2222,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
                     <button type="button" class="pop-pre" data-pre="B" aria-pressed="false" title="Preset B">B</button>
                   </div>
                   <div class="pop-actions">
+                    <button type="button" class="pop-edit" data-pre-edit title="Edit presets" aria-label="Edit presets" aria-pressed="false"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button>
                     <button type="button" class="pop-save" data-pop-save title="Save" aria-label="Save changes"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg></button>
                     <button type="button" class="pop-close" data-pop-close title="Close" aria-label="Close"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
                   </div>
@@ -2249,6 +2255,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
                     <button type="button" class="pop-pre" data-pre="B" aria-pressed="false" title="Preset B">B</button>
                   </div>
                   <div class="pop-actions">
+                    <button type="button" class="pop-edit" data-pre-edit title="Edit presets" aria-label="Edit presets" aria-pressed="false"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button>
                     <button type="button" class="pop-save" data-pop-save title="Save" aria-label="Save changes"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg></button>
                     <button type="button" class="pop-close" data-pop-close title="Close" aria-label="Close"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
                   </div>
@@ -2279,6 +2286,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
                     <button type="button" class="pop-pre" data-pre="B" aria-pressed="false" title="Preset B">B</button>
                   </div>
                   <div class="pop-actions">
+                    <button type="button" class="pop-edit" data-pre-edit title="Edit presets" aria-label="Edit presets" aria-pressed="false"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button>
                     <button type="button" class="pop-save" data-pop-save title="Save" aria-label="Save changes"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg></button>
                     <button type="button" class="pop-close" data-pop-close title="Close" aria-label="Close"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
                   </div>
@@ -2655,21 +2663,18 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var s = pxPerInch(), L = labelStep(), T = tickStep(L);
     bedRulers.innerHTML = ''; drawMajorGrid(L);
     var fontWorld = 11 / s, tickOut = Math.max(0.4, 11 / s), gap = Math.max(0.12, 3 / s);
-    var numOff = tickOut * 1.45 + gap + fontWorld * 0.55;
-    var numClear = numOff + fontWorld * 0.85;
-    var railBand = 13 / s;
-    var overshoot = 14 / s;
-    var railInner = numClear;
-    var railOuter = numClear + railBand;
+    var railW = 28 / s;
+    var overshoot = 10 / s;
     var lip = 1.5 / s;
-    var span = BED + overshoot * 2;
-    bedRulers.appendChild(railRect(-overshoot, -railOuter, span, railBand, '#E8EEF8'));
-    bedRulers.appendChild(railRect(-railOuter, -overshoot, railBand, span, '#E8EEF8'));
-    bedRulers.appendChild(railRect(-railOuter, -railOuter, railBand, railBand, '#E2E8F2'));
-    bedRulers.appendChild(railRect(-overshoot, -railOuter, span, lip, '#C5CDD8'));
-    bedRulers.appendChild(railRect(-railOuter, -overshoot, lip, span, '#C5CDD8'));
-    bedRulers.appendChild(railRect(-railOuter, -railOuter, railBand, lip, '#C5CDD8'));
-    bedRulers.appendChild(railRect(-railOuter, -railOuter, lip, railBand, '#C5CDD8'));
+    var run = BED + overshoot;
+    bedRulers.appendChild(railRect(0, -railW, run, railW, '#E8EEF8'));
+    bedRulers.appendChild(railRect(-railW, 0, railW, run, '#E8EEF8'));
+    bedRulers.appendChild(railRect(-railW, -railW, railW, railW, '#E2E8F2'));
+    bedRulers.appendChild(railRect(0, -railW, run, lip, '#C5CDD8'));
+    bedRulers.appendChild(railRect(-railW, 0, lip, run, '#C5CDD8'));
+    bedRulers.appendChild(railRect(-railW, -railW, railW, lip, '#C5CDD8'));
+    bedRulers.appendChild(railRect(-railW, -railW, lip, railW, '#C5CDD8'));
+    var numOff = Math.min(railW * 0.58, tickOut * 1.35 + gap + fontWorld * 0.35);
     for (var i = 0; i <= BED; i += T) {
       var isLabel = (i % L === 0) && i !== 0, isMajor = (i % L === 0);
       var len = isMajor ? tickOut * 1.4 : tickOut * 0.75;
@@ -2805,7 +2810,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     blank: { A: null, B: null },
     gap: { A: null, B: null },
     margin: { A: null, B: null },
-    armed: { blank: null, gap: null, margin: null }
+    armed: { blank: null, gap: null, margin: null },
+    editing: { blank: false, gap: false, margin: false }
   };
   function clonePreset(v) {
     return v ? JSON.parse(JSON.stringify(v)) : null;
@@ -2844,7 +2850,16 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       btn.setAttribute('aria-pressed', armed ? 'true' : 'false');
     });
     var pop = document.querySelector('.param-popover[data-pop="' + key + '"]');
-    if (pop) pop.classList.toggle('is-arming', !!presetState.armed[key]);
+    if (pop) {
+      var editing = !!presetState.editing[key];
+      pop.classList.toggle('is-editing', editing);
+      pop.classList.toggle('is-arming', editing && !!presetState.armed[key]);
+      var editBtn = pop.querySelector('[data-pre-edit]');
+      if (editBtn) {
+        editBtn.classList.toggle('is-on', editing);
+        editBtn.setAttribute('aria-pressed', editing ? 'true' : 'false');
+      }
+    }
   }
   function writeFieldsFromBag(key) {
     if (key === 'blank') {
@@ -2885,6 +2900,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     presetState[key][slot] = takeSnapshot(key);
     persistPresets();
     presetState.armed[key] = null;
+    presetState.editing[key] = false;
     paintPresetButtons(key);
     return true;
   }
@@ -3250,8 +3266,19 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       var cancelKey = paramState.open;
       if (cancelKey && PRESET_KEYS.indexOf(cancelKey) !== -1) {
         presetState.armed[cancelKey] = null;
+        presetState.editing[cancelKey] = false;
         paintPresetButtons(cancelKey);
       }
+      return;
+    }
+    const editBtn = e.target.closest('[data-pre-edit]');
+    if (editBtn) {
+      e.preventDefault(); e.stopPropagation();
+      var editKey = paramState.open;
+      if (!editKey || PRESET_KEYS.indexOf(editKey) === -1) return;
+      presetState.editing[editKey] = !presetState.editing[editKey];
+      if (!presetState.editing[editKey]) presetState.armed[editKey] = null;
+      paintPresetButtons(editKey);
       return;
     }
     const preBtn = e.target.closest('.pop-pre');
@@ -3261,9 +3288,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       const key = wrap && wrap.getAttribute('data-presets');
       const slot = preBtn.getAttribute('data-pre');
       if (!key || !slot || PRESET_KEYS.indexOf(key) === -1) return;
+      if (presetState.editing[key]) {
+        presetState.armed[key] = presetState.armed[key] === slot ? null : slot;
+        paintPresetButtons(key);
+        return;
+      }
       if (presetState[key][slot]) applyPresetSlot(key, slot);
-      presetState.armed[key] = presetState.armed[key] === slot ? null : slot;
-      paintPresetButtons(key);
     }
   });
 
@@ -3409,6 +3439,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     row.classList.add('is-open');
     if (PRESET_KEYS.indexOf(key) !== -1) {
       presetState.armed[key] = null;
+      presetState.editing[key] = false;
       paintPresetButtons(key);
     }
     updateSaveDirty();
