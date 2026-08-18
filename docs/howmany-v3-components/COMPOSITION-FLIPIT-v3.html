@@ -35,6 +35,8 @@ Bridges in this host:
   · R5  HUD motion matches FlipIt 240ms grid ease (no minHeight snap)
         Bed blank → HUD Blank ticker live · #bt-calc floats outside ticker pill
   · R6  HUD param↔calc stacked crossfade + header radius synced to 0fr end
+  · R7  Collapsed ticker fades after settle · FlipIt surface fade
+        Blank+ticker above HUD · square #bt-calc · outside-arc corner grab
 
 Not wired: sandbox isolator · child-spec · Post → HUD/bed hydrate.
 Prior composition/lock archives stay on disk.
@@ -79,13 +81,36 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   body.lb-panning.lb-dragging { cursor: grabbing; }
 
   /* Blank ticker cluster — pill + disconnected calc, right-pinned together */
+  .lb-blank-layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    z-index: 45;
+    pointer-events: none;
+    overflow: visible;
+  }
+  #lb-hit-right, #lb-hit-top, #lb-hit-corner { pointer-events: auto; }
+  #lb-corner-arc {
+    fill: none;
+    stroke: #000;
+    stroke-width: 2;
+    stroke-linecap: round;
+    pointer-events: none;
+  }
+  body.lb-dragging-xy #lb-corner-arc {
+    stroke: #16a34a;
+    filter: drop-shadow(0 0 3px rgba(0, 180, 40, 0.7));
+  }
+
   .blank-ticker-cluster {
     position: fixed;
-    z-index: 22;
+    z-index: 46;
     height: 34px;
     display: none;
     align-items: center;
-    gap: 6px;
+    gap: 3px;
     pointer-events: none;
   }
   .blank-ticker-cluster.is-on { display: inline-flex; }
@@ -113,7 +138,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
   .blank-ticker .bt-readout { line-height: 1; letter-spacing: 0.01em; }
   .blank-ticker-cluster .bt-calc {
-    width: 26px; height: 26px; min-width: 26px; min-height: 26px;
+    width: 34px; height: 34px; min-width: 34px; min-height: 34px;
     margin: 0; padding: 0;
     border: 1.1px solid rgba(255, 255, 255, 0.18);
     border-radius: 6.6px;
@@ -126,7 +151,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
   .blank-ticker-cluster .bt-calc:hover { background: rgba(26, 20, 40, 0.92); color: #ffffff; }
   .blank-ticker-cluster .bt-calc:active { transform: scale(0.94); }
-  .blank-ticker-cluster .bt-calc svg { display: block; width: 15px; height: 15px; pointer-events: none; }
+  .blank-ticker-cluster .bt-calc svg {
+    display: block; width: 16px; height: 16px; pointer-events: none;
+    transform: translateY(0.5px);
+  }
 
 /* ── Numeric HUD (NUMERIC-HUD-v3) ── */
 :root {
@@ -285,12 +313,33 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       flex: 1; min-width: 0;
       display: flex; align-items: center; justify-content: center;
     }
-    .keypad .header-part-ticker { display: none; pointer-events: none; }
-    .keypad.collapsed .header-part-ticker {
+    .keypad .header-part-ticker {
       display: flex;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: none;
+    }
+    .keypad:not(.collapsed) .header-part-ticker {
+      position: absolute;
+      width: 0;
+      height: 0;
+      overflow: hidden;
+    }
+    .keypad.collapsed .header-part-ticker {
+      position: static;
+      width: auto;
+      height: auto;
+      overflow: visible;
       background: linear-gradient(var(--blue-28), var(--blue-28)), #ffffff;
       border: 1.1px solid rgba(83, 139, 236, 0.35);
       color: var(--ink);
+      transition: opacity var(--motion-collapse) var(--ease), visibility var(--motion-collapse) var(--ease);
+    }
+    .keypad.collapsed.is-settled .header-part-ticker {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
     }
 
     #hud-body {
@@ -988,6 +1037,32 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }
     .surface-spacer { flex: 1 1 auto; min-width: 4.4px; }
 
+    .surface-lead {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      min-height: 28.6px;
+      flex-shrink: 0;
+    }
+    .surface-expanded-chrome {
+      display: inline-flex;
+      align-items: center;
+      gap: 4.4px;
+      opacity: 0;
+      pointer-events: none;
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      transition: opacity var(--dur) var(--ease);
+    }
+    .gcode.is-expanded .surface-expanded-chrome {
+      position: static;
+      transform: none;
+      opacity: 1;
+      pointer-events: auto;
+    }
+
     .btn-gc0de {
       height: 28.6px;
       padding: 0 11px;
@@ -1005,10 +1080,15 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       align-items: center;
       justify-content: center;
       box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.25);
+      transition: opacity var(--dur) var(--ease);
     }
     .btn-gc0de:hover { background: var(--blue-28); }
     .btn-gc0de:active { transform: scale(0.98); }
-    .gcode.is-expanded .btn-gc0de { display: none; }
+    .gcode.is-expanded .btn-gc0de {
+      opacity: 0;
+      pointer-events: none;
+      position: absolute;
+    }
 
     .gcode .part-group {
       display: inline-flex;
@@ -1217,7 +1297,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     .gcode .part-group.is-connected .part-sep { display: block; }
 
     .btn-surface-chevron {
-      display: none;
+      display: inline-flex;
       width: 28.6px;
       height: 28.6px;
       min-width: 28.6px;
@@ -1243,7 +1323,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       overflow: visible;
       pointer-events: none;
     }
-    .gcode.is-expanded .btn-surface-chevron { display: inline-flex; }
     .btn-surface-chevron:hover {
       color: var(--ink);
       border-color: rgba(26, 20, 40, 0.35);
@@ -1252,12 +1331,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     .btn-surface-chevron:active { transform: scale(0.94); }
 
     .io-tabs {
-      display: none;
+      display: inline-flex;
       align-items: center;
       gap: 2.2px;
       flex-shrink: 0;
     }
-    .gcode.is-expanded .io-tabs { display: inline-flex; }
     .io-tab {
       height: 28.6px;
       padding: 0 6.6px;
@@ -1906,11 +1984,15 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         <line id="lb-edge-y" x1="0" y1="0" x2="0" y2="48" stroke="#000000" stroke-opacity="0.50" stroke-width="1.75" vector-effect="non-scaling-stroke"/>
         <circle cx="0" cy="0" r="0.12" fill="#000000"/>
         <g id="lb-bed-rulers"></g>
-        <rect id="lb-blank" x="0" y="0" width="12" height="8" fill="#ffffff" fill-opacity="0.80" stroke="#000000" stroke-width="1.25" vector-effect="non-scaling-stroke"/>
-        <rect id="lb-free-corner" x="11.72" y="7.72" width="0.28" height="0.28" fill="rgba(0,0,0,0.14)" stroke="#000000" stroke-width="1.25" vector-effect="non-scaling-stroke" style="pointer-events:none"/>
+      </g>
+    </svg>
+    <svg class="lb-blank-layer" id="lb-blank-layer" xmlns="http://www.w3.org/2000/svg">
+      <g id="lb-blank-cam">
+        <rect id="lb-blank" x="0" y="0" width="12" height="8" fill="#ffffff" fill-opacity="0.80" stroke="#000000" stroke-width="1.25" vector-effect="non-scaling-stroke" style="pointer-events:none"/>
+        <path id="lb-corner-arc" d="M 12.58 8 A 0.58 0.58 0 0 1 12 8.58" vector-effect="non-scaling-stroke"/>
+        <circle id="lb-hit-corner" cx="12.41" cy="8.41" r="0.5" fill="transparent" style="cursor:nesw-resize; pointer-events:all"/>
         <rect id="lb-hit-right"  x="11.65" y="0"    width="0.7" height="8"  fill="transparent" style="cursor:ew-resize"/>
         <rect id="lb-hit-top"    x="0"     y="7.65" width="12"  height="0.7" fill="transparent" style="cursor:ns-resize"/>
-        <rect id="lb-hit-corner" x="11.4"  y="7.4"  width="1.1" height="1.1" fill="transparent" style="cursor:nesw-resize"/>
       </g>
     </svg>
     <div class="lb-chrome">
@@ -2126,12 +2208,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
     <div class="surface-row" id="surface-row">
       <div class="surface-editing-banner" aria-live="polite">EDITING</div>
+      <div class="surface-lead">
       <button type="button" class="btn-gc0de" id="btn-expand" title="Expand G-code" aria-label="Expand G-code" aria-expanded="true">GC0DE</button>
-
+      <div class="surface-expanded-chrome">
       <button type="button" class="btn-surface-chevron" id="btn-surface-chevron" title="Collapse G-code" aria-label="Collapse G-code">
         <svg width="14.3" height="14.3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
       </button>
-
       <div class="io-tabs" id="io-tabs" role="tablist">
         <button type="button" class="io-tab is-on" role="tab" aria-selected="true" data-tab="source" id="tab-source">
           <svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>
@@ -2141,6 +2223,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
           <svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h10"/><path d="M6 12h9"/><path d="M11 18h7"/></svg>
           Output
         </button>
+      </div>
+      </div>
       </div>
 
       <div class="surface-spacer" aria-hidden="true"></div>
@@ -2307,9 +2391,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   var state = { blankW: 12, blankH: 8, snap: 0.125, zoom: 1, panX: 0, panY: 0, dragging: null, start: null };
 
   var svg = document.getElementById('lb-world');
+  var blankLayer = document.getElementById('lb-blank-layer');
   var camera = document.getElementById('lb-camera');
+  var blankCam = document.getElementById('lb-blank-cam');
   var blank = document.getElementById('lb-blank');
-  var freeCorner = document.getElementById('lb-free-corner');
+  var cornerArc = document.getElementById('lb-corner-arc');
   var hitRight = document.getElementById('lb-hit-right');
   var hitTop = document.getElementById('lb-hit-top');
   var hitCorner = document.getElementById('lb-hit-corner');
@@ -2342,18 +2428,27 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
   function applyCamera() {
     var s = pxPerInch();
-    camera.setAttribute('transform', 'translate(' + state.panX + ', ' + state.panY + ') scale(' + s + ', ' + (-s) + ')');
+    var t = 'translate(' + state.panX + ', ' + state.panY + ') scale(' + s + ', ' + (-s) + ')';
+    camera.setAttribute('transform', t);
+    if (blankCam) blankCam.setAttribute('transform', t);
   }
   function layoutBlank() {
-    var w = state.blankW, h = state.blankH, cs = 0.28;
+    var w = state.blankW, h = state.blankH;
     blank.setAttribute('width', w); blank.setAttribute('height', h);
-    freeCorner.setAttribute('x', w - cs); freeCorner.setAttribute('y', h - cs);
     hitRight.setAttribute('x', w - 0.35); hitRight.setAttribute('y', 0);
     hitRight.setAttribute('width', 0.7); hitRight.setAttribute('height', h);
     hitTop.setAttribute('x', 0); hitTop.setAttribute('y', h - 0.35);
     hitTop.setAttribute('width', w); hitTop.setAttribute('height', 0.7);
-    hitCorner.setAttribute('x', w - 0.55); hitCorner.setAttribute('y', h - 0.55);
-    hitCorner.setAttribute('width', 1.1); hitCorner.setAttribute('height', 1.1);
+    var s = pxPerInch();
+    var r = 10 / Math.max(s, 0.001);
+    var d = 'M ' + (w + r) + ' ' + h + ' A ' + r + ' ' + r + ' 0 0 1 ' + w + ' ' + (h + r);
+    if (cornerArc) cornerArc.setAttribute('d', d);
+    if (hitCorner) {
+      var mid = 0.70710678 * r;
+      hitCorner.setAttribute('cx', w + mid);
+      hitCorner.setAttribute('cy', h + mid);
+      hitCorner.setAttribute('r', 8 / Math.max(s, 0.001));
+    }
   }
   function line(x1, y1, x2, y2, sw, color, opacity) {
     var n = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -2434,9 +2529,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
   function onPointerDown(e) {
     var t = e.target;
-    if (t === hitCorner || t.id === 'lb-hit-corner') { state.dragging = 'xy'; document.body.classList.add('lb-dragging-xy'); }
-    else if (t === hitRight || t.id === 'lb-hit-right') { state.dragging = 'x'; document.body.classList.add('lb-dragging-x'); }
-    else if (t === hitTop || t.id === 'lb-hit-top') { state.dragging = 'y'; document.body.classList.add('lb-dragging-y'); }
+    var id = t && t.id;
+    if (t === hitCorner || id === 'lb-hit-corner') { state.dragging = 'xy'; document.body.classList.add('lb-dragging-xy'); }
+    else if (t === hitRight || id === 'lb-hit-right') { state.dragging = 'x'; document.body.classList.add('lb-dragging-x'); }
+    else if (t === hitTop || id === 'lb-hit-top') { state.dragging = 'y'; document.body.classList.add('lb-dragging-y'); }
+    else if (e.currentTarget === blankLayer) return;
     else { state.dragging = 'pan'; document.body.classList.add('lb-panning', 'lb-dragging'); }
     state.start = { cx: e.clientX, cy: e.clientY, w: state.blankW, h: state.blankH, panX: state.panX, panY: state.panY };
     try { e.target.setPointerCapture(e.pointerId); } catch (_) {}
@@ -2460,6 +2557,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
 
   svg.addEventListener('pointerdown', onPointerDown);
+  if (blankLayer) blankLayer.addEventListener('pointerdown', onPointerDown);
   window.addEventListener('pointermove', onPointerMove);
   window.addEventListener('pointerup', onPointerUp);
   window.addEventListener('pointercancel', onPointerUp);
@@ -2588,15 +2686,22 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     hudBody.style.minHeight = '';
   }
 
+  var settledTimer = null;
   function setCollapsed(on) {
     const wasCalc = state.calc;
     state.collapsed = on;
     hud.classList.toggle('collapsed', on);
+    hud.classList.remove('is-settled');
+    if (settledTimer) { clearTimeout(settledTimer); settledTimer = null; }
     btnChevron.setAttribute('aria-expanded', on ? 'false' : 'true');
     btnChevron.title = on ? 'Expand' : 'Collapse';
     if (on) {
       closeAllParamPopovers();
       /* Keep calc-mode while the 0fr close runs so calc does not flash to params. */
+      settledTimer = setTimeout(function () {
+        settledTimer = null;
+        if (state.collapsed) hud.classList.add('is-settled');
+      }, motionMs());
     }
     applyBodyHeight();
     if (on && wasCalc) {

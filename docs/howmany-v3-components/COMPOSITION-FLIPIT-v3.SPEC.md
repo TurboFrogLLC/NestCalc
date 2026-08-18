@@ -1,12 +1,12 @@
 # FlipIt — Composition host — Living SPEC
 
-**Status:** Living (residual R6 — HUD crossfade + synced header radius)  
+**Status:** Living (residual R7 — ticker fade, surface fade, blank above HUD, arc grab)  
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
 **Branch:** `docs/flipit-v3-refinements`  
-**Trace:** `NC-FLIPIT-20260817-R6`  
-**Host tip blob:** `999b6df31854645552e4ae5d543b6539c6b481cf`  
+**Trace:** `NC-FLIPIT-20260817-R7`  
+**Host tip blob:** `120ce855c038bc60796ce68a5b86433706b9f856`  
 **Class:** Exploratory composition host only · not product GOAL · not a shared import  
 
 **Host rule**  
@@ -23,11 +23,12 @@ Prior composition/lock archives (`COMPOSITION-HUD-DECODER-v3.*`, `DE-CODER-v3-LO
 | LaserBed world | `.bed-stage` · `#laser-bed-host` | `LASER-BED-v3.SPEC.md` · tip `40224e68` | 0 |
 | LaserBed chrome (zoom) | `.lb-chrome` | same | 15 |
 | toolPath | `#backplot.toolpath` | `TOOLPATH-v3.SPEC.md` · tip `2e9e2ace` | 20 |
-| Blank ticker | `#blank-ticker` | `LASER-BED-v3.SPEC.md` | 22 |
+| Blank ticker cluster | `#blank-ticker-cluster` | host raise above HUD | **46** |
+| Blank overlay | `#lb-blank-layer` | host raise above HUD | **45** |
 | FLiPIT | `#gcode` · class `.gcode` | `FLIPIT-v3.SPEC.md` · tip `37d628e9` | 30 |
 | FLiPIT toast | `#gcode-toast` | host override of standalone 40 | **35** |
 | Numeric HUD | `#hud` | `NUMERIC-HUD-v3.SPEC.md` · tip `bec93ffa` | 40 |
-| HUD popover | `.param-popover` | same | 50 |
+| HUD popover | `.param-popover` | same (inside HUD stacking context) | 50 |
 
 Z-index scale is from `ALIGNMENT-v3.SPEC.md`. Overlay cards sit **inside** `.bed-stage` so those bands share one stacking context.
 
@@ -49,6 +50,7 @@ Wordmarks stay as locked: **FLiP** white 700 + **IT** amber 800 · **tool** whit
 | **R4** | AUTO-SIZE 2nd click **closes** collapsed FlipIt · Output tab gated until Flip IT · READY/DONE inset status | `__flipitAutoSize` closes when already open+collapsed (no re-detect) · `#tab-output.is-gated` until `hasOutput()` · stage-status inset + 1.7px glow · READY type `--ink-30` |
 | **R5** | HUD motion matches FlipIt · bed blank → HUD Blank live · `#bt-calc` floats outside ticker | `--motion-collapse/expand/mode` **240ms** + `min-height` eased · `__hudSyncBlank(w,h)` from LaserBed `render()` · `#blank-ticker-cluster` |
 | **R6** | HUD param↔calc stacked opacity crossfade · header radius eases with 0fr · calc→collapse does not flash params | `#hud-stage` height 240ms · no `display` swap · header `border-radius` + `border-bottom-color` 240ms · defer `calc-mode` clear until collapse end |
+| **R7** | Collapsed HUD part ticker fades after settle · FlipIt GC0DE↔tabs fade · blank+ticker above HUD · square `#bt-calc` · outside-arc corner grab | `.is-settled` after 240ms · `.surface-lead` opacity · `#lb-blank-layer` z **45** / cluster **46** · `#bt-calc` 34² / 3px gap · `#lb-corner-arc` ~10px / 2px |
 
 Hide primitives stay surface-owned (`ALIGNMENT-v3` §4). Host does not invent a shared hide API.
 
@@ -69,7 +71,11 @@ Hide primitives stay surface-owned (`ALIGNMENT-v3` §4). Host does not invent a 
 | HUD popovers | Keep ALIGNMENT z 50. Placement/clamp only: prefer right → left → bottom → top, then shift so the popover does not cover an open FLiPIT card or the active `#lb-blank`. Viewport inset **16px** (not flush to the edge). |
 | HUD motion | Collapse uses FlipIt `240ms` `grid-template-rows` 0fr/1fr. Param↔calc: stacked `#hud-stage` height + opacity (no `display` swap). Header radius and bottom-border-color ease with the close. Calc→collapse keeps calc visible until 0fr ends. |
 | Bed blank → HUD | LaserBed drag updates HUD Blank ticker + popover via `__hudSyncBlank` (`fmt3`). Host-only; no product backend. |
-| Blank calc (`#bt-calc`) | Outside the ticker pill in `#blank-ticker-cluster`. 6px gap, vertically centered, right-pinned with the pill. Ticker padding is readout-only. R3 click contract unchanged. |
+| Blank calc (`#bt-calc`) | Outside the ticker pill. **34×34** (ticker height, square). 3px gap. Icon optically centered (`translateY(0.5px)`). R3 click contract unchanged. |
+| Collapsed HUD part ticker | Hidden until collapse settles (`.is-settled`), then 240ms fade in. Instant hide on expand (no mid-open flash). |
+| FlipIt surface lead | GC0DE ↔ chevron+Source/Output opacity fade (`var(--dur)`). R3/R4 open/close contracts unchanged. |
+| Blank z-order | `#lb-blank-layer` **45** and ticker cluster **46** sit above HUD **40**. Card bands otherwise keep ALIGNMENT-v3. |
+| Free-corner grab | Inner square removed. Outside quarter-arc (~10px, 2px stroke). `#lb-hit-corner` is a circle on the arc midpoint (XY resize). Green glow while `lb-dragging-xy`. |
 
 ---
 
@@ -126,3 +132,4 @@ Do not require `file://`.
 | 2026-08-17 | **R4** `NC-FLIPIT-20260817-R4`. AUTO-SIZE 2nd click closes collapsed FlipIt. Output tab gated until Flip IT. READY/DONE inset status, READY type lighter gray, glow 1.7px. |
 | 2026-08-17 | **R5** `NC-FLIPIT-20260817-R5`. HUD felt rushed because `applyBodyHeight()` snapped `minHeight` and calc swapped `display` with no transition, so the 600ms grid ease never carried the shell; FlipIt only eases `grid-template-rows` at 240ms. Align HUD to 240ms + ease `min-height`. Bed blank live-syncs HUD Blank. `#bt-calc` floats outside the ticker pill. |
 | 2026-08-17 | **R6** `NC-FLIPIT-20260817-R6`. Snap/flash came from `display` toggles plus instant `calc-mode` teardown, and header radius flipped on class before 0fr finished. Stack modes and ease `#hud-stage` height; sync header radius; defer calc clear until collapse ends. |
+| 2026-08-17 | **R7** `NC-FLIPIT-20260817-R7`. Collapsed part ticker fades after settle. FlipIt surface chrome fades. Blank overlay + ticker above HUD. Square 34px `#bt-calc` at 3px. Inner free-corner square replaced by outside arc grab with drag glow. |
