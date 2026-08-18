@@ -34,6 +34,7 @@ Bridges in this host:
         Output tab gated until Flip IT · READY/DONE inset status chrome
   · R5  HUD motion matches FlipIt 240ms grid ease (no minHeight snap)
         Bed blank → HUD Blank ticker live · #bt-calc floats outside ticker pill
+  · R6  HUD param↔calc stacked crossfade + header radius synced to 0fr end
 
 Not wired: sandbox isolator · child-spec · Post → HUD/bed hydrate.
 Prior composition/lock archives stay on disk.
@@ -221,6 +222,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       z-index: 1;
       border-radius: var(--radius) var(--radius) 0 0;
       background: rgba(26, 20, 40, 0.82);
+      transition:
+        border-radius var(--motion-collapse) var(--ease),
+        border-bottom-color var(--motion-collapse) var(--ease);
     }
     .keypad-header:active { cursor: grabbing; }
     .keypad-header .tool {
@@ -295,9 +299,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       grid-template-rows: 1fr;
       overflow: hidden;
       min-height: 0;
-      transition:
-        grid-template-rows var(--motion-collapse) var(--ease),
-        min-height var(--motion-collapse) var(--ease);
+      transition: grid-template-rows var(--motion-collapse) var(--ease);
     }
     #hud-body-inner {
       overflow: hidden;
@@ -320,12 +322,34 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       padding-bottom: 0;
     }
     .keypad.collapsed .keypad-header {
-      border-bottom: none;
+      border-bottom-color: transparent;
       border-radius: var(--radius);
     }
 
-    #hud-mode { display: flex; flex-direction: column; gap: 4.4px; }
-    .keypad.calc-mode #hud-mode { display: none; }
+    .hud-stage {
+      position: relative;
+      overflow: hidden;
+      flex: 0 0 auto;
+      width: 100%;
+      transition: height var(--motion-mode) var(--ease);
+    }
+    #hud-mode,
+    .classic-calc {
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+      width: 100%;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--motion-mode) var(--ease);
+    }
+    #hud-mode { gap: 4.4px; opacity: 1; pointer-events: auto; }
+    .keypad.calc-mode #hud-mode { opacity: 0; pointer-events: none; }
+    .keypad.calc-mode .classic-calc { opacity: 1; pointer-events: auto; }
     /* Calculator path: footer chips stay available while params hide */
 
     .param-rows { display: flex; flex-direction: column; gap: 8.8px; margin-top: 0; }
@@ -518,8 +542,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       padding: 0; caret-color: var(--ink); overflow: hidden; white-space: nowrap;
     }
 
-    .classic-calc { display: none; flex-direction: column; gap: 6.6px; }
-    .keypad.calc-mode .classic-calc { display: flex; }
+    .classic-calc { gap: 6.6px; }
     .classic-lcd {
       height: 52.8px; border-radius: 11px; border: 1.65px solid var(--ink);
       background: #fff; color: var(--ink); font-family: var(--font-mono);
@@ -1936,6 +1959,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
     <div id="hud-body">
       <div id="hud-body-inner">
+        <div class="hud-stage" id="hud-stage">
         <div id="hud-mode">
           <div class="param-rows">
             <div class="param-row" data-param="part">
@@ -2051,6 +2075,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
             <button type="button" class="ckey press" data-k=".">.</button>
             <button type="button" class="ckey op press" data-k="=">=</button>
           </div>
+        </div>
         </div>
 
         <div class="hud-footer-sep" aria-hidden="true"></div>
@@ -2469,6 +2494,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   const classicEl = document.getElementById('classic-calc');
   const hudMode = document.getElementById('hud-mode');
   const hudBody = document.getElementById('hud-body');
+  const hudStage = document.getElementById('hud-stage');
 
   const state = {
     calc: false, collapsed: false, drag: null,
@@ -2522,12 +2548,22 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     return !!(state.collapsed || hud.classList.contains('collapsed'));
   }
 
+  var motionTimer = null;
+  function motionMs() {
+    const raw = getComputedStyle(hud).getPropertyValue('--motion-mode').trim();
+    const n = parseFloat(raw);
+    return Number.isFinite(n) ? n : 240;
+  }
+  function clearMotionTimer() {
+    if (motionTimer) { clearTimeout(motionTimer); motionTimer = null; }
+  }
+
   function applyModeVisibility() {
-    /* Never leave classic-calc display:flex after collapse — that stale
-       inline style is what made #bt-calc appear to "enter calc" on expand. */
+    /* Class-only: never toggle display. Stacked opacity handles the swap. */
     const showCalc = !!(state.calc && !isHudCollapsed());
-    if (showCalc) { classicEl.style.display = 'flex'; hudMode.style.display = 'none'; }
-    else { classicEl.style.display = 'none'; hudMode.style.display = 'flex'; }
+    hud.classList.toggle('calc-mode', showCalc);
+    if (hudMode) hudMode.setAttribute('aria-hidden', showCalc ? 'true' : 'false');
+    if (classicEl) classicEl.setAttribute('aria-hidden', showCalc ? 'false' : 'true');
   }
 
   /* Initial placement only — collapse/expand never moves left/top (position hold) */
@@ -2540,42 +2576,54 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   })();
 
   function hudMotion() {
-    return 'grid-template-rows var(--motion-collapse) var(--ease), min-height var(--motion-collapse) var(--ease)';
+    return 'grid-template-rows var(--motion-collapse) var(--ease)';
   }
   function applyBodyHeight() {
-    if (!hudBody) return;
-    if (state.collapsed) {
-      hudBody.style.minHeight = '0px';
-      return;
-    }
-    const hudH = parseFloat(hudBody.dataset.hudH || '0');
-    const calcH = parseFloat(hudBody.dataset.calcH || '0');
+    if (!hudStage) return;
+    if (state.collapsed) return;
+    const hudH = parseFloat(hudBody.dataset.hudStageH || hudBody.dataset.hudH || '0');
+    const calcH = parseFloat(hudBody.dataset.calcStageH || hudBody.dataset.calcH || '0');
     const h = state.calc ? calcH : hudH;
-    hudBody.style.minHeight = h ? (h + 'px') : '0px';
+    hudStage.style.height = h ? (h + 'px') : '';
+    hudBody.style.minHeight = '';
   }
 
   function setCollapsed(on) {
+    const wasCalc = state.calc;
     state.collapsed = on;
     hud.classList.toggle('collapsed', on);
     btnChevron.setAttribute('aria-expanded', on ? 'false' : 'true');
     btnChevron.title = on ? 'Expand' : 'Collapse';
-    if (on && state.calc) {
-      state.calc = false;
-      hud.classList.remove('calc-mode');
-      calcToggle.classList.remove('active-calc');
-      calcToggle.setAttribute('aria-pressed', 'false');
-    }
     if (on) {
       closeAllParamPopovers();
-      /* position hold — leave left/top exactly where they are */
+      /* Keep calc-mode while the 0fr close runs so calc does not flash to params. */
     }
-    applyModeVisibility();
     applyBodyHeight();
+    if (on && wasCalc) {
+      clearMotionTimer();
+      motionTimer = setTimeout(function () {
+        motionTimer = null;
+        if (!state.collapsed) return;
+        state.calc = false;
+        calcToggle.classList.remove('active-calc');
+        calcToggle.setAttribute('aria-pressed', 'false');
+        applyModeVisibility();
+        if (hudStage) {
+          hudStage.style.transition = 'none';
+          const ph = parseFloat(hudBody.dataset.hudStageH || hudBody.dataset.hudH || '0');
+          hudStage.style.height = ph ? ph + 'px' : '';
+          void hudStage.offsetHeight;
+          hudStage.style.transition = 'height var(--motion-mode) var(--ease)';
+        }
+      }, motionMs());
+    } else {
+      applyModeVisibility();
+    }
   }
 
   function setCalc(on) {
+    clearMotionTimer();
     state.calc = on;
-    hud.classList.toggle('calc-mode', on);
     calcToggle.classList.toggle('active-calc', on);
     calcToggle.setAttribute('aria-pressed', on ? 'true' : 'false');
     if (on && state.collapsed) setCollapsed(false);
@@ -3080,24 +3128,37 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
   function lockBodyHeight() {
     const wasCollapsed = state.collapsed, wasCalc = state.calc;
-    const inner = document.getElementById('hud-body-inner');
+    if (!hudStage || !hudMode || !classicEl) return;
     hudBody.style.transition = 'none';
-    hud.classList.remove('collapsed');
+    hudStage.style.transition = 'none';
+    hud.classList.remove('collapsed', 'calc-mode');
     hudBody.style.minHeight = '';
-    classicEl.style.display = 'flex';
-    hudMode.style.display = 'none';
-    const calcH = inner ? inner.offsetHeight : classicEl.offsetHeight;
-    classicEl.style.display = 'none';
-    hudMode.style.display = 'flex';
-    const hudH = inner ? inner.offsetHeight : hudMode.offsetHeight;
-    hudBody.dataset.hudH = String(hudH);
-    hudBody.dataset.calcH = String(calcH);
+    hudStage.style.height = 'auto';
+    classicEl.style.position = 'absolute';
+    classicEl.style.opacity = '0';
+    hudMode.style.position = 'static';
+    hudMode.style.opacity = '1';
+    const hudStageH = hudMode.offsetHeight;
+    hudMode.style.position = 'absolute';
+    hudMode.style.opacity = '0';
+    classicEl.style.position = 'static';
+    classicEl.style.opacity = '1';
+    const calcStageH = classicEl.offsetHeight;
+    hudMode.style.position = '';
+    hudMode.style.opacity = '';
+    classicEl.style.position = '';
+    classicEl.style.opacity = '';
+    hudBody.dataset.hudStageH = String(hudStageH);
+    hudBody.dataset.calcStageH = String(calcStageH);
+    hudBody.dataset.hudH = String(hudStageH);
+    hudBody.dataset.calcH = String(calcStageH);
     state.calc = wasCalc; state.collapsed = wasCollapsed;
     hud.classList.toggle('collapsed', wasCollapsed);
     applyModeVisibility();
     applyBodyHeight();
     void hudBody.offsetHeight;
     hudBody.style.transition = hudMotion();
+    hudStage.style.transition = 'height var(--motion-mode) var(--ease)';
   }
 
   window.__hudSyncBlank = function (w, h) {
@@ -3119,8 +3180,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   window.__hudExitCalc = function () { if (state.calc) setCalc(false); };
   window.__hudFromBedCalc = function () {
     if (isHudCollapsed()) {
+      clearMotionTimer();
       state.calc = false;
-      hud.classList.remove('calc-mode');
       calcToggle.classList.remove('active-calc');
       calcToggle.setAttribute('aria-pressed', 'false');
       setCollapsed(false);

@@ -12,7 +12,7 @@ Does not mutate Option B / residual-2 / V2 shell packages. Production still huma
 | FLiPIT | `FLIPIT-v3.html` | `FLIPIT-v3.SPEC.md` | `8922424c…` |
 | toolPath | `TOOLPATH-v3.html` | `TOOLPATH-v3.SPEC.md` | `ebf8d53e…` |
 | LaserBed | `LASER-BED-v3.html` | `LASER-BED-v3.SPEC.md` | `60ca551c…` |
-| **Composition host** | `COMPOSITION-FLIPIT-v3.html` | `COMPOSITION-FLIPIT-v3.SPEC.md` | `a1eba691…` |
+| **Composition host** | `COMPOSITION-FLIPIT-v3.html` | `COMPOSITION-FLIPIT-v3.SPEC.md` | `999b6df3…` |
 | Alignment contract | — | `ALIGNMENT-v3.SPEC.md` | copy-paste only (no runtime plugin) |
 
 Audit (historical filename): `docs/audits/HOWMANY-V3-INDIVIDUALS-AUDIT-2026-08-17.md`
@@ -38,5 +38,5 @@ Older filenames referenced in early docs (`LASER-BED-v3-v1.html`, `NUMERIC-HUD-v
 
 1. Load `ALIGNMENT-v3.SPEC.md` for shared tokens / z-index / hide policies
 2. Load each living `*.SPEC.md` + matching HTML as authority for that surface
-3. Load `COMPOSITION-FLIPIT-v3.html` for the assembled host + bridges (R17 / R27 / R29 / R30 / R1–R5 chrome)
+3. Load `COMPOSITION-FLIPIT-v3.html` for the assembled host + bridges (R17 / R27 / R29 / R30 / R1–R6 chrome)
 4. HTML wins on pixel/token conflicts vs SPEC
