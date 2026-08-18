@@ -48,6 +48,8 @@ Bridges in this host:
   · R11 Preset edit mode (load vs write) · rails origin-to-end filled
   · R12 Compact HUD height · 4-side bed frame · card glide
         Token-aware NC highlight · default part 1.250×3.375 + Flip visual
+  · R13 Preset write-mode + OK applies live fields to HUD/bed
+        Single frost-blue bed rail · XYZR 4dp black · front surface
 
 Not wired: sandbox isolator · child-spec · Post → HUD/bed hydrate.
 Prior composition/lock archives stay on disk.
@@ -77,7 +79,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   .bed-stage { position: fixed; inset: 0; background: #fff; overflow: hidden; z-index: 0; }
   .lb-world { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
   .lb-chrome {
-    position: absolute; top: 12px; right: 12px; display: flex; gap: 6px; z-index: 80;
+    position: absolute; top: 12px; right: 12px; display: flex; gap: 6px; z-index: 82;
   }
   .lb-chrome button {
     width: 28px; height: 28px; padding: 0; border: 1px solid #a2a2a2; border-radius: 4px;
@@ -122,12 +124,13 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
   .blank-ticker-cluster {
     position: fixed;
-    z-index: 46;
+    z-index: 82;
     height: 34px;
     display: none;
     align-items: center;
     gap: 3px;
     pointer-events: none;
+    isolation: isolate;
   }
   .blank-ticker-cluster.is-on { display: inline-flex; }
   .blank-ticker {
@@ -166,11 +169,17 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     box-sizing: border-box;
     overflow: visible;
     transform-origin: center center;
+    position: relative;
+    z-index: 1;
+    opacity: 1;
   }
-  .blank-ticker-cluster .bt-calc:hover {
+  .blank-ticker-cluster .bt-calc:hover,
+  .blank-ticker-cluster .bt-calc:focus,
+  .blank-ticker-cluster .bt-calc:focus-visible {
     color: #ffffff;
     border-color: rgba(255, 255, 255, 0.35);
     background: rgba(48, 42, 64, 0.94);
+    opacity: 1;
   }
   .blank-ticker-cluster .bt-calc:active { transform: scale(0.94); }
   .blank-ticker-cluster .bt-calc svg {
@@ -241,7 +250,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       box-shadow:
         0 0 0 1.1px rgba(255, 255, 255, 0.55),
         0 0 0 1.1px rgba(83, 139, 236, 0.22);
-      z-index: 40;
+      z-index: 80;
       display: flex;
       flex-direction: column;
       overflow: visible;
@@ -590,10 +599,25 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       gap: 6.6px;
       margin: 0 0 8.8px;
     }
-    .param-popover.is-editing.is-arming .pop-pre-confirm { display: flex; }
-    .param-popover .pop-edit.is-on {
-      background: rgba(255, 206, 27, 0.22);
+    .param-popover.is-editing .pop-pre-confirm { display: flex; }
+    .param-popover.is-editing .pop-pre {
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.92),
+        0 0 0 1.2px rgba(255, 206, 27, 0.55),
+        0 0.5px 1px rgba(0, 0, 0, 0.25);
+    }
+    .param-popover.is-editing .pop-title::after {
+      content: "write";
+      margin-left: 6px;
+      font-size: 9px;
+      letter-spacing: 0.06em;
       color: #FFCE1B;
+      opacity: 0.85;
+    }
+    .param-popover .pop-edit.is-on {
+      background: rgba(255, 206, 27, 0.38);
+      color: #FFCE1B;
+      box-shadow: 0 0 0 1.2px rgba(255, 206, 27, 0.70);
     }
     .param-popover .pop-pre-ok,
     .param-popover .pop-pre-cancel {
@@ -616,7 +640,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         inset 0 1px 0 rgba(255, 255, 255, 0.95),
         0 0.5px 1px rgba(0, 0, 0, 0.22);
     }
-    .param-popover .pop-pre-ok:hover { background: #ffffff; }
+    .param-popover .pop-pre-ok:hover:not(:disabled) { background: #ffffff; }
+    .param-popover .pop-pre-ok:disabled {
+      opacity: 0.38;
+      cursor: default;
+    }
     .param-popover .pop-pre-cancel {
       background: rgba(255, 255, 255, 0.14);
       color: #FFCE1B;
@@ -1708,6 +1736,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     .tok-t { color: var(--gc-t); font-weight: 600; }
     .tok-n { color: var(--gc-n); }
     .tok-xyz { color: var(--gc-xyz); }
+    .tok-axis { color: #000000; }
 
     /* Action / stage footer */
     .action-row {
@@ -2710,22 +2739,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     bedRulers.innerHTML = ''; drawMajorGrid(L);
     var fontWorld = 11 / s, tickOut = Math.max(0.4, 11 / s), gap = Math.max(0.12, 3 / s);
     var railW = 36 / s;
-    var overshoot = Math.max(6 / s, 6 / s);
-    var lip = 1.5 / s;
-    var run = BED + overshoot;
-    var frame = BED + railW;
-    bedRulers.appendChild(railRect(0, -railW, run, railW, '#E8EEF8'));
-    bedRulers.appendChild(railRect(-railW, 0, railW, run, '#E8EEF8'));
-    bedRulers.appendChild(railRect(0, BED, run, railW, '#E8EEF8'));
-    bedRulers.appendChild(railRect(BED, 0, railW, run, '#E8EEF8'));
-    bedRulers.appendChild(railRect(-railW, -railW, railW, railW, '#E2E8F2'));
-    bedRulers.appendChild(railRect(BED, -railW, railW, railW, '#E2E8F2'));
-    bedRulers.appendChild(railRect(-railW, BED, railW, railW, '#E2E8F2'));
-    bedRulers.appendChild(railRect(BED, BED, railW, railW, '#E2E8F2'));
-    bedRulers.appendChild(railRect(0, -railW, run, lip, '#C5CDD8'));
-    bedRulers.appendChild(railRect(-railW, 0, lip, run, '#C5CDD8'));
-    bedRulers.appendChild(railRect(0, frame - lip, run, lip, '#C5CDD8'));
-    bedRulers.appendChild(railRect(frame - lip, 0, lip, run, '#C5CDD8'));
+    var frameRun = BED + 2 * railW;
+    bedRulers.appendChild(railRect(-railW, -railW, frameRun, railW, '#E8EEF8'));
+    bedRulers.appendChild(railRect(-railW, BED, frameRun, railW, '#E8EEF8'));
+    bedRulers.appendChild(railRect(-railW, 0, railW, BED, '#E8EEF8'));
+    bedRulers.appendChild(railRect(BED, 0, railW, BED, '#E8EEF8'));
     var numOff = Math.min(railW - fontWorld * 1.35, tickOut * 1.15 + gap + fontWorld * 0.4);
     if (numOff < tickOut + gap + fontWorld * 0.2) numOff = tickOut + gap + fontWorld * 0.25;
     for (var i = 0; i <= BED; i += T) {
@@ -2766,6 +2784,14 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   function render() {
     layoutBlank(); applyCamera(); drawBedRulers(); positionBlankTicker(); syncHudBlankFromBed();
   }
+  window.__bedSetBlank = function (w, h) {
+    var nw = Number.isFinite(w) ? w : state.blankW;
+    var nh = Number.isFinite(h) ? h : state.blankH;
+    if (state.blankW === nw && state.blankH === nh) return;
+    state.blankW = nw;
+    state.blankH = nh;
+    render();
+  };
   window.__bedSetPart = function (w, h, rot) {
     if (Number.isFinite(w)) state.partW = w;
     if (Number.isFinite(h)) state.partH = h;
@@ -2928,6 +2954,33 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         editBtn.classList.toggle('is-on', editing);
         editBtn.setAttribute('aria-pressed', editing ? 'true' : 'false');
       }
+      var okBtn = pop.querySelector('[data-pre-ok]');
+      if (okBtn) okBtn.disabled = !(editing && !!presetState.armed[key]);
+    }
+  }
+  function parseLiveNumber(el) {
+    if (!el) return null;
+    var raw = String(el.value || '').trim();
+    if (raw === '' || raw === '.') return 0;
+    var n = parseFloat(raw);
+    return Number.isFinite(n) ? n : null;
+  }
+  function commitLiveFields(key) {
+    if (key === 'part' || key === 'blank' || key === 'gap') {
+      var bag = paramState[key];
+      if (!bag) return;
+      var ix = document.querySelector('[data-' + key + '="x"]');
+      var iy = document.querySelector('[data-' + key + '="y"]');
+      var nx = parseLiveNumber(ix);
+      var ny = parseLiveNumber(iy);
+      if (nx != null) bag.x = nx;
+      if (ny != null) bag.y = ny;
+      if (bag.linked) bag.y = bag.x;
+    } else if (key === 'margin') {
+      ['l', 'r', 't', 'b'].forEach(function (k) {
+        var n = parseLiveNumber(document.querySelector('[data-m="' + k + '"]'));
+        if (n != null) paramState.margin[k] = n;
+      });
     }
   }
   function writeFieldsFromBag(key) {
@@ -3018,6 +3071,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     state.partX = p.x; state.partY = p.y; state.partLinked = !!p.linked;
     state.blankW = b.x; state.blankH = b.y;
     updateSaveDirty();
+    if (typeof window.__bedSetBlank === 'function') window.__bedSetBlank(b.x, b.y);
     if (typeof window.__bedSetPart === 'function') window.__bedSetPart(p.x, p.y);
     if (typeof window.__bedSetNest === 'function') window.__bedSetNest(m);
     remasureHudStage();
@@ -3255,6 +3309,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         }
         updateSaveDirty();
       });
+      inp.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter') return;
+        e.preventDefault();
+        e.stopPropagation();
+        inp.blur();
+      });
     });
     if (linkBtn) {
       linkBtn.addEventListener('click', function () {
@@ -3326,6 +3386,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (saveBtn) {
       e.preventDefault(); e.stopPropagation();
       if (paramState.open) {
+        commitLiveFields(paramState.open);
         paramState.snapshot = takeSnapshot(paramState.open);
         refreshTickers();
         closeAllParamPopovers();
@@ -3336,6 +3397,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (preOk) {
       e.preventDefault(); e.stopPropagation();
       var okKey = paramState.open;
+      if (okKey) commitLiveFields(okKey);
       if (okKey && saveArmedPreset(okKey)) {
         showPresetToast(preOk.closest('.param-popover'));
       }
@@ -3605,6 +3667,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       inp.value = fmt3(n);
       refreshTickers();
     });
+    inp.addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter') return;
+      e.preventDefault();
+      e.stopPropagation();
+      inp.blur();
+    });
   });
 
   /* Margin */
@@ -3629,6 +3697,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       paramState.margin[inp.getAttribute('data-m')] = n;
       inp.value = fmt3(n);
       refreshTickers();
+    });
+    inp.addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter') return;
+      e.preventDefault();
+      e.stopPropagation();
+      inp.blur();
     });
   });
 
@@ -3864,13 +3938,20 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
           var letter = m[1].toUpperCase();
           var word = m[0];
           var cls = '';
+          var shown = word;
           if (letter === 'G') cls = 'tok-g';
           else if (letter === 'M') cls = 'tok-m';
           else if (letter === 'F' || letter === 'S') cls = 'tok-fs';
           else if (letter === 'T') cls = 'tok-t';
           else if (letter === 'N') cls = 'tok-n';
-          else if ('XYZIJKR'.indexOf(letter) !== -1) cls = 'tok-xyz';
-          if (cls) out += '<span class="' + cls + '">' + escapeHtml(word) + '</span>';
+          else if ('XYZR'.indexOf(letter) !== -1) {
+            cls = 'tok-axis';
+            var axisN = parseFloat(m[2]);
+            if (Number.isFinite(axisN)) {
+              shown = m[1] + (m[2].charAt(0) === '+' && axisN >= 0 ? '+' : '') + axisN.toFixed(4);
+            }
+          } else if ('IJK'.indexOf(letter) !== -1) cls = 'tok-xyz';
+          if (cls) out += '<span class="' + cls + '">' + escapeHtml(shown) + '</span>';
           else out += escapeHtml(word);
           i += word.length;
           continue;
