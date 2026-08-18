@@ -4,6 +4,7 @@ One copyable block. Same shape on every Surface.
 Surface = the step. Waypoint = the intersection. Handoff = this block.
 
 Three bands. Real blank lines between them. Do not bleed the bands.
+Do not wrap the routing header in YAML `---` fences.
 
 ```text
 Repo: NestCalc
@@ -23,11 +24,11 @@ Corrective Action: None | Bent | Correction | Broken
 
 ## Bands
 
-1. Front matter. `Waypoint:` is required.
+1. Routing header. `Waypoint:` is required.
 2. Instruction + Reason. Reason is plain English.
 3. Corrective Action.
 
-Pack `06` may carry extra front-matter fields (Worktree, Model, Effort,
+Pack `06` may carry extra routing-header fields (Worktree, Model, Effort,
 Orchestration, Session, Mode). This product file keeps the slimmer set.
 The three bands stay.
 
