@@ -90,7 +90,7 @@
 
     .round-controls {
       display: grid;
-      grid-template-columns: 1.3fr repeat(2, minmax(92px, 0.6fr));
+      grid-template-columns: 1.1fr repeat(3, minmax(92px, 0.6fr));
       gap: 10px;
       padding: 12px;
       border: 1px solid var(--line);
@@ -120,6 +120,35 @@
     }
 
     .round-note { margin: 0; color: var(--muted); font-size: 0.75rem; }
+
+    .gap-presets {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      gap: 6px;
+    }
+
+    .preset-label {
+      width: 100%;
+      color: var(--muted);
+      font: 700 0.67rem/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .gap-preset {
+      min-height: 30px;
+      border: 1px solid #52525b;
+      border-radius: 7px;
+      padding: 0 8px;
+      color: #e4e4e7;
+      background: var(--panel-2);
+      cursor: pointer;
+      font: 600 0.72rem/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    .gap-preset:hover { border-color: #a1a1aa; }
+    .gap-preset:focus-visible { outline: 3px solid rgb(251 191 36 / 42%); outline-offset: 2px; }
 
     .fixture-list { display: flex; gap: 8px; }
 
@@ -261,6 +290,7 @@
     @media (max-width: 700px) {
       .shell { width: min(100% - 20px, 1120px); padding-top: 20px; }
       header { align-items: start; }
+      .round-controls { grid-template-columns: 1fr 1fr; }
       .viewfinder, #plot { min-height: 460px; }
       .readout { grid-template-columns: 1fr; }
       .datum.status { grid-column: auto; }
@@ -297,9 +327,24 @@
             <option value="row">Row compare (optional)</option>
           </select>
         </label>
-        <label class="control-label">R (mm)<input id="round-radius" type="number" min="0.001" step="any" value="10"></label>
-        <label class="control-label">g (mm)<input id="round-gap" type="number" min="0.001" step="any" value="2"></label>
-        <p class="round-note">Round OD only. The optional row compare places its second center at (p, 0).</p>
+        <label class="control-label">Units
+          <select id="round-units">
+            <option value="in" selected>in</option>
+            <option value="mm">mm</option>
+          </select>
+        </label>
+        <label class="control-label" id="round-radius-label">R (in)<input id="round-radius" type="number" min="0.001" step="any" value="0.393700787401575"></label>
+        <label class="control-label" id="round-gap-label">g (in)<input id="round-gap" type="number" min="0.05" max="0.5" step="0.001" value="0.078740157480315"></label>
+        <div class="gap-presets" aria-label="Gap presets">
+          <span class="preset-label">Gap presets</span>
+          <button class="gap-preset" type="button" data-gap-inches="0.05">0.050 in</button>
+          <button class="gap-preset" type="button" data-gap-inches="0.125">0.125 in</button>
+          <button class="gap-preset" type="button" data-gap-inches="0.25">0.250 in</button>
+          <button class="gap-preset" type="button" data-gap-inches="0.5">0.500 in</button>
+          <button class="gap-preset" type="button" data-gap-mm="1">1 mm</button>
+          <button class="gap-preset" type="button" data-gap-mm="2">2 mm</button>
+        </div>
+        <p class="round-note" id="round-note">Round OD only. Gap is 0.050–0.500 in. The optional row compare places its second center at (p, 0).</p>
       </div>
 
       <div class="viewfinder" id="viewfinder">
@@ -330,6 +375,8 @@
       'use strict';
 
       const EPSILON = 1e-7;
+      const MM_PER_INCH = 25.4;
+      const GAP_LIMITS_IN = { min: 0.05, max: 0.5 };
       const SVG_NS = 'http://www.w3.org/2000/svg';
       const CARDINAL_ANGLES = [0, Math.PI / 2, Math.PI, 3 * Math.PI / 2];
       const LABELS = {
@@ -354,8 +401,12 @@
         status: document.querySelector('#status'),
         statusBox: document.querySelector('#status-box'),
         roundMode: document.querySelector('#round-mode'),
+        roundUnits: document.querySelector('#round-units'),
+        roundRadiusLabel: document.querySelector('#round-radius-label'),
         roundRadius: document.querySelector('#round-radius'),
+        roundGapLabel: document.querySelector('#round-gap-label'),
         roundGap: document.querySelector('#round-gap'),
+        roundNote: document.querySelector('#round-note'),
         roundReadout: document.querySelector('#round-readout'),
       };
 
@@ -579,6 +630,35 @@
       const formatBounds = (bounds) =>
         `[${formatNumber(bounds.min_x)}, ${formatNumber(bounds.min_y)}] → [${formatNumber(bounds.max_x)}, ${formatNumber(bounds.max_y)}]`;
 
+      const activeUnit = () => elements.roundUnits.value;
+      const toMm = (value, unit = activeUnit()) => unit === 'in' ? value * MM_PER_INCH : value;
+      const fromMm = (value, unit = activeUnit()) => unit === 'in' ? value / MM_PER_INCH : value;
+      const gapLimitsMm = () => ({ min: GAP_LIMITS_IN.min * MM_PER_INCH, max: GAP_LIMITS_IN.max * MM_PER_INCH });
+      const formatInput = (value, unit = activeUnit()) => Number(fromMm(value, unit).toFixed(6)).toString();
+      const formatRoundNumber = (value) => formatNumber(fromMm(value));
+      const formatRoundBounds = (bounds) =>
+        `[${formatRoundNumber(bounds.min_x)}, ${formatRoundNumber(bounds.min_y)}] → [${formatRoundNumber(bounds.max_x)}, ${formatRoundNumber(bounds.max_y)}]`;
+
+      function syncRoundControlLabels() {
+        const unit = activeUnit();
+        const limits = gapLimitsMm();
+        elements.roundRadiusLabel.firstChild.textContent = `R (${unit})`;
+        elements.roundGapLabel.firstChild.textContent = `g (${unit})`;
+        elements.roundGap.min = formatInput(limits.min, unit);
+        elements.roundGap.max = formatInput(limits.max, unit);
+        elements.roundGap.step = unit === 'in' ? '0.001' : '0.01';
+        elements.roundNote.textContent = `Round OD only. Gap is ${formatInput(limits.min, unit)}–${formatInput(limits.max, unit)} ${unit}. The optional row compare places its second center at (p, 0).`;
+      }
+
+      function clampGapInput() {
+        const limits = gapLimitsMm();
+        const entered = Number(elements.roundGap.value);
+        const enteredMm = toMm(Number.isFinite(entered) ? entered : limits.min);
+        const gapMm = Math.min(limits.max, Math.max(limits.min, enteredMm));
+        if (!Number.isFinite(entered) || Math.abs(gapMm - enteredMm) > EPSILON) elements.roundGap.value = formatInput(gapMm);
+        return gapMm;
+      }
+
       function compareBounds(computed, expected) {
         const keys = ['min_x', 'min_y', 'max_x', 'max_y'];
         const maxDelta = Math.max(...keys.map((key) => Math.abs(computed[key] - expected[key])));
@@ -594,7 +674,8 @@
       function updateRoundReadout(layout, mode) {
         const centerDistance = layout.centers.length === 2 ? layout.p : 0;
         const label = mode === 'row' ? 'row compare' : mode === 'inset' ? 'hex inset' : 'single';
-        elements.roundReadout.textContent = `${label} · R ${formatNumber(layout.R)} · g ${formatNumber(layout.g)} · p ${formatNumber(layout.p)} · dx ${formatNumber(layout.dx)} · dy ${formatNumber(layout.dy)} · center distance ${formatNumber(centerDistance)} · ${formatBounds(layout.bounds)} mm`;
+        const unit = activeUnit();
+        elements.roundReadout.textContent = `${label} · R ${formatRoundNumber(layout.R)} · g ${formatRoundNumber(layout.g)} · p ${formatRoundNumber(layout.p)} · dx ${formatRoundNumber(layout.dx)} · dy ${formatRoundNumber(layout.dy)} · center distance ${formatRoundNumber(centerDistance)} · ${formatRoundBounds(layout.bounds)} ${unit}`;
       }
 
       function loadRoundLayout() {
@@ -602,9 +683,11 @@
         setBusy(true);
         try {
           const mode = elements.roundMode.value;
+          const radiusMm = toMm(Number(elements.roundRadius.value));
+          const gapMm = clampGapInput();
           const layout = roundLayout({
-            radius: elements.roundRadius.value,
-            gap: elements.roundGap.value,
+            radius: radiusMm,
+            gap: gapMm,
             mode,
           });
           const segments = parseProgram(roundProgram(layout));
@@ -612,15 +695,15 @@
           const comparison = compareBounds(computed, layout.bounds);
           const fixture = {
             id: mode === 'row' ? 'Round OD row compare' : mode === 'inset' ? 'Round OD hex inset pair' : 'Round OD single',
-            units: 'mm',
+            units: activeUnit(),
             expected_aabb: layout.bounds,
           };
           selected = fixture;
-          elements.computed.textContent = `${formatBounds(computed)} mm`;
-          elements.expected.textContent = `${formatBounds(layout.bounds)} mm`;
+          elements.computed.textContent = `${formatRoundBounds(computed)} ${fixture.units}`;
+          elements.expected.textContent = `${formatRoundBounds(layout.bounds)} ${fixture.units}`;
           elements.status.textContent = comparison.matches
-            ? `MATCH · Δmax ${formatNumber(comparison.maxDelta)} mm`
-            : `MISMATCH · Δmax ${formatNumber(comparison.maxDelta)} mm`;
+            ? `MATCH · Δmax ${formatRoundNumber(comparison.maxDelta)} ${fixture.units}`
+            : `MISMATCH · Δmax ${formatRoundNumber(comparison.maxDelta)} ${fixture.units}`;
           elements.statusBox.classList.toggle('mismatch', !comparison.matches);
           updateRoundReadout(layout, mode);
           draw({ fixture, segments, computed, comparison });
@@ -699,6 +782,28 @@
             control.addEventListener('input', loadRoundLayout);
             control.addEventListener('change', loadRoundLayout);
           }
+          elements.roundUnits.addEventListener('change', (event) => {
+            const previousUnit = event.target.dataset.previousUnit || 'in';
+            const nextUnit = activeUnit();
+            const radiusMm = toMm(Number(elements.roundRadius.value), previousUnit);
+            const gapMm = toMm(Number(elements.roundGap.value), previousUnit);
+            elements.roundRadius.value = formatInput(radiusMm, nextUnit);
+            elements.roundGap.value = formatInput(gapMm, nextUnit);
+            event.target.dataset.previousUnit = nextUnit;
+            syncRoundControlLabels();
+            loadRoundLayout();
+          });
+          elements.roundUnits.dataset.previousUnit = activeUnit();
+          for (const preset of document.querySelectorAll('.gap-preset')) {
+            preset.addEventListener('click', () => {
+              const gapMm = preset.dataset.gapInches
+                ? Number(preset.dataset.gapInches) * MM_PER_INCH
+                : Number(preset.dataset.gapMm);
+              elements.roundGap.value = formatInput(gapMm);
+              loadRoundLayout();
+            });
+          }
+          syncRoundControlLabels();
           new ResizeObserver(() => currentPlot && draw(currentPlot)).observe(elements.viewfinder);
           loadRoundLayout();
         } catch (error) {

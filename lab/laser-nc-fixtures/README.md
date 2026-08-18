@@ -52,17 +52,23 @@ python3 -m http.server 4173 --directory lab/laser-nc-fixtures
 ```
 
 Then open <http://127.0.0.1:4173/toolPath.html>. The default view is the L3
-round **hex inset pair** with `R = 10 mm` and `g = 2 mm`. The fixture buttons
-still load F1–F4, the fixed F5 golden round pair, and both F6 orientations; **Refresh** redraws the
-current round layout or fetches the current fixture without reloading the page.
+round **hex inset pair** in **inches**, preserving the original physical
+geometry: `R ≈ 0.393701 in` (`10 mm`) and `g ≈ 0.078740 in` (`2 mm`).
+The in/mm toggle converts the displayed `R` and `g` values without changing
+the physical layout. The fixture buttons still load F1–F4, the fixed F5 golden
+round pair, and both F6 orientations; **Refresh** redraws the current round
+layout or fetches the current fixture without reloading the page.
 
 For round parts, `R` is the outer radius, `g` is a required positive perimeter
-gap, and `p = 2R + g` is the center distance. The first center is `(0, 0)`;
-the default inset second center is `(p/2, p*sqrt(3)/2)`. The clearly labelled
-optional **row compare** places its second center at `(p, 0)`. The readout
-reports `R`, `g`, `p`, `dx`, `dy`, center distance, and the combined AABB.
-The page packs washers on their OD only; a washer ID hole, if introduced in a
-future lab fixture, is draw-only and never changes the layout calculation.
+gap, and `p = 2R + g` is the center distance. The continuous gap dial clamps
+to `0.050–0.500 in` (`1.27–12.7 mm`) and has preset chips for `0.050 in`,
+`0.125 in`, `0.250 in`, `0.500 in`, `1 mm`, and `2 mm`. The first center is
+`(0, 0)`; the default inset second center is `(p/2, p*sqrt(3)/2)`. The clearly
+labelled optional **row compare** places its second center at `(p, 0)`. The
+readout reports `R`, `g`, `p`, `dx`, `dy`, center distance, and the combined
+AABB in the active unit. The page packs washers on their OD only; a washer ID
+hole, if introduced in a future lab fixture, is draw-only and never changes the
+layout calculation.
 
 ### L2 proof checklist
 
@@ -78,10 +84,13 @@ future lab fixture, is draw-only and never changes the layout calculation.
 
 ### L3 proof checklist
 
-- Default `R = 10 mm`, `g = 2 mm` hex inset shows two circles with center
-  distance `p = 22 mm`, `dx = 11 mm`, and `dy = 11*sqrt(3) mm`.
-- A positive `g` leaves a visible OD-to-OD gap; zero and negative gaps are
-  rejected.
+- Default inch view preserves `R = 10 mm`, `g = 2 mm`; flipping to mm shows
+  those values while preserving the same two-circle geometry.
+- The gap dial clamps continuously to `0.050–0.500 in` or its `1.27–12.7 mm`
+  equivalent. Each inch/mm preset sets that same physical gap in the active
+  display unit.
+- The default hex inset has center distance `p = 22 mm`, `dx = 11 mm`, and
+  `dy = 11*sqrt(3) mm` (or their inch equivalents).
 - **Single circle** shows only the origin-centered OD. **Row compare** is an
   optional comparison only and places its second center at `(p, 0)`.
 - `F5-round-hex-inset-r10-g2.nc` is the deterministic golden fixture for the
@@ -102,5 +111,5 @@ future lab fixture, is draw-only and never changes the layout calculation.
   production controller policy.
 - Nothing in this page connects to HowMany, NestCalc product code, the
   calculator, bridge/host surfaces, Clerk, PWA, routes, or deployment.
-- This is not a multi-part shape nesting lab, a full-sheet nest, AutoNest, or
-  a FlipIt host change. It does not prescribe controller output.
+- This is not a multi-part different-shapes nesting lab, a full-sheet nest,
+  AutoNest, or a FlipIt host change. It does not prescribe controller output.
