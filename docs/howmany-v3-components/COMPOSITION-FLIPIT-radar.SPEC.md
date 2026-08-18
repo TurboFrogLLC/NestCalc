@@ -1,12 +1,12 @@
 # FlipIt — Radar composition host — Living SPEC
 
-**Status:** Living (radar residual R1 — PNG skin + V3 behavior port)  
+**Status:** Living (radar residual R2 — PNG dashboard chrome + V3 behavior port)  
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-radar.html`  
 **Branch:** `docs/flipit-radar-authority`  
-**Trace:** `NC-FLIPIT-20260818-RADAR-R1`  
-**Host tip blob:** `ddbdc0aa87f5e6ac83755c3b0d2146b7ef8cf300`  
+**Trace:** `NC-FLIPIT-20260818-RADAR-R2`  
+**Host tip blob:** `f9598c673eba165ee58aaa0fb50579ccb588cc16`  
 **Class:** Exploratory docs-only composition host · not a product GOAL · not a shared import  
 
 **Host rule**  
@@ -21,7 +21,7 @@ This file is a **parallel** host. It does not overwrite `COMPOSITION-FLIPIT-v3.h
 | Layout freeze | `authority/RADAR-SHELL-SYNTHESIS.md` §2 | Cards, drawer, focus, calc |
 | Color | `authority/audience-radar-skin.png` (sampled HEX) | Every paint token |
 | Behavior | `COMPOSITION-FLIPIT-v3.html` + `.SPEC.md` R1–R13 | Cycles, unload, presets, resize, zoom |
-| Chrome | this host | Radar restyle of V3 chrome |
+| Chrome | this host | One-page radar dashboard: mint metric row + white chart heroes |
 
 ---
 
@@ -63,6 +63,8 @@ Calc:     only free-float surface; FLIP / shared-name home
 ```
 
 - No sidebar. Cards stay in the grid. No free rearrange.
+- Top five cards share one mint metric language (same height / radius / padding). White is for the two heroes.
+- Product header (`HowMany`), not docs-meta. Focus is a quiet control.
 - Boot: every card visible. FlipIt is **open + expanded**. Source accepts typed NC with no file.
 - Output tab is **never gated**. Manual edit is always allowed.
 
@@ -134,4 +136,5 @@ From a clone, any non-colliding static port is fine, e.g. `http://127.0.0.1:<por
 
 | Date | Change |
 |------|--------|
-| 2026-08-18 | **R1** `NC-FLIPIT-20260818-RADAR-R1`. Parallel radar host. PNG tokens. Frozen KPI + hero grid. V3 R1–R13 behavior port with ungated output, drawer (not popover), focus 1-up/2-up, View Transitions, free-float calculator. |
+| 2026-08-18 | **R2** `NC-FLIPIT-20260818-RADAR-R2`. Rebuild chrome from `audience-radar-skin.png`. One mint metric row + two white chart heroes. Drop R1 pastel-tile / docs-meta / skinny HUD / toy toolPath. Behavior contracts unchanged. |
+| 2026-08-18 | **R1** `NC-FLIPIT-20260818-RADAR-R1`. Parallel radar host. PNG tokens. Frozen KPI + hero grid. V3 R1–R13 behavior port with ungated output, drawer (not popover), focus 1-up/2-up, View Transitions, free-float calculator. Visual FAIL — do not polish that chrome. |

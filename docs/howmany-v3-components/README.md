@@ -13,7 +13,7 @@ Does not mutate Option B / residual-2 / V2 shell packages. Production still huma
 | toolPath | `TOOLPATH-v3.html` | `TOOLPATH-v3.SPEC.md` | `ebf8d53e…` |
 | LaserBed | `LASER-BED-v3.html` | `LASER-BED-v3.SPEC.md` | `60ca551c…` |
 | **Composition host** | `COMPOSITION-FLIPIT-v3.html` | `COMPOSITION-FLIPIT-v3.SPEC.md` | `a5171b91…` |
-| **Radar composition** | `COMPOSITION-FLIPIT-radar.html` | `COMPOSITION-FLIPIT-radar.SPEC.md` | `ddbdc0aa…` |
+| **Radar composition** | `COMPOSITION-FLIPIT-radar.html` | `COMPOSITION-FLIPIT-radar.SPEC.md` | `f9598c67…` |
 | Alignment contract | — | `ALIGNMENT-v3.SPEC.md` | copy-paste only (no runtime plugin) |
 
 Audit (historical filename): `docs/audits/HOWMANY-V3-INDIVIDUALS-AUDIT-2026-08-17.md`
