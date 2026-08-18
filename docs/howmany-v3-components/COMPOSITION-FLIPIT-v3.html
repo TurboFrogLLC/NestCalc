@@ -24,6 +24,9 @@ Bridges in this host:
         HUD AUTO-SIZE + FLiPIT chips · calc-mode keeps chips
         LaserBed calc chip → HUD calculator · real local file open
         Popover clamp avoids open FLiPIT + active bed blank
+  · R2  AUTO-SIZE opens FLiPIT collapsed only · 2nd click detects
+        #bt-calc: collapsed → expand params · expanded → toggle calc
+        HUD height follows active mode · tighter popover edge clamp
 
 Not wired: sandbox isolator · child-spec · Post → HUD/bed hydrate.
 Prior composition/lock archives stay on disk.
@@ -2491,6 +2494,18 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     hud.style.top = '16px';
   })();
 
+  function applyBodyHeight() {
+    if (!hudBody) return;
+    if (state.collapsed) {
+      hudBody.style.minHeight = '';
+      return;
+    }
+    const hudH = parseFloat(hudBody.dataset.hudH || '0');
+    const calcH = parseFloat(hudBody.dataset.calcH || '0');
+    const h = state.calc ? calcH : hudH;
+    hudBody.style.minHeight = h ? (h + 'px') : '';
+  }
+
   function setCollapsed(on) {
     state.collapsed = on;
     hud.classList.toggle('collapsed', on);
@@ -2503,17 +2518,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       calcToggle.setAttribute('aria-pressed', 'false');
     }
     if (on) {
-      hudBody.style.minHeight = '';
       closeAllParamPopovers();
-      /* position hold — leave left/top exactly where they are */
-    } else {
-      const hudH = parseFloat(hudBody.dataset.hudH || '0');
-      const calcH = parseFloat(hudBody.dataset.calcH || '0');
-      if (state.calc && calcH) hudBody.style.minHeight = calcH + 'px';
-      else if (hudH) hudBody.style.minHeight = hudH + 'px';
       /* position hold — leave left/top exactly where they are */
     }
     applyModeVisibility();
+    applyBodyHeight();
   }
 
   function setCalc(on) {
@@ -2524,6 +2533,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (on && state.collapsed) setCollapsed(false);
     if (on) closeAllParamPopovers();
     applyModeVisibility();
+    applyBodyHeight();
   }
 
   btnChevron.addEventListener('click', function () {
@@ -2726,7 +2736,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     const rowRect = openRow.getBoundingClientRect();
     const pop = openRow.querySelector('.param-popover');
     if (!pop) return;
-    const gap = 11, edge = 8, vw = window.innerWidth, vh = window.innerHeight;
+    const gap = 11, edge = 16, avoidPad = 12, vw = window.innerWidth, vh = window.innerHeight;
     pop.style.position = 'fixed';
     pop.style.right = 'auto'; pop.style.bottom = 'auto';
     const pw = pop.offsetWidth || 286, ph = pop.offsetHeight || 140;
@@ -2748,7 +2758,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (blank) avoidRects.push(blank.getBoundingClientRect());
     const hitsAvoid = function (box) {
       for (let i = 0; i < avoidRects.length; i++) {
-        if (overlaps(box, avoidRects[i], 8)) return true;
+        if (overlaps(box, avoidRects[i], avoidPad)) return true;
       }
       return false;
     };
@@ -2770,15 +2780,15 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       if (onScreen(box) && !hitsAvoid(box)) { chosen = box; break; }
     }
     if (!chosen) {
-      /* Shift the preferred on-screen candidate off FlipIt / blank. */
+      /* Shift preferred on-screen candidate off FlipIt / blank, keep 16px inset. */
       const fallback = boxAt(
-        clampX(hudRect.right + gap <= vw - edge ? hudRect.right + gap : hudRect.left - gap - pw),
+        clampX(hudRect.right + gap + pw <= vw - edge ? hudRect.right + gap : hudRect.left - gap - pw),
         clampY(rowRect.top)
       );
       let left = fallback.left, top = fallback.top;
       avoidRects.forEach(function (r) {
         const trial = boxAt(left, top);
-        if (!overlaps(trial, r, 8)) return;
+        if (!overlaps(trial, r, avoidPad)) return;
         const opts = [
           { left: r.left - gap - pw, top: top },
           { left: r.right + gap, top: top },
@@ -2790,7 +2800,17 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
           if (onScreen(box) && !hitsAvoid(box)) { left = box.left; top = box.top; return; }
         }
       });
-      chosen = boxAt(clampX(left), clampY(top));
+      const shifted = boxAt(clampX(left), clampY(top));
+      if (onScreen(shifted) && !hitsAvoid(shifted)) chosen = shifted;
+    }
+    if (!chosen) {
+      for (let i = 0; i < candidates.length; i++) {
+        const box = boxAt(clampX(candidates[i].left), clampY(candidates[i].top));
+        if (onScreen(box) && !hitsAvoid(box)) { chosen = box; break; }
+      }
+    }
+    if (!chosen) {
+      chosen = boxAt(clampX(hudRect.left), clampY(hudRect.bottom + gap));
     }
     pop.style.left = Math.round(chosen.left) + 'px';
     pop.style.top = Math.round(chosen.top) + 'px';
@@ -3024,13 +3044,22 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     hudBody.style.transition = 'none';
     hudBody.dataset.hudH = String(hudH);
     hudBody.dataset.calcH = String(calcH);
-    hudBody.style.minHeight = (wasCalc ? calcH : hudH) + 'px';
     state.calc = wasCalc; state.collapsed = wasCollapsed;
+    hud.classList.toggle('collapsed', wasCollapsed);
     applyModeVisibility();
+    applyBodyHeight();
   }
 
   window.__hudToggleCalc = function () { setCalc(!state.calc); };
   window.__hudExitCalc = function () { if (state.calc) setCalc(false); };
+  window.__hudFromBedCalc = function () {
+    if (state.collapsed) {
+      setCalc(false);
+      setCollapsed(false);
+      return;
+    }
+    setCalc(!state.calc);
+  };
 
   document.getElementById('btn-auto-size').addEventListener('click', function () {
     closeAllParamPopovers();
@@ -3796,10 +3825,16 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   window.__flipitClose = closeGcode;
   window.__flipitToggle = toggleGcode;
   window.__flipitAutoSize = function () {
-    openGcode(true);
-    if (detectPart()) showToast('Part sized');
-    else showToast('Load a program to Auto-Size');
-    return !!bounds;
+    var wasOpen = isGcodeOpen();
+    var wasCollapsed = wasOpen && !panel.classList.contains('is-expanded');
+    openGcode(false);
+    if (wasOpen && wasCollapsed) {
+      if (detectPart()) showToast('Part sized');
+      else showToast('Load a program to Auto-Size');
+      return !!bounds;
+    }
+    if (!hasSource()) showToast('Load a program to Auto-Size');
+    return false;
   };
 
   /* R17 composition bridge — waypoints toggle toolPath */
@@ -3919,14 +3954,15 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 })();
 </script>
 <script>
-/* ── Host residual R1 — LaserBed calc chip → HUD calculator ── */
+/* ── Host residual R1/R2 — LaserBed calc chip → HUD ── */
 (function () {
   var btCalc = document.getElementById('bt-calc');
   if (!btCalc) return;
   btCalc.addEventListener('click', function (e) {
     e.preventDefault();
     e.stopPropagation();
-    if (typeof window.__hudToggleCalc === 'function') window.__hudToggleCalc();
+    if (typeof window.__hudFromBedCalc === 'function') window.__hudFromBedCalc();
+    else if (typeof window.__hudToggleCalc === 'function') window.__hudToggleCalc();
   });
 })();
 </script>

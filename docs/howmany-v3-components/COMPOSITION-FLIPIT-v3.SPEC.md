@@ -1,11 +1,12 @@
 # FlipIt — Composition host — Living SPEC
 
-**Status:** Living (residual R1 — chrome + file open + popover clamp)  
+**Status:** Living (residual R2 — collapsed AUTO-SIZE + HUD height + clamp)  
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
 **Branch:** `docs/flipit-v3-refinements`  
-**Trace:** `NC-FLIPIT-20260817-R1`  
+**Trace:** `NC-FLIPIT-20260817-R2`  
+**Host tip blob:** `4782dbc56b627be98556ac187193865decc8388f`  
 **Class:** Exploratory composition host only · not product GOAL · not a shared import  
 
 **Host rule**  
@@ -43,6 +44,7 @@ Wordmarks stay as locked: **FLiP** white 700 + **IT** amber 800 · **tool** whit
 | **R29** | Full-viewport primary canvas = LaserBed | authority `LASER-BED-v3.html` under `.bed-stage` · origin BL · Fit = zoom/center only (blank size unchanged) |
 | **R30** | HUD position hold | from Numeric HUD tip (collapse/expand never writes left/top) · never set `display` on `#hud-body` |
 | **R1** | Boot HUD open / FLiPIT closed · HUD ↔ FLiPIT chrome · AUTO-SIZE from HUD + calc paths · real local file open · popover clamp | hide primitive `display:none` + `is-open` on `#gcode` · `#btn-gcode` toggles · `#btn-auto-size` + `#btn-detect` run Auto-Size · `#bt-calc` toggles HUD calculator · `#flipit-file-input` accepts `.txt` / `.nc` / `.cnc` / `text/plain` |
+| **R2** | AUTO-SIZE opens FLiPIT **collapsed only** · 2nd click detects · `#bt-calc` expand-to-params when HUD collapsed · HUD body height matches active mode · tighter popover inset | `openGcode(false)` from `#btn-auto-size` · detect only when already open+collapsed · `__hudFromBedCalc` · `applyBodyHeight()` · popover edge **16px** / FlipIt avoid **12px** |
 
 Hide primitives stay surface-owned (`ALIGNMENT-v3` §4). Host does not invent a shared hide API.
 
@@ -52,12 +54,12 @@ Hide primitives stay surface-owned (`ALIGNMENT-v3` §4). Host does not invent a 
 |---------|----------------|
 | Load | Numeric HUD open at (16,16). FLiPIT closed (`display: none`, no `is-open`). toolPath hidden (R27). |
 | HUD **FLiPIT** (`#btn-gcode`) | Toggle FLiPIT open/close. `aria-pressed` + title sync. |
-| HUD **AUTO-SIZE** (`#btn-auto-size`) | Open FLiPIT expanded and run Auto-Size. Works from HUD param mode **and** HUD calculator mode (footer chips stay mounted outside `#hud-mode`). No source → toast `Load a program to Auto-Size`. |
-| FLiPIT Auto-Size (`#btn-detect`) | Existing calculator-path detect. Arms after a real file load. |
+| HUD **AUTO-SIZE** (`#btn-auto-size`) | Open FLiPIT **collapsed** (never expanded). Center toast kept. No source → `LOAD A PROGRAM TO AUTO-SIZE`. If FLiPIT is already open **and** collapsed, a second click runs detect (same as `#btn-detect` when a program is loaded). Footer chips stay mounted in HUD calculator mode. Label stays **AUTO-SIZE**. |
+| FLiPIT Auto-Size (`#btn-detect`) | Existing in-panel detect. Expand/collapse chrome unchanged. Arms after a real file load. |
 | FLiPIT close (`#btn-close`) | `closeGcode()` + R11 `lastGcodePos`. |
-| LaserBed calc chip (`#bt-calc`) | Toggle HUD calculator mode. |
+| LaserBed calc chip (`#bt-calc`) | HUD collapsed → expand to **param** mode only (do not enter calculator). HUD already expanded → toggle calculator. After exit / collapse / expand, `#hud-body` height matches the active mode. |
 | FLiPIT Open (`#btn-open`) | Native local file picker. Accept `.txt`, `.nc`, `.cnc`, and `text/plain`. Load into Source. **No sample / BRACKET_PLATE fallback.** |
-| HUD popovers | Keep ALIGNMENT z 50. Placement/clamp only: prefer right → left → bottom → top, then shift so the popover does not cover an open FLiPIT card or the active `#lb-blank`. |
+| HUD popovers | Keep ALIGNMENT z 50. Placement/clamp only: prefer right → left → bottom → top, then shift so the popover does not cover an open FLiPIT card or the active `#lb-blank`. Viewport inset **16px** (not flush to the edge). |
 
 ---
 
@@ -95,7 +97,7 @@ Do not require `file://`.
 2. Verify LaserBed fills the viewport (BL origin, 48×48 fit, blank 12×8, right-pin ticker, Fit does not reset blank).
 3. Verify Numeric HUD (16,16) is the only card open. FLiPIT and toolPath are absent.
 4. HUD **FLiPIT** opens FLiPIT (top-right, expanded). X closes it. Chip toggles again.
-5. HUD **AUTO-SIZE** opens FLiPIT and runs detect (toast if no program). Same chips stay live in HUD calculator mode. FLiPIT `#btn-detect` is the in-panel Auto-Size.
+5. HUD **AUTO-SIZE** opens FLiPIT **collapsed** and toasts if no program. A second click while collapsed runs detect. `#btn-detect` and expand/collapse stay in-panel. Same chips stay live in HUD calculator mode.
 6. FLiPIT Open picks a real local `.txt` / `.nc` / `.cnc` file and loads Source. No sample program.
 7. HUD tickers open popovers; placement stays outside the HUD and clamps off open FLiPIT and the bed blank. Collapse/expand holds left/top (R30).
 8. FLiPIT waypoints still toggle toolPath (R17 / R27).
@@ -109,3 +111,4 @@ Do not require `file://`.
 |------|--------|
 | 2026-08-17 | First FlipIt composition host. Inline four locked individuals. R17 waypoints↔toolPath · R27 toolPath hidden · R29 LaserBed canvas · R30 HUD hold from tip. Toast z 35. Isolator/child-spec omitted. |
 | 2026-08-17 | **R1** `NC-FLIPIT-20260817-R1`. Boot HUD-only. HUD ↔ FLiPIT chrome. AUTO-SIZE from HUD + calculator paths. Real local file open (no sample). Popover clamp avoids FLiPIT + bed blank. Calc chip → HUD calculator. |
+| 2026-08-17 | **R2** `NC-FLIPIT-20260817-R2`. AUTO-SIZE opens FLiPIT collapsed only; 2nd click detects. `#bt-calc` expands collapsed HUD to params (toggle calc only when already expanded). `#hud-body` height follows param/calc. Popover inset 16px. |
