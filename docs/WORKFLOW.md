@@ -100,8 +100,8 @@ When independent review is named: B6 → B7 → B8 → B9.
 - B9 post-merge: sync, prune, persist approved lessons, quiet archive
   when that is the named work. Worker continues when confidence and
   criteria are met. wReckless at B9 only if they are not.
-- Grok Build may do B6+B7 in one pass on the same authorized head
-  only when B6 has no waypoint change.
+- B6+B7 may run in one pass on the same authorized head only when B6
+  has no waypoint change. Who runs that pass is in AGENTS.md Surfaces.
 
 Implementation waves push the branch and open a ready-for-review PR unless
 wReckless asks for draft. This governance review PR is draft by request.
