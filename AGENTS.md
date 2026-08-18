@@ -47,14 +47,14 @@ Missing Clerk auth env is blocked proof, not a pass.
 - Start-check match handoff Branch + Head. Create or switch, then continue.
 - Echo `flow_id` and `goal_sha256` every turn when a goal is on.
 - Preserve calculator math and AutoNest unless the active GOAL names them.
-- Preserve FLiPIT identity and V3 HTML + SPEC unless a new Human decision.
+- Preserve FLiPIT identity and V3 HTML + SPEC unless a new wReckless decision.
 - Keep secrets, `.env*`, and production credentials out of git.
-- Workers fail-closed on governance files. Human + SuperGrok may author them.
+- Workers fail-closed on governance files. wReckless + SuperGrok may author them.
 
 ### Never
 
 - Touch `main`.
-- Merge, Production, MODE, or identity without the Human gate.
+- Merge, Production, MODE, or identity without the wReckless gate.
 - Invent the next Surface.
 - Soft-infer across authorities.
 - Import NanoTate golden-pipeline, SBOM, or env-proxy as NestCalc continue-gates.
@@ -66,14 +66,14 @@ Missing Clerk auth env is blocked proof, not a pass.
 - **None** — no problem this step.
 - **Correction** — known predetermined fix. Worker applies it, records it on
   the handoff, continues.
-- **Bent** — missed, new, or unknown-cause break. Continue. Human + SuperGrok
+- **Bent** — missed, new, or unknown-cause break. Continue. wReckless + SuperGrok
   watch the flow and inspect prior waypoints. Harden later.
 - **Broken** — known hard gate. STOP. Problem only. No correction.
 
 Hard gates: `main`, Production, secrets, MODE, FLiPIT name, V3 authority.
 Wrong branch or worktree is Correction, not Broken.
 
-Elevated CA is Human + SuperGrok process harden. Workers do not open it.
+Elevated CA is wReckless + SuperGrok process harden. Workers do not open it.
 
 ## Surfaces
 
@@ -84,7 +84,7 @@ Workers execute the received handoff. They do not invent the next Surface.
 
 | Surface | Role |
 | --- | --- |
-| Human | Gates: merge, Production, identity, MODE. Not an authority hop. |
+| wReckless | Gates: merge, Production, identity, MODE. Not an authority hop. |
 | SuperGrok | Orchestrator only. No product implement. |
 | Grok Build | Preferred implement / review+closeout when named. |
 | Codex App | Named implement when the handoff says so. |
@@ -92,8 +92,8 @@ Workers execute the received handoff. They do not invent the next Surface.
 
 When independent review is named: B6 → B7 → B8 → B9.
 B6 waypoint change → stop; do not enter B7.
-B7 and B8 travel together. B8 is Human merge.
-B9 is post-merge. Human at B9 only if confidence or criteria are not met.
+B7 and B8 travel together. B8 is wReckless merge.
+B9 is post-merge. wReckless at B9 only if confidence or criteria are not met.
 Grok Build may do B6+B7 one pass on the same authorized head only when B6
 has no waypoint change.
 
@@ -112,7 +112,7 @@ active GOAL narrows scope.
 5. V3 HTML + SPEC under `docs/howmany-v3-components/` and related docs packages
 
 Live GitHub wins mutable facts. Conversation memory is advisory.
-Human is a gate, not an authority hop. Soft inference is forbidden.
+wReckless is a gate, not an authority hop. Soft inference is forbidden.
 
-`docs/governance/MODE` stays `advisory` until a dedicated Human promotion goal.
+`docs/governance/MODE` stays `advisory` until a dedicated wReckless promotion goal.
 Contracts still fail closed. MODE does not make them optional.

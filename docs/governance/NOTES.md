@@ -15,7 +15,7 @@ docs/templates/handoff.md.
   three-band shape. Pack rewrite is not this PR.
 - `docs/governance/goal-lifecycle-contract.md` not rewritten this wave.
   B3 `create-handoff` JSON artifact is still the machine handoff. The new
-  `docs/templates/handoff.md` is the human/agent traveler. Two artifacts.
+  `docs/templates/handoff.md` is the traveler. Two artifacts.
 - `docs/goals/GOAL-TRACE-INDEX.md` and `docs/goals/history/` procedure is
   locked in WORKFLOW. This PR does not create or backfill those files.
 - Clerk / PWA / security long-form from the old WORKFLOW was not copied into
@@ -31,6 +31,8 @@ docs/templates/handoff.md.
 - Escalation after no progress is named. Exact try-count is not locked.
 - B9 command list (exact fetch/prune/worktree delete order) is not restated
   here. Old WORKFLOW had the long hygiene list; lean B9 names the outcome.
+- Gate term is now wReckless, not Human. Main-branch NestCalc files outside
+  this PR still say Human until they are rewritten or this PR merges.
 
 ## Known drift this PR is meant to surface
 
@@ -42,13 +44,14 @@ docs/templates/handoff.md.
 - Current main host-first list is Playwright, git, npm ci. This draft adds
   committed `scripts/*.py` and the re-check rule for new scripts.
 - Current main opens ready-for-review PRs by default. This PR is draft by
-  Human request.
+  request.
 - Current main authority list includes build specs, architecture review, and
   governance README. Lean AGENTS shortens that list. Specs still exist.
 - Skill routing tables (Clerk, Vercel plugins, iOS wall) were removed from
   AGENTS. Inventory still lives in `docs/SKILL_AND_PLUGIN_RECOMMENDATIONS.md`.
 - Current main B9 is always post-merge hygiene. This draft: B6–B9 ladder;
-  Human at B9 only if confidence or criteria are not met.
+  wReckless at B9 only if confidence or criteria are not met.
+- Gate name Human → wReckless on this branch.
 
 ## Out of this PR
 
@@ -58,3 +61,4 @@ docs/templates/handoff.md.
 - Radar experiment (PR #66 stay closed unless reopened).
 - Lab parser import.
 - Skill-registry build.
+- Sweep of every leftover Human string in older NestCalc governance contracts.
