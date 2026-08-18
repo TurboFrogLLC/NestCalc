@@ -37,6 +37,9 @@ Bridges in this host:
   · R6  HUD param↔calc stacked crossfade + header radius synced to 0fr end
   · R7  Collapsed ticker fades after settle · FlipIt surface fade
         Blank+ticker above HUD · square #bt-calc · outside-arc corner grab
+  · R8  Bigger free-corner arc · ticker fade as collapse ends
+        toolPath open-space + multi-card arrange · blank body behind cards
+        Resize glow on blank · lock + HUD-sized calc · unit align · popover presets
 
 Not wired: sandbox isolator · child-spec · Post → HUD/bed hydrate.
 Prior composition/lock archives stay on disk.
@@ -87,7 +90,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     width: 100%;
     height: 100%;
     display: block;
-    z-index: 45;
+    z-index: 10;
     pointer-events: none;
     overflow: visible;
   }
@@ -99,9 +102,21 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     stroke-linecap: round;
     pointer-events: none;
   }
-  body.lb-dragging-xy #lb-corner-arc {
+  body.lb-dragging-xy #lb-corner-arc,
+  body.lb-dragging-x #lb-blank,
+  body.lb-dragging-y #lb-blank,
+  body.lb-dragging-xy #lb-blank {
     stroke: #16a34a;
     filter: drop-shadow(0 0 3px rgba(0, 180, 40, 0.7));
+  }
+  @keyframes lb-lock-blink {
+    0%, 18% { stroke: #dc2626; filter: drop-shadow(0 0 3px rgba(220, 38, 38, 0.75)); }
+    22%, 48% { stroke: #000000; filter: none; }
+    52%, 70% { stroke: #dc2626; filter: drop-shadow(0 0 3px rgba(220, 38, 38, 0.75)); }
+    74%, 100% { stroke: #000000; filter: none; }
+  }
+  #lb-blank.lb-lock-blink {
+    animation: lb-lock-blink 680ms cubic-bezier(0.4, 0, 0.2, 1) 1;
   }
 
   .blank-ticker-cluster {
@@ -137,10 +152,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     touch-action: none;
   }
   .blank-ticker .bt-readout { line-height: 1; letter-spacing: 0.01em; }
-  .blank-ticker-cluster .bt-calc {
-    width: 34px; height: 34px; min-width: 34px; min-height: 34px;
+  .blank-ticker-cluster .bt-calc,
+  .blank-ticker-cluster .bt-lock {
+    width: 28.6px; height: 28.6px; min-width: 28.6px; min-height: 28.6px;
     margin: 0; padding: 0;
-    border: 1.1px solid rgba(255, 255, 255, 0.18);
+    border: 1.1px solid rgba(255, 255, 255, 0.22);
     border-radius: 6.6px;
     background: rgba(26, 20, 40, 0.82);
     color: #ffffff;
@@ -148,11 +164,23 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     cursor: pointer; flex-shrink: 0; line-height: 0;
     pointer-events: auto;
     box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.25);
+    box-sizing: border-box;
   }
-  .blank-ticker-cluster .bt-calc:hover { background: rgba(26, 20, 40, 0.92); color: #ffffff; }
-  .blank-ticker-cluster .bt-calc:active { transform: scale(0.94); }
+  .blank-ticker-cluster .bt-calc:hover,
+  .blank-ticker-cluster .bt-lock:hover { background: rgba(26, 20, 40, 0.92); color: #ffffff; }
+  .blank-ticker-cluster .bt-calc:active,
+  .blank-ticker-cluster .bt-lock:active { transform: scale(0.94); }
+  .blank-ticker-cluster .bt-lock.is-on {
+    background: rgba(180, 36, 44, 0.88);
+    border-color: rgba(255, 90, 90, 0.45);
+    color: #ffffff;
+  }
   .blank-ticker-cluster .bt-calc svg {
-    display: block; width: 16px; height: 16px; pointer-events: none;
+    display: block; width: 18.5px; height: 18.5px; pointer-events: none;
+    transform: translateY(0.5px);
+  }
+  .blank-ticker-cluster .bt-lock svg {
+    display: block; width: 16.5px; height: 16.5px; pointer-events: none;
     transform: translateY(0.5px);
   }
 
@@ -334,7 +362,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       background: linear-gradient(var(--blue-28), var(--blue-28)), #ffffff;
       border: 1.1px solid rgba(83, 139, 236, 0.35);
       color: var(--ink);
-      transition: opacity var(--motion-collapse) var(--ease), visibility var(--motion-collapse) var(--ease);
+      transition:
+        opacity var(--motion-collapse) var(--ease) 160ms,
+        visibility var(--motion-collapse) var(--ease) 160ms;
     }
     .keypad.collapsed.is-settled .header-part-ticker {
       opacity: 1;
@@ -499,11 +529,43 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }
     .param-popover .pop-head {
       display: flex; align-items: center; justify-content: space-between;
-      gap: 8.8px; margin-bottom: 8.8px;
+      gap: 6.6px; margin-bottom: 8.8px;
     }
     .param-popover .pop-title {
       font-family: var(--font); font-size: 11px; font-weight: 650;
       text-transform: uppercase; letter-spacing: 0.04em; color: #FFCE1B; margin: 0;
+      flex: 0 0 auto;
+    }
+    .param-popover .pop-presets {
+      flex: 1 1 auto;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-evenly;
+      gap: 6.6px;
+    }
+    .param-popover .pop-pre {
+      height: 19.8px;
+      min-width: 28.6px;
+      padding: 0 7.7px;
+      border: none;
+      border-radius: 4.4px;
+      background: rgba(255, 255, 255, 0.70);
+      color: #FFCE1B;
+      font-family: var(--font);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: pointer;
+      line-height: 1;
+      flex: 0 0 auto;
+    }
+    .param-popover .pop-pre:hover { background: rgba(255, 255, 255, 0.86); }
+    .param-popover .pop-pre.is-filled { background: rgba(255, 255, 255, 0.82); }
+    .param-popover .pop-pre.is-armed {
+      box-shadow: 0 0 0 1.5px #FFCE1B;
+      background: rgba(255, 255, 255, 0.90);
     }
     .param-popover .pop-actions { display: flex; align-items: center; gap: 4.4px; flex-shrink: 0; }
     .param-popover .pop-close, .param-popover .pop-save {
@@ -1429,12 +1491,14 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       position: relative;
       display: inline-grid;
       grid-template-columns: 1fr 1fr;
+      align-items: stretch;
       height: 28.6px;
       width: 70.4px;
       padding: 2.2px;
       border-radius: 8.8px;
       background: rgba(26, 20, 40, 0.16);
       flex-shrink: 0;
+      box-sizing: border-box;
     }
     .unit-switch .thumb {
       position: absolute;
@@ -1459,6 +1523,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       font-weight: 700;
       cursor: pointer;
       padding: 0;
+      margin: 0;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
       transition: color var(--dur) var(--ease);
     }
     .unit-switch button.is-on { color: var(--ink); }
@@ -1983,12 +2053,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         <line id="lb-edge-x" x1="0" y1="0" x2="48" y2="0" stroke="#000000" stroke-opacity="0.50" stroke-width="1.75" vector-effect="non-scaling-stroke"/>
         <line id="lb-edge-y" x1="0" y1="0" x2="0" y2="48" stroke="#000000" stroke-opacity="0.50" stroke-width="1.75" vector-effect="non-scaling-stroke"/>
         <circle cx="0" cy="0" r="0.12" fill="#000000"/>
+        <rect id="lb-blank" x="0" y="0" width="12" height="8" fill="#ffffff" fill-opacity="0.80" stroke="#000000" stroke-width="1.25" vector-effect="non-scaling-stroke" style="pointer-events:none"/>
         <g id="lb-bed-rulers"></g>
       </g>
     </svg>
     <svg class="lb-blank-layer" id="lb-blank-layer" xmlns="http://www.w3.org/2000/svg">
       <g id="lb-blank-cam">
-        <rect id="lb-blank" x="0" y="0" width="12" height="8" fill="#ffffff" fill-opacity="0.80" stroke="#000000" stroke-width="1.25" vector-effect="non-scaling-stroke" style="pointer-events:none"/>
         <path id="lb-corner-arc" d="M 12.58 8 A 0.58 0.58 0 0 1 12 8.58" vector-effect="non-scaling-stroke"/>
         <circle id="lb-hit-corner" cx="12.41" cy="8.41" r="0.5" fill="transparent" style="cursor:nesw-resize; pointer-events:all"/>
         <rect id="lb-hit-right"  x="11.65" y="0"    width="0.7" height="8"  fill="transparent" style="cursor:ew-resize"/>
@@ -2001,18 +2071,24 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       <button type="button" id="lb-fit" title="Fit"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg></button>
     </div>
 
-    <!-- Blank ticker cluster — pill + disconnected calc, right-pinned -->
+    <!-- Blank ticker cluster — lock + pill + calc, right-pinned -->
     <div class="blank-ticker-cluster" id="blank-ticker-cluster">
+      <button type="button" class="bt-lock" id="bt-lock" title="Lock blank" aria-label="Lock blank" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      </button>
       <div class="blank-ticker" id="blank-ticker" aria-label="Blank size">
         <span class="bt-readout" id="bt-readout">12.000 × 8.000</span>
       </div>
       <button type="button" class="bt-calc" id="bt-calc" title="Calculator" aria-label="Calculator">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-          <rect width="16" height="20" x="4" y="2" rx="2"/>
-          <line x1="8" x2="16" y1="6" y2="6"/>
-          <line x1="16" x2="16" y1="14" y2="18"/>
-          <path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/>
-          <path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="17.6" height="22" x="3.2" y="1" rx="2"/>
+          <line x1="7.2" x2="16.8" y1="5.2" y2="5.2"/>
+          <line x1="16.8" x2="16.8" y1="14" y2="18.4"/>
+          <path d="M16.8 9.6h.01"/><path d="M12 9.6h.01"/><path d="M7.2 9.6h.01"/>
+          <path d="M12 14h.01"/><path d="M7.2 14h.01"/><path d="M12 18.4h.01"/><path d="M7.2 18.4h.01"/>
         </svg>
       </button>
     </div>
@@ -2073,6 +2149,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
               <div class="param-popover" data-pop="blank">
                 <div class="pop-head">
                   <div class="pop-title">Blank size</div>
+                  <div class="pop-presets" data-presets="blank">
+                    <button type="button" class="pop-pre" data-pre="A" aria-pressed="false" title="Preset A">A</button>
+                    <button type="button" class="pop-pre" data-pre="B" aria-pressed="false" title="Preset B">B</button>
+                  </div>
                   <div class="pop-actions">
                     <button type="button" class="pop-save" data-pop-save title="Save" aria-label="Save changes"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg></button>
                     <button type="button" class="pop-close" data-pop-close title="Close" aria-label="Close"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
@@ -2096,6 +2176,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
               <div class="param-popover" data-pop="gap">
                 <div class="pop-head">
                   <div class="pop-title">Gap</div>
+                  <div class="pop-presets" data-presets="gap">
+                    <button type="button" class="pop-pre" data-pre="A" aria-pressed="false" title="Preset A">A</button>
+                    <button type="button" class="pop-pre" data-pre="B" aria-pressed="false" title="Preset B">B</button>
+                  </div>
                   <div class="pop-actions">
                     <button type="button" class="pop-save" data-pop-save title="Save" aria-label="Save changes"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg></button>
                     <button type="button" class="pop-close" data-pop-close title="Close" aria-label="Close"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
@@ -2117,6 +2201,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
               <div class="param-popover" data-pop="margin">
                 <div class="pop-head">
                   <div class="pop-title">Margin</div>
+                  <div class="pop-presets" data-presets="margin">
+                    <button type="button" class="pop-pre" data-pre="A" aria-pressed="false" title="Preset A">A</button>
+                    <button type="button" class="pop-pre" data-pre="B" aria-pressed="false" title="Preset B">B</button>
+                  </div>
                   <div class="pop-actions">
                     <button type="button" class="pop-save" data-pop-save title="Save" aria-label="Save changes"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg></button>
                     <button type="button" class="pop-close" data-pop-close title="Close" aria-label="Close"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
@@ -2388,7 +2476,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 /* LaserBed host + blank ticker right-pin residual */
 (function () {
   var BED = 48;
-  var state = { blankW: 12, blankH: 8, snap: 0.125, zoom: 1, panX: 0, panY: 0, dragging: null, start: null };
+  var state = { blankW: 12, blankH: 8, snap: 0.125, zoom: 1, panX: 0, panY: 0, dragging: null, start: null, locked: false };
 
   var svg = document.getElementById('lb-world');
   var blankLayer = document.getElementById('lb-blank-layer');
@@ -2404,6 +2492,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   var blankTicker = document.getElementById('blank-ticker');
   var blankCluster = document.getElementById('blank-ticker-cluster');
   var btReadout = document.getElementById('bt-readout');
+  var btLock = document.getElementById('bt-lock');
   if (!svg || !camera || !blank) return;
 
   var PAD = 36;
@@ -2440,14 +2529,14 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     hitTop.setAttribute('x', 0); hitTop.setAttribute('y', h - 0.35);
     hitTop.setAttribute('width', w); hitTop.setAttribute('height', 0.7);
     var s = pxPerInch();
-    var r = 10 / Math.max(s, 0.001);
+    var r = 18 / Math.max(s, 0.001);
     var d = 'M ' + (w + r) + ' ' + h + ' A ' + r + ' ' + r + ' 0 0 1 ' + w + ' ' + (h + r);
     if (cornerArc) cornerArc.setAttribute('d', d);
     if (hitCorner) {
       var mid = 0.70710678 * r;
       hitCorner.setAttribute('cx', w + mid);
       hitCorner.setAttribute('cy', h + mid);
-      hitCorner.setAttribute('r', 8 / Math.max(s, 0.001));
+      hitCorner.setAttribute('r', 11 / Math.max(s, 0.001));
     }
   }
   function line(x1, y1, x2, y2, sw, color, opacity) {
@@ -2527,9 +2616,42 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     state.panY = (H + BED * s) / 2;
   }
 
+  function setBlankLocked(on) {
+    state.locked = !!on;
+    if (btLock) {
+      btLock.classList.toggle('is-on', state.locked);
+      btLock.setAttribute('aria-pressed', state.locked ? 'true' : 'false');
+      btLock.title = state.locked ? 'Unlock blank' : 'Lock blank';
+      btLock.setAttribute('aria-label', state.locked ? 'Unlock blank' : 'Lock blank');
+    }
+    if (blank) {
+      blank.classList.remove('lb-lock-blink');
+      if (state.locked) {
+        void blank.getBoundingClientRect();
+        blank.classList.add('lb-lock-blink');
+      }
+    }
+  }
+  if (btLock) {
+    btLock.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      setBlankLocked(!state.locked);
+    });
+    if (blank) {
+      blank.addEventListener('animationend', function () {
+        blank.classList.remove('lb-lock-blink');
+      });
+    }
+  }
+  window.__blankLocked = function () { return !!state.locked; };
+
   function onPointerDown(e) {
     var t = e.target;
     var id = t && t.id;
+    if (state.locked && (id === 'lb-hit-corner' || id === 'lb-hit-right' || id === 'lb-hit-top' || t === hitCorner || t === hitRight || t === hitTop)) {
+      return;
+    }
     if (t === hitCorner || id === 'lb-hit-corner') { state.dragging = 'xy'; document.body.classList.add('lb-dragging-xy'); }
     else if (t === hitRight || id === 'lb-hit-right') { state.dragging = 'x'; document.body.classList.add('lb-dragging-x'); }
     else if (t === hitTop || id === 'lb-hit-top') { state.dragging = 'y'; document.body.classList.add('lb-dragging-y'); }
@@ -2608,6 +2730,94 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     margin: { l: 0.25, r: 0.25, t: 0.25, b: 0.25 },
     open: null, snapshot: null
   };
+
+  const PRESET_KEYS = ['blank', 'gap', 'margin'];
+  const PRESET_STORE = 'howmany.flipit.v3.presets';
+  var presetState = {
+    blank: { A: null, B: null },
+    gap: { A: null, B: null },
+    margin: { A: null, B: null },
+    armed: { blank: null, gap: null, margin: null }
+  };
+  function clonePreset(v) {
+    return v ? JSON.parse(JSON.stringify(v)) : null;
+  }
+  function loadPresets() {
+    try {
+      var raw = localStorage.getItem(PRESET_STORE);
+      if (!raw) return;
+      var data = JSON.parse(raw);
+      PRESET_KEYS.forEach(function (key) {
+        if (!data[key]) return;
+        ['A', 'B'].forEach(function (slot) {
+          if (data[key][slot]) presetState[key][slot] = data[key][slot];
+        });
+      });
+    } catch (_) {}
+  }
+  function persistPresets() {
+    try {
+      var out = {};
+      PRESET_KEYS.forEach(function (key) {
+        out[key] = { A: presetState[key].A, B: presetState[key].B };
+      });
+      localStorage.setItem(PRESET_STORE, JSON.stringify(out));
+    } catch (_) {}
+  }
+  function paintPresetButtons(key) {
+    var wrap = document.querySelector('.pop-presets[data-presets="' + key + '"]');
+    if (!wrap) return;
+    wrap.querySelectorAll('.pop-pre').forEach(function (btn) {
+      var slot = btn.getAttribute('data-pre');
+      var filled = !!(presetState[key] && presetState[key][slot]);
+      var armed = presetState.armed[key] === slot;
+      btn.classList.toggle('is-filled', filled);
+      btn.classList.toggle('is-armed', armed);
+      btn.setAttribute('aria-pressed', armed ? 'true' : 'false');
+    });
+  }
+  function writeFieldsFromBag(key) {
+    if (key === 'blank') {
+      var bx = document.querySelector('[data-blank="x"]'), by = document.querySelector('[data-blank="y"]');
+      if (bx) bx.value = fmt3(paramState.blank.x); if (by) by.value = fmt3(paramState.blank.y);
+      var bl = document.querySelector('[data-blank-link]');
+      if (bl) { bl.classList.toggle('active', !!paramState.blank.linked); bl.setAttribute('aria-pressed', paramState.blank.linked ? 'true' : 'false'); }
+    } else if (key === 'gap') {
+      var gx = document.querySelector('[data-gap="x"]'), gy = document.querySelector('[data-gap="y"]');
+      if (gx) gx.value = fmt3(paramState.gap.x); if (gy) gy.value = fmt3(paramState.gap.y);
+      var gl = document.querySelector('[data-gap-link]');
+      if (gl) { gl.classList.toggle('active', !!paramState.gap.linked); gl.setAttribute('aria-pressed', paramState.gap.linked ? 'true' : 'false'); }
+    } else if (key === 'margin') {
+      ['l','r','t','b'].forEach(function (k) {
+        var el = document.querySelector('[data-m="' + k + '"]');
+        if (el) el.value = fmt3(paramState.margin[k]);
+      });
+    }
+    refreshTickers();
+    updateSaveDirty();
+  }
+  function applyPresetSlot(key, slot) {
+    var bag = presetState[key] && presetState[key][slot];
+    if (!bag) return false;
+    if (key === 'blank') {
+      paramState.blank.x = bag.x; paramState.blank.y = bag.y; paramState.blank.linked = !!bag.linked;
+    } else if (key === 'gap') {
+      paramState.gap.x = bag.x; paramState.gap.y = bag.y; paramState.gap.linked = !!bag.linked;
+    } else if (key === 'margin') {
+      paramState.margin.l = bag.l; paramState.margin.r = bag.r; paramState.margin.t = bag.t; paramState.margin.b = bag.b;
+    }
+    writeFieldsFromBag(key);
+    return true;
+  }
+  function saveArmedPreset(key) {
+    var slot = presetState.armed[key];
+    if (!slot || PRESET_KEYS.indexOf(key) === -1) return;
+    presetState[key][slot] = takeSnapshot(key);
+    persistPresets();
+    paintPresetButtons(key);
+  }
+  loadPresets();
+  PRESET_KEYS.forEach(paintPresetButtons);
 
   function fmt3(n) { return (Number.isFinite(n) ? n : 0).toFixed(3); }
 
@@ -2691,17 +2901,13 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     const wasCalc = state.calc;
     state.collapsed = on;
     hud.classList.toggle('collapsed', on);
-    hud.classList.remove('is-settled');
+    hud.classList.toggle('is-settled', on);
     if (settledTimer) { clearTimeout(settledTimer); settledTimer = null; }
     btnChevron.setAttribute('aria-expanded', on ? 'false' : 'true');
     btnChevron.title = on ? 'Expand' : 'Collapse';
     if (on) {
       closeAllParamPopovers();
-      /* Keep calc-mode while the 0fr close runs so calc does not flash to params. */
-      settledTimer = setTimeout(function () {
-        settledTimer = null;
-        if (state.collapsed) hud.classList.add('is-settled');
-      }, motionMs());
+      /* is-settled is immediate; CSS 160ms delay starts the 240ms fade as 0fr ends. */
     }
     applyBodyHeight();
     if (on && wasCalc) {
@@ -2751,7 +2957,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (e.button != null && e.button !== 0) return;
     if (e.target.closest && e.target.closest('button')) return;
     const r = hud.getBoundingClientRect();
-    state.drag = { ox: e.clientX - r.left, oy: e.clientY - r.top, pid: e.pointerId };
+    state.drag = { ox: e.clientX - r.left, oy: e.clientY - r.top, pid: e.pointerId, sl: r.left, st: r.top };
     hud.style.transform = 'none';
     hud.style.left = r.left + 'px';
     hud.style.top = r.top + 'px';
@@ -2768,6 +2974,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
   function endHudDrag() {
     if (!state.drag) return;
+    var r = hud.getBoundingClientRect();
+    if (Math.abs(r.left - state.drag.sl) > 4 || Math.abs(r.top - state.drag.st) > 4) {
+      window.__cardUserDrag = window.__cardUserDrag || { hud: false, flipit: false, toolpath: false };
+      window.__cardUserDrag.hud = true;
+    }
     try { hudHeader.releasePointerCapture(state.drag.pid); } catch (_) {}
     state.drag = null;
   }
@@ -2923,10 +3134,23 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (saveBtn) {
       e.preventDefault(); e.stopPropagation();
       if (paramState.open) {
+        saveArmedPreset(paramState.open);
         paramState.snapshot = takeSnapshot(paramState.open);
         refreshTickers();
         closeAllParamPopovers();
       }
+      return;
+    }
+    const preBtn = e.target.closest('.pop-pre');
+    if (preBtn) {
+      e.preventDefault(); e.stopPropagation();
+      const wrap = preBtn.closest('.pop-presets');
+      const key = wrap && wrap.getAttribute('data-presets');
+      const slot = preBtn.getAttribute('data-pre');
+      if (!key || !slot || PRESET_KEYS.indexOf(key) === -1) return;
+      if (presetState[key][slot]) applyPresetSlot(key, slot);
+      presetState.armed[key] = presetState.armed[key] === slot ? null : slot;
+      paintPresetButtons(key);
     }
   });
 
@@ -3070,6 +3294,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     const row = document.querySelector('.param-row[data-param="' + key + '"]');
     if (!row) return;
     row.classList.add('is-open');
+    if (PRESET_KEYS.indexOf(key) !== -1) {
+      presetState.armed[key] = null;
+      paintPresetButtons(key);
+    }
     updateSaveDirty();
     requestAnimationFrame(function () { positionOutsideHUD(); positionOutsideHUD(); });
   }
@@ -3738,6 +3966,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       /* capture for R11 */
       var r = panel.getBoundingClientRect();
       lastGcodePos = { left: Math.round(r.left), top: Math.round(r.top) };
+      if (Math.abs(r.left - ol) > 4 || Math.abs(r.top - ot) > 4) {
+        window.__cardUserDrag = window.__cardUserDrag || { hud: false, flipit: false, toolpath: false };
+        window.__cardUserDrag.flipit = true;
+      }
     }
     dragBar.addEventListener('pointerup', end);
     dragBar.addEventListener('pointercancel', end);
@@ -3772,6 +4004,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }
     setExpanded(!!expanded);
     syncHudFlipitChrome();
+    if (typeof window.__hostArrange === 'function') window.__hostArrange('flipit');
   }
   function closeGcode() {
     if (panel.classList.contains('is-open') && panel.style.display !== 'none') {
@@ -4117,8 +4350,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       e.stopPropagation();
       var card = document.getElementById('backplot');
       if (!card) return;
-      var open = card.classList.contains('is-hidden');
-      if (open) {
+      var opening = card.classList.contains('is-hidden');
+      if (typeof window.__setToolpathOpen === 'function') {
+        window.__setToolpathOpen(opening);
+        return;
+      }
+      if (opening) {
         card.classList.remove('is-hidden');
         card.style.display = '';
       } else {
@@ -4179,6 +4416,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       card.classList.remove('is-dragging');
       try { if (pid != null) dragBar.releasePointerCapture(pid); } catch (_) {}
       pid = null;
+      var r = card.getBoundingClientRect();
+      if (Math.abs(r.left - ol) > 4 || Math.abs(r.top - ot) > 4) {
+        window.__cardUserDrag = window.__cardUserDrag || { hud: false, flipit: false, toolpath: false };
+        window.__cardUserDrag.toolpath = true;
+      }
     }
     dragBar.addEventListener('pointerup', end);
     dragBar.addEventListener('pointercancel', end);
@@ -4199,14 +4441,18 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (on) {
       card.classList.remove('is-hidden');
       card.style.display = '';
+      if (typeof window.__hostArrange === 'function') window.__hostArrange('toolpath');
     } else {
       card.classList.add('is-hidden');
+      window.__cardUserDrag = window.__cardUserDrag || { hud: false, flipit: false, toolpath: false };
+      window.__cardUserDrag.toolpath = false;
     }
     ['btn-toolpath-src', 'btn-toolpath-out'].forEach(function (wid) {
       var w = document.getElementById(wid);
       if (w) w.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
   }
+  window.__setToolpathOpen = setToolpathOpen;
 
   if (btnClose) {
     btnClose.addEventListener('click', function (e) {
@@ -4227,16 +4473,95 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 })();
 </script>
 <script>
-/* ── Host residual R1–R3 — LaserBed calc chip → HUD ── */
+/* ── Host residual R1–R8 — LaserBed calc chip → HUD + card arrange ── */
 (function () {
   var btCalc = document.getElementById('bt-calc');
-  if (!btCalc) return;
-  btCalc.addEventListener('click', function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.stopImmediatePropagation) e.stopImmediatePropagation();
-    if (typeof window.__hudFromBedCalc === 'function') window.__hudFromBedCalc();
-  }, true);
+  if (btCalc) {
+    btCalc.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+      if (typeof window.__hudFromBedCalc === 'function') window.__hudFromBedCalc();
+    }, true);
+  }
+
+  window.__cardUserDrag = window.__cardUserDrag || { hud: false, flipit: false, toolpath: false };
+
+  function overlaps(a, b, pad) {
+    pad = pad == null ? 12 : pad;
+    return !(a.right + pad <= b.left || a.left - pad >= b.right || a.bottom + pad <= b.top || a.top - pad >= b.bottom);
+  }
+  function placeCard(el, left, top) {
+    if (!el) return;
+    el.style.left = Math.round(left) + 'px';
+    el.style.top = Math.round(top) + 'px';
+    el.style.right = 'auto';
+    el.style.transform = 'none';
+  }
+  function findOpenSpace(el, avoids) {
+    var w = el.offsetWidth || 280;
+    var h = el.offsetHeight || 220;
+    var vw = window.innerWidth;
+    var vh = window.innerHeight;
+    var gap = 16;
+    var hud = document.getElementById('hud');
+    var hudBox = hud ? hud.getBoundingClientRect() : null;
+    var candidates = [
+      { left: gap, top: hudBox ? Math.round(hudBox.bottom + 12) : 80 },
+      { left: hudBox ? Math.round(hudBox.right + 12) : 300, top: gap },
+      { left: gap, top: Math.max(gap, vh - h - gap) },
+      { left: Math.max(gap, vw - w - gap), top: gap },
+      { left: Math.max(gap, vw - w - gap), top: Math.max(gap, vh - h - gap) },
+      { left: Math.max(gap, (vw - w) / 2), top: Math.max(gap, (vh - h) / 2) }
+    ];
+    for (var i = 0; i < candidates.length; i++) {
+      var box = {
+        left: candidates[i].left,
+        top: candidates[i].top,
+        right: candidates[i].left + w,
+        bottom: candidates[i].top + h
+      };
+      if (box.left < 0 || box.top < 0 || box.right > vw || box.bottom > vh) continue;
+      var hit = false;
+      for (var j = 0; j < avoids.length; j++) {
+        if (avoids[j] && overlaps(box, avoids[j], 12)) { hit = true; break; }
+      }
+      if (!hit) return candidates[i];
+    }
+    return { left: gap, top: Math.min(vh - h - gap, hudBox ? hudBox.bottom + 12 : 240) };
+  }
+
+  window.__hostArrange = function (reason) {
+    var hud = document.getElementById('hud');
+    var gcode = document.getElementById('gcode');
+    var tp = document.getElementById('backplot');
+    var flags = window.__cardUserDrag;
+    var flipitOpen = !!(gcode && gcode.classList.contains('is-open') && gcode.style.display !== 'none');
+    var tpOpen = !!(tp && !tp.classList.contains('is-hidden'));
+    var vw = window.innerWidth;
+    var vh = window.innerHeight;
+    var gap = 16;
+
+    if (flipitOpen && tpOpen) {
+      var gW = gcode.offsetWidth, gH = gcode.offsetHeight;
+      var tW = tp.offsetWidth || 280, tH = tp.offsetHeight || 220;
+      var hW = hud ? hud.offsetWidth : 268;
+      if (!flags.flipit) placeCard(gcode, Math.max(gap, (vw - gW) / 2), Math.max(gap, (vh - gH) / 2));
+      if (reason === 'toolpath' || !flags.toolpath) {
+        placeCard(tp, gap, Math.max(gap, Math.min(80, vh - tH - gap)));
+      }
+      if (hud && !flags.hud) placeCard(hud, Math.max(gap, vw - hW - gap), gap);
+      return;
+    }
+
+    if (reason === 'toolpath' && tpOpen) {
+      var avoids = [];
+      if (hud) avoids.push(hud.getBoundingClientRect());
+      if (flipitOpen) avoids.push(gcode.getBoundingClientRect());
+      var pos = findOpenSpace(tp, avoids);
+      placeCard(tp, pos.left, pos.top);
+    }
+  };
 })();
 </script>
 </body>
