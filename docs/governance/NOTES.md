@@ -2,16 +2,14 @@
 
 ## Locked this wave (`docs/b8-continue-land`)
 
+- wReckless owns the system. No Surface owns freeze, land, or a cycle.
+- wReckless starts the work and names the Surface. Workers do not self-start.
+- Typical first-name is a hint: Codex App (product freeze), Grok Build (docs
+  freeze / land). A named Codex CLI may run a full cycle including freeze.
 - B8 is continuation when repo-backed confidence and named criteria pass.
-- Merge on that clearance is not a standing wReckless seat. Merge without
-  clearance is a wReckless gate.
-- wReckless at land only on escalation: B6 waypoint change, failed or missing
-  confidence, failed criteria, or a hard gate.
-- Codex App preferred for **product goal freeze**. Named coding implement after.
-- Grok Build preferred for docs freeze, docs work, and B6–B9 land.
+- Merge without that clearance is a wReckless gate.
 - Codex does not touch UI / chrome unless the traveler names it.
 - Traveler is the job packet. the-Feeler is the feeler-gauge probe.
-- Sidecar stays optional in this wave.
 - Quiet GOAL stays quiet. No merge from this draft.
 
 ## Codex review on this PR
