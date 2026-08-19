@@ -33,10 +33,8 @@ Workers do not pick their own start. The traveler names the Surface.
 6. When the named job ends, emit one traveler to wReckless. Silent finish is Broken.
 
 One `main` exception: checkout sync only (fetch, switch to `main`, fast-forward
-to `origin/main`). No edits, commits, push, or merge.
-Codex on that sync: Model `GPT-5.6 Luna` and Effort `low` only. Any other Codex
-model or effort is Broken.
-Grok Build on that sync may use any model it has.
+to `origin/main`). No edits, commits, push, or merge. Any named Surface may
+do that sync. Model and effort are not a gate on it.
 
 Typical first-name: Codex App for product freeze, Grok Build for docs freeze.
 A named Codex CLI (or any other Surface) may run a full cycle including freeze.
