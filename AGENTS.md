@@ -18,7 +18,8 @@ Procedure lives in `docs/WORKFLOW.md`. Routing lives here.
 ## Commands
 
 Host first. Do not sandbox-first for npm, Playwright, git, or committed
-`scripts/*.py`.
+`scripts/*.py`. These commands are not traveler Instruction. The host runs
+them in NestCalc on the Mac. The land suite runs at land, not at every station.
 
 ```text
 npm run lint
@@ -31,6 +32,10 @@ npm run governance:check
 npm run test:governance
 python3 scripts/nestcalc-governance.py check
 python3 scripts/nestcalc-governance.py validate-goal --goal GOAL.md
+git diff --check
+git status --porcelain=v1
+git branch --show-current
+git rev-parse HEAD
 ```
 
 A script written in this step is not host-first until it is on HEAD and
@@ -44,11 +49,12 @@ Missing Clerk auth env is blocked proof, not a pass.
 
 - One worktree + one branch per authorized scope.
 - Engine and chrome do not share a worktree unless the active GOAL names both.
-- Start-check match traveler Branch + Head. Create or switch, then continue.
+- Read the traveler first. Do the Instruction. Do not emit host commands in the traveler.
+- Stay on traveler Branch + Head. Create or switch is host / Orchestrator, not worker Instruction.
 - Echo `flow_id` and `goal_sha256` every turn when a goal is on.
 - Live post-bootstrap `GOAL.md` must carry the `nestcalc-governance` v1 block.
-  `validate-goal` is the check. Recipe lives in `docs/WORKFLOW.md` and
-  `docs/governance/`.
+  Freeze stamp is that fence: `flow_id`, `goal_sha256`, hash match, one Active Goal.
+  Recipe lives in `docs/WORKFLOW.md` and `docs/governance/`.
 - Preserve calculator math and AutoNest unless the active GOAL names them.
 - Preserve FLiPIT identity and V3 HTML + SPEC unless a new wReckless decision.
 - Keep secrets, `.env*`, and production credentials out of git.
@@ -65,6 +71,7 @@ Missing Clerk auth env is blocked proof, not a pass.
 - Import NanoTate golden-pipeline, SBOM, or env-proxy as NestCalc continue-gates.
 - Mix engine and chrome in one worktree unless the active GOAL names both.
 - Sandbox-first the host-first list.
+- Fold host commands into the traveler.
 - Let Codex touch UI / chrome unless the traveler names it.
 
 ### Corrective Action
@@ -77,7 +84,8 @@ Missing Clerk auth env is blocked proof, not a pass.
 - **Broken** — known hard gate. STOP. Problem only. No correction.
 
 Hard gates: `main`, Production, secrets, MODE, FLiPIT name, V3 authority.
-Wrong branch or worktree is Correction, not Broken.
+Wrong branch, wrong worktree, or wrong repo is Correction, not Broken.
+Opening a draft PR on the named branch is not a hard gate.
 
 Elevated CA is wReckless + SuperGrok process harden. Workers do not open it.
 
@@ -113,6 +121,8 @@ B8 merge on that clearance is not a wReckless seat.
 wReckless at land only on escalation: B6 waypoint change, failed or missing
 confidence, failed criteria, or a hard gate.
 
+PR-write tiers live in `docs/WORKFLOW.md` Land.
+
 Do not auto-spawn Codex.
 
 ## Authority
@@ -121,13 +131,16 @@ Read in this order. Later items do not override earlier ones unless the
 active GOAL narrows scope.
 
 1. This file
-2. Active `GOAL.md`
+2. Active `GOAL.md` — scope and outcomes. Not a host command list.
 3. `docs/WORKFLOW.md`
 4. `LESSONS_LEARNED.md`
 5. V3 HTML + SPEC under `docs/howmany-v3-components/` and related docs packages
 
+This station's traveler Instruction wins over GOAL for which operation runs now.
+GOAL does not add operations to the packet.
+
 Live GitHub wins mutable facts. Conversation memory is advisory.
-wReckless is a gate, not an authority hop. Soft inference is forbidden.
+wReckless is a gate, not a later authority. Soft inference is forbidden.
 
 `docs/governance/MODE` stays `advisory` until a dedicated wReckless promotion goal.
 Contracts still fail closed. MODE does not make them optional.
