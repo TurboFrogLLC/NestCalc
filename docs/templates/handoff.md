@@ -1,7 +1,8 @@
-# Handoff
+# Traveler (handoff)
 
-One copyable block. Same shape on every Surface.
-Surface = the step. Waypoint = the intersection. Handoff = this block.
+One copyable packet. Same shape on every Surface.
+Surface = the station. Waypoint = the intersection. Traveler = this block.
+the-Feeler is not this file. the-Feeler only measures the gap.
 
 Three bands. Real blank lines between them. Do not bleed the bands.
 Do not wrap the routing header in YAML `---` fences.
@@ -32,7 +33,7 @@ Pack `06` may carry extra routing-header fields (Worktree, Model, Effort,
 Orchestration, Session, Mode). This product file keeps the slimmer set.
 The three bands stay.
 
-`create-handoff` JSON is a machine sidecar (prompt hash and bindings).
+`create-handoff` JSON is a sidecar (prompt hash and bindings).
 It is not this traveler.
 
 ## Orchestrator emission (two copy boxes)
@@ -42,12 +43,12 @@ shell Surface, emit **two** separate copy boxes, in order:
 
 1. Terminal commands — `cd` into the NestCalc primary clone or named worktree,
    fetch/checkout/branch as needed, short head check.
-2. The one handoff block above.
+2. The one traveler block above.
 
 Primary clone path:
 `/Users/computer/wrecklesstoddler/vibe/projects/nestcalc`
 
-Do not fold the terminal commands into the handoff body by default.
+Do not fold the terminal commands into the traveler body by default.
 When Branch is populated, the terminal box is required for Orchestrator
 human-facing output.
 
@@ -63,7 +64,7 @@ Definitions live in AGENTS.md Boundaries. Do not restate them here.
 
 ## Optional worker terminal check
 
-After the handoff block, a worker Surface may add:
+After the traveler block, a worker Surface may add:
 
 ```text
 git rev-parse --abbrev-ref HEAD
