@@ -30,6 +30,7 @@ Workers do not pick their own start. The traveler names the Surface.
    Create or switch is host or Orchestrator work, not traveler Instruction.
 4. Do this station's Instruction only. Do not run another station's stamp.
 5. Apply this station's stamp before the traveler moves.
+6. When the named job ends, emit one traveler to wReckless. Silent finish is Broken.
 
 One `main` exception: checkout sync only (fetch, switch to `main`, fast-forward
 to `origin/main`). No edits, commits, push, or merge.
@@ -51,12 +52,14 @@ does not move.
 | Freeze | v1 fence on `GOAL.md`. `flow_id`, `goal_sha256`, hash match, one Active Goal. |
 | B5 Implement | Named branch. Allowed Files only. Freeze hash unchanged. |
 | Land B6–B9 | Host suite below, in the traveler worktree, after B5 is on HEAD. |
+| Job end | One traveler to wReckless. Posted on the PR before merge when a PR exists. |
 
 Freeze does not run the land suite. B5 does not re-run freeze.
 Land does not start-check as if it were freeze.
 
 B5 is the cut immediately before B6. It is not job close.
 When independent review is named, the job closes at B9. B6–B9 is QC and ship.
+The last stamp is still a traveler to wReckless.
 
 ## Goal
 
@@ -172,6 +175,14 @@ Use the strongest verification the touched surface warrants.
 
 When independent review is named: B5 → B6 → B7 → B8 → B9.
 B5 is the last production station. B6 starts QC. The job closes at B9.
+The last stamp is one traveler to wReckless.
+
+Cycle:
+
+| Cycle | Use |
+| --- | --- |
+| Full | Product / machine / Allowed Files. B5 → B6–B9 when review is named. |
+| Lite | Skill or docs. Implement, stamp, draft PR, travel back. Merge only if this traveler named Merge. |
 
 PR-write tiers:
 
@@ -192,6 +203,8 @@ PR-write tiers:
 - B8 merge on that clearance is not a wReckless seat.
 - B9 post-merge: sync, prune, persist approved lessons, quiet archive
   when that is the named work. That is job close.
+- When a PR exists, post the end-of-job traveler on that PR before merge.
+- If next cannot be named, next is wReckless.
 - wReckless at land only on escalation: B6 waypoint change, failed or
   missing confidence, failed criteria, or a hard gate.
 
