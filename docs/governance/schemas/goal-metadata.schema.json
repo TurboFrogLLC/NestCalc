@@ -11,8 +11,8 @@
     "active_goal_title": {"type": "string", "minLength": 1},
     "goal_sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
     "goal_memory_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
-    "branch_intent": {"type": "string", "pattern": "^codex/[a-z0-9][a-z0-9._/-]*$"},
-    "execution_route": {"const": "codex-cli"},
+    "branch_intent": {"type": "string", "minLength": 3, "maxLength": 255, "pattern": "^[a-z0-9](?:[a-z0-9._-]{0,62}[a-z0-9_-])?(?:/[a-z0-9](?:[a-z0-9._-]{0,62}[a-z0-9_-])?)+$"},
+    "execution_route": {"type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[A-Za-z0-9][A-Za-z0-9 ._+:/-]*$"},
     "publication_route": {"const": "feature-pr"},
     "skills": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
     "protected_surfaces": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
@@ -20,16 +20,16 @@
       "type": "object",
       "required": ["orchestrator", "read_only_agents"],
       "properties": {
-        "orchestrator": {"const": "codex-cli"},
+        "orchestrator": {"type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[A-Za-z0-9][A-Za-z0-9 ._+:/-]*$"},
         "read_only_agents": {
           "type": "array",
           "items": {
             "type": "object",
             "required": ["lane", "requested_model", "observed_model", "status"],
             "properties": {
-              "lane": {"type": "string", "minLength": 1},
-              "requested_model": {"const": "gpt-5.6-terra"},
-              "observed_model": {"type": ["string", "null"]},
+              "lane": {"type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[A-Za-z0-9][A-Za-z0-9 ._+:/-]*$"},
+              "requested_model": {"type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[A-Za-z0-9][A-Za-z0-9 ._+:/-]*$"},
+              "observed_model": {"type": ["string", "null"], "minLength": 1, "maxLength": 64, "pattern": "^[A-Za-z0-9][A-Za-z0-9 ._+:/-]*$"},
               "status": {"enum": ["matched", "mismatch", "unavailable"]}
             },
             "additionalProperties": false

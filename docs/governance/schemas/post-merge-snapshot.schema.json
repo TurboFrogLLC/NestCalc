@@ -9,7 +9,7 @@
     "snapshot_id": {"type": "string", "pattern": "^[0-9a-f]{16}$"},
     "captured_at": {"type": "string", "format": "date-time"},
     "repository": {"const": "TurboFrogLLC/NestCalc"},
-    "branch": {"type": "string", "pattern": "^codex/"},
+    "branch": {"type": "string", "minLength": 3, "maxLength": 255, "pattern": "^[a-z0-9](?:[a-z0-9._-]{0,62}[a-z0-9_-])?(?:/[a-z0-9](?:[a-z0-9._-]{0,62}[a-z0-9_-])?)+$"},
     "branch_tip": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
     "merged_pr": {"type": "object", "required": ["number", "url", "state"], "properties": {"number": {"type": "integer", "minimum": 1}, "url": {"type": "string"}, "state": {"const": "merged"}}, "additionalProperties": false},
     "main_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},

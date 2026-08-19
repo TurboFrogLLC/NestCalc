@@ -26,12 +26,15 @@ GOAL_SCHEMA = "nestcalc-goal-v1"
 HANDOFF_SCHEMA = "nestcalc-execution-handoff-v1"
 CLOSEOUT_SCHEMA = "nestcalc-closeout-v1"
 SNAPSHOT_SCHEMA = "nestcalc-post-merge-v1"
-REQUIRED_AGENT_MODEL = "gpt-5.6-terra"
 BOOTSTRAP_TITLE = "NestCalc Governed Goal Pipeline v1"
 FLOW_RE = re.compile(r"^NC-[0-9]{8}-[0-9a-f]{8}$")
 SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 HASH_RE = re.compile(r"^sha256:[0-9a-f]{64}$")
-BRANCH_RE = re.compile(r"^codex/[a-z0-9][a-z0-9._/-]*$")
+BRANCH_RE = re.compile(
+    r"^[a-z0-9](?:[a-z0-9._-]{0,62}[a-z0-9_-])?"
+    r"(?:/[a-z0-9](?:[a-z0-9._-]{0,62}[a-z0-9_-])?)+$"
+)
+SAFE_LABEL_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9 ._+:/-]{0,63}$")
 PR_URL_RE = re.compile(r"^https://github\.com/TurboFrogLLC/NestCalc/pull/[0-9]+$")
 META_RE = re.compile(
     r"<!-- nestcalc-governance:start -->\n```json\n(?P<data>.*?)\n```\n"
@@ -102,6 +105,11 @@ def sha256_bytes(value: bytes) -> str:
 
 def sha256_text(value: str) -> str:
     return sha256_bytes(value.encode("utf-8"))
+
+
+def is_safe_feature_branch(value: Any) -> bool:
+    branch = str(value or "")
+    return len(branch) <= 255 and BRANCH_RE.fullmatch(branch) is not None
 
 
 def read_json(path: Path) -> dict[str, Any]:
@@ -186,8 +194,8 @@ def validate_agent_roster(roster: Any, result: Result) -> None:
         result.errors.append("agent_roster must be an object")
         return
     check_exact_keys(roster, ("orchestrator", "read_only_agents"), ("orchestrator", "read_only_agents"), result)
-    if roster.get("orchestrator") != "codex-cli":
-        result.errors.append("agent_roster.orchestrator must be codex-cli")
+    if not SAFE_LABEL_RE.fullmatch(str(roster.get("orchestrator", ""))):
+        result.errors.append("agent_roster.orchestrator must be a safe named Surface")
     lanes = roster.get("read_only_agents")
     if not isinstance(lanes, list):
         result.errors.append("agent_roster.read_only_agents must be an array")
@@ -206,8 +214,12 @@ def validate_agent_roster(roster: Any, result: Result) -> None:
         requested = lane.get("requested_model")
         observed = lane.get("observed_model")
         status = lane.get("status")
-        if requested != REQUIRED_AGENT_MODEL:
-            result.errors.append(f"{label}.requested_model must be {REQUIRED_AGENT_MODEL}")
+        if not SAFE_LABEL_RE.fullmatch(str(lane.get("lane", ""))):
+            result.errors.append(f"{label}.lane must be a safe non-empty label")
+        if not SAFE_LABEL_RE.fullmatch(str(requested or "")):
+            result.errors.append(f"{label}.requested_model must be a safe non-empty model label")
+        if observed is not None and not SAFE_LABEL_RE.fullmatch(str(observed)):
+            result.errors.append(f"{label}.observed_model must be null or a safe model label")
         if status not in {"matched", "mismatch", "unavailable"}:
             result.errors.append(f"{label}.status is invalid")
         elif status == "matched" and observed != requested:
@@ -259,10 +271,10 @@ def validate_goal(path: Path, *, allow_bootstrap: bool) -> Result:
         result.errors.append("active_goal_title must exactly match the Active Goal heading")
     if not SHA_RE.fullmatch(str(metadata.get("goal_memory_commit", ""))):
         result.errors.append("goal_memory_commit must be a full 40-character SHA")
-    if not BRANCH_RE.fullmatch(str(metadata.get("branch_intent", ""))):
-        result.errors.append("branch_intent must start with codex/ and use safe characters")
-    if metadata.get("execution_route") != "codex-cli":
-        result.errors.append("execution_route must be codex-cli")
+    if not is_safe_feature_branch(metadata.get("branch_intent")):
+        result.errors.append("branch_intent must be a safe slash-qualified feature branch")
+    if not SAFE_LABEL_RE.fullmatch(str(metadata.get("execution_route", ""))):
+        result.errors.append("execution_route must be a safe named route")
     if metadata.get("publication_route") != "feature-pr":
         result.errors.append("publication_route must be feature-pr")
     for field_name in ("skills", "protected_surfaces"):
@@ -302,10 +314,10 @@ def validate_handoff_data(data: dict[str, Any], subject: str = "execution-handof
             result.errors.append(f"{key} must be a sha256 digest")
     if not SHA_RE.fullmatch(str(data.get("goal_memory_commit", ""))):
         result.errors.append("goal_memory_commit must be a full SHA")
-    if not BRANCH_RE.fullmatch(str(data.get("branch_intent", ""))):
-        result.errors.append("branch_intent must start with codex/")
-    if data.get("execution_route") != "codex-cli":
-        result.errors.append("execution_route must be codex-cli")
+    if not is_safe_feature_branch(data.get("branch_intent")):
+        result.errors.append("branch_intent must be a safe slash-qualified feature branch")
+    if not SAFE_LABEL_RE.fullmatch(str(data.get("execution_route", ""))):
+        result.errors.append("execution_route must be a safe named route")
     if data.get("publication_route") != "feature-pr":
         result.errors.append("publication_route must be feature-pr")
     validate_agent_roster(data.get("agent_roster"), result)
@@ -316,10 +328,10 @@ def validate_handoff_data(data: dict[str, Any], subject: str = "execution-handof
 def validate_closeout_data(data: dict[str, Any], subject: str = "closeout") -> Result:
     result = Result(subject)
     required = {
-        "schema_version", "flow_id", "status", "disposition", "human_action_required",
-        "goal_memory_commit", "implementation_commit", "reviewed_commit", "pr", "limitations",
+        "schema_version", "flow_id", "status", "disposition", "goal_memory_commit",
+        "implementation_commit", "reviewed_commit", "pr", "limitations",
     }
-    allowed = required | {"blocker"}
+    allowed = required | {"blocker", "human_action_required"}
     check_exact_keys(data, required, allowed, result)
     if data.get("schema_version") != CLOSEOUT_SCHEMA:
         result.errors.append(f"schema_version must be {CLOSEOUT_SCHEMA}")
@@ -338,8 +350,11 @@ def validate_closeout_data(data: dict[str, Any], subject: str = "closeout") -> R
         result.errors.append("goal-memory and implementation commits must be distinct")
     if data.get("reviewed_commit") == data.get("goal_memory_commit"):
         result.errors.append("reviewed_commit cannot be the goal-memory commit")
-    if not isinstance(data.get("human_action_required"), str) or not data.get("human_action_required", "").strip():
-        result.errors.append("human_action_required must be non-empty")
+    if "human_action_required" in data and (
+        not isinstance(data["human_action_required"], str)
+        or not data["human_action_required"].strip()
+    ):
+        result.errors.append("human_action_required must be non-empty when present")
     if not isinstance(data.get("limitations"), list) or not all(isinstance(item, str) for item in data.get("limitations", [])):
         result.errors.append("limitations must be a string array")
     pr = data.get("pr")
@@ -391,8 +406,8 @@ def validate_snapshot_data(data: dict[str, Any], subject: str = "post-merge-snap
         result.errors.append("captured_at must be an ISO-8601 timestamp")
     if data.get("repository") != REPOSITORY:
         result.errors.append(f"repository must be {REPOSITORY}")
-    if not BRANCH_RE.fullmatch(str(data.get("branch", ""))):
-        result.errors.append("branch must start with codex/")
+    if not is_safe_feature_branch(data.get("branch")):
+        result.errors.append("branch must be a safe slash-qualified feature branch")
     for key in ("branch_tip", "main_sha"):
         if not SHA_RE.fullmatch(str(data.get(key, ""))):
             result.errors.append(f"{key} must be a full SHA")
@@ -515,13 +530,10 @@ def validate_closeout_breakdown_text(text: str, subject: str = "closeout-breakdo
                 section = section.split(stop, 1)[0]
         signal = extract_closeout_breakdown_field(section, "Signal")
         rationale = extract_closeout_breakdown_field(section, "Rationale")
-        human_action = extract_closeout_breakdown_field(section, "Human action")
         if signal not in CLOSEOUT_ASSESSMENT_ALIGNMENT:
             result.errors.append("section 8 Signal must be merge-ready, suspend-merge, or rollback-required")
         if not rationale:
             result.errors.append("section 8 Rationale is required")
-        if not human_action:
-            result.errors.append("section 8 Human action is required")
         if signal == "rollback-required" and "**Rollback steps:**" not in section:
             result.errors.append("rollback-required closeout must include Rollback steps")
         if signal and assessment:
@@ -563,6 +575,12 @@ def validate_manifest(root: Path) -> tuple[Result, dict[str, Any] | None]:
         result.errors.append("unsupported manifest schema_version")
     if manifest.get("repository") != REPOSITORY:
         result.errors.append(f"repository must be {REPOSITORY}")
+    traveler = root / "docs/templates/handoff.md"
+    if not traveler.is_file():
+        result.errors.append("missing required traveler template: docs/templates/handoff.md")
+    else:
+        result.details["traveler"] = "required"
+        result.details["execution_sidecar"] = "optional"
     for rel in manifest.get("required_paths", []):
         if not (root / rel).is_file():
             result.errors.append(f"missing required path: {rel}")
@@ -590,6 +608,7 @@ def aggregate_check(root: Path, mode: str) -> Result:
         result.errors.append("docs/governance/MODE must be advisory or enforce")
     manifest_result, manifest = validate_manifest(root)
     result.merge(manifest_result)
+    result.details.update(manifest_result.details)
     if manifest:
         fixtures = manifest.get("fixtures", {})
         valid_count = 0
@@ -621,9 +640,36 @@ def aggregate_check(root: Path, mode: str) -> Result:
             else:
                 fixture_outcomes.append({"fixture": rel, "expected": "invalid", "outcome": "rejected"})
                 invalid_count += 1
+        listed = {
+            str(rel)
+            for category in ("valid", "invalid")
+            for rel in fixtures.get(category, [])
+        }
+        supplemental_outcomes: list[dict[str, str]] = []
+        for expected in ("valid", "invalid"):
+            fixture_dir = root / "docs/governance/fixtures" / expected
+            if not fixture_dir.is_dir():
+                continue
+            for fixture_path in sorted(path for path in fixture_dir.iterdir() if path.is_file()):
+                rel = fixture_path.relative_to(root).as_posix()
+                if rel in listed:
+                    continue
+                checked = validate_fixture(fixture_path)
+                accepted = checked.ok
+                correct = accepted if expected == "valid" else not accepted
+                outcome = "accepted" if accepted else "rejected"
+                supplemental_outcomes.append(
+                    {"fixture": rel, "expected": expected, "outcome": outcome}
+                )
+                if not correct:
+                    detail = "; ".join(checked.errors) if checked.errors else "fixture unexpectedly passed"
+                    result.errors.append(
+                        f"supplemental {expected} fixture produced {outcome}: {rel}: {detail}"
+                    )
         result.details["valid_fixtures"] = valid_count
         result.details["invalid_fixtures"] = invalid_count
         result.details["fixture_outcomes"] = fixture_outcomes
+        result.details["supplemental_fixture_outcomes"] = supplemental_outcomes
     active = validate_goal(root / "GOAL.md", allow_bootstrap=mode == "advisory")
     result.merge(active)
     result.details["advisory_mode"] = configured_mode == "advisory"
@@ -737,7 +783,7 @@ def create_handoff(root: Path, args: argparse.Namespace) -> Result:
         "goal_sha256": metadata.get("goal_sha256"),
         "goal_memory_commit": args.goal_memory_commit,
         "branch_intent": metadata.get("branch_intent"),
-        "execution_route": "codex-cli",
+        "execution_route": metadata.get("execution_route"),
         "publication_route": "feature-pr",
         "prompt_sha256": sha256_bytes(prompt),
         "agent_roster": metadata.get("agent_roster"),

@@ -10,7 +10,7 @@
       {
         "lane": "contract-review",
         "observed_model": "some-other-model",
-        "requested_model": "gpt-5.6-terra",
+        "requested_model": "gpt-5.6-sol",
         "status": "matched"
       }
     ]
@@ -19,7 +19,7 @@
   "execution_route": "codex-cli",
   "flow_id": "NC-20260712-bad0cafe",
   "goal_memory_commit": "1111111111111111111111111111111111111111",
-  "goal_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "goal_sha256": "sha256:4b4a3594664b10433db8badf5107db7ed8bd5a3a712490f4bbba8302f23e72c2",
   "protected_surfaces": ["product source"],
   "publication_route": "feature-pr",
   "repository": "TurboFrogLLC/NestCalc",
