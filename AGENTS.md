@@ -10,7 +10,8 @@ notices.
 # AGENTS.md — NestCalc
 
 Repo NestCalc. Product FLiPIT. Next.js 16 PWA. Clerk. Serwist. Vercel.
-Traveler: `docs/templates/handoff.md`. Procedure: `docs/WORKFLOW.md`. Routing here.
+Traveler: `docs/templates/traveler.md`. Packslip: `docs/templates/packslip.md`.
+Procedure: `docs/WORKFLOW.md`. Routing here.
 
 ## Commands
 
@@ -47,7 +48,7 @@ git rev-parse HEAD
 - Post-bootstrap `GOAL.md` carries the v1 fence. Freeze stamp: `flow_id`, `goal_sha256`, hash match, one Active Goal.
 - Preserve calculator math, AutoNest, FLiPIT identity, and V3 HTML + SPEC unless the GOAL or a new wReckless decision names them.
 - Secrets stay out of git. Workers fail-closed on governance files. wReckless + SuperGrok may author them.
-- When the named job ends, emit one traveler to wReckless. Merge or no merge. That return is not inventing a Surface.
+- When the named job ends, emit the packslip to wReckless. Merge or no merge. That return is not inventing a Surface.
 
 ### Never
 
@@ -58,7 +59,7 @@ git rev-parse HEAD
 - Mix engine and chrome unless the GOAL names both.
 - Sandbox-first the host list. Fold host commands into the traveler.
 - Let Codex touch UI / chrome unless the traveler names it.
-- Finish a job silent. No end-of-job traveler is Broken.
+- Finish a job silent. No packslip is Broken.
 
 ### Corrective Action
 
@@ -69,17 +70,17 @@ git rev-parse HEAD
 
 Hard gates: `main` (except checkout sync), Production, secrets, MODE, FLiPIT name, V3.
 Wrong branch, worktree, or repo is Correction. Draft PR is not Broken.
-Silent job end (no traveler back to wReckless) is Broken.
+Silent job end (no packslip) is Broken.
 
 ## Surfaces
 
 wReckless owns the system. No Surface owns freeze, land, or a cycle.
-Surface = station. Waypoint = intersection. Traveler = packet. the-Feeler = gap check.
+Surface = station. Waypoint = intersection. Traveler = mid-job packet. Packslip = shipped packet. the-Feeler = gap check.
 Typical first-name is a hint. Any named Surface may run a full cycle.
 
 | Surface | Typical first-name |
 | --- | --- |
-| wReckless | Owner. Starts work. Receives the end-of-job traveler. Gates: Production, identity, MODE, land escalation. |
+| wReckless | Owner. Starts work. Receives the packslip. Gates: Production, identity, MODE, land escalation. |
 | SuperGrok | Orchestrator only. May author governance. |
 | Codex App | Product freeze and later coding. |
 | Codex CLI | Full cycle, or escalate after no progress. |
@@ -90,8 +91,8 @@ B6 waypoint change → stop. Listen/fix cap: initial + one. Unfixable → escala
 B7–B9 travel as one package when repo-backed confidence and named criteria pass.
 B8 on that clearance is not a wReckless seat. wReckless at land only on escalation.
 If next cannot be named, next is wReckless.
-When a PR exists, post the end-of-job traveler on that PR before merge.
-PR-write tiers: `docs/WORKFLOW.md` Land. Do not auto-spawn Codex.
+When a PR exists, post the packslip on that PR at merge.
+PR-write tiers: `docs/WORKFLOW.md` Land. Draft is a tier, not a start gate. Do not auto-spawn Codex.
 
 ## Authority
 
