@@ -12,7 +12,7 @@ notices.
 Repo name is NestCalc. Product name is FLiPIT.
 Next.js 16 web PWA. Clerk auth. Serwist/PWA. Vercel.
 
-Every surface output is a handoff. See `docs/templates/handoff.md`.
+Every surface output is a traveler (the handoff). See `docs/templates/handoff.md`.
 Procedure lives in `docs/WORKFLOW.md`. Routing lives here.
 
 ## Commands
@@ -44,7 +44,7 @@ Missing Clerk auth env is blocked proof, not a pass.
 
 - One worktree + one branch per authorized scope.
 - Engine and chrome do not share a worktree unless the active GOAL names both.
-- Start-check match handoff Branch + Head. Create or switch, then continue.
+- Start-check match traveler Branch + Head. Create or switch, then continue.
 - Echo `flow_id` and `goal_sha256` every turn when a goal is on.
 - Live post-bootstrap `GOAL.md` must carry the `nestcalc-governance` v1 block.
   `validate-goal` is the check. Recipe lives in `docs/WORKFLOW.md` and
@@ -68,7 +68,7 @@ Missing Clerk auth env is blocked proof, not a pass.
 
 - **None** — no problem this step.
 - **Correction** — known predetermined fix. Worker applies it, records it on
-  the handoff, continues.
+  the traveler, continues.
 - **Bent** — missed, new, or unknown-cause break. Continue. wReckless + SuperGrok
   watch the flow and inspect prior waypoints. Harden later.
 - **Broken** — known hard gate. STOP. Problem only. No correction.
@@ -80,17 +80,19 @@ Elevated CA is wReckless + SuperGrok process harden. Workers do not open it.
 
 ## Surfaces
 
-Surface = the step. Waypoint = the intersection. Handoff = the copyable block.
-The waypoint chooses the Surface. Preferred strengths are not walls.
-Any worker may receive any named task the handoff authorizes.
-Workers execute the received handoff. They do not invent the next Surface.
+Surface = the station. Waypoint = the intersection. Traveler = the packet.
+the-Feeler = the gap check. The waypoint chooses the Surface.
+Preferred strengths are not walls.
+Any worker may receive any named task the traveler authorizes.
+Workers execute the received traveler. They do not invent the next Surface.
+Do not call a person, Surface, or the-Feeler a traveler.
 
 | Surface | Role |
 | --- | --- |
 | wReckless | Gates: Production, identity, MODE, and land escalation. Not an authority hop. Not a mid-ladder stop. |
 | SuperGrok | Orchestrator only. No product implement. May author governance files. |
 | Grok Build | Preferred implement and preferred B6–B9 land when named. |
-| Codex App | Named implement when the handoff says so. May run the same land loop. |
+| Codex App | Named implement when the traveler says so. May run the same land loop. |
 | Codex CLI | Named implement or escalate after no progress. May run the same land loop. |
 
 When independent review is named: B6 → B7 → B8 → B9.
