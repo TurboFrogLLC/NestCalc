@@ -44,7 +44,7 @@ does not move.
 | --- | --- |
 | Freeze | v1 fence on `GOAL.md`. `flow_id`, `goal_sha256`, hash match, one Active Goal. |
 | B5 Implement | Named branch. Allowed Files only. Freeze hash unchanged. |
-| Land B6–B9 | Host suite below, in NestCalc on the host, after B5 is on HEAD. |
+| Land B6–B9 | Host suite below, in the traveler worktree, after B5 is on HEAD. |
 
 Freeze does not run the land suite. B5 does not re-run freeze.
 Land does not start-check as if it were freeze.
@@ -135,16 +135,19 @@ See AGENTS.md Surfaces. This file does not assign actors by phase.
 
 ## Proof
 
-Host only. Land proof, in NestCalc on the host. Not in the traveler.
+Host only. Land proof, in the traveler worktree. Not in the traveler.
 Not at freeze. Not at B5. Not at every station.
 
+`cd` the traveler worktree. If none is named, use the primary clone:
+`/Users/computer/wrecklesstoddler/vibe/projects/nestcalc`
+That `cd` is host setup. It is not traveler Instruction.
+
 ```text
-cd /Users/computer/wrecklesstoddler/vibe/projects/nestcalc
 python3 scripts/nestcalc-governance.py check
 python3 scripts/nestcalc-governance.py validate-goal --goal GOAL.md
 npm run governance:check
 npm run test:governance
-git diff --check
+git diff --check origin/main...HEAD
 git status --porcelain=v1
 git branch --show-current
 git rev-parse HEAD
