@@ -57,12 +57,15 @@ Missing Clerk auth env is blocked proof, not a pass.
 ### Never
 
 - Touch `main`.
-- Merge, Production, MODE, or identity without the wReckless gate.
+- Production, MODE, or identity without the wReckless gate.
+- Merge unless B8 continue is already cleared (repo-backed confidence and named
+  criteria). Merge without that clearance is a wReckless gate.
 - Invent the next Surface.
 - Soft-infer across authorities.
 - Import NanoTate golden-pipeline, SBOM, or env-proxy as NestCalc continue-gates.
 - Mix engine and chrome in one worktree unless the active GOAL names both.
 - Sandbox-first the host-first list.
+- Let Codex touch UI / chrome unless the traveler names it.
 
 ### Corrective Action
 
@@ -91,9 +94,9 @@ Do not call a person, Surface, or the-Feeler a traveler.
 | --- | --- |
 | wReckless | Gates: Production, identity, MODE, and land escalation. Not an authority hop. Not a mid-ladder stop. |
 | SuperGrok | Orchestrator only. No product implement. May author governance files. |
-| Grok Build | Preferred implement and preferred B6–B9 land when named. |
-| Codex App | Named implement when the traveler says so. May run the same land loop. |
-| Codex CLI | Named implement or escalate after no progress. May run the same land loop. |
+| Codex App | Preferred initial implement for coding goals. |
+| Codex CLI | Named implement or escalate after no progress. |
+| Grok Build | Preferred B6–B9 land. Docs when named. |
 
 When independent review is named: B6 → B7 → B8 → B9.
 B6 waypoint change → stop; do not enter B7.
@@ -103,11 +106,10 @@ when named. Unfixable after the cap → escalate (wReckless waypoint, or named
 Codex).
 B7 closeout, B8 merge, and B9 post-merge travel as one package when repo-backed
 confidence and named criteria pass.
-B8 is continuation, not a wReckless seat.
+B8 merge on that clearance is not a wReckless seat.
 wReckless at land only on escalation: B6 waypoint change, failed or missing
 confidence, failed criteria, or a hard gate.
 
-Escalate Grok Build → Codex CLI after real tries with no progress.
 Do not auto-spawn Codex.
 
 ## Authority
