@@ -31,6 +31,9 @@ Continuing while still broken is failure. A Broken stop is containment.
    from the host.
 4. Echo `flow_id` and `goal_sha256` every turn when a goal is on.
 
+Coding goals prefer Codex App to start. Codex does not touch UI / chrome unless
+the traveler names it. Docs prefer the named Surface (often Grok Build or SuperGrok).
+
 ## Goal
 
 - One active `GOAL.md` when the goal workflow is on.
@@ -144,7 +147,7 @@ When independent review is named: B6 → B7 → B8 → B9.
   → escalate (wReckless waypoint, or named Codex).
 - B7 closeout, B8 merge, and B9 post-merge travel as one package when
   repo-backed confidence and named criteria pass.
-- B8 is continuation, not a wReckless seat.
+- B8 merge on that clearance is not a wReckless seat.
 - B9 post-merge: sync, prune, persist approved lessons, quiet archive
   when that is the named work.
 - wReckless at land only on escalation: B6 waypoint change, failed or
