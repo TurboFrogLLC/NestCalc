@@ -13,6 +13,7 @@ Before implementation or PR closeout:
 1. Read `NestCalc_Build_Spec.md`.
 2. Read this file and identify relevant `L-nestcalc-*` labels.
 3. Treat matching lessons as preflight checks and regression risks.
+   Skip retired rows.
 
 ## Lesson Index
 
@@ -60,7 +61,8 @@ Before implementation or PR closeout:
 | `L-nestcalc-margin-input-blur-noop` | [PR #30](https://github.com/TurboFrogLLC/NestCalc/pull/30) | When margin fields display effective fallback values but store nullable overrides, suppress unchanged NumberInput blur commits or no-op session updates when parsed value equals the displayed effective value. | AutoNest or Manual margin NumberInput binds to effective values while nullable overrides inherit a global margin. |
 | `L-nestcalc-autonest-fallback-preview-scope` | [PR #30](https://github.com/TurboFrogLLC/NestCalc/pull/30) | AutoNest fallback preview rewiring is a distinct product wave; preserve explicit NestGrid fallback policy in goal out-of-scope until a new goal authorizes it. | Review suggests feeding fallback preview from AutoNest margins while GOAL.md preserves NestGrid for fallback/not-ready states. |
 | `L-nestcalc-governance-harden-scope-freeze` | [PR #31](https://github.com/TurboFrogLLC/NestCalc/pull/31) | When hardening governance contracts to Superbrain parity, freeze the CLI command surface and MODE token unless the goal names them; capture executable-gate gaps (handoff revalidate, Flow ID bind) as residual risks with follow-up goals instead of expanding scope mid-PR. | NestCalc governance harden, MODE promotion, or Superbrain baseline alignment waves. |
-| `L-nestcalc-b3b4-style-not-stage-codes` | [PR #31](https://github.com/TurboFrogLLC/NestCalc/pull/31) | NestCalc closeout stage codes B6–B9 stay sole numeric codes; Superbrain B3/B4 alignment must use B3-style / B4-style labels so lifecycle docs never invent NestCalc B1–B5. | Writing NestCalc lifecycle, WORKFLOW, or AGENTS stage maps that reference Superbrain Ultra E2E. |
+| `L-nestcalc-b3b4-style-not-stage-codes` | [PR #31](https://github.com/TurboFrogLLC/NestCalc/pull/31) | RETIRED. Old rule forbade NestCalc B1–B5 so SuperBrain B3/B4 would not be copied as NestCalc stations. B5 is now implement, the last production station before B6 QC. Do not treat the old ban as law. | Historical only. See `L-nestcalc-b5-is-implement`. |
+| `L-nestcalc-b5-is-implement` | [PR #71](https://github.com/TurboFrogLLC/NestCalc/pull/71) | B5 is implement, the last production station before B6 QC. Job closes at B9. SuperBrain B3/B4 are not NestCalc stations. | Writing NestCalc WORKFLOW or AGENTS station maps. |
 | `L-nestcalc-bootstrap-fixture-not-live-goal` | [PR #31](https://github.com/TurboFrogLLC/NestCalc/pull/31) | Bootstrap metadata exceptions must be tested with a fixture goal title, never the live product GOAL.md, so governance waves cannot couple tests to AutoNest or other active product goal state. | Writing or changing NestCalc governance bootstrap exception tests or advisory MODE behavior. |
 | `L-nestcalc-gcode-contract-freeze-before-relax` | [PR #33](https://github.com/TurboFrogLLC/NestCalc/pull/33) | A residual that relaxes fail-closed NC safety (mode/unit gates, G53 rejection, omitted-axis emission) is a product-contract change; freeze GOAL.md and ShopHelpers_Spec before implementation, not via an in-place test rewrite. | G-code residual, dialect pass-through, or any change that weakens fail-closed rotation/validation contracts. |
 | `L-nestcalc-gcode-pass-through-vs-coordinate-state` | [PR #33](https://github.com/TurboFrogLLC/NestCalc/pull/33) | When rewriting a coordinate scanner for dialect pass-through, keep modal endpoint reconstruction and coordinate-state rejection as separate hard gates from non-target token opacity—passing ACS control text must not imply rewriting G53 or dropping omitted-axis emission. | Lexer/pass-through work on ACS or shop dialect text inside G-code rotation. |
@@ -78,3 +80,4 @@ Before implementation or PR closeout:
 - Append new rows only from final PR closeout breakdowns or human-approved retros.
 - Preserve stable `L-nestcalc-*` labels after merge; never rename existing labels.
 - Skip duplicate labels when appending.
+- Retired rows stay in the index. Do not apply them.
