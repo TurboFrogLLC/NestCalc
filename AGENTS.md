@@ -75,7 +75,7 @@ Silent job end (no packslip) is Broken.
 ## Surfaces
 
 wReckless owns the system. No Surface owns freeze, land, or a cycle.
-Surface = station. Waypoint = intersection. Traveler = instruction sheet for the next station. Packslip = shipped receipt.
+Surface = station. Waypoint = fork where a decision is required. Traveler = instruction sheet. Packslip = shipped receipt.
 Typical first-name is a hint. Any named Surface may run a full cycle.
 
 | Surface | Typical first-name |
@@ -87,10 +87,10 @@ Typical first-name is a hint. Any named Surface may run a full cycle.
 | Grok Build | Docs freeze, docs work, B6–B9 land. |
 
 B5 → B6 → B7 → B8 → B9 when independent review is named. B5 is the cut. B6 starts QC. Job closes at B9.
-B6 waypoint change → stop. Listen/fix cap: initial + one. Unfixable → escalate.
+Route change at B6 → stop. Listen/fix cap: initial + one. Unfixable → escalate.
 B7–B9 travel as one package when repo-backed confidence and named criteria pass.
 B8 on that clearance is not a wReckless seat. wReckless at land only on escalation.
-If next cannot be named, next is wReckless.
+If next cannot be decided, next is wReckless.
 When a PR exists, post the packslip on that PR at merge.
 PR-write tiers: `docs/WORKFLOW.md` Land. Draft is a tier, not a start gate. Do not auto-spawn Codex.
 
