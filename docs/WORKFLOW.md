@@ -44,10 +44,13 @@ does not move.
 | --- | --- |
 | Freeze | v1 fence on `GOAL.md`. `flow_id`, `goal_sha256`, hash match, one Active Goal. |
 | Implement | Named branch. Allowed Files only. Freeze hash unchanged. |
-| Land | Host suite below, on the Mac, in NestCalc, after implement is on HEAD. |
+| Land | Host suite below, in NestCalc on the host, after implement is on HEAD. |
 
 Freeze does not run the land suite. Implement does not re-run freeze.
 Land does not start-check as if it were freeze.
+
+Implement stamp is the cut. It is not job close.
+When independent review is named, the job closes at B9. B6–B9 is QC and ship.
 
 ## Goal
 
@@ -132,7 +135,7 @@ See AGENTS.md Surfaces. This file does not assign actors by phase.
 
 ## Proof
 
-Host only. End of the job, in NestCalc, on the Mac. Not in the traveler.
+Host only. Land proof, in NestCalc on the host. Not in the traveler.
 Not at freeze. Not at every station.
 
 ```text
@@ -159,6 +162,7 @@ Use the strongest verification the touched surface warrants.
 ## Land
 
 When independent review is named: B6 → B7 → B8 → B9.
+The job closes at B9.
 
 PR-write tiers:
 
@@ -178,7 +182,7 @@ PR-write tiers:
   repo-backed confidence and named criteria pass.
 - B8 merge on that clearance is not a wReckless seat.
 - B9 post-merge: sync, prune, persist approved lessons, quiet archive
-  when that is the named work.
+  when that is the named work. That is job close.
 - wReckless at land only on escalation: B6 waypoint change, failed or
   missing confidence, failed criteria, or a hard gate.
 
