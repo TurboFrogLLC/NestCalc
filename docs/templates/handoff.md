@@ -32,6 +32,9 @@ Pack `06` may carry extra routing-header fields (Worktree, Model, Effort,
 Orchestration, Session, Mode). This product file keeps the slimmer set.
 The three bands stay.
 
+`create-handoff` JSON is a machine sidecar (prompt hash and bindings).
+It is not this traveler.
+
 ## Orchestrator emission (two copy boxes)
 
 When SuperGrok (or another Orchestrator) hands work to a human for a host
