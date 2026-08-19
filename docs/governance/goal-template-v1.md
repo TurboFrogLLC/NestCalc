@@ -54,13 +54,12 @@ Name every surface that must not change.
 
 ### Required Proof
 
-List exact required commands and proof. Every required proof title MUST be
-fixable inside Allowed Files edit authority, or apply Path A (narrow proof /
-residual debt) or Path B (expand Allowed Files in this freeze). No third path.
+Name land-stamp outcomes. Do not put runnable host command fences here.
+The host suite lives in `docs/WORKFLOW.md` Proof. Every named outcome MUST be
+fixable inside Allowed Files, or apply Path A (narrow proof / residual debt)
+or Path B (expand Allowed Files in this freeze). No third path.
 
 ### Grilling Decision Record
-
-Use `nestcalc-goal-grilling`:
 
 ```text
 evidence → confidence → decision → residual risk / flagged decisions
@@ -74,17 +73,15 @@ The JSON `execution_route`, `branch_intent`, orchestrator, and model values must
 record the real bounded route without inventing a Codex-only pin. A false
 `matched` model claim fails closed.
 
-### Traveler / sidecar / preflight
+### Traveler / sidecar
 
-- Traveler: `docs/templates/handoff.md`.
-- The traveler is the required handoff packet. The prompt-hash sidecar is
-  optional; after goal-memory commit, create it only when the traveler asks:
-  `python3 scripts/nestcalc-governance.py create-handoff` (prompt hash only).
-- Named Surface MUST re-validate goal + traveler bindings before first
-  implementation edit.
-- Host-first for Playwright, git/gh network, and npm.
+- Traveler: `docs/templates/handoff.md`. Thin. This station only.
+- Sidecar is optional. Do not require it to continue.
+- Do not write start-check or the land suite into the traveler Instruction.
+- `/goal` is a tooling call. Name it on the freeze traveler only if the next
+  station must invoke it. The executor does not add `/goal` after the fact.
 
 ### Stopping Condition
 
-State the complete and blocked terminal conditions. Stop before goal commit and
-traveler/sidecar generation unless wReckless or the named handoff asks.
+State the complete and blocked terminal conditions for this freeze station.
+Do not implement from this freeze unless the traveler names that operation.
