@@ -1,11 +1,27 @@
 # WORKFLOW
 
 Procedure only. Routing lives in AGENTS.md Surfaces.
-Handoff chooses the Surface. Preferred strengths are not walls.
+The traveler chooses the Surface. Preferred strengths are not walls.
+
+## Terms
+
+Shop words. Same meaning here.
+
+| Term | Means | Is not |
+| --- | --- | --- |
+| **Surface** | The station doing this step | A person-name for the packet |
+| **Waypoint** | The intersection. Next Surface + why. Always forward | A fail flag |
+| **Traveler** | The packet that moves with the job. Three-band handoff in `docs/templates/handoff.md` | A person, a Surface, or the-Feeler |
+| **the-Feeler** | Feeler-gauge check. Bounded probe: gap / no gap / next station | Implement, merge, or invent a Surface |
+| **Sidecar** | `create-handoff` JSON (prompt hash and bindings) | The traveler |
+
+the-Feeler measures. It does not cut, ship, or rewrite the parent model.
+Parent cannot flip itself mid-session. Model bump = traveler; wReckless pastes it into the next session.
+Continuing while still broken is failure. A Broken stop is containment.
 
 ## Start
 
-1. Match handoff Branch + Head. Create or switch if needed; continue.
+1. Match traveler Branch + Head. Create or switch if needed; continue.
 2. One worktree + one branch per authorized scope.
    Engine and chrome do not share a worktree unless the active GOAL names both.
 3. Host first. Do not sandbox-first for npm, Playwright, git, or
@@ -38,8 +54,7 @@ Hash mismatch, secrets in the block, or more than one Active Goal still stop.
 The full recipe and hash steps live in `docs/governance/README.md`.
 The copy template is `docs/governance/goal-template-v1.md`.
 
-`create-handoff` JSON is a machine sidecar (prompt hash and bindings).
-The traveler is `docs/templates/handoff.md`.
+`create-handoff` JSON is a sidecar. The traveler is `docs/templates/handoff.md`.
 
 ### Memory files
 
@@ -65,7 +80,7 @@ risk. Update the index. Zero Active rows when quiet.
 The waypoint chose the Surface. That Surface runs these. They are
 not a waypoint back to wReckless or SuperGrok.
 
-- Match handoff Branch + Head.
+- Match traveler Branch + Head.
 - Confirm freeze commit and `goal_sha256`.
 - Read the three memory files and relevant lessons.
 - Confirm required proof is reachable in Allowed Files.
@@ -86,10 +101,14 @@ Confidence from repo-backed evidence is clearance to continue.
 Invented or missing confidence is not clearance.
 Flag residual risk. Do not invent extra wReckless interrupts.
 
+No movement after a real try: the-Feeler may probe once on the named ladder.
+Same defect, no movement → traveler to the next allowed station (Surface,
+effort, model session, or wReckless). Do not churn.
+
 Route, branch-prefix, or Surface mismatch against the old Codex-only
 machine pins is a waypoint. Apply Corrective Action. It is not Broken.
 
-Fail a worker-local gate: apply Corrective Action on the handoff
+Fail a worker-local gate: apply Corrective Action on the traveler
 (Correction / Bent / Broken). Broken is STOP. Do not send to us
 unless a wReckless gate is hit or confidence is not cleared.
 
@@ -99,7 +118,7 @@ See AGENTS.md Surfaces. This file does not assign actors by phase.
 
 ## Proof
 
-Run the proof named by the GOAL / handoff. Host first.
+Run the proof named by the GOAL / traveler. Host first.
 Report evidence. Confidence cleared → continue.
 
 Use the strongest verification the touched surface warrants:
@@ -138,7 +157,7 @@ wReckless asks for draft. This governance review PR is draft by request.
 
 Definitions live in AGENTS.md Boundaries.
 
-Handoff band values: None | Bent | Correction | Broken.
+Traveler band values: None | Bent | Correction | Broken.
 
 - None — omit the second line.
 - Bent / Correction — problem and/or correction; continue.
