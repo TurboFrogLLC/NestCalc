@@ -12,7 +12,7 @@ notices.
 Repo name is NestCalc. Product name is FLiPIT.
 Next.js 16 web PWA. Clerk auth. Serwist/PWA. Vercel.
 
-Every surface output is a handoff. See `docs/templates/handoff.md`.
+Every surface output is a traveler (the handoff). See `docs/templates/handoff.md`.
 Procedure lives in `docs/WORKFLOW.md`. Routing lives here.
 
 ## Commands
@@ -44,8 +44,11 @@ Missing Clerk auth env is blocked proof, not a pass.
 
 - One worktree + one branch per authorized scope.
 - Engine and chrome do not share a worktree unless the active GOAL names both.
-- Start-check match handoff Branch + Head. Create or switch, then continue.
+- Start-check match traveler Branch + Head. Create or switch, then continue.
 - Echo `flow_id` and `goal_sha256` every turn when a goal is on.
+- Live post-bootstrap `GOAL.md` must carry the `nestcalc-governance` v1 block.
+  `validate-goal` is the check. Recipe lives in `docs/WORKFLOW.md` and
+  `docs/governance/`.
 - Preserve calculator math and AutoNest unless the active GOAL names them.
 - Preserve FLiPIT identity and V3 HTML + SPEC unless a new wReckless decision.
 - Keep secrets, `.env*`, and production credentials out of git.
@@ -54,18 +57,21 @@ Missing Clerk auth env is blocked proof, not a pass.
 ### Never
 
 - Touch `main`.
-- Merge, Production, MODE, or identity without the wReckless gate.
+- Production, MODE, or identity without the wReckless gate.
+- Merge unless B8 continue is already cleared (repo-backed confidence and named
+  criteria). Merge without that clearance is a wReckless gate.
 - Invent the next Surface.
 - Soft-infer across authorities.
 - Import NanoTate golden-pipeline, SBOM, or env-proxy as NestCalc continue-gates.
 - Mix engine and chrome in one worktree unless the active GOAL names both.
 - Sandbox-first the host-first list.
+- Let Codex touch UI / chrome unless the traveler names it.
 
 ### Corrective Action
 
 - **None** — no problem this step.
 - **Correction** — known predetermined fix. Worker applies it, records it on
-  the handoff, continues.
+  the traveler, continues.
 - **Bent** — missed, new, or unknown-cause break. Continue. wReckless + SuperGrok
   watch the flow and inspect prior waypoints. Harden later.
 - **Broken** — known hard gate. STOP. Problem only. No correction.
@@ -77,27 +83,36 @@ Elevated CA is wReckless + SuperGrok process harden. Workers do not open it.
 
 ## Surfaces
 
-Surface = the step. Waypoint = the intersection. Handoff = the copyable block.
-The waypoint chooses the Surface. Preferred strengths are not walls.
-Any worker may receive any named task the handoff authorizes.
-Workers execute the received handoff. They do not invent the next Surface.
+wReckless owns the system. No Surface owns freeze, land, or a cycle.
+wReckless starts the work and names the Surface on the traveler.
+Workers do not pick their own start.
 
-| Surface | Role |
+Surface = the station. Waypoint = the intersection. Traveler = the packet.
+the-Feeler = the gap check.
+Typical first-name below is a hint, not a wall.
+Any named Surface may run a full cycle when the traveler says so,
+including freeze + implement + land.
+
+| Surface | Typical first-name |
 | --- | --- |
-| wReckless | Gates: merge, Production, identity, MODE. Not an authority hop. |
-| SuperGrok | Orchestrator only. No product implement. |
-| Grok Build | Preferred implement / review+closeout when named. |
-| Codex App | Named implement when the handoff says so. |
-| Codex CLI | Named implement or escalate after no progress. |
+| wReckless | Owner. Starts the cycle. Gates: Production, identity, MODE, land escalation. |
+| SuperGrok | Orchestrator only. No product implement. May author governance files. |
+| Codex App | Often named for product goal freeze and later coding. |
+| Codex CLI | Often named for a full cycle, or escalate after no progress. |
+| Grok Build | Often named for docs freeze, docs work, and B6–B9 land. |
 
 When independent review is named: B6 → B7 → B8 → B9.
 B6 waypoint change → stop; do not enter B7.
-B7 and B8 travel together. B8 is wReckless merge.
-B9 is post-merge. wReckless at B9 only if confidence or criteria are not met.
-Grok Build may do B6+B7 one pass on the same authorized head only when B6
-has no waypoint change.
+B6 may listen and fix on the named Surface (cap: initial + one post-fix).
+Land is often named Grok Build. Codex App or Codex CLI may run that loop
+when named. Unfixable after the cap → escalate (wReckless waypoint, or named
+Codex).
+B7 closeout, B8 merge, and B9 post-merge travel as one package when repo-backed
+confidence and named criteria pass.
+B8 merge on that clearance is not a wReckless seat.
+wReckless at land only on escalation: B6 waypoint change, failed or missing
+confidence, failed criteria, or a hard gate.
 
-Escalate Grok Build → Codex CLI after real tries with no progress.
 Do not auto-spawn Codex.
 
 ## Authority

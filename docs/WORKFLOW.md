@@ -1,11 +1,28 @@
 # WORKFLOW
 
 Procedure only. Routing lives in AGENTS.md Surfaces.
-Handoff chooses the Surface. Preferred strengths are not walls.
+The traveler chooses the Surface. Preferred strengths are not walls.
+No Surface owns freeze, land, or a cycle. wReckless starts the work.
+
+## Terms
+
+Shop words. Same meaning here.
+
+| Term | Means | Is not |
+| --- | --- | --- |
+| **Surface** | The station doing this step | A person-name for the packet |
+| **Waypoint** | The intersection. Next Surface + why. Always forward | A fail flag |
+| **Traveler** | The packet that moves with the job. Three-band handoff in `docs/templates/handoff.md` | A person, a Surface, or the-Feeler |
+| **the-Feeler** | Feeler-gauge check. Bounded probe: gap / no gap / next station | Implement, merge, or invent a Surface |
+| **Sidecar** | `create-handoff` JSON (prompt hash and bindings) | The traveler |
+
+the-Feeler measures. It does not cut, ship, or rewrite the parent model.
+Parent cannot flip itself mid-session. Model bump = traveler; wReckless pastes it into the next session.
+Continuing while still broken is failure. A Broken stop is containment.
 
 ## Start
 
-1. Match handoff Branch + Head. Create or switch if needed; continue.
+1. Match traveler Branch + Head. Create or switch if needed; continue.
 2. One worktree + one branch per authorized scope.
    Engine and chrome do not share a worktree unless the active GOAL names both.
 3. Host first. Do not sandbox-first for npm, Playwright, git, or
@@ -15,12 +32,35 @@ Handoff chooses the Surface. Preferred strengths are not walls.
    from the host.
 4. Echo `flow_id` and `goal_sha256` every turn when a goal is on.
 
+Workers do not pick their own start. The traveler names the Surface.
+Typical first-name: Codex App for product freeze, Grok Build for docs freeze.
+A named Codex CLI (or any other Surface) may run a full cycle including freeze.
+Codex does not touch UI / chrome unless the traveler names it.
+
 ## Goal
 
 - One active `GOAL.md` when the goal workflow is on.
 - Quiet `GOAL.md` when no product goal is open.
 - Docs-only governance can land without a new GOAL after a land;
   wReckless + SuperGrok may unify surfaces in chat.
+
+### v1 metadata
+
+Post-bootstrap `GOAL.md` must carry the `nestcalc-governance` v1 fence and
+JSON block (`flow_id`, `goal_sha256`, and the other required keys).
+
+```text
+python3 scripts/nestcalc-governance.py validate-goal --goal GOAL.md
+```
+
+Missing block **stops**, except the one historical title
+`NestCalc Governed Goal Pipeline v1` may **warn** while
+`docs/governance/MODE` is `advisory`.
+Hash mismatch, secrets in the block, or more than one Active Goal still stop.
+The full recipe and hash steps live in `docs/governance/README.md`.
+The copy template is `docs/governance/goal-template-v1.md`.
+
+`create-handoff` JSON is a sidecar. The traveler is `docs/templates/handoff.md`.
 
 ### Memory files
 
@@ -39,6 +79,7 @@ risk. Update the index. Zero Active rows when quiet.
 - Freeze `GOAL.md` with `flow_id` and `goal_sha256`.
 - Commit that freeze before implementation. The freeze commit is not
   the implementation.
+- The traveler names who freezes. Typical: Codex App (product), Grok Build (docs).
 - Echo `flow_id` and `goal_sha256` every turn.
 
 ### Worker-local gates
@@ -46,7 +87,7 @@ risk. Update the index. Zero Active rows when quiet.
 The waypoint chose the Surface. That Surface runs these. They are
 not a waypoint back to wReckless or SuperGrok.
 
-- Match handoff Branch + Head.
+- Match traveler Branch + Head.
 - Confirm freeze commit and `goal_sha256`.
 - Read the three memory files and relevant lessons.
 - Confirm required proof is reachable in Allowed Files.
@@ -64,9 +105,17 @@ evidence → confidence → continue
 ```
 
 Confidence from repo-backed evidence is clearance to continue.
+Invented or missing confidence is not clearance.
 Flag residual risk. Do not invent extra wReckless interrupts.
 
-Fail a worker-local gate: apply Corrective Action on the handoff
+No movement after a real try: the-Feeler may probe once on the named ladder.
+Same defect, no movement → traveler to the next allowed station (Surface,
+effort, model session, or wReckless). Do not churn.
+
+Route, branch-prefix, or Surface mismatch against the old Codex-only
+machine pins is a waypoint. Apply Corrective Action. It is not Broken.
+
+Fail a worker-local gate: apply Corrective Action on the traveler
 (Correction / Bent / Broken). Broken is STOP. Do not send to us
 unless a wReckless gate is hit or confidence is not cleared.
 
@@ -76,7 +125,7 @@ See AGENTS.md Surfaces. This file does not assign actors by phase.
 
 ## Proof
 
-Run the proof named by the GOAL / handoff. Host first.
+Run the proof named by the GOAL / traveler. Host first.
 Report evidence. Confidence cleared → continue.
 
 Use the strongest verification the touched surface warrants:
@@ -94,14 +143,19 @@ Missing Clerk auth env is blocked proof, not a pass.
 
 When independent review is named: B6 → B7 → B8 → B9.
 
-- B6 review. A waypoint change here → stop; do not enter B7.
-- B7 closeout and B8 wReckless merge always travel together.
-- B8 stays wReckless.
+- B6 review on the named Surface. Often named: Grok Build.
+  A waypoint change here → stop; do not enter B7.
+- B6 may listen and fix (cap: initial + one post-fix). Codex App or
+  Codex CLI may run the same loop when named. Apply only concrete
+  defects still on HEAD. Do not scope-expand. Unfixable after the cap
+  → escalate (wReckless waypoint, or named Codex).
+- B7 closeout, B8 merge, and B9 post-merge travel as one package when
+  repo-backed confidence and named criteria pass.
+- B8 merge on that clearance is not a wReckless seat.
 - B9 post-merge: sync, prune, persist approved lessons, quiet archive
-  when that is the named work. Worker continues when confidence and
-  criteria are met. wReckless at B9 only if they are not.
-- B6+B7 may run in one pass on the same authorized head only when B6
-  has no waypoint change. Who runs that pass is in AGENTS.md Surfaces.
+  when that is the named work.
+- wReckless at land only on escalation: B6 waypoint change, failed or
+  missing confidence, failed criteria, or a hard gate.
 
 Implementation waves push the branch and open a ready-for-review PR unless
 wReckless asks for draft. This governance review PR is draft by request.
@@ -110,7 +164,7 @@ wReckless asks for draft. This governance review PR is draft by request.
 
 Definitions live in AGENTS.md Boundaries.
 
-Handoff band values: None | Bent | Correction | Broken.
+Traveler band values: None | Bent | Correction | Broken.
 
 - None — omit the second line.
 - Bent / Correction — problem and/or correction; continue.

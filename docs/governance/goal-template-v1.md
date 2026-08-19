@@ -66,18 +66,24 @@ Use `nestcalc-goal-grilling`:
 evidence → confidence → decision → residual risk / flagged decisions
 ```
 
-Record flagged decisions with reason, decision, and CLI consequence.
-Read-only evidence lanes request `gpt-5.6-terra` at medium reasoning effort;
+Record flagged decisions with reason, decision, and consequence.
+Read-only evidence lanes record requested vs observed model honestly;
 record unavailable or mismatched routing honestly.
 
-### B3-Style Handoff / B4-Style Preflight
+The JSON `execution_route` / `branch_intent` pins below the fence are leftover
+machine encoding. Name the real Surface in the traveler. Schema rewrite is a
+later pass.
 
-- After goal-memory commit: create execution handoff via
+### Traveler / sidecar / preflight
+
+- Traveler: `docs/templates/handoff.md`.
+- After goal-memory commit, when a sidecar is required:
   `python3 scripts/nestcalc-governance.py create-handoff` (prompt hash only).
-- CLI MUST re-validate goal + handoff + branch before first implementation edit.
-- Host-first for Playwright, git/gh network, and `npm ci`.
+- Named Surface MUST re-validate goal + traveler bindings before first
+  implementation edit.
+- Host-first for Playwright, git/gh network, and npm.
 
 ### Stopping Condition
 
 State the complete and blocked terminal conditions. Stop before goal commit and
-CLI prompt generation unless the human asks.
+traveler/sidecar generation unless wReckless or the named handoff asks.

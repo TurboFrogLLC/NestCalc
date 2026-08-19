@@ -4,10 +4,14 @@ This repository-local module is the **enforce-grade** governance contract for
 NestCalc goal lifecycle evidence. Contracts fail closed. Soft inference is
 forbidden: agents do not guess compliance.
 
-`docs/governance/MODE` remains **`advisory`** until a separate human-approved
+Written law is `AGENTS.md` and `docs/WORKFLOW.md`. The script is a mechanical
+check of that law. It is a waypoint, not a second authority.
+
+`docs/governance/MODE` remains **`advisory`** until a separate wReckless
 promotion goal meets the criteria in `GAP-AND-HARDENING.md`. MODE does **not**
 make contracts optional. MODE only controls the historical bootstrap exception
-for missing v1 metadata on the one pre-v1 goal title.
+for missing v1 metadata on the one pre-v1 goal title
+(`NestCalc Governed Goal Pipeline v1`).
 
 Superbrain baseline `NT-20260729-goal-lifecycle-hardened-baseline` is the
 product-agnostic hardness reference. NestCalc files are sole authority after
@@ -18,9 +22,10 @@ enterprise long-tail as required NestCalc gates.
 
 | Document | Role |
 | --- | --- |
-| `AGENTS.md` | Role separation, protected surfaces, skill routing |
-| `docs/WORKFLOW.md` | Operating model and fail-closed cycle |
-| `docs/governance/goal-lifecycle-contract.md` | Lifecycle gates and B3/B4-style alignment |
+| `AGENTS.md` | Routing, protected surfaces, Surfaces |
+| `docs/WORKFLOW.md` | Procedure, v1 MUST, land loop |
+| `docs/templates/handoff.md` | Traveler |
+| `docs/governance/goal-lifecycle-contract.md` | Recipe the machine still checks |
 | `docs/governance/GAP-AND-HARDENING.md` | Soft→hard record + MODE promotion/rollback |
 | `docs/governance/MODE` | `advisory` \| `enforce` token only |
 | `scripts/nestcalc-governance.py` | Single command interface |
@@ -36,7 +41,7 @@ python3 scripts/nestcalc-governance.py validate-goal --goal GOAL.md
 python3 scripts/nestcalc-governance.py create-handoff --prompt-file <local-file> --goal-memory-commit <sha> --output .nestcalc/governance/execution-handoff.json
 python3 scripts/nestcalc-governance.py validate-closeout --input <closeout.json>
 python3 scripts/nestcalc-governance.py validate-closeout-breakdown --input <closeout.md>
-python3 scripts/nestcalc-governance.py capture-post-merge --pr-number <number> --branch <codex/branch> --lesson-state <none|pending|applied> --output .nestcalc/governance/post-merge.json
+python3 scripts/nestcalc-governance.py capture-post-merge --pr-number <number> --branch <branch> --lesson-state <none|pending|applied> --output .nestcalc/governance/post-merge.json
 python3 scripts/nestcalc-governance.py verify-post-merge --input .nestcalc/governance/post-merge.json
 ```
 
@@ -70,46 +75,46 @@ value itself. The active title in metadata must exactly match the single
 ## Artifact lifecycle and privacy
 
 - `GOAL.md` and `docs/governance/**` are committed authority.
-- Generated handoff, closeout, and snapshot artifacts belong under
+- Generated sidecar, closeout, and snapshot artifacts belong under
   `.nestcalc/governance/` and are gitignored.
-- Handoffs store only the prompt hash. Prompt plaintext is never copied.
+- Sidecars store only the prompt hash. Prompt plaintext is never copied.
 - Artifact validation rejects secret-like keys and values, Clerk/env material,
   private keys, bearer tokens, credentials, and prompt plaintext fields.
-- Requested and observed read-only agent models are both recorded. The required
-  route is `gpt-5.6-terra` at medium reasoning effort. A missing route is
-  `unavailable`; a differing observed model is `mismatch`; neither is passing
-  evidence.
+- Requested and observed read-only agent models are both recorded. A missing
+  route is `unavailable`; a differing observed model is `mismatch`; neither is
+  passing evidence.
 
-## B3-style handoff and B4-style preflight
+## Traveler vs sidecar
 
-- **Execution handoff (B3-style):** durable sanitized artifact via
-  `create-handoff`. Required before CLI implementation for post-bootstrap goals.
-- **CLI preflight (B4-style):** re-validate goal hash, handoff, branch, lessons,
-  and proof scope before first implementation edit. Fail closed on mismatch.
+- **Traveler:** `docs/templates/handoff.md`. This is the Surface interface.
+- **Sidecar:** `create-handoff` JSON. Prompt hash and bindings only.
+- Current sidecar schema still pins `execution_route: codex-cli` and
+  `branch_intent: ^codex/`. That is leftover encoding. Surface law is AGENTS.
+  Schema rewrite is a later pass.
 
-NestCalc numeric stage codes **B6–B9** remain the Grok Build closeout ladder.
-Do not invent NestCalc B1–B5 stage codes that conflict with B6–B9. See
-`goal-lifecycle-contract.md`.
+NestCalc numeric stage codes **B6–B9** remain the land ladder.
+B8 is continuation when repo-backed confidence and named criteria pass.
+wReckless is escalation only.
 
-Grok Build closeout uses the global `pr-closeout-breakdown` skill. Every posted
-closeout comment MUST include sections 1–8, an Overall Assessment, a Flow ID,
-Reviewed commit SHA, and the `END OF PR CLOSEOUT BREAKDOWN` sentinel. Section 8
-merge disposition templates live in `closeout-rollback-templates.md`. Lesson
-persistence uses the canonical checkout per `lesson-persistence-example.md`.
+Grok Build is the preferred land worker. Codex App or Codex CLI may run the
+same listen/fix/cap loop when named. Closeout comments still use the global
+`pr-closeout-breakdown` shape until that contract is rewritten: sections 1–8,
+Overall Assessment, Flow ID, Reviewed commit SHA, and
+`END OF PR CLOSEOUT BREAKDOWN`.
 
 ## Migration
 
 Goals prepared under this contract MUST copy
 `docs/governance/goal-template-v1.md`, replace every placeholder, commit the goal
 alone, update `goal_memory_commit` to that commit in a second goal-memory commit,
-then run `validate-goal` and `create-handoff`. The goal-memory commit supplied to
-`create-handoff` MUST exist, contain `GOAL.md`, contain no implementation path,
-and predate implementation.
+then run `validate-goal` and, when a sidecar is required, `create-handoff`.
+The goal-memory commit supplied to `create-handoff` MUST exist, contain
+`GOAL.md`, contain no implementation path, and predate implementation.
 
 Do not edit an active product GOAL as part of a governance-only wave.
 
 ## MODE promotion
 
 Keep `docs/governance/MODE` set to `advisory` until promotion criteria in
-`GAP-AND-HARDENING.md` are met. Promotion is a separate human-approved goal.
+`GAP-AND-HARDENING.md` are met. Promotion is a separate wReckless goal.
 Rollback is MODE token only; do not silently weaken schemas.
