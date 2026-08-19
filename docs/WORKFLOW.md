@@ -1,36 +1,34 @@
 # WORKFLOW
 
 Procedure only. Routing lives in AGENTS.md Surfaces.
-The traveler chooses the Surface. Preferred strengths are not walls.
+Preferred strengths are not walls.
 No Surface owns freeze, land, or a cycle. wReckless starts the work.
 
 ## Terms
 
-Shop words. Same meaning here.
+| Term | Means |
+| --- | --- |
+| **Surface** | Station that does this step |
+| **Waypoint** | Intersection: next Surface + why. Always forward |
+| **Traveler** | Instruction sheet for the next station. `docs/templates/traveler.md` |
+| **Packslip** | Shipped receipt. Job number = PR. `docs/templates/packslip.md` |
+| **Sidecar** | `create-handoff` JSON only |
 
-| Term | Means | Is not |
-| --- | --- | --- |
-| **Surface** | The station doing this step | A person-name for the packet |
-| **Waypoint** | The intersection. Next Surface + why. Always forward | A fail flag |
-| **Traveler** | Routing packet. Moves with the job from first handoff through every station. `docs/templates/traveler.md` | A person, a Surface, the packslip, or the-Feeler |
-| **Packslip** | Shipped packet. `docs/templates/packslip.md`. Job number = PR | An Instruction or `/goal` |
-| **the-Feeler** | Feeler-gauge check. Bounded probe: gap / no gap / next station | Implement, merge, or invent a Surface |
-| **Sidecar** | `create-handoff` JSON (prompt hash and bindings) | The traveler |
+The traveler is a document. It does not choose. The named Surface, or a waypoint change, sets the next station. the-Feeler is a tool a station may call when stuck; it is not a term here.
 
-the-Feeler measures. It does not cut, ship, or rewrite the parent model.
-Parent cannot flip itself mid-session. Model bump = traveler; wReckless pastes it into the next session.
+Parent cannot flip itself mid-session. Model bump = new traveler; wReckless pastes it into the next session.
 Continuing while still broken is failure. A Broken stop is containment.
 
 ## Start
 
-Workers do not pick their own start. The traveler names the Surface.
+Workers do not pick their own start. The traveler names the Surface for this step.
 
 1. Read the traveler. Instruction is the job for this station.
 2. Echo `flow_id` and `goal_sha256` every turn when a goal is on.
 3. Stay on the named Branch + Head. Wrong branch or worktree is Correction.
    Create or switch is host or Orchestrator work, not traveler Instruction.
 4. Do this station's Instruction only. Do not run another station's stamp.
-5. Apply this station's stamp before the traveler moves.
+5. Apply this station's stamp before the next traveler is written.
 6. When the named job ends, emit the packslip to wReckless. Silent finish is Broken.
 
 One `main` exception: checkout sync only (fetch, switch to `main`, fast-forward
@@ -43,8 +41,7 @@ Codex does not touch UI / chrome unless the traveler names it.
 
 ## Station stamps
 
-Each station signs its own work. No stamp = in-process miss. The traveler
-does not move.
+Each station signs its own work. No stamp = in-process miss. Do not write the next traveler until this station is stamped.
 
 | Station | Stamp |
 | --- | --- |
@@ -115,7 +112,7 @@ risk. Update the index. Zero Active rows when quiet.
 
 ### Worker-local gates
 
-The waypoint chose the Surface. That Surface runs these. They are
+The waypoint named the Surface. That Surface runs these. They are
 not a waypoint back to wReckless or SuperGrok.
 
 - Read the traveler first.
