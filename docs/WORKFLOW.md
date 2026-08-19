@@ -95,8 +95,11 @@ risk. Update the index. Zero Active rows when quiet.
   the implementation.
 - The traveler names who freezes. Typical: Codex App (product), Grok Build (docs).
 - Echo `flow_id` and `goal_sha256` every turn.
-- `/goal` is a Codex thread loop. It is not this freeze. Workers may choose
-  it on a Codex implement session. Do not treat it as required.
+- `/goal` is a Codex tooling call (thread loop). It is not the repo freeze.
+  If the next station must invoke `/goal`, the freeze traveler names it in
+  Instruction. The executor does not add `/goal` after the fact.
+  If the freeze traveler omits `/goal`, the next station reads `GOAL.md` only.
+  Keep any `/goal` line short. Point it at `GOAL.md`. Do not paste the sheet.
 
 ### Worker-local gates
 
