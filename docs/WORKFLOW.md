@@ -9,19 +9,22 @@ No Surface owns freeze, land, or a cycle. wReckless starts the work.
 | Term | Means |
 | --- | --- |
 | **Surface** | Station that does this step |
-| **Waypoint** | Intersection: next Surface + why. Always forward |
+| **Waypoint** | Fork in the road. A decision is required to move forward |
 | **Traveler** | Instruction sheet for the next station. `docs/templates/traveler.md` |
 | **Packslip** | Shipped receipt. Job number = PR. `docs/templates/packslip.md` |
 | **Sidecar** | `create-handoff` JSON only |
 
-The traveler is a document. It does not choose. The named Surface, or a waypoint change, sets the next station. Skills are tools a station may call as part of normal work, for more information, or when stuck.
+Traveler and waypoint are documents and signs. They do not decide.
+Planning, the station on the floor, or wReckless decides at a waypoint.
+The traveler records the next Surface and Instruction. Route may change there.
+Skills are tools a station may call as part of normal work, for more information, or when stuck.
 
 Parent cannot flip itself mid-session. Model bump = new traveler; wReckless pastes it into the next session.
 Continuing while still broken is failure. A Broken stop is containment.
 
 ## Start
 
-Workers do not pick their own start. The traveler names the Surface for this step.
+Workers do not pick their own start. The traveler's Surface line is this station.
 
 1. Read the traveler. Instruction is the job for this station.
 2. Echo `flow_id` and `goal_sha256` every turn when a goal is on.
@@ -101,7 +104,7 @@ risk. Update the index. Zero Active rows when quiet.
 - Freeze `GOAL.md` with `flow_id` and `goal_sha256`.
 - Commit that freeze before implementation. The freeze commit is not
   the implementation.
-- The traveler names who freezes. Typical: Codex App (product), Grok Build (docs).
+- The traveler's Surface line is who freezes. Typical: Codex App (product), Grok Build (docs).
 - Echo `flow_id` and `goal_sha256` every turn.
 - `/goal` is a Codex tooling call (thread loop). It is not the repo freeze.
   If the next station must invoke `/goal`, the traveler's first word is
@@ -112,8 +115,8 @@ risk. Update the index. Zero Active rows when quiet.
 
 ### Worker-local gates
 
-The waypoint named the Surface. That Surface runs these. They are
-not a waypoint back to wReckless or SuperGrok.
+This station is the Surface on the traveler. That Surface runs these. They are
+not a decision point back to wReckless or SuperGrok unless confidence fails or a hard gate hits.
 
 - Read the traveler first.
 - Confirm freeze commit and `goal_sha256` when a goal is on.
@@ -123,8 +126,8 @@ not a waypoint back to wReckless or SuperGrok.
   Invented or missing confidence is not clearance.
 - Flag residual risk. Do not invent extra wReckless interrupts.
 - Skills are tools for normal work, more information, or a stuck step.
-  No movement after a real try → next allowed station (Surface, effort,
-  model session, or wReckless). Do not churn.
+  No movement after a real try → decide at that fork: next station (Surface,
+  effort, model session, or wReckless). Do not churn.
 
 Route, branch-prefix, or Surface mismatch against the old Codex-only
 machine pins is a waypoint. Apply Corrective Action. It is not Broken.
@@ -193,11 +196,11 @@ Draft is a tier, not a start gate. Open a draft when there is something to
 hang paper on.
 
 - B6 review on the named Surface. Often named: Grok Build.
-  A waypoint change here → stop; do not enter B7.
+  A decision that changes the route here → stop; do not enter B7.
 - B6 may listen and fix (cap: initial + one post-fix). Codex App or
   Codex CLI may run the same loop when named. Apply only concrete
   defects still on HEAD. Do not scope-expand. Unfixable after the cap
-  → escalate (wReckless waypoint, or named Codex).
+  → escalate (wReckless, or named Codex).
 - B7 closeout, B8 merge, and B9 post-merge travel as one package when
   repo-backed confidence and named criteria pass.
 - B8 merge on that clearance is not a wReckless seat.
@@ -205,8 +208,8 @@ hang paper on.
   when that is the named work. That is job close.
 - When a PR exists, post the packslip on that PR at merge. The worker emits
   the same packslip to wReckless.
-- If next cannot be named, next is wReckless.
-- wReckless at land only on escalation: B6 waypoint change, failed or
+- If next cannot be decided, next is wReckless.
+- wReckless at land only on escalation: route change at B6, failed or
   missing confidence, failed criteria, or a hard gate.
 
 ## Corrective Action
