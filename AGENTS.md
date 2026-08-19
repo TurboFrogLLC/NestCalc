@@ -46,6 +46,9 @@ Missing Clerk auth env is blocked proof, not a pass.
 - Engine and chrome do not share a worktree unless the active GOAL names both.
 - Start-check match handoff Branch + Head. Create or switch, then continue.
 - Echo `flow_id` and `goal_sha256` every turn when a goal is on.
+- Live post-bootstrap `GOAL.md` must carry the `nestcalc-governance` v1 block.
+  `validate-goal` is the check. Recipe lives in `docs/WORKFLOW.md` and
+  `docs/governance/`.
 - Preserve calculator math and AutoNest unless the active GOAL names them.
 - Preserve FLiPIT identity and V3 HTML + SPEC unless a new wReckless decision.
 - Keep secrets, `.env*`, and production credentials out of git.
@@ -84,18 +87,23 @@ Workers execute the received handoff. They do not invent the next Surface.
 
 | Surface | Role |
 | --- | --- |
-| wReckless | Gates: merge, Production, identity, MODE. Not an authority hop. |
-| SuperGrok | Orchestrator only. No product implement. |
-| Grok Build | Preferred implement / review+closeout when named. |
-| Codex App | Named implement when the handoff says so. |
-| Codex CLI | Named implement or escalate after no progress. |
+| wReckless | Gates: Production, identity, MODE, and land escalation. Not an authority hop. Not a mid-ladder stop. |
+| SuperGrok | Orchestrator only. No product implement. May author governance files. |
+| Grok Build | Preferred implement and preferred B6–B9 land when named. |
+| Codex App | Named implement when the handoff says so. May run the same land loop. |
+| Codex CLI | Named implement or escalate after no progress. May run the same land loop. |
 
 When independent review is named: B6 → B7 → B8 → B9.
 B6 waypoint change → stop; do not enter B7.
-B7 and B8 travel together. B8 is wReckless merge.
-B9 is post-merge. wReckless at B9 only if confidence or criteria are not met.
-Grok Build may do B6+B7 one pass on the same authorized head only when B6
-has no waypoint change.
+B6 may listen and fix on the named Surface (cap: initial + one post-fix).
+Preferred land worker is Grok Build. Codex App or Codex CLI may run that loop
+when named. Unfixable after the cap → escalate (wReckless waypoint, or named
+Codex).
+B7 closeout, B8 merge, and B9 post-merge travel as one package when repo-backed
+confidence and named criteria pass.
+B8 is continuation, not a wReckless seat.
+wReckless at land only on escalation: B6 waypoint change, failed or missing
+confidence, failed criteria, or a hard gate.
 
 Escalate Grok Build → Codex CLI after real tries with no progress.
 Do not auto-spawn Codex.
