@@ -2,6 +2,7 @@
 
 Procedure only. Routing lives in AGENTS.md Surfaces.
 The traveler chooses the Surface. Preferred strengths are not walls.
+No Surface owns freeze, land, or a cycle. wReckless starts the work.
 
 ## Terms
 
@@ -31,8 +32,10 @@ Continuing while still broken is failure. A Broken stop is containment.
    from the host.
 4. Echo `flow_id` and `goal_sha256` every turn when a goal is on.
 
-Product goal freeze prefers Codex App. Docs freeze prefers Grok Build (faster,
-cheaper). Codex does not touch UI / chrome unless the traveler names it.
+Workers do not pick their own start. The traveler names the Surface.
+Typical first-name: Codex App for product freeze, Grok Build for docs freeze.
+A named Codex CLI (or any other Surface) may run a full cycle including freeze.
+Codex does not touch UI / chrome unless the traveler names it.
 
 ## Goal
 
@@ -76,7 +79,7 @@ risk. Update the index. Zero Active rows when quiet.
 - Freeze `GOAL.md` with `flow_id` and `goal_sha256`.
 - Commit that freeze before implementation. The freeze commit is not
   the implementation.
-- Product freeze: Codex App preferred. Docs freeze: Grok Build preferred.
+- The traveler names who freezes. Typical: Codex App (product), Grok Build (docs).
 - Echo `flow_id` and `goal_sha256` every turn.
 
 ### Worker-local gates
@@ -140,7 +143,7 @@ Missing Clerk auth env is blocked proof, not a pass.
 
 When independent review is named: B6 → B7 → B8 → B9.
 
-- B6 review on the named Surface. Preferred: Grok Build.
+- B6 review on the named Surface. Often named: Grok Build.
   A waypoint change here → stop; do not enter B7.
 - B6 may listen and fix (cap: initial + one post-fix). Codex App or
   Codex CLI may run the same loop when named. Apply only concrete
