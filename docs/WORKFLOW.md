@@ -31,6 +31,10 @@ Workers do not pick their own start. The traveler names the Surface.
 4. Do this station's Instruction only. Do not run another station's stamp.
 5. Apply this station's stamp before the traveler moves.
 
+One `main` exception: checkout sync only (fetch, switch to `main`, fast-forward
+to `origin/main`). No edits, commits, push, or merge. Allowed only on Model
+`GPT-5.6 Luna` and Effort `low`. Any other model or effort is Broken.
+
 Typical first-name: Codex App for product freeze, Grok Build for docs freeze.
 A named Codex CLI (or any other Surface) may run a full cycle including freeze.
 Codex does not touch UI / chrome unless the traveler names it.
