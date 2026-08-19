@@ -4,16 +4,16 @@
   "repository": "TurboFrogLLC/NestCalc",
   "goal_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
   "goal_memory_commit": "1111111111111111111111111111111111111111",
-  "branch_intent": "codex/governance-fixture",
-  "execution_route": "codex-cli",
+  "branch_intent": "scripts/governance-fixture",
+  "execution_route": "grok-build",
   "publication_route": "feature-pr",
   "prompt_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
   "agent_roster": {
-    "orchestrator": "codex-cli",
+    "orchestrator": "Grok Build",
     "read_only_agents": [
       {
         "lane": "contract-review",
-        "requested_model": "gpt-5.6-terra",
+        "requested_model": "gpt-5.6-sol",
         "observed_model": null,
         "status": "unavailable"
       }

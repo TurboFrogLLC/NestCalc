@@ -111,7 +111,7 @@
     },
     "merge_disposition": {
       "type": "object",
-      "required": ["signal", "rationale", "human_action_required"],
+      "required": ["signal", "rationale"],
       "properties": {
         "signal": {
           "type": "string",

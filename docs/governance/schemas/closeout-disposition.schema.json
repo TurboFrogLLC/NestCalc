@@ -3,7 +3,7 @@
   "$id": "https://github.com/TurboFrogLLC/NestCalc/docs/governance/schemas/closeout-disposition.schema.json",
   "title": "NestCalcCloseoutDispositionV1",
   "type": "object",
-  "required": ["schema_version", "flow_id", "status", "disposition", "human_action_required", "goal_memory_commit", "implementation_commit", "reviewed_commit", "pr", "limitations"],
+  "required": ["schema_version", "flow_id", "status", "disposition", "goal_memory_commit", "implementation_commit", "reviewed_commit", "pr", "limitations"],
   "properties": {
     "schema_version": {"const": "nestcalc-closeout-v1"},
     "flow_id": {"type": "string", "pattern": "^NC-[0-9]{8}-[0-9a-f]{8}$"},

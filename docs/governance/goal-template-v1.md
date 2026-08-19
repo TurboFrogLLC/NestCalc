@@ -6,18 +6,18 @@
 {
   "active_goal_title": "REPLACE WITH ONE ACTIVE GOAL",
   "agent_roster": {
-    "orchestrator": "codex-cli",
+    "orchestrator": "REPLACE WITH NAMED SURFACE",
     "read_only_agents": [
       {
         "lane": "replace-with-bounded-lane",
         "observed_model": null,
-        "requested_model": "gpt-5.6-terra",
+        "requested_model": "replace-with-requested-model",
         "status": "unavailable"
       }
     ]
   },
-  "branch_intent": "codex/replace-with-feature-branch",
-  "execution_route": "codex-cli",
+  "branch_intent": "replace-with-scope/replace-with-feature-branch",
+  "execution_route": "REPLACE WITH NAMED ROUTE",
   "flow_id": "NC-YYYYMMDD-00000000",
   "goal_memory_commit": "0000000000000000000000000000000000000000",
   "goal_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
@@ -70,14 +70,15 @@ Record flagged decisions with reason, decision, and consequence.
 Read-only evidence lanes record requested vs observed model honestly;
 record unavailable or mismatched routing honestly.
 
-The JSON `execution_route` / `branch_intent` pins below the fence are leftover
-machine encoding. Name the real Surface in the traveler. Schema rewrite is a
-later pass.
+The JSON `execution_route`, `branch_intent`, orchestrator, and model values must
+record the real bounded route without inventing a Codex-only pin. A false
+`matched` model claim fails closed.
 
 ### Traveler / sidecar / preflight
 
 - Traveler: `docs/templates/handoff.md`.
-- After goal-memory commit, when a sidecar is required:
+- The traveler is the required handoff packet. The prompt-hash sidecar is
+  optional; after goal-memory commit, create it only when the traveler asks:
   `python3 scripts/nestcalc-governance.py create-handoff` (prompt hash only).
 - Named Surface MUST re-validate goal + traveler bindings before first
   implementation edit.

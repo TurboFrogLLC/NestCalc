@@ -5,21 +5,21 @@
 {
   "active_goal_title": "Governance Fixture Goal",
   "agent_roster": {
-    "orchestrator": "codex-cli",
+    "orchestrator": "Grok Build",
     "read_only_agents": [
       {
         "lane": "contract-review",
-        "observed_model": "gpt-5.6-terra",
-        "requested_model": "gpt-5.6-terra",
+        "observed_model": "gpt-5.6-sol",
+        "requested_model": "gpt-5.6-sol",
         "status": "matched"
       }
     ]
   },
-  "branch_intent": "codex/governance-fixture",
-  "execution_route": "codex-cli",
+  "branch_intent": "scripts/governance-fixture",
+  "execution_route": "grok-build",
   "flow_id": "NC-20260712-a1b2c3d4",
   "goal_memory_commit": "1111111111111111111111111111111111111111",
-  "goal_sha256": "sha256:16a76588578166e665b743dc40e6e93b5653ab41bb17d10e7d3c180a0cb57fa7",
+  "goal_sha256": "sha256:52424611491155f1d02ea6fa51551bc84bd4479b5c094d9735a6c344db159d55",
   "protected_surfaces": [
     "calculator math",
     "Clerk auth",
