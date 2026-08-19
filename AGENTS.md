@@ -62,7 +62,10 @@ Missing Clerk auth env is blocked proof, not a pass.
 
 ### Never
 
-- Touch `main`.
+- Touch `main`, except a checkout sync: fetch, switch to `main`, fast-forward to
+  `origin/main`. No edits. No commits. No push. No merge.
+  That sync is allowed only on Model `GPT-5.6 Luna` and Effort `low`.
+  Any other model or effort on a main-sync traveler is Broken. STOP.
 - Production, MODE, or identity without the wReckless gate.
 - Merge unless B8 continue is already cleared (repo-backed confidence and named
   criteria). Merge without that clearance is a wReckless gate.
@@ -83,7 +86,9 @@ Missing Clerk auth env is blocked proof, not a pass.
   watch the flow and inspect prior waypoints. Harden later.
 - **Broken** — known hard gate. STOP. Problem only. No correction.
 
-Hard gates: `main`, Production, secrets, MODE, FLiPIT name, V3 authority.
+Hard gates: `main` (except Luna/low checkout sync), Production, secrets, MODE,
+FLiPIT name, V3 authority.
+A main-sync traveler on any model or effort other than Luna/low is Broken.
 Wrong branch, wrong worktree, or wrong repo is Correction, not Broken.
 Opening a draft PR on the named branch is not a hard gate.
 
