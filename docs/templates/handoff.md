@@ -34,6 +34,8 @@ Corrective Action: None | Bent | Correction | Broken
 
 Instruction is this station's work only. It is not a host command list.
 Do not put `cd`, git, npm, Playwright, or `python3 scripts/…` in the traveler.
+`/goal` is a tooling call. Name it in this Instruction when the station must
+invoke it. The executor does not add `/goal` if this packet omits it.
 
 Pack `06` may carry extra routing-header fields (Worktree, Orchestration,
 Session, Mode). This product file keeps the slimmer set plus Model / Effort.
