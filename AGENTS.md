@@ -19,7 +19,7 @@ Procedure lives in `docs/WORKFLOW.md`. Routing lives here.
 
 Host first. Do not sandbox-first for npm, Playwright, git, or committed
 `scripts/*.py`. These commands are not traveler Instruction. The host runs
-them in NestCalc. The land suite runs at land, not at every station.
+them in the traveler worktree. The land suite runs at land, not at every station.
 
 ```text
 npm run lint
@@ -32,7 +32,7 @@ npm run governance:check
 npm run test:governance
 python3 scripts/nestcalc-governance.py check
 python3 scripts/nestcalc-governance.py validate-goal --goal GOAL.md
-git diff --check
+git diff --check origin/main...HEAD
 git status --porcelain=v1
 git branch --show-current
 git rev-parse HEAD
