@@ -83,25 +83,28 @@ Elevated CA is wReckless + SuperGrok process harden. Workers do not open it.
 
 ## Surfaces
 
-Surface = the station. Waypoint = the intersection. Traveler = the packet.
-the-Feeler = the gap check. The waypoint chooses the Surface.
-Preferred strengths are not walls.
-Any worker may receive any named task the traveler authorizes.
-Workers execute the received traveler. They do not invent the next Surface.
-Do not call a person, Surface, or the-Feeler a traveler.
+wReckless owns the system. No Surface owns freeze, land, or a cycle.
+wReckless starts the work and names the Surface on the traveler.
+Workers do not pick their own start.
 
-| Surface | Role |
+Surface = the station. Waypoint = the intersection. Traveler = the packet.
+the-Feeler = the gap check.
+Typical first-name below is a hint, not a wall.
+Any named Surface may run a full cycle when the traveler says so,
+including freeze + implement + land.
+
+| Surface | Typical first-name |
 | --- | --- |
-| wReckless | Gates: Production, identity, MODE, and land escalation. Not an authority hop. Not a mid-ladder stop. |
+| wReckless | Owner. Starts the cycle. Gates: Production, identity, MODE, land escalation. |
 | SuperGrok | Orchestrator only. No product implement. May author governance files. |
-| Codex App | Preferred product **goal freeze**. Named coding implement after freeze. |
-| Codex CLI | Named implement or escalate after no progress. |
-| Grok Build | Preferred B6–B9 land. Docs freeze and docs work when cheaper. |
+| Codex App | Often named for product goal freeze and later coding. |
+| Codex CLI | Often named for a full cycle, or escalate after no progress. |
+| Grok Build | Often named for docs freeze, docs work, and B6–B9 land. |
 
 When independent review is named: B6 → B7 → B8 → B9.
 B6 waypoint change → stop; do not enter B7.
 B6 may listen and fix on the named Surface (cap: initial + one post-fix).
-Preferred land worker is Grok Build. Codex App or Codex CLI may run that loop
+Land is often named Grok Build. Codex App or Codex CLI may run that loop
 when named. Unfixable after the cap → escalate (wReckless waypoint, or named
 Codex).
 B7 closeout, B8 merge, and B9 post-merge travel as one package when repo-backed
