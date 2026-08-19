@@ -22,20 +22,32 @@ Continuing while still broken is failure. A Broken stop is containment.
 
 ## Start
 
-1. Match traveler Branch + Head. Create or switch if needed; continue.
-2. One worktree + one branch per authorized scope.
-   Engine and chrome do not share a worktree unless the active GOAL names both.
-3. Host first. Do not sandbox-first for npm, Playwright, git, or
-   committed `scripts/*.py` (today: `python3 scripts/nestcalc-governance.py`).
-   A script written in this step is not host-first until it is on HEAD
-   and `python3 scripts/nestcalc-governance.py check` has been re-run
-   from the host.
-4. Echo `flow_id` and `goal_sha256` every turn when a goal is on.
-
 Workers do not pick their own start. The traveler names the Surface.
+
+1. Read the traveler. Instruction is the job for this station.
+2. Echo `flow_id` and `goal_sha256` every turn when a goal is on.
+3. Stay on the named Branch + Head. Wrong branch or worktree is Correction.
+   Create or switch is host or Orchestrator work, not traveler Instruction.
+4. Do this station's Instruction only. Do not run another station's stamp.
+5. Apply this station's stamp before the traveler moves.
+
 Typical first-name: Codex App for product freeze, Grok Build for docs freeze.
 A named Codex CLI (or any other Surface) may run a full cycle including freeze.
 Codex does not touch UI / chrome unless the traveler names it.
+
+## Station stamps
+
+Each station signs its own work. No stamp = in-process miss. The traveler
+does not move.
+
+| Station | Stamp |
+| --- | --- |
+| Freeze | v1 fence on `GOAL.md`. `flow_id`, `goal_sha256`, hash match, one Active Goal. |
+| Implement | Named branch. Allowed Files only. Freeze hash unchanged. |
+| Land | Host suite below, on the Mac, in NestCalc, after implement is on HEAD. |
+
+Freeze does not run the land suite. Implement does not re-run freeze.
+Land does not start-check as if it were freeze.
 
 ## Goal
 
@@ -49,9 +61,8 @@ Codex does not touch UI / chrome unless the traveler names it.
 Post-bootstrap `GOAL.md` must carry the `nestcalc-governance` v1 fence and
 JSON block (`flow_id`, `goal_sha256`, and the other required keys).
 
-```text
-python3 scripts/nestcalc-governance.py validate-goal --goal GOAL.md
-```
+That fence is the freeze stamp. GOAL states outcomes. Do not put runnable
+host command fences in a freeze GOAL. The host suite lives under Proof.
 
 Missing block **stops**, except the one historical title
 `NestCalc Governed Goal Pipeline v1` may **warn** while
@@ -61,6 +72,9 @@ The full recipe and hash steps live in `docs/governance/README.md`.
 The copy template is `docs/governance/goal-template-v1.md`.
 
 `create-handoff` JSON is a sidecar. The traveler is `docs/templates/handoff.md`.
+After freeze, the parent emits the traveler. Do not write start-check or
+the land suite into that Instruction.
+This station's traveler Instruction wins over GOAL for which operation runs now.
 
 ### Memory files
 
@@ -81,39 +95,29 @@ risk. Update the index. Zero Active rows when quiet.
   the implementation.
 - The traveler names who freezes. Typical: Codex App (product), Grok Build (docs).
 - Echo `flow_id` and `goal_sha256` every turn.
+- `/goal` is a Codex thread loop. It is not this freeze. Workers may choose
+  it on a Codex implement session. Do not treat it as required.
 
 ### Worker-local gates
 
 The waypoint chose the Surface. That Surface runs these. They are
 not a waypoint back to wReckless or SuperGrok.
 
-- Match traveler Branch + Head.
-- Confirm freeze commit and `goal_sha256`.
-- Read the three memory files and relevant lessons.
-- Confirm required proof is reachable in Allowed Files.
-- Host first for npm, Playwright, git, and committed scripts.
-- Missing Clerk auth env is blocked proof, not a pass.
-- Run:
-
-```text
-python3 scripts/nestcalc-governance.py check
-python3 scripts/nestcalc-governance.py validate-goal --goal GOAL.md
-```
-
-```text
-evidence → confidence → continue
-```
-
-Confidence from repo-backed evidence is clearance to continue.
-Invented or missing confidence is not clearance.
-Flag residual risk. Do not invent extra wReckless interrupts.
-
-No movement after a real try: the-Feeler may probe once on the named ladder.
-Same defect, no movement → traveler to the next allowed station (Surface,
-effort, model session, or wReckless). Do not churn.
+- Read the traveler first.
+- Confirm freeze commit and `goal_sha256` when a goal is on.
+- Stay inside Allowed Files.
+- evidence → confidence → continue.
+- Confidence from repo-backed evidence is clearance to continue.
+  Invented or missing confidence is not clearance.
+- Flag residual risk. Do not invent extra wReckless interrupts.
+- No movement after a real try: the-Feeler may probe once on the named ladder.
+  Same defect, no movement → traveler to the next allowed station (Surface,
+  effort, model session, or wReckless). Do not churn.
 
 Route, branch-prefix, or Surface mismatch against the old Codex-only
 machine pins is a waypoint. Apply Corrective Action. It is not Broken.
+
+Draft PR on the named branch is not Broken.
 
 Fail a worker-local gate: apply Corrective Action on the traveler
 (Correction / Bent / Broken). Broken is STOP. Do not send to us
@@ -125,23 +129,41 @@ See AGENTS.md Surfaces. This file does not assign actors by phase.
 
 ## Proof
 
-Run the proof named by the GOAL / traveler. Host first.
-Report evidence. Confidence cleared → continue.
+Host only. End of the job, in NestCalc, on the Mac. Not in the traveler.
+Not at freeze. Not at every station.
 
-Use the strongest verification the touched surface warrants:
+```text
+cd /Users/computer/wrecklesstoddler/vibe/projects/nestcalc
+python3 scripts/nestcalc-governance.py check
+python3 scripts/nestcalc-governance.py validate-goal --goal GOAL.md
+npm run governance:check
+npm run test:governance
+git diff --check
+git status --porcelain=v1
+git branch --show-current
+git rev-parse HEAD
+```
 
-- `npm run lint`
-- `npm run build`
-- `npm run test` or `npm run test:unit`
-- `npm run test:e2e` / `npm run test:e2e:auth` when Clerk env is present
-- `npm run governance:check` / `npm run test:governance` for governance waves
-- Playwright for UI
+Plus the GOAL-named product proof (lint / build / unit / e2e) when that
+GOAL names it.
+
+A script written in this step is not host-first until it is on HEAD and
+the host has re-run `python3 scripts/nestcalc-governance.py check`.
 
 Missing Clerk auth env is blocked proof, not a pass.
+Use the strongest verification the touched surface warrants.
 
 ## Land
 
 When independent review is named: B6 → B7 → B8 → B9.
+
+PR-write tiers:
+
+| Tier | Allowed |
+| --- | --- |
+| Draft | Named land Surface opens or updates a draft PR on the named branch. |
+| Ready | Same Surface after B6 cap. Mark ready. Fix review. |
+| Merge | B8 continue: repo-backed confidence and named criteria. |
 
 - B6 review on the named Surface. Often named: Grok Build.
   A waypoint change here → stop; do not enter B7.
@@ -156,9 +178,6 @@ When independent review is named: B6 → B7 → B8 → B9.
   when that is the named work.
 - wReckless at land only on escalation: B6 waypoint change, failed or
   missing confidence, failed criteria, or a hard gate.
-
-Implementation waves push the branch and open a ready-for-review PR unless
-wReckless asks for draft. This governance review PR is draft by request.
 
 ## Corrective Action
 
