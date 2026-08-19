@@ -26,6 +26,31 @@ Reason:
 Corrective Action: None | Bent | Correction | Broken
 ```
 
+When the station must invoke `/goal`, the first word of this copyable block
+is `/goal`. Then the three-band packet:
+
+```text
+/goal
+Repo: NestCalc
+Surface:
+Waypoint:
+Branch:
+Head:
+flow_id:
+goal_sha256:
+Trace:
+Model:
+Effort:
+
+Instruction:
+Read GOAL.md. Do this station only.
+Reason:
+
+Corrective Action: None
+```
+
+Do not bury `/goal` in Instruction. Do not add it after the fact.
+
 ## Bands
 
 1. Routing header. `Waypoint:` is required. `Model:` and `Effort:` when that Surface uses them.
@@ -34,8 +59,9 @@ Corrective Action: None | Bent | Correction | Broken
 
 Instruction is this station's work only. It is not a host command list.
 Do not put `cd`, git, npm, Playwright, or `python3 scripts/…` in the traveler.
-`/goal` is a tooling call. Name it in this Instruction when the station must
-invoke it. The executor does not add `/goal` if this packet omits it.
+`/goal` is a Codex tooling call. When this packet invokes it, `/goal` is the
+first word of the traveler. The executor does not add `/goal` if this packet
+omits it.
 
 When the named job ends, this packet goes to wReckless. That return is not
 inventing a Surface. If next cannot be named, next is wReckless.
