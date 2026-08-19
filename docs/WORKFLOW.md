@@ -43,13 +43,13 @@ does not move.
 | Station | Stamp |
 | --- | --- |
 | Freeze | v1 fence on `GOAL.md`. `flow_id`, `goal_sha256`, hash match, one Active Goal. |
-| Implement | Named branch. Allowed Files only. Freeze hash unchanged. |
-| Land | Host suite below, in NestCalc on the host, after implement is on HEAD. |
+| B5 Implement | Named branch. Allowed Files only. Freeze hash unchanged. |
+| Land B6–B9 | Host suite below, in NestCalc on the host, after B5 is on HEAD. |
 
-Freeze does not run the land suite. Implement does not re-run freeze.
+Freeze does not run the land suite. B5 does not re-run freeze.
 Land does not start-check as if it were freeze.
 
-Implement stamp is the cut. It is not job close.
+B5 is the cut immediately before B6. It is not job close.
 When independent review is named, the job closes at B9. B6–B9 is QC and ship.
 
 ## Goal
@@ -136,7 +136,7 @@ See AGENTS.md Surfaces. This file does not assign actors by phase.
 ## Proof
 
 Host only. Land proof, in NestCalc on the host. Not in the traveler.
-Not at freeze. Not at every station.
+Not at freeze. Not at B5. Not at every station.
 
 ```text
 cd /Users/computer/wrecklesstoddler/vibe/projects/nestcalc
@@ -161,8 +161,8 @@ Use the strongest verification the touched surface warrants.
 
 ## Land
 
-When independent review is named: B6 → B7 → B8 → B9.
-The job closes at B9.
+When independent review is named: B5 → B6 → B7 → B8 → B9.
+B5 is the last production station. B6 starts QC. The job closes at B9.
 
 PR-write tiers:
 
