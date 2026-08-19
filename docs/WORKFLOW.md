@@ -12,7 +12,8 @@ Shop words. Same meaning here.
 | --- | --- | --- |
 | **Surface** | The station doing this step | A person-name for the packet |
 | **Waypoint** | The intersection. Next Surface + why. Always forward | A fail flag |
-| **Traveler** | The packet that moves with the job. Three-band handoff in `docs/templates/handoff.md` | A person, a Surface, or the-Feeler |
+| **Traveler** | Mid-job packet. `docs/templates/traveler.md` | A person, a Surface, the packslip, or the-Feeler |
+| **Packslip** | Shipped packet. `docs/templates/packslip.md`. Job number = PR | An Instruction or `/goal` |
 | **the-Feeler** | Feeler-gauge check. Bounded probe: gap / no gap / next station | Implement, merge, or invent a Surface |
 | **Sidecar** | `create-handoff` JSON (prompt hash and bindings) | The traveler |
 
@@ -30,7 +31,7 @@ Workers do not pick their own start. The traveler names the Surface.
    Create or switch is host or Orchestrator work, not traveler Instruction.
 4. Do this station's Instruction only. Do not run another station's stamp.
 5. Apply this station's stamp before the traveler moves.
-6. When the named job ends, emit one traveler to wReckless. Silent finish is Broken.
+6. When the named job ends, emit the packslip to wReckless. Silent finish is Broken.
 
 One `main` exception: checkout sync only (fetch, switch to `main`, fast-forward
 to `origin/main`). No edits, commits, push, or merge. Any named Surface may
@@ -50,14 +51,14 @@ does not move.
 | Freeze | v1 fence on `GOAL.md`. `flow_id`, `goal_sha256`, hash match, one Active Goal. |
 | B5 Implement | Named branch. Allowed Files only. Freeze hash unchanged. |
 | Land B6–B9 | Host suite below, in the traveler worktree, after B5 is on HEAD. |
-| Job end | One traveler to wReckless. Posted on the PR before merge when a PR exists. |
+| Job end | Packslip on the PR at merge, and the same block emitted to wReckless. |
 
 Freeze does not run the land suite. B5 does not re-run freeze.
 Land does not start-check as if it were freeze.
 
 B5 is the cut immediately before B6. It is not job close.
 When independent review is named, the job closes at B9. B6–B9 is QC and ship.
-The last stamp is still a traveler to wReckless.
+The last stamp is the packslip.
 
 ## Goal
 
@@ -81,7 +82,7 @@ Hash mismatch, secrets in the block, or more than one Active Goal still stop.
 The full recipe and hash steps live in `docs/governance/README.md`.
 The copy template is `docs/governance/goal-template-v1.md`.
 
-`create-handoff` JSON is a sidecar. The traveler is `docs/templates/handoff.md`.
+`create-handoff` JSON is a sidecar. The traveler is `docs/templates/traveler.md`.
 After freeze, the parent emits the traveler. Do not write start-check or
 the land suite into that Instruction.
 This station's traveler Instruction wins over GOAL for which operation runs now.
@@ -106,10 +107,10 @@ risk. Update the index. Zero Active rows when quiet.
 - The traveler names who freezes. Typical: Codex App (product), Grok Build (docs).
 - Echo `flow_id` and `goal_sha256` every turn.
 - `/goal` is a Codex tooling call (thread loop). It is not the repo freeze.
-  If the next station must invoke `/goal`, the freeze traveler's first word is
+  If the next station must invoke `/goal`, the traveler's first word is
   `/goal`. Then the three-band packet. Do not bury it in Instruction.
   The executor does not add `/goal` after the fact.
-  If the freeze traveler omits `/goal`, the next station reads `GOAL.md` only.
+  If the traveler omits `/goal`, the next station reads `GOAL.md` only.
   Keep any `/goal` line short. Point it at `GOAL.md`. Do not paste the sheet.
 
 ### Worker-local gates
@@ -131,7 +132,7 @@ not a waypoint back to wReckless or SuperGrok.
 Route, branch-prefix, or Surface mismatch against the old Codex-only
 machine pins is a waypoint. Apply Corrective Action. It is not Broken.
 
-Draft PR on the named branch is not Broken.
+Draft PR on the named branch is not Broken. Draft is a tier, not a start gate.
 
 Fail a worker-local gate: apply Corrective Action on the traveler
 (Correction / Bent / Broken). Broken is STOP. Do not send to us
@@ -174,7 +175,7 @@ Use the strongest verification the touched surface warrants.
 
 When independent review is named: B5 → B6 → B7 → B8 → B9.
 B5 is the last production station. B6 starts QC. The job closes at B9.
-The last stamp is one traveler to wReckless.
+The last stamp is the packslip.
 
 Cycle:
 
@@ -191,6 +192,9 @@ PR-write tiers:
 | Ready | Same Surface after B6 cap. Mark ready. Fix review. |
 | Merge | B8 continue: repo-backed confidence and named criteria. |
 
+Draft is a tier, not a start gate. Open a draft when there is something to
+hang paper on.
+
 - B6 review on the named Surface. Often named: Grok Build.
   A waypoint change here → stop; do not enter B7.
 - B6 may listen and fix (cap: initial + one post-fix). Codex App or
@@ -202,7 +206,8 @@ PR-write tiers:
 - B8 merge on that clearance is not a wReckless seat.
 - B9 post-merge: sync, prune, persist approved lessons, quiet archive
   when that is the named work. That is job close.
-- When a PR exists, post the end-of-job traveler on that PR before merge.
+- When a PR exists, post the packslip on that PR at merge. The worker emits
+  the same packslip to wReckless.
 - If next cannot be named, next is wReckless.
 - wReckless at land only on escalation: B6 waypoint change, failed or
   missing confidence, failed criteria, or a hard gate.
