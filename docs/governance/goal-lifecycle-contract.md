@@ -51,9 +51,11 @@ Secrets, hash mismatch, and more than one Active Goal stay Broken.
 Stale Codex-only route or `codex/` branch pins in the current machine are a
 waypoint (Correction), not Broken. Schema rewrite is a later pass.
 
-## Lifecycle map (no conflicting stage codes)
+## Lifecycle map
 
-NestCalc closeout stages **B6–B9** remain the only numeric NestCalc stage codes.
+Numeric stations in use: B5 implement, then B6–B9 land.
+The old ban on B1–B5 is retired. B5 is the last production station.
+Do not import SuperBrain B3/B4 as extra NestCalc stations.
 
 | Phase | NestCalc name | Gate |
 | --- | --- | --- |
@@ -61,17 +63,14 @@ NestCalc closeout stages **B6–B9** remain the only numeric NestCalc stage code
 | Goal freeze | Goal freeze | v1 metadata + `goal_sha256` + protected surfaces + skills |
 | Traveler | Handoff | `docs/templates/handoff.md` three-band block |
 | Machine sidecar | `create-handoff` | `.nestcalc/governance/execution-handoff.json` (prompt hash only) |
-| Preflight | Worker-local gates | Re-validate goal hash, sidecar, branch, lessons; host-first |
-| Implement | Implementation | Allowed Files only; protected surfaces untouched |
-| Publish | Feature PR | Ready-for-review unless wReckless asks for draft |
-| Review | B6 | Named Surface; preferred Grok Build; listen/fix cap |
+| B5 | Implement | Named branch; Allowed Files only; freeze hash unchanged |
+| Review | B6 | Named Surface; listen/fix cap |
 | Closeout + merge + hygiene | B7 + B8 + B9 | One package when repo-backed confidence and named criteria pass |
 
+B5 is the cut. It is not job close. B6 starts QC. The job closes at B9.
 B8 is continuation, not a wReckless seat. wReckless at land only on
 escalation: B6 waypoint change, failed or missing confidence, failed criteria,
 or a hard gate.
-
-Do not invent NestCalc stage codes B1–B5.
 
 ## Autonomous goal-grilling loop (required pattern)
 

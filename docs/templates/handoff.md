@@ -6,6 +6,7 @@ the-Feeler is not this file. the-Feeler only measures the gap.
 
 Three bands. Real blank lines between them. Do not bleed the bands.
 Do not wrap the routing header in YAML `---` fences.
+Keep it thin. Instruction is this station only. Do not restate GOAL.md.
 
 ```text
 Repo: NestCalc
@@ -16,6 +17,8 @@ Head:
 flow_id:
 goal_sha256:
 Trace:
+Model:
+Effort:
 
 Instruction:
 Reason:
@@ -25,12 +28,17 @@ Corrective Action: None | Bent | Correction | Broken
 
 ## Bands
 
-1. Routing header. `Waypoint:` is required.
+1. Routing header. `Waypoint:` is required. `Model:` and `Effort:` when that Surface uses them.
 2. Instruction + Reason. Reason is plain English.
 3. Corrective Action.
 
-Pack `06` may carry extra routing-header fields (Worktree, Model, Effort,
-Orchestration, Session, Mode). This product file keeps the slimmer set.
+Instruction is this station's work only. It is not a host command list.
+Do not put `cd`, git, npm, Playwright, or `python3 scripts/…` in the traveler.
+`/goal` is a tooling call. Name it in this Instruction when the station must
+invoke it. The executor does not add `/goal` if this packet omits it.
+
+Pack `06` may carry extra routing-header fields (Worktree, Orchestration,
+Session, Mode). This product file keeps the slimmer set plus Model / Effort.
 The three bands stay.
 
 `create-handoff` JSON is a sidecar (prompt hash and bindings).
@@ -41,16 +49,20 @@ It is not this traveler.
 When SuperGrok (or another Orchestrator) hands work to a human for a host
 shell Surface, emit **two** separate copy boxes, in order:
 
-1. Terminal commands — `cd` into the NestCalc primary clone or named worktree,
-   fetch/checkout/branch as needed, short head check.
+1. Terminal commands — always start with exact `cd` into the NestCalc
+   primary clone or named worktree, then fetch/checkout/branch as needed,
+   short head check.
 2. The one traveler block above.
 
 Primary clone path:
 `/Users/computer/wrecklesstoddler/vibe/projects/nestcalc`
 
-Do not fold the terminal commands into the traveler body by default.
+Do not fold the terminal commands into the traveler body.
 When Branch is populated, the terminal box is required for Orchestrator
 human-facing output.
+
+Workers do not emit a terminal box. Workers read the traveler, then do
+the Instruction.
 
 ## Corrective Action line
 
@@ -61,13 +73,3 @@ Values: None | Bent | Correction | Broken.
 - Broken — second line is the problem only. STOP. No correction.
 
 Definitions live in AGENTS.md Boundaries. Do not restate them here.
-
-## Optional worker terminal check
-
-After the traveler block, a worker Surface may add:
-
-```text
-git rev-parse --abbrev-ref HEAD
-git rev-parse --short HEAD
-git status --porcelain=v1
-```
