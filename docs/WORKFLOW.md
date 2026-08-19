@@ -14,7 +14,7 @@ No Surface owns freeze, land, or a cycle. wReckless starts the work.
 | **Packslip** | Shipped receipt. Job number = PR. `docs/templates/packslip.md` |
 | **Sidecar** | `create-handoff` JSON only |
 
-The traveler is a document. It does not choose. The named Surface, or a waypoint change, sets the next station. the-Feeler is a tool a station may call when stuck; it is not a term here.
+The traveler is a document. It does not choose. The named Surface, or a waypoint change, sets the next station. Skills are tools a station may call as part of normal work, for more information, or when stuck.
 
 Parent cannot flip itself mid-session. Model bump = new traveler; wReckless pastes it into the next session.
 Continuing while still broken is failure. A Broken stop is containment.
@@ -122,9 +122,9 @@ not a waypoint back to wReckless or SuperGrok.
 - Confidence from repo-backed evidence is clearance to continue.
   Invented or missing confidence is not clearance.
 - Flag residual risk. Do not invent extra wReckless interrupts.
-- No movement after a real try: the-Feeler may probe once on the named ladder.
-  Same defect, no movement → traveler to the next allowed station (Surface,
-  effort, model session, or wReckless). Do not churn.
+- Skills are tools for normal work, more information, or a stuck step.
+  No movement after a real try → next allowed station (Surface, effort,
+  model session, or wReckless). Do not churn.
 
 Route, branch-prefix, or Surface mismatch against the old Codex-only
 machine pins is a waypoint. Apply Corrective Action. It is not Broken.
