@@ -19,7 +19,7 @@ Procedure lives in `docs/WORKFLOW.md`. Routing lives here.
 
 Host first. Do not sandbox-first for npm, Playwright, git, or committed
 `scripts/*.py`. These commands are not traveler Instruction. The host runs
-them in NestCalc on the Mac. The land suite runs at land, not at every station.
+them in NestCalc. The land suite runs at land, not at every station.
 
 ```text
 npm run lint
