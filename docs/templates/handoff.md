@@ -37,6 +37,10 @@ Do not put `cd`, git, npm, Playwright, or `python3 scripts/…` in the traveler.
 `/goal` is a tooling call. Name it in this Instruction when the station must
 invoke it. The executor does not add `/goal` if this packet omits it.
 
+When the named job ends, this packet goes to wReckless. That return is not
+inventing a Surface. If next cannot be named, next is wReckless.
+When a PR exists, post this packet on the PR before merge.
+
 Pack `06` may carry extra routing-header fields (Worktree, Orchestration,
 Session, Mode). This product file keeps the slimmer set plus Model / Effort.
 The three bands stay.
