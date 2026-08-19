@@ -94,9 +94,9 @@ Do not call a person, Surface, or the-Feeler a traveler.
 | --- | --- |
 | wReckless | Gates: Production, identity, MODE, and land escalation. Not an authority hop. Not a mid-ladder stop. |
 | SuperGrok | Orchestrator only. No product implement. May author governance files. |
-| Codex App | Preferred initial implement for coding goals. |
+| Codex App | Preferred product **goal freeze**. Named coding implement after freeze. |
 | Codex CLI | Named implement or escalate after no progress. |
-| Grok Build | Preferred B6–B9 land. Docs when named. |
+| Grok Build | Preferred B6–B9 land. Docs freeze and docs work when cheaper. |
 
 When independent review is named: B6 → B7 → B8 → B9.
 B6 waypoint change → stop; do not enter B7.
