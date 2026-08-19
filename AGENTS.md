@@ -52,8 +52,6 @@ git rev-parse HEAD
 ### Never
 
 - Touch `main` except checkout sync: fetch, switch, ff-only to `origin/main`. No edit, commit, push, or merge.
-  Codex: `GPT-5.6 Luna` / `low` only. Any other Codex model or effort is Broken.
-  Grok Build may use any model it has.
 - Production, MODE, or identity without wReckless.
 - Merge unless B8 continue is cleared (repo-backed confidence and named criteria).
 - Invent the next Surface. Soft-infer. Import NanoTate golden-pipeline / SBOM / env-proxy as continue-gates.
@@ -70,7 +68,7 @@ git rev-parse HEAD
 - **Broken** — hard gate. STOP. Problem only.
 
 Hard gates: `main` (except checkout sync), Production, secrets, MODE, FLiPIT name, V3.
-Codex main-sync not Luna/low is Broken. Wrong branch, worktree, or repo is Correction. Draft PR is not Broken.
+Wrong branch, worktree, or repo is Correction. Draft PR is not Broken.
 Silent job end (no traveler back to wReckless) is Broken.
 
 ## Surfaces
