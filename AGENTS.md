@@ -75,7 +75,7 @@ Silent job end (no packslip) is Broken.
 ## Surfaces
 
 wReckless owns the system. No Surface owns freeze, land, or a cycle.
-Surface = station. Waypoint = intersection. Traveler = mid-job packet. Packslip = shipped packet. the-Feeler = gap check.
+Surface = station. Waypoint = intersection. Traveler = routing packet. Packslip = shipped packet. the-Feeler = gap check.
 Typical first-name is a hint. Any named Surface may run a full cycle.
 
 | Surface | Typical first-name |
