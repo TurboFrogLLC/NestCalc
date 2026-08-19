@@ -31,8 +31,8 @@ Continuing while still broken is failure. A Broken stop is containment.
    from the host.
 4. Echo `flow_id` and `goal_sha256` every turn when a goal is on.
 
-Coding goals prefer Codex App to start. Codex does not touch UI / chrome unless
-the traveler names it. Docs prefer the named Surface (often Grok Build or SuperGrok).
+Product goal freeze prefers Codex App. Docs freeze prefers Grok Build (faster,
+cheaper). Codex does not touch UI / chrome unless the traveler names it.
 
 ## Goal
 
@@ -76,6 +76,7 @@ risk. Update the index. Zero Active rows when quiet.
 - Freeze `GOAL.md` with `flow_id` and `goal_sha256`.
 - Commit that freeze before implementation. The freeze commit is not
   the implementation.
+- Product freeze: Codex App preferred. Docs freeze: Grok Build preferred.
 - Echo `flow_id` and `goal_sha256` every turn.
 
 ### Worker-local gates
