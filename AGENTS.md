@@ -109,8 +109,9 @@ including freeze + implement + land.
 | Codex CLI | Often named for a full cycle, or escalate after no progress. |
 | Grok Build | Often named for docs freeze, docs work, and B6–B9 land. |
 
-When independent review is named: B6 → B7 → B8 → B9.
-B6 waypoint change → stop; do not enter B7.
+When independent review is named: B5 → B6 → B7 → B8 → B9.
+B5 is the last production station. B6 starts QC. B6 waypoint change → stop;
+do not enter B7.
 B6 may listen and fix on the named Surface (cap: initial + one post-fix).
 Land is often named Grok Build. Codex App or Codex CLI may run that loop
 when named. Unfixable after the cap → escalate (wReckless waypoint, or named
@@ -118,6 +119,7 @@ Codex).
 B7 closeout, B8 merge, and B9 post-merge travel as one package when repo-backed
 confidence and named criteria pass.
 B8 merge on that clearance is not a wReckless seat.
+The job closes at B9.
 wReckless at land only on escalation: B6 waypoint change, failed or missing
 confidence, failed criteria, or a hard gate.
 
