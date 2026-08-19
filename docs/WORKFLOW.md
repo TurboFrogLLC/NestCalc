@@ -22,6 +22,25 @@ Handoff chooses the Surface. Preferred strengths are not walls.
 - Docs-only governance can land without a new GOAL after a land;
   wReckless + SuperGrok may unify surfaces in chat.
 
+### v1 metadata
+
+Post-bootstrap `GOAL.md` must carry the `nestcalc-governance` v1 fence and
+JSON block (`flow_id`, `goal_sha256`, and the other required keys).
+
+```text
+python3 scripts/nestcalc-governance.py validate-goal --goal GOAL.md
+```
+
+Missing block **stops**, except the one historical title
+`NestCalc Governed Goal Pipeline v1` may **warn** while
+`docs/governance/MODE` is `advisory`.
+Hash mismatch, secrets in the block, or more than one Active Goal still stop.
+The full recipe and hash steps live in `docs/governance/README.md`.
+The copy template is `docs/governance/goal-template-v1.md`.
+
+`create-handoff` JSON is a machine sidecar (prompt hash and bindings).
+The traveler is `docs/templates/handoff.md`.
+
 ### Memory files
 
 When a goal is on, these three are the memory:
@@ -64,7 +83,11 @@ evidence → confidence → continue
 ```
 
 Confidence from repo-backed evidence is clearance to continue.
+Invented or missing confidence is not clearance.
 Flag residual risk. Do not invent extra wReckless interrupts.
+
+Route, branch-prefix, or Surface mismatch against the old Codex-only
+machine pins is a waypoint. Apply Corrective Action. It is not Broken.
 
 Fail a worker-local gate: apply Corrective Action on the handoff
 (Correction / Bent / Broken). Broken is STOP. Do not send to us
@@ -94,14 +117,19 @@ Missing Clerk auth env is blocked proof, not a pass.
 
 When independent review is named: B6 → B7 → B8 → B9.
 
-- B6 review. A waypoint change here → stop; do not enter B7.
-- B7 closeout and B8 wReckless merge always travel together.
-- B8 stays wReckless.
+- B6 review on the named Surface. Preferred: Grok Build.
+  A waypoint change here → stop; do not enter B7.
+- B6 may listen and fix (cap: initial + one post-fix). Codex App or
+  Codex CLI may run the same loop when named. Apply only concrete
+  defects still on HEAD. Do not scope-expand. Unfixable after the cap
+  → escalate (wReckless waypoint, or named Codex).
+- B7 closeout, B8 merge, and B9 post-merge travel as one package when
+  repo-backed confidence and named criteria pass.
+- B8 is continuation, not a wReckless seat.
 - B9 post-merge: sync, prune, persist approved lessons, quiet archive
-  when that is the named work. Worker continues when confidence and
-  criteria are met. wReckless at B9 only if they are not.
-- B6+B7 may run in one pass on the same authorized head only when B6
-  has no waypoint change. Who runs that pass is in AGENTS.md Surfaces.
+  when that is the named work.
+- wReckless at land only on escalation: B6 waypoint change, failed or
+  missing confidence, failed criteria, or a hard gate.
 
 Implementation waves push the branch and open a ready-for-review PR unless
 wReckless asks for draft. This governance review PR is draft by request.
