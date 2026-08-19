@@ -7,9 +7,9 @@
   clearance is a wReckless gate.
 - wReckless at land only on escalation: B6 waypoint change, failed or missing
   confidence, failed criteria, or a hard gate.
-- Codex App preferred to start coding goals. Codex does not touch UI / chrome
-  unless the traveler names it.
-- Grok Build preferred for B6–B9 land. Docs when named.
+- Codex App preferred for **product goal freeze**. Named coding implement after.
+- Grok Build preferred for docs freeze, docs work, and B6–B9 land.
+- Codex does not touch UI / chrome unless the traveler names it.
 - Traveler is the job packet. the-Feeler is the feeler-gauge probe.
 - Sidecar stays optional in this wave.
 - Quiet GOAL stays quiet. No merge from this draft.
