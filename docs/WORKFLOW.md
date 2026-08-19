@@ -12,7 +12,7 @@ Shop words. Same meaning here.
 | --- | --- | --- |
 | **Surface** | The station doing this step | A person-name for the packet |
 | **Waypoint** | The intersection. Next Surface + why. Always forward | A fail flag |
-| **Traveler** | Mid-job packet. `docs/templates/traveler.md` | A person, a Surface, the packslip, or the-Feeler |
+| **Traveler** | Routing packet. Moves with the job from first handoff through every station. `docs/templates/traveler.md` | A person, a Surface, the packslip, or the-Feeler |
 | **Packslip** | Shipped packet. `docs/templates/packslip.md`. Job number = PR | An Instruction or `/goal` |
 | **the-Feeler** | Feeler-gauge check. Bounded probe: gap / no gap / next station | Implement, merge, or invent a Surface |
 | **Sidecar** | `create-handoff` JSON (prompt hash and bindings) | The traveler |
