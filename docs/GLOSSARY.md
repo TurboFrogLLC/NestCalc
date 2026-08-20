@@ -18,17 +18,17 @@ Owner may sit any other seat. Those labels bound everyone else.
 | Packslip | Job-end receipt. Mandatory. | Shipped. Ship. Traveler. |
 | Waypoint | Fork. A decision is required. | Entity. Operator. Failure. |
 | Sign | Posted choices at that fork. | Law. |
+| Bent | A waypoint. Something is off. Next is Corrective Action or Non-conformance. | A finish band. Continue-and-forget. Broken. |
 | Law | `AGENTS.md` + `docs/WORKFLOW.md` | |
 | Sidecar | `create-handoff` JSON only. | Traveler. |
 | Product | FLiPIT | HowMany as the product name. |
 | Primary clone | `/Users/computer/wrecklesstoddler/vibe/projects/nestcalc` | |
 | None | No problem. Omit the second CA line. | |
-| Corrective Action | Known fix. Apply it now. Continue. New packslip row. | Correction. Bent. |
-| Bent | Off, no fix in hand, and continue cannot corrupt this job. Inspect later. | Correction. A hidden Non-conformance. Broken. |
-| Non-conformance | Hard gate. STOP. Problem only. No fix on this slip. | Broken. Bent. |
+| Corrective Action | Known fix. Apply it now. Continue. New packslip row. | Correction. Bent as a finish. |
+| Non-conformance | Hard gate. STOP. Problem only. No fix on this slip. | Broken. Bent as a finish. |
 
-If you cannot tell whether continue is safe, it is not Bent. It is Non-conformance.
-If you later get the fix, that is a new Corrective Action row. Bent does not become the fix.
+Finish bands: None | Corrective Action | Non-conformance.
+Bent is not a finish. If you cannot tell which way, next is Owner.
 
 Do not invent the next operation. Do not invent the next Operator.
 Do not run another operation. A stamp is not something you run.
