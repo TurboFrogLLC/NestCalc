@@ -8,16 +8,15 @@ No Surface owns freeze, land, or a cycle. wReckless starts the work.
 
 | Term | Means |
 | --- | --- |
+| **Law** | This file + AGENTS.md. Bounds the roads. |
 | **Surface** | Station that does this step |
-| **Waypoint** | Fork in the road. A decision is required to move forward |
-| **Traveler** | Instruction sheet for the next station. `docs/templates/traveler.md` |
-| **Packslip** | Shipped receipt. Job number = PR. `docs/templates/packslip.md` |
+| **Waypoint** | Fork. A decision is required to move forward |
+| **Sign** | Posted choices at that fork (CA bands, known next stations) |
+| **Traveler** | Instruction sheet. Records Surface + Instruction after a decision. `docs/templates/traveler.md` |
+| **Packslip** | Shipped receipt. Job number = PR. Stamp is the retrieve handle. `docs/templates/packslip.md` |
 | **Sidecar** | `create-handoff` JSON only |
 
-Traveler and waypoint are documents and signs. They do not decide.
-Planning, the station on the floor, or wReckless decides at a waypoint.
-The traveler records the next Surface and Instruction. Route may change there.
-Skills are tools a station may call as part of normal work, for more information, or when stuck.
+Planning, the station, or wReckless decides. Skills are tools for normal work, more information, or a stuck step.
 
 Parent cannot flip itself mid-session. Model bump = new traveler; wReckless pastes it into the next session.
 Continuing while still broken is failure. A Broken stop is containment.
@@ -40,11 +39,12 @@ do that sync. Model and effort are not a gate on it.
 
 Typical first-name: Codex App for product freeze, Grok Build for docs freeze.
 A named Codex CLI (or any other Surface) may run a full cycle including freeze.
-Codex does not touch UI / chrome unless the traveler names it.
+Codex does not touch UI / chrome unless the traveler's Instruction names it.
 
 ## Station stamps
 
 Each station signs its own work. No stamp = in-process miss. Do not write the next traveler until this station is stamped.
+Stamp is the handle. Retrieve the SHA; do not keep the pile in the window.
 
 | Station | Stamp |
 | --- | --- |
@@ -126,21 +126,17 @@ not a decision point back to wReckless or SuperGrok unless confidence fails or a
   Invented or missing confidence is not clearance.
 - Flag residual risk. Do not invent extra wReckless interrupts.
 - Skills are tools for normal work, more information, or a stuck step.
-  No movement after a real try → decide at that fork: next station (Surface,
-  effort, model session, or wReckless). Do not churn.
+- One real try. Progress → continue. No progress → one more pass. Still none → stop.
+  Next from the known set (Surface, effort, model session, or wReckless). Do not churn.
 
 Route, branch-prefix, or Surface mismatch against the old Codex-only
-machine pins is a waypoint. Apply Corrective Action. It is not Broken.
+machine pins is a fork. Apply Corrective Action. It is not Broken.
 
 Draft PR on the named branch is not Broken. Draft is a tier, not a start gate.
 
 Fail a worker-local gate: apply Corrective Action on the traveler
 (Correction / Bent / Broken). Broken is STOP. Do not send to us
 unless a wReckless gate is hit or confidence is not cleared.
-
-## Surfaces
-
-See AGENTS.md Surfaces. This file does not assign actors by phase.
 
 ## Proof
 
@@ -182,7 +178,7 @@ Cycle:
 | Cycle | Use |
 | --- | --- |
 | Full | Product / machine / Allowed Files. B5 → B6–B9 when review is named. |
-| Lite | Skill or docs. Implement, stamp, draft PR, travel back. Merge only if this traveler named Merge. |
+| Lite | Skill or docs. Implement, stamp, draft PR, emit packslip. Merge only if Merge is on this traveler. |
 
 PR-write tiers:
 
