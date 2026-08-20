@@ -5,99 +5,85 @@
 | Posture | Enforce-grade contracts; zero soft inference |
 | Runtime mode | `docs/governance/MODE` (`advisory` until promotion; see GAP-AND-HARDENING.md) |
 | Superbrain reference | `NT-20260729-goal-lifecycle-hardened-baseline` (product-agnostic patterns only) |
-| Authority | NestCalc repository files after write — Superbrain does not run NestCalc |
+| Authority | NestCalc repository files after write; Superbrain does not run NestCalc |
 
-Written law is `AGENTS.md` and `docs/WORKFLOW.md`. This file is the recipe the
-machine still checks. The checker is a waypoint against that law. It does not
-define Surfaces or pin Codex as the only route.
+Written law is `AGENTS.md` and `docs/WORKFLOW.md`; terms are defined in
+`docs/GLOSSARY.md`. This file is the lifecycle recipe checked by the Machine.
+It does not assign an Owner gate to an Operator or pin Codex as the only route.
 
 ## Hard rules (fail-closed)
 
-1. Exactly one active goal in `GOAL.md` (`## Active Goal:` once).
-2. Post-bootstrap goals MUST carry the `nestcalc-governance` v1 metadata block.
-   Missing metadata is a hard error under `MODE=enforce`. Under `MODE=advisory`,
-   only the historical bootstrap title `NestCalc Governed Goal Pipeline v1` may
-   warn; all other goals hard-fail.
-3. Canonical `goal_sha256` MUST match the computed hash (see README). Mismatch
+1. Exactly one active goal appears in `GOAL.md` (`## Active Goal:` once).
+2. Post-bootstrap goals carry the `nestcalc-governance` v1 metadata block.
+   Missing metadata is a hard error under `MODE=enforce`. Under
+   `MODE=advisory`, only the historical bootstrap title
+   `NestCalc Governed Goal Pipeline v1` may warn; all other goals hard-fail.
+3. Canonical `goal_sha256` matches the computed hash (see README). A mismatch
    hard-fails.
-4. Read-only evidence lanes record requested vs observed model honestly.
-   Status is `matched` | `mismatch` | `unavailable`. Matched without matching
-   observed model hard-fails. Model mismatch is never pass evidence.
-5. Goal-memory commits MUST contain `GOAL.md`, MUST NOT contain implementation
-   paths under `src/`, `e2e/`, `public/`, `playwright/`, or root package/config
-   implementation files listed in the governance script.
-6. Execution sidecar stores **prompt hash only**. Prompt plaintext fields and
-   secret-like keys/values hard-fail.
-7. `create-handoff` hard-fails on dirty/uncommitted `GOAL.md`, branch mismatch,
-   goal-memory commit mismatch, or invalid roster.
-8. Completed closeout requires open, non-draft, ready-for-review NestCalc PR and
-   distinct goal-memory vs implementation commits.
-9. Closeout breakdown MUST include sections 1–8, Overall Assessment, Flow ID,
-   Reviewed commit, and `END OF PR CLOSEOUT BREAKDOWN`.
-10. Assessment MUST align with section 8 signal (`merge-ready` /
-    `suspend-merge` / `rollback-required`).
-11. Required proof ⊆ Allowed Files (edit authority). Path A (narrow required
-    proof / residual debt) or Path B (expand Allowed Files in the same freeze).
-    No third path.
-12. Orchestrator retains write authority. Read-only sub-agents gather evidence
-    only; they do not edit, commit, or decide scope.
-13. Stop before goal-memory commit and before CLI prompt generation unless
-    wReckless or the named handoff asks.
-14. Direct main implementation is forbidden.
-15. No automatic merge, force-push, branch deletion, or production promote from
-    governance tooling.
+4. Read-only evidence lanes record requested and observed models honestly.
+   Status is `matched` | `mismatch` | `unavailable`; model mismatch is never
+   passing evidence.
+5. Goal-memory commits contain `GOAL.md` and no implementation paths under
+   `src/`, `e2e/`, `public/`, `playwright/`, or the root package/config files
+   listed in the governance script.
+6. The execution sidecar stores a prompt hash only. Prompt plaintext fields and
+   secret-like keys or values hard-fail.
+7. `create-handoff` hard-fails on dirty `GOAL.md`, branch mismatch,
+   goal-memory commit mismatch, or an invalid roster.
+8. Completed closeout artifacts require an open, non-draft, ready-for-review
+   NestCalc PR and distinct goal-memory and implementation commits.
+9. The closeout breakdown contract retains its existing artifact sections,
+   assessment signals, Flow ID, and reviewed-commit requirements.
+10. Required proof is a subset of Allowed Files: use narrow proof with explicit
+    residual debt, or expand Allowed Files in the same Freeze. There is no
+    implicit third path.
+11. The Operator retains write authority. Read-only agents gather evidence;
+    they do not edit, commit, or decide scope.
+12. Stop before a goal-memory commit or Traveler generation unless wReckless or
+    the named Instruction asks for it.
+13. Direct `main` implementation, automatic merge, force-push, branch deletion,
+    and Production promotion are forbidden.
 
-Secrets, hash mismatch, and more than one Active Goal stay Broken.
-Stale Codex-only route or `codex/` branch pins in the current machine are a
-waypoint (Correction), not Broken. Schema rewrite is a later pass.
+Secrets, hash mismatch, and more than one Active Goal remain hard failures.
+Stale route or branch-prefix pins in schemas are a Corrective Action, not
+permission to rewrite protected contracts.
 
-## Lifecycle map
+## Lifecycle recipe
 
-Numeric stations in use: B5 implement, then B6–B9 land.
-The old ban on B1–B5 is retired. B5 is the last production station.
-Do not import SuperBrain B3/B4 as extra NestCalc stations.
+| Operation | Required result |
+| --- | --- |
+| Goal prep | Inspect repository hygiene, read authority, and mint or reuse `flow_id` in the `NC-YYYYMMDD-<8-hex>` format. |
+| Freeze | Commit one active `GOAL.md` with v1 metadata, canonical `goal_sha256`, Allowed Files, protected surfaces, proof, and stopping condition. |
+| Traveler | Carry one PR from start to end using `docs/templates/traveler.md`; its Instruction controls the current operation. |
+| Cut | Implement on the named branch, within Allowed Files, with the Freeze hash unchanged. A completed Cut is not job end. |
+| Quality Control | While the PR is draft: Send for review, Wait, then Inspection. If Inspection needs work, apply another Spot Check on the same Traveler and inspect again. |
+| Release | With repo-backed confidence and named criteria satisfied, Merge unless the Traveler forbids it, then Close. |
+| Job end | Emit the Packslip from `docs/templates/packslip.md` only after Close. Print it in the CLI and, when a PR exists, post the same block there. |
+| Stopped operation | Emit the Non-conformance Report from `docs/templates/nonconformance.md`, leave Disposition blank, and wait. It is not a Packslip. |
 
-| Phase | NestCalc name | Gate |
-| --- | --- | --- |
-| Goal prep | Goal prep | Hygiene; mint/reuse `flow_id` `NC-YYYYMMDD-<8-hex>`; read authority |
-| Goal freeze | Goal freeze | v1 metadata + `goal_sha256` + protected surfaces + skills |
-| Traveler | Handoff | `docs/templates/handoff.md` three-band block |
-| Machine sidecar | `create-handoff` | `.nestcalc/governance/execution-handoff.json` (prompt hash only) |
-| B5 | Implement | Named branch; Allowed Files only; freeze hash unchanged |
-| Review | B6 | Named Surface; listen/fix cap |
-| Closeout + merge + hygiene | B7 + B8 + B9 | One package when repo-backed confidence and named criteria pass |
+No Operator owns Freeze, Release, or a cycle. Only wReckless is Owner. Merge is
+permitted without a new Owner decision only when the Traveler allows it and the
+repository supplies the required confidence and criteria. If the next operation
+cannot be decided, the next decision returns to the Owner.
 
-B5 is the cut. It is not job close. B6 starts QC. The job closes at B9.
-B8 is continuation, not a wReckless seat. wReckless at land only on
-escalation: B6 waypoint change, failed or missing confidence, failed criteria,
-or a hard gate.
-
-## Autonomous goal-grilling loop (required pattern)
+## Evidence and decision loop
 
 ```text
 evidence → confidence → decision → residual risk / flagged decisions
 ```
 
-1. **Evidence** — repo-backed facts from authority files and bounded read-only lanes.
-2. **Confidence** — stated against a concrete gate: no blocking questions remain;
-   residual uncertainty is explicit. Invented confidence is not clearance.
-3. **Decision** — orchestrator chooses scope, Allowed Files, required proof, and
-   stop conditions.
-4. **Residual risk / flagged decisions** — every uncertain choice records reason,
-   decision, consequence.
+1. **Evidence** — repository-backed facts from authority and bounded read-only lanes.
+2. **Confidence** — state it against a concrete gate; invented or missing
+   confidence is not clearance.
+3. **Decision** — the Operator chooses only what the current operation permits.
+4. **Residual risk / flagged decisions** — record uncertain choices with reason,
+   decision, and consequence.
 
-Skill authority: `.agents/skills/nestcalc-goal-grilling/SKILL.md`.
+## Machine sidecar
 
-## Machine sidecar (required fields)
-
-Artifact schema: `docs/governance/schemas/execution-handoff.schema.json`.
-This is not the traveler.
-
-- `flow_id`, `goal_sha256`, `goal_memory_commit`, `branch_intent`
-- `prompt_sha256` only (never prompt body)
-- `agent_roster` with honest model contract
-
-Command:
+The optional execution sidecar is not the Traveler. Its protected schema is
+`docs/governance/schemas/execution-handoff.schema.json`; it contains bindings
+and `prompt_sha256`, never prompt plaintext.
 
 ```bash
 python3 scripts/nestcalc-governance.py create-handoff \
@@ -106,43 +92,31 @@ python3 scripts/nestcalc-governance.py create-handoff \
   --output .nestcalc/governance/execution-handoff.json
 ```
 
-Current schema still pins `execution_route: codex-cli` and `branch_intent: ^codex/`.
-That pin is leftover machine encoding. Do not treat it as Surface law.
+Current schema route and branch-prefix pins are leftover Machine encoding.
+They do not override `AGENTS.md`, the Traveler, or the frozen GOAL, and this
+contract does not authorize changing them.
 
-## Preflight (required before implement)
+## Preflight before Cut
 
-Before first implementation edit, the named Surface MUST:
-
-1. Read authority order in `AGENTS.md` / `docs/WORKFLOW.md`.
+1. Read the Traveler, `AGENTS.md`, `docs/GLOSSARY.md`, and `docs/WORKFLOW.md`.
 2. Run `python3 scripts/nestcalc-governance.py validate-goal --goal GOAL.md`.
-3. Confirm the traveler bindings and, when present, the sidecar match current
-   `flow_id` / `goal_sha256` / branch.
-4. Confirm current branch equals the handoff Branch.
-5. Identify relevant `L-nestcalc-*` lessons.
-6. Confirm required proof is reachable inside Allowed Files (or Path A residual
-   debt is recorded).
-7. Host-first for Playwright, git network/credentials/`.git` locks, and `npm` —
-   never sandbox-then-escalate for known host ops.
-8. Treat missing Clerk auth env as **blocked auth proof**, never as a pass.
+3. Confirm Traveler and any sidecar bindings match `flow_id`, `goal_sha256`,
+   branch, and head.
+4. Identify relevant `L-nestcalc-*` lessons.
+5. Confirm required proof is reachable within Allowed Files or record the
+   explicitly frozen residual debt.
+6. Run npm, Playwright, git, and committed scripts host-first.
+7. Treat missing Clerk auth environment as blocked proof, never a pass.
 
-Fail any item → apply Corrective Action. Broken is STOP.
-
-## Thin path / non-goals
-
-NestCalc does **not** require NanoTate enterprise long-tail as gates:
-
-- golden pipeline / SBOM / supply-chain scanners
-- env-proxy gates
-- UI-tier mechanical thin process from NanoTate product docs
-- Superbrain runtime mode flips
-
-Product-agnostic hardness only. NestCalc remains sole authority.
+A failed worker-local gate requires a Spot Check. Apply Corrective Action and
+stay on the current operation when a known path exists. If two passes make no
+progress, stop and emit a Non-conformance Report.
 
 ## MODE semantics
 
 | MODE | Contract validation | Active `GOAL.md` missing v1 metadata |
 | --- | --- | --- |
-| `advisory` | Schemas, fixtures, sidecar, closeout hard-fail as always | Bootstrap title exception may warn; other goals hard-fail |
-| `enforce` | Same hard contracts | Hard-fail (no bootstrap exception) |
+| `advisory` | Schemas, fixtures, sidecar, and closeout contracts hard-fail as always. | The historical bootstrap title may warn; other goals hard-fail. |
+| `enforce` | The same hard contracts apply. | Hard-fail. |
 
-Promotion criteria and rollback: `docs/governance/GAP-AND-HARDENING.md`.
+Promotion criteria and rollback are in `docs/governance/GAP-AND-HARDENING.md`.
