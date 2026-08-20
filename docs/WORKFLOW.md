@@ -3,30 +3,33 @@
 Procedure only. Routing lives in AGENTS.md Roles.
 Preferred strengths are not walls.
 No Operator owns freeze, land, or a cycle. Owner starts the work.
+Owner may sit any seat. Those labels bound everyone else.
 
 ## Terms
 
 | Term | Means |
 | --- | --- |
 | **Law** | This file + AGENTS.md. Bounds the roads. |
-| **Owner** | wReckless. Not an Operator. |
+| **Owner** | wReckless. May act as Operator, Operations Manager, tool, or operation. |
 | **Operations Manager** | SuperGrok. Orchestrator. Not an Operator. |
-| **Operator** | Codex App, Codex CLI, or Grok Build. Who runs this operation. |
-| **Operation** | This step. The next operation is the next step. |
+| **Operator** | Codex App, Codex CLI, or Grok Build. The parent AI on the traveler. |
+| **Operation** | Any action. The stamp/label (B5 Cut, freeze). Not who runs it. |
+| **Tool** | A skill the Operator calls to finish an operation. the-Feeler. `/goal`. Not an Operator. |
+| **Machine** | A repo script that stamps or checks. `scripts/nestcalc-governance.py`. Not a tool. |
 | **Waypoint** | Fork. A decision is required to move forward |
 | **Sign** | Posted choices at that fork (CA bands, known next operations) |
 | **Traveler** | Instruction sheet. Records Operator + Instruction after a decision. `docs/templates/traveler.md` |
 | **Packslip** | Job-end receipt. Mandatory. `docs/templates/packslip.md` |
 | **Sidecar** | `create-handoff` JSON only |
 
-Planning, the Operator, or Owner decides. Skills are tools for normal work, more information, or a stuck step.
+Planning, the Operator, or Owner decides. Tools are for normal work, more information, or a stuck step. A tool has a parent Operator. It does not get its own traveler Operator line.
 
 Parent cannot flip itself mid-session. Model bump = new traveler; Owner pastes it into the next session.
 Continuing while still nonconforming is failure. A Non-conformance stop is containment.
 
 ## Start
 
-Operators do not pick their own start. The traveler's Operator line is this operation.
+Operators do not pick their own start. The traveler's Operator line is who runs this operation.
 
 1. Read the traveler. Instruction is the job for this operation.
 2. Echo `flow_id` and `goal_sha256` every turn when a goal is on.
@@ -46,8 +49,8 @@ Codex does not touch UI / chrome unless the traveler's Instruction names it.
 
 ## Operation stamps
 
-Each operation signs its own work. No stamp = in-process miss. Do not write the next traveler until this operation is stamped.
-Stamp is the handle. Retrieve the SHA; do not keep the pile in the window.
+Each operation gets a stamp. No stamp = in-process miss. Do not write the next traveler until this operation is stamped.
+Stamp is the label and retrieve handle. It is not an Operator.
 
 | Operation | Stamp |
 | --- | --- |
@@ -109,7 +112,7 @@ risk. Update the index. Zero Active rows when quiet.
   the implementation.
 - The traveler's Operator line is who freezes. Typical: Codex App (product), Grok Build (docs).
 - Echo `flow_id` and `goal_sha256` every turn.
-- `/goal` is a Codex tooling call (thread loop). It is not the repo freeze.
+- `/goal` is a Codex tool (thread loop). It is not the repo freeze.
   If the next operation must invoke `/goal`, the traveler's first word is
   `/goal`. Then the three-band packet. Do not bury it in Instruction.
   The executor does not add `/goal` after the fact.
@@ -118,7 +121,7 @@ risk. Update the index. Zero Active rows when quiet.
 
 ### Worker-local gates
 
-This operation is the Operator on the traveler. That Operator runs these. They are
+This operation is run by the Operator on the traveler. That Operator runs these. They are
 not a decision point back to Owner or Operations Manager unless confidence fails or a hard gate hits.
 
 - Read the traveler first.
@@ -128,7 +131,7 @@ not a decision point back to Owner or Operations Manager unless confidence fails
 - Confidence from repo-backed evidence is clearance to continue.
   Invented or missing confidence is not clearance.
 - Flag residual risk. Do not invent extra Owner interrupts.
-- Skills are tools for normal work, more information, or a stuck step.
+- Tools are for normal work, more information, or a stuck step. A tool is not an Operator.
 - One real try. Progress → continue. No progress → one more pass. Still none → stop.
   Next from the known set (Operator, effort, model session, or Owner). Do not churn.
 
