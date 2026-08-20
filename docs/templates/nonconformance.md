@@ -1,9 +1,6 @@
 # Non-conformance Report
 
-Facts only. Not a packslip. Not an Instruction.
-Disposition stays blank. Management fills it.
-
-`NCMR-` is the stamp. Do not expand it.
+Rules: `README.md`.
 
 ```text
 Repo: NestCalc
