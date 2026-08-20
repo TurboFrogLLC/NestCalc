@@ -66,14 +66,13 @@ git rev-parse HEAD
 
 ### Corrective Action
 
-Bands live in `docs/GLOSSARY.md`.
+Bands live in `docs/GLOSSARY.md`. Finish bands only:
 
 - **None** — no problem.
 - **Corrective Action** — known fix. Apply it now. Continue.
-- **Bent** — off, no fix in hand, continue cannot corrupt this job. Inspect later.
 - **Non-conformance** — hard gate. STOP. Problem only.
 
-If continue might corrupt the job, it is not Bent.
+Bent is a waypoint, not a finish band. Something is off. Next is Corrective Action or Non-conformance. If you cannot tell, next is Owner.
 Hard gates: `main` (except checkout sync), Production, secrets, MODE, FLiPIT name, V3.
 Wrong branch, worktree, or repo is Corrective Action. Draft PR is not a stop.
 Silent job end (no packslip) is Non-conformance.
