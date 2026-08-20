@@ -7,10 +7,11 @@ This product keeps the slimmer header. Meaning does not fork.
 
 Three bands. Real blank lines. No YAML `---` fences. No host commands.
 Instruction is this operation only.
+Operator is Codex App, Codex CLI, or Grok Build. Not Owner. Not Operations Manager.
 
 ```text
 Repo: NestCalc
-Surface:
+Operator:
 Waypoint:
 Branch:
 Head:
@@ -34,6 +35,6 @@ Job end is `packslip.md`, not this file. Every job ends on a packslip.
 
 ## Orchestrator emission
 
-Host-shell Surfaces: terminal box first (`cd` the worktree), then this block.
+Host-shell Operators: terminal box first (`cd` the worktree), then this block.
 Primary clone: `/Users/computer/wrecklesstoddler/vibe/projects/nestcalc`
-Workers do not emit the terminal box.
+Operators do not emit the terminal box.
