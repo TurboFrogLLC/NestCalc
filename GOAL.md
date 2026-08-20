@@ -5,14 +5,14 @@
 {
   "active_goal_title": "Align governance machine and lifecycle recipe to Quality Control and Release",
   "agent_roster": {
-    "orchestrator": "codex-app",
+    "orchestrator": "codex-cli",
     "read_only_agents": []
   },
   "branch_intent": "scripts/machine-qc-release-align",
-  "execution_route": "codex-app",
+  "execution_route": "codex-cli",
   "flow_id": "NC-20260820-7c19de45",
   "goal_memory_commit": "995eacbc085d2762e70ac3328c00ccdd44f00d4a",
-  "goal_sha256": "sha256:d1054cc4f107a6b28e4803366362d25f4e6514f9927d66055a6ac145cdd0665f",
+  "goal_sha256": "sha256:83bc0380d0d2cee858f4689e0441db62761ae3635acd0bc990eced52b08d1c07",
   "protected_surfaces": [
     "UI and chrome, calculator math, engine behavior, nest-session transforms, AutoNest, G-code, presets, Clerk, PWA, routes, service workers, secrets, deployment, and Production",
     "FLiPIT identity, V3 HTML and SPEC authority, docs/governance/MODE, main, flow_id format, schemas, fixtures, sidecar and closeout artifact contracts, and SuperBrain"
@@ -21,8 +21,7 @@
   "repository": "TurboFrogLLC/NestCalc",
   "schema_version": "nestcalc-goal-v1",
   "skills": [
-    "codex-repo-hygiene-gate",
-    "nestcalc-goal-grilling"
+    "codex-repo-hygiene-gate"
   ]
 }
 ```
@@ -43,8 +42,8 @@ and Release operations defined by `AGENTS.md`, `docs/GLOSSARY.md`, and
 
 This freeze is authored by Operator **Codex App**, model **GPT-5.6 Sol**,
 effort **medium**, on `scripts/machine-qc-release-align`. It authorizes only the
-bounded implementation below; it does not authorize merge or any later
-operation.
+bounded implementation below, routed next to Operator **Codex CLI**. It does
+not authorize merge.
 
 ### Scope / Allowed Files
 
@@ -105,40 +104,13 @@ are both present in the manifest and independently enforced by
 `validate_manifest`, and that the rewritten lifecycle documents contain no
 numeric station identity or retired land-ladder vocabulary.
 
-### Grilling Decision Record
-
-```text
-evidence → confidence → decision → residual risk / flagged decisions
-```
-
-- Evidence: `AGENTS.md`, `docs/GLOSSARY.md`, and `docs/WORKFLOW.md` define the
-  living terms and the Quality Control and Release sequence. The two governance
-  recipe documents still describe the retired numeric sequence.
-- Evidence: `docs/governance/manifest.json` omits `docs/GLOSSARY.md` and
-  `docs/templates/nonconformance.md`; `validate_manifest` directly requires only
-  traveler and packslip; the deterministic test proves only those two pins.
-- Confidence: freeze-ready. The required proof is reachable inside Allowed
-  Files, protected surfaces are explicit and non-empty, exactly one Active Goal
-  is present, and no blocking question remains.
-- Decision: Path B. Include the existing deterministic governance test in
-  Allowed Files so every new fail-closed manifest assertion can be implemented
-  and proved without scope expansion.
-- Flagged decision — reason: the employee manual is newer than the machine
-  recipe, but the current artifact schemas still use older closeout field names.
-  Decision: rewrite only the human lifecycle recipe and required authority pins;
-  preserve artifact schemas and fixtures. Consequence: artifact-shape
-  modernization, if ever desired, requires a separately named goal.
-- Residual risk: the rewritten recipe may mention existing artifact commands
-  whose field vocabulary predates the employee manual. Those commands remain
-  mechanical evidence interfaces, not lifecycle identity, and must not be
-  expanded in this wave.
-- Evidence lanes: no delegated read-only agents were used. Evidence came from
-  the pinned repository authority and checker/test sources at the named head.
-
 ### Stopping Condition
 
-This Codex App operation stops after the goal-only freeze commits are created
-on `scripts/machine-qc-release-align` and the final `flow_id` and canonical
-`goal_sha256` are reported. Do not implement the allowed changes, create a
-sidecar, push, open or update a PR, merge, touch `main`, or choose the next
-operation in this hop.
+This Codex App operation stops after the replacement goal-only freeze commits
+are created and the Codex CLI implementation traveler is printed. Codex App
+must not implement the allowed changes.
+
+The Codex CLI implementation operation stops after the frozen outcomes are
+implemented inside Allowed Files and committed on
+`scripts/machine-qc-release-align`. Do not merge, touch `main`, or choose the
+next operation.
