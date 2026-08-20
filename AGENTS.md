@@ -43,20 +43,20 @@ git rev-parse HEAD
 
 - One worktree + one branch. Engine and chrome stay split unless the GOAL names both.
 - Read the traveler first. Do the Instruction. No host commands in the traveler.
-- Stay on Branch + Head. Create or switch is host or Orchestrator.
+- Stay on Branch + Head. Create or switch is host or Operations Manager.
 - Echo `flow_id` and `goal_sha256` when a goal is on.
 - Post-bootstrap `GOAL.md` carries the v1 fence. Freeze stamp: `flow_id`, `goal_sha256`, hash match, one Active Goal.
-- Preserve calculator math, AutoNest, FLiPIT identity, and V3 HTML + SPEC unless the GOAL or a new wReckless decision names them.
-- Secrets stay out of git. Workers fail-closed on governance files. wReckless + SuperGrok may author them.
+- Preserve calculator math, AutoNest, FLiPIT identity, and V3 HTML + SPEC unless the GOAL or a new Owner decision names them.
+- Secrets stay out of git. Operators fail-closed on governance files. Owner + Operations Manager may author them.
 - Job end is the packslip. Every time. Any B. PR or no PR. Merge or no merge.
   Print it in the CLI. That print is the only closeout. If a PR exists, post the same block on that PR.
 
 ### Never
 
 - Touch `main` except checkout sync: fetch, switch, ff-only to `origin/main`. No edit, commit, push, or merge.
-- Production, MODE, or identity without wReckless.
+- Production, MODE, or identity without the Owner.
 - Merge unless B8 continue is cleared (repo-backed confidence and named criteria).
-- Invent the next Surface. Soft-infer. Import NanoTate golden-pipeline / SBOM / env-proxy as continue-gates.
+- Invent the next Operator. Soft-infer. Import NanoTate golden-pipeline / SBOM / env-proxy as continue-gates.
 - Mix engine and chrome unless the GOAL names both.
 - Sandbox-first the host list. Fold host commands into the traveler.
 - Let Codex touch UI / chrome unless the traveler's Instruction names it.
@@ -73,25 +73,26 @@ Hard gates: `main` (except checkout sync), Production, secrets, MODE, FLiPIT nam
 Wrong branch, worktree, or repo is Correction. Draft PR is not Non-conformance.
 Silent job end (no packslip) is Non-conformance.
 
-## Surfaces
+## Roles
 
-wReckless owns the system. No Surface owns freeze, land, or a cycle.
-Surface = who runs this operation. Operation = this step. Waypoint = fork where a decision is required. Traveler = instruction sheet. Packslip = shipped receipt.
-Typical first-name is a hint. Any named Surface may run a full cycle.
+Owner is wReckless. Operations Manager is SuperGrok. Operators do the work.
+No Operator owns freeze, land, or a cycle. Owner starts the work and receives the packslip.
+Operator = who runs this operation. Operation = this step. Waypoint = fork where a decision is required. Traveler = instruction sheet. Packslip = job-end receipt.
+Typical first-name is a hint. Any named Operator may run a full cycle.
 
-| Surface | Typical first-name |
+| Role | Who |
 | --- | --- |
-| wReckless | Owner. Starts work. Receives the packslip. Gates: Production, identity, MODE, land escalation. |
-| SuperGrok | Orchestrator only. May author governance. |
-| Codex App | Product freeze and later coding. |
-| Codex CLI | Full cycle, or escalate after no progress. |
-| Grok Build | Docs freeze, docs work, B6–B9 land. |
+| Owner | wReckless. Starts work. Receives the packslip. Gates: Production, identity, MODE, land escalation. Not an Operator. |
+| Operations Manager | SuperGrok. Orchestrator only. May author governance. Not an Operator. |
+| Operator | Codex App. Product freeze and later coding. |
+| Operator | Codex CLI. Full cycle, or escalate after no progress. |
+| Operator | Grok Build. Docs freeze, docs work, B6–B9 land. |
 
 B5 → B6 → B7 → B8 → B9 when independent review is named. B5 is the cut. B6 starts QC. Job closes at B9.
 Route change at B6 → stop. Listen/fix cap: initial + one. Unfixable → escalate.
 B7–B9 travel as one package when repo-backed confidence and named criteria pass.
-B8 on that clearance is not a wReckless seat. B8: packslip → merge → B9 stamps on the same slip → print in CLI → post on the PR.
-If next cannot be decided, next is wReckless.
+B8 on that clearance is not an Owner seat. B8: packslip → merge → B9 stamps on the same slip → print in CLI → post on the PR.
+If next cannot be decided, next is the Owner.
 PR-write tiers: `docs/WORKFLOW.md` Land. Draft is a tier, not a start gate. Do not auto-spawn Codex.
 
 ## Authority
