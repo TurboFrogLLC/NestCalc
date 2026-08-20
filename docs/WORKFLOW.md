@@ -1,26 +1,10 @@
 # WORKFLOW
 
 Procedure only. Routing lives in AGENTS.md Roles.
+Terms: `docs/GLOSSARY.md`. LLC terms stay in SuperBrain `GLOSSARY.md`.
 Preferred strengths are not walls.
 No Operator owns freeze, land, or a cycle. Owner starts the work.
 Only wReckless is Owner. Owner may sit any other seat. Those labels bound everyone else.
-
-## Terms
-
-| Term | Means |
-| --- | --- |
-| **Law** | This file + AGENTS.md. Bounds the roads. |
-| **Owner** | wReckless only. May act as Operator, Operations Manager, tool, or operation. |
-| **Operations Manager** | SuperGrok. Orchestrator. Not an Operator. Not Owner. |
-| **Operator** | Codex App, Codex CLI, or Grok Build. The parent AI on the traveler. |
-| **Operation** | Any action. The stamp/label (B5 Cut, freeze). Not who runs it. |
-| **Tool** | A skill the Operator calls to finish an operation. the-Feeler. `/goal`. Not an Operator. |
-| **Machine** | A repo script that stamps or checks. `scripts/nestcalc-governance.py`. Not a tool. |
-| **Waypoint** | Fork. A decision is required to move forward |
-| **Sign** | Posted choices at that fork (CA bands, known next operations) |
-| **Traveler** | Instruction sheet. Records Operator + Instruction after a decision. `docs/templates/traveler.md` |
-| **Packslip** | Job-end receipt. Mandatory. `docs/templates/packslip.md` |
-| **Sidecar** | `create-handoff` JSON only |
 
 Planning, the Operator, or Owner decides. Tools are for normal work, more information, or a stuck step. A tool has a parent Operator. It does not get its own traveler Operator line.
 
@@ -35,8 +19,8 @@ Operators do not pick their own start. The traveler's Operator line is who runs 
 2. Echo `flow_id` and `goal_sha256` every turn when a goal is on.
 3. Stay on the named Branch + Head. Wrong branch or worktree is Correction.
    Create or switch is host or Operations Manager work, not traveler Instruction.
-4. Do this operation's Instruction only. Do not run another operation's stamp.
-5. Apply this operation's stamp before the next traveler is written.
+4. Do this operation's Instruction only. Do not run another operation.
+5. Stamp this operation before the next traveler is written.
 6. When the named job ends, emit the packslip. Any B. PR or no PR. Silent finish is Non-conformance.
 
 One `main` exception: checkout sync only (fetch, switch to `main`, fast-forward
@@ -63,7 +47,7 @@ Freeze does not run the land suite. B5 does not re-run freeze.
 Land does not start-check as if it were freeze.
 
 B5 is the cut immediately before B6. It is not job close.
-When independent review is named, the job closes at B9. B6–B9 is QC and close.
+When independent review is named, the job closes at B9. B6–B9 is QC.
 The last stamp is the packslip, even if the job stopped at B1–B5.
 
 ## Goal
@@ -91,7 +75,7 @@ The copy template is `docs/governance/goal-template-v1.md`.
 `create-handoff` JSON is a sidecar. The traveler is `docs/templates/traveler.md`.
 After freeze, the parent emits the traveler. Do not write start-check or
 the land suite into that Instruction.
-This operation's traveler Instruction wins over GOAL for which operation runs now.
+Traveler Instruction wins over GOAL for this step.
 
 ### Memory files
 
@@ -136,9 +120,9 @@ not a decision point back to Owner or Operations Manager unless confidence fails
   Next from the known set (Operator, effort, model session, or Owner). Do not churn.
 
 Route, branch-prefix, or Operator mismatch against the old Codex-only
-machine pins is a fork. Apply Corrective Action. It is not Non-conformance.
+machine pins is a fork. Apply Corrective Action. It is not a stop.
 
-Draft PR on the named branch is not Non-conformance. Draft is a tier, not a start gate.
+Draft PR on the named branch is not a stop. Draft is a tier, not a start gate.
 
 Fail a worker-local gate: apply Corrective Action on the traveler
 (Correction / Bent / Non-conformance). Non-conformance is STOP. Do not send to us
