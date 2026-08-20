@@ -23,9 +23,12 @@ Owner may sit any other seat. Those labels bound everyone else.
 | Product | FLiPIT | HowMany as the product name. |
 | Primary clone | `/Users/computer/wrecklesstoddler/vibe/projects/nestcalc` | |
 | None | No problem. Omit the second CA line. | |
-| Correction | Known fix. Apply it. Continue. | Bent. Non-conformance. |
-| Bent | Something is off. You do not have the fix yet. Continue. Inspect later. | Correction. Non-conformance. Broken. |
-| Non-conformance | Hard gate. STOP. Problem only. No fix on this slip. | Broken. Bent. Correction. |
+| Corrective Action | Known fix. Apply it now. Continue. New packslip row. | Correction. Bent. |
+| Bent | Off, no fix in hand, and continue cannot corrupt this job. Inspect later. | Correction. A hidden Non-conformance. Broken. |
+| Non-conformance | Hard gate. STOP. Problem only. No fix on this slip. | Broken. Bent. |
+
+If you cannot tell whether continue is safe, it is not Bent. It is Non-conformance.
+If you later get the fix, that is a new Corrective Action row. Bent does not become the fix.
 
 Do not invent the next operation. Do not invent the next Operator.
 Do not run another operation. A stamp is not something you run.
