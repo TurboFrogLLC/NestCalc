@@ -5,7 +5,7 @@ https://github.com/TurboFrogLLC/wReckless-Grok-Superbrain/blob/main/nerveCenter/
 
 Job-end receipt. Mandatory. Not an Instruction. First word is never `/goal`.
 No Model. No Waypoint line. Shipped is not a fork.
-Stamp is the retrieve handle.
+Stamp is the retrieve handle. Returns to Owner.
 
 Emit when the job stops. Any B. PR or no PR. Merge or no merge.
 Print this block in the CLI. That print is the only closeout.
@@ -17,7 +17,7 @@ Skip merge/ship rows that did not run.
 
 ```text
 Repo: NestCalc
-Surface: wReckless
+Owner: wReckless
 PR:
 Branch:
 Head:
@@ -27,7 +27,7 @@ Trace:
 Cycle: Full | Lite
 Date:
 
-Seq  Label     Surface      Stamp                 CA taken              Still open
+Seq  Label     Operator     Stamp                 CA taken              Still open
 B1   Plan
 B2   Freeze
 B3   Bind
