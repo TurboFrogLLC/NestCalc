@@ -11,8 +11,8 @@
   "branch_intent": "scripts/machine-qc-release-align",
   "execution_route": "codex-app",
   "flow_id": "NC-20260820-7c19de45",
-  "goal_memory_commit": "a419ea930818542a4de52fa331e003533ffcc476",
-  "goal_sha256": "sha256:9badd4bbcd3b25d46b2dd8c63885db585f6e4b23c4b71f0c72a8c39609d1f8f3",
+  "goal_memory_commit": "995eacbc085d2762e70ac3328c00ccdd44f00d4a",
+  "goal_sha256": "sha256:d1054cc4f107a6b28e4803366362d25f4e6514f9927d66055a6ac145cdd0665f",
   "protected_surfaces": [
     "UI and chrome, calculator math, engine behavior, nest-session transforms, AutoNest, G-code, presets, Clerk, PWA, routes, service workers, secrets, deployment, and Production",
     "FLiPIT identity, V3 HTML and SPEC authority, docs/governance/MODE, main, flow_id format, schemas, fixtures, sidecar and closeout artifact contracts, and SuperBrain"
