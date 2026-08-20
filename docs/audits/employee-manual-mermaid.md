@@ -26,15 +26,8 @@ flowchart TD
   S --> T[Close]
   T --> U[Job end: print Packslip in CLI and post it on the PR]
 
-  subgraph X[Collision — operator emphasis for docs work]
-    X1[AGENTS.md: Grok Build is listed for docs freeze and docs work]
-    X2[WORKFLOW.md: preferred strengths are not walls; traveler Operator line decides who runs this operation]
-  end
-  C -. conflict drawn, not resolved .-> X1
-  C -. conflict drawn, not resolved .-> X2
 ```
 
-Legend: solid arrows are the stated operating flow; dashed arrows identify the
-source collision without resolving it. “Corrective Action” loops within the
-same operation; “Non-conformance” stops the operation and does not produce a
-Packslip.
+Legend: solid arrows are the stated operating flow. “Corrective Action” loops
+within the same operation; “Non-conformance” stops the operation and does not
+produce a Packslip.
