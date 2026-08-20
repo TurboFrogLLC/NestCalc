@@ -186,7 +186,7 @@ Cycle:
 | Cycle | Use |
 | --- | --- |
 | Full | Product / machine / Allowed Files. Cut → Quality Control → Release when review is named. |
-| Lite | Skill or docs. Implement, stamp, draft PR, Quality Control. Merge only if this traveler allows it. |
+| Lite | Skill or docs. Implement, stamp, draft PR, Quality Control. Merge unless this traveler forbids it. |
 
 ## Spot Check
 
