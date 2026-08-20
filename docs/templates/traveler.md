@@ -1,9 +1,11 @@
 # Traveler
 
-Instruction sheet for this operation.
+One packet for this PR. Start to end.
+This block is the current operation on that traveler.
 Three bands. Real blank lines. No YAML `---` fences. No host commands.
 Instruction is this operation only.
 Operator is Codex App, Codex CLI, or Grok Build. Not Owner. Not Operations Manager.
+Management may edit this traveler. Operators complete the operation. They do not rewrite the traveler.
 
 ```text
 Repo: NestCalc
@@ -20,16 +22,15 @@ Effort:
 Instruction:
 Reason:
 
-Corrective Action: None | Corrective Action | Non-conformance
+Spot Check: None | Corrective Action | Non-conformance
 ```
-
-Bent is a waypoint, not a finish band. Decide Corrective Action or Non-conformance.
 
 When the operation must invoke `/goal`, the first word of this copyable block is
 `/goal`. Then the three-band packet. Do not bury it in Instruction.
 The executor does not add `/goal` if this packet omits it.
 
-Job end is `packslip.md`, not this file. Every job ends on a packslip.
+Job end is `packslip.md`. That is when the job is done.
+Non-conformance stops this operation. Emit `nonconformance.md`. Do not emit a packslip for that.
 
 Host-shell: terminal box first (`cd` the worktree), then this block.
 Primary clone: `/Users/computer/wrecklesstoddler/vibe/projects/nestcalc`
