@@ -44,11 +44,11 @@ git rev-parse HEAD
 
 - One worktree + one branch. Engine and chrome stay split unless the GOAL names both.
 - Read the traveler first. Do the Instruction. No host commands in the traveler.
-- Stay on Branch + Head. Create or switch is host or Operations Manager.
+- Stay on Branch + Head. Create or switch is host work.
 - Echo `flow_id` and `goal_sha256` when a goal is on.
 - Post-bootstrap `GOAL.md` carries the v1 fence. Freeze stamp: `flow_id`, `goal_sha256`, hash match, one Active Goal.
 - Preserve calculator math, AutoNest, FLiPIT identity, and V3 HTML + SPEC unless the GOAL or a new Owner decision names them.
-- Secrets stay out of git. Operators fail-closed on governance files. Owner + Operations Manager may author them.
+- Secrets stay out of git. Operators fail-closed on governance files.
 - Job end is the packslip. Every time. Any B. PR or no PR. Merge or no merge.
   Print it in the CLI. That print is the only closeout. If a PR exists, post the same block on that PR.
 
@@ -83,8 +83,7 @@ Typical first-name is a hint. Any named Operator may run a full cycle.
 
 | Role | Who |
 | --- | --- |
-| Owner | wReckless only. May do any other role. Gates: Production, identity, MODE, land escalation. |
-| Operations Manager | SuperGrok. Orchestrator only. May author governance. |
+| Owner | wReckless only. Gates: Production, identity, MODE, land escalation. |
 | Operator | Codex App. Product freeze and later coding. |
 | Operator | Codex CLI. Full cycle, or escalate after no progress. |
 | Operator | Grok Build. Docs freeze, docs work, B6–B9 land. |
