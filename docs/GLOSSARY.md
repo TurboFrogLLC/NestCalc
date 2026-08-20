@@ -25,10 +25,11 @@ Owner may sit any other seat. Those labels bound everyone else.
 | Primary clone | `/Users/computer/wrecklesstoddler/vibe/projects/nestcalc` | |
 | None | No problem. Omit the second CA line. | |
 | Corrective Action | Known fix. Apply it now. Continue. New packslip row. | Correction. Bent as a finish. |
-| Non-conformance | Hard gate. STOP. Problem only. No fix on this slip. | Broken. Bent as a finish. |
+| Non-conformance | Operator stops. Next is Owner. Job is not dead. | Broken. Job-kill. Bent as a finish. |
 
 Finish bands: None | Corrective Action | Non-conformance.
 Bent is not a finish. If you cannot tell which way, next is Owner.
+Non-conformance is management. Owner may sit any seat and continue the same job.
 
 Do not invent the next operation. Do not invent the next Operator.
 Do not run another operation. A stamp is not something you run.
