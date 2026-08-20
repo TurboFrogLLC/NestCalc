@@ -70,7 +70,7 @@ Bands live in `docs/GLOSSARY.md`. Finish bands only:
 
 - **None** — no problem.
 - **Corrective Action** — known fix. Apply it now. Continue.
-- **Non-conformance** — hard gate. STOP. Problem only.
+- **Non-conformance** — Operator stops. Next is Owner. Job is not dead.
 
 Bent is a waypoint, not a finish band. Something is off. Next is Corrective Action or Non-conformance. If you cannot tell, next is Owner.
 Hard gates: `main` (except checkout sync), Production, secrets, MODE, FLiPIT name, V3.
