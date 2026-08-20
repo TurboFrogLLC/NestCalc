@@ -61,6 +61,7 @@ git rev-parse HEAD
 - Sandbox-first the host list. Fold host commands into the traveler.
 - Let Codex touch UI / chrome unless the traveler's Instruction names it.
 - Finish a job silent. No packslip is Non-conformance.
+- Act as Owner. Only wReckless is Owner.
 
 ### Corrective Action
 
@@ -75,8 +76,9 @@ Silent job end (no packslip) is Non-conformance.
 
 ## Roles
 
-Owner is wReckless. Operations Manager is SuperGrok. Operators do the work.
-Owner may sit any seat: Operator, Operations Manager, tool, or operation. Those labels bound everyone else. They do not bind Owner.
+Only wReckless is Owner. No other role may act as Owner.
+Owner may sit any other seat: Operator, Operations Manager, tool, or operation. Those labels bound everyone else.
+Operations Manager is SuperGrok. Operators do the work.
 No Operator owns freeze, land, or a cycle. Owner starts the work and receives the packslip.
 Operator = Codex App, Codex CLI, or Grok Build. Operation = the action and its stamp. Tool = a skill the Operator calls (the-Feeler). Machine = a repo script that stamps or checks.
 Waypoint = fork where a decision is required. Traveler = instruction sheet. Packslip = job-end receipt.
@@ -84,8 +86,8 @@ Typical first-name is a hint. Any named Operator may run a full cycle.
 
 | Role | Who |
 | --- | --- |
-| Owner | wReckless. May do any role. Gates: Production, identity, MODE, land escalation. |
-| Operations Manager | SuperGrok. Orchestrator only. May author governance. Not an Operator. |
+| Owner | wReckless only. May do any other role. Gates: Production, identity, MODE, land escalation. |
+| Operations Manager | SuperGrok. Orchestrator only. May author governance. Not an Operator. Not Owner. |
 | Operator | Codex App. Product freeze and later coding. |
 | Operator | Codex CLI. Full cycle, or escalate after no progress. |
 | Operator | Grok Build. Docs freeze, docs work, B6–B9 land. |
