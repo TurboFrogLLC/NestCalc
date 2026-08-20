@@ -9,29 +9,30 @@ No Surface owns freeze, land, or a cycle. wReckless starts the work.
 | Term | Means |
 | --- | --- |
 | **Law** | This file + AGENTS.md. Bounds the roads. |
-| **Surface** | Station that does this step |
+| **Surface** | Who runs this operation |
+| **Operation** | This step. The next operation is the next step. |
 | **Waypoint** | Fork. A decision is required to move forward |
-| **Sign** | Posted choices at that fork (CA bands, known next stations) |
+| **Sign** | Posted choices at that fork (CA bands, known next operations) |
 | **Traveler** | Instruction sheet. Records Surface + Instruction after a decision. `docs/templates/traveler.md` |
-| **Packslip** | Shipped receipt. Job number = PR. Stamp is the retrieve handle. `docs/templates/packslip.md` |
+| **Packslip** | Job-end receipt. Mandatory. `docs/templates/packslip.md` |
 | **Sidecar** | `create-handoff` JSON only |
 
-Planning, the station, or wReckless decides. Skills are tools for normal work, more information, or a stuck step.
+Planning, the operation, or wReckless decides. Skills are tools for normal work, more information, or a stuck step.
 
 Parent cannot flip itself mid-session. Model bump = new traveler; wReckless pastes it into the next session.
-Continuing while still broken is failure. A Broken stop is containment.
+Continuing while still nonconforming is failure. A Non-conformance stop is containment.
 
 ## Start
 
-Workers do not pick their own start. The traveler's Surface line is this station.
+Workers do not pick their own start. The traveler's Surface line is this operation.
 
-1. Read the traveler. Instruction is the job for this station.
+1. Read the traveler. Instruction is the job for this operation.
 2. Echo `flow_id` and `goal_sha256` every turn when a goal is on.
 3. Stay on the named Branch + Head. Wrong branch or worktree is Correction.
    Create or switch is host or Orchestrator work, not traveler Instruction.
-4. Do this station's Instruction only. Do not run another station's stamp.
-5. Apply this station's stamp before the next traveler is written.
-6. When the named job ends, emit the packslip to wReckless. Silent finish is Broken.
+4. Do this operation's Instruction only. Do not run another operation's stamp.
+5. Apply this operation's stamp before the next traveler is written.
+6. When the named job ends, emit the packslip. Any B. PR or no PR. Silent finish is Non-conformance.
 
 One `main` exception: checkout sync only (fetch, switch to `main`, fast-forward
 to `origin/main`). No edits, commits, push, or merge. Any named Surface may
@@ -41,24 +42,24 @@ Typical first-name: Codex App for product freeze, Grok Build for docs freeze.
 A named Codex CLI (or any other Surface) may run a full cycle including freeze.
 Codex does not touch UI / chrome unless the traveler's Instruction names it.
 
-## Station stamps
+## Operation stamps
 
-Each station signs its own work. No stamp = in-process miss. Do not write the next traveler until this station is stamped.
+Each operation signs its own work. No stamp = in-process miss. Do not write the next traveler until this operation is stamped.
 Stamp is the handle. Retrieve the SHA; do not keep the pile in the window.
 
-| Station | Stamp |
+| Operation | Stamp |
 | --- | --- |
 | Freeze | v1 fence on `GOAL.md`. `flow_id`, `goal_sha256`, hash match, one Active Goal. |
 | B5 Implement | Named branch. Allowed Files only. Freeze hash unchanged. |
 | Land B6–B9 | Host suite below, in the traveler worktree, after B5 is on HEAD. |
-| Job end | Packslip on the PR at merge, and the same block emitted to wReckless. |
+| Job end | Packslip. Always. Print in the CLI. Post on the PR when one exists. |
 
 Freeze does not run the land suite. B5 does not re-run freeze.
 Land does not start-check as if it were freeze.
 
 B5 is the cut immediately before B6. It is not job close.
 When independent review is named, the job closes at B9. B6–B9 is QC and ship.
-The last stamp is the packslip.
+The last stamp is the packslip, even if the job stopped at B1–B5.
 
 ## Goal
 
@@ -85,7 +86,7 @@ The copy template is `docs/governance/goal-template-v1.md`.
 `create-handoff` JSON is a sidecar. The traveler is `docs/templates/traveler.md`.
 After freeze, the parent emits the traveler. Do not write start-check or
 the land suite into that Instruction.
-This station's traveler Instruction wins over GOAL for which operation runs now.
+This operation's traveler Instruction wins over GOAL for which operation runs now.
 
 ### Memory files
 
@@ -107,15 +108,15 @@ risk. Update the index. Zero Active rows when quiet.
 - The traveler's Surface line is who freezes. Typical: Codex App (product), Grok Build (docs).
 - Echo `flow_id` and `goal_sha256` every turn.
 - `/goal` is a Codex tooling call (thread loop). It is not the repo freeze.
-  If the next station must invoke `/goal`, the traveler's first word is
+  If the next operation must invoke `/goal`, the traveler's first word is
   `/goal`. Then the three-band packet. Do not bury it in Instruction.
   The executor does not add `/goal` after the fact.
-  If the traveler omits `/goal`, the next station reads `GOAL.md` only.
+  If the traveler omits `/goal`, the next operation reads `GOAL.md` only.
   Keep any `/goal` line short. Point it at `GOAL.md`. Do not paste the sheet.
 
 ### Worker-local gates
 
-This station is the Surface on the traveler. That Surface runs these. They are
+This operation is the Surface on the traveler. That Surface runs these. They are
 not a decision point back to wReckless or SuperGrok unless confidence fails or a hard gate hits.
 
 - Read the traveler first.
@@ -130,18 +131,18 @@ not a decision point back to wReckless or SuperGrok unless confidence fails or a
   Next from the known set (Surface, effort, model session, or wReckless). Do not churn.
 
 Route, branch-prefix, or Surface mismatch against the old Codex-only
-machine pins is a fork. Apply Corrective Action. It is not Broken.
+machine pins is a fork. Apply Corrective Action. It is not Non-conformance.
 
-Draft PR on the named branch is not Broken. Draft is a tier, not a start gate.
+Draft PR on the named branch is not Non-conformance. Draft is a tier, not a start gate.
 
 Fail a worker-local gate: apply Corrective Action on the traveler
-(Correction / Bent / Broken). Broken is STOP. Do not send to us
+(Correction / Bent / Non-conformance). Non-conformance is STOP. Do not send to us
 unless a wReckless gate is hit or confidence is not cleared.
 
 ## Proof
 
 Host only. Land proof, in the traveler worktree. Not in the traveler.
-Not at freeze. Not at B5. Not at every station.
+Not at freeze. Not at B5. Not at every operation.
 
 `cd` the traveler worktree. If none is named, use the primary clone:
 `/Users/computer/wrecklesstoddler/vibe/projects/nestcalc`
@@ -170,7 +171,7 @@ Use the strongest verification the touched surface warrants.
 ## Land
 
 When independent review is named: B5 → B6 → B7 → B8 → B9.
-B5 is the last production station. B6 starts QC. The job closes at B9.
+B5 is the last production operation. B6 starts QC. The job closes at B9.
 The last stamp is the packslip.
 
 Cycle:
@@ -197,13 +198,14 @@ hang paper on.
   Codex CLI may run the same loop when named. Apply only concrete
   defects still on HEAD. Do not scope-expand. Unfixable after the cap
   → escalate (wReckless, or named Codex).
-- B7 closeout, B8 merge, and B9 post-merge travel as one package when
+- B7 ready, B8 merge, and B9 post-merge travel as one package when
   repo-backed confidence and named criteria pass.
-- B8 merge on that clearance is not a wReckless seat.
+- B8 on that clearance is not a wReckless seat.
+  B8: packslip → merge → B9 on the same slip → print that slip in the CLI → post it on the PR.
+  The CLI print is the only closeout. No narrative report.
 - B9 post-merge: sync, prune, persist approved lessons, quiet archive
-  when that is the named work. That is job close.
-- When a PR exists, post the packslip on that PR at merge. The worker emits
-  the same packslip to wReckless.
+  when that is the named work. Stamp B9 on the same packslip.
+- Job end is the packslip even when B8/B9 did not run. PR or no PR.
 - If next cannot be decided, next is wReckless.
 - wReckless at land only on escalation: route change at B6, failed or
   missing confidence, failed criteria, or a hard gate.
@@ -212,8 +214,8 @@ hang paper on.
 
 Definitions live in AGENTS.md Boundaries.
 
-Traveler band values: None | Bent | Correction | Broken.
+Traveler band values: None | Bent | Correction | Non-conformance.
 
 - None — omit the second line.
 - Bent / Correction — problem and/or correction; continue.
-- Broken — problem only; STOP; no correction.
+- Non-conformance — problem only; STOP; no correction.
