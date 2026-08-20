@@ -1,10 +1,8 @@
 # WORKFLOW
 
 Procedure only. Routing lives in AGENTS.md Roles.
-Terms: `docs/GLOSSARY.md`. LLC terms stay in SuperBrain `GLOSSARY.md`.
 Preferred strengths are not walls.
 No Operator owns freeze, land, or a cycle. Owner starts the work.
-Only wReckless is Owner. Owner may sit any other seat. Those labels bound everyone else.
 
 Planning, the Operator, or Owner decides. Tools are for normal work, more information, or a stuck step. A tool has a parent Operator. It does not get its own traveler Operator line.
 
@@ -18,7 +16,7 @@ Operators do not pick their own start. The traveler's Operator line is who runs 
 1. Read the traveler. Instruction is the job for this operation.
 2. Echo `flow_id` and `goal_sha256` every turn when a goal is on.
 3. Stay on the named Branch + Head. Wrong branch or worktree is Correction.
-   Create or switch is host or Operations Manager work, not traveler Instruction.
+   Create or switch is host work, not traveler Instruction.
 4. Do this operation's Instruction only. Do not run another operation.
 5. Stamp this operation before the next traveler is written.
 6. When the named job ends, emit the packslip. Any B. PR or no PR. Silent finish is Non-conformance.
@@ -54,8 +52,7 @@ The last stamp is the packslip, even if the job stopped at B1–B5.
 
 - One active `GOAL.md` when the goal workflow is on.
 - Quiet `GOAL.md` when no product goal is open.
-- Docs-only governance can land without a new GOAL after a land;
-  Owner + Operations Manager may unify operators in chat.
+- Docs-only governance can land without a new GOAL after a land.
 
 ### v1 metadata
 
@@ -106,7 +103,7 @@ risk. Update the index. Zero Active rows when quiet.
 ### Worker-local gates
 
 This operation is run by the Operator on the traveler. That Operator runs these. They are
-not a decision point back to Owner or Operations Manager unless confidence fails or a hard gate hits.
+not a decision point back to Owner unless confidence fails or a hard gate hits.
 
 - Read the traveler first.
 - Confirm freeze commit and `goal_sha256` when a goal is on.
