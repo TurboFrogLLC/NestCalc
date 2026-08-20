@@ -20,8 +20,10 @@ Effort:
 Instruction:
 Reason:
 
-Corrective Action: None | Bent | Corrective Action | Non-conformance
+Corrective Action: None | Corrective Action | Non-conformance
 ```
+
+Bent is a waypoint, not a finish band. Decide Corrective Action or Non-conformance.
 
 When the operation must invoke `/goal`, the first word of this copyable block is
 `/goal`. Then the three-band packet. Do not bury it in Instruction.
