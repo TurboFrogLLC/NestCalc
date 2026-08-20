@@ -5,8 +5,11 @@ https://github.com/TurboFrogLLC/wReckless-Grok-Superbrain/blob/main/nerveCenter/
 
 Shipped receipt. Not an Instruction. First word is never `/goal`. No Model.
 No Waypoint line. Shipped is not a fork.
-Job number = PR number. Post this on the PR at merge. Worker emits the same
-block when merge completes. Stamp is the retrieve handle.
+Stamp is the retrieve handle.
+
+Job number = PR when a PR exists. No PR: `PR: —` and the handle is `flow_id`
+or branch. Emit when the job stops, merge or not. Skip merge/ship rows that
+did not run. If a PR exists, post this on that PR.
 
 ```text
 Repo: NestCalc
