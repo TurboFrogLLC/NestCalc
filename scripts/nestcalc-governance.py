@@ -575,12 +575,13 @@ def validate_manifest(root: Path) -> tuple[Result, dict[str, Any] | None]:
         result.errors.append("unsupported manifest schema_version")
     if manifest.get("repository") != REPOSITORY:
         result.errors.append(f"repository must be {REPOSITORY}")
-    traveler = root / "docs/templates/handoff.md"
-    if not traveler.is_file():
-        result.errors.append("missing required traveler template: docs/templates/handoff.md")
-    else:
-        result.details["traveler"] = "required"
-        result.details["execution_sidecar"] = "optional"
+    for template in ("traveler.md", "packslip.md"):
+        template_path = root / "docs/templates" / template
+        if not template_path.is_file():
+            result.errors.append(f"missing required template: docs/templates/{template}")
+        else:
+            result.details[template.removesuffix(".md")] = "required"
+    result.details["execution_sidecar"] = "optional"
     for rel in manifest.get("required_paths", []):
         if not (root / rel).is_file():
             result.errors.append(f"missing required path: {rel}")
