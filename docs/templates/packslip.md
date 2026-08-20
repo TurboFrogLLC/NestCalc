@@ -1,16 +1,20 @@
 # Packslip
 
-Job-end receipt. Mandatory. Not an Instruction. First word is never `/goal`.
-No Model. No Waypoint line.
+Job-end receipt. That is when the job is done.
+Not an Instruction. Not a Non-conformance Report.
+First word is never `/goal`. No Model. No Waypoint line.
 Stamp is the retrieve handle. Returns to Owner.
 
-Emit when the job stops. Any B. PR or no PR. Merge or no merge.
+Emit when this traveler's job ends. Merge or no merge.
 Print this block in the CLI. That print is the only closeout.
 Job number = PR when a PR exists. No PR: `PR: —` and the handle is `flow_id`
 or branch. If a PR exists, post this same block on that PR.
 
-B8 when named: packslip → merge → stamp B8 and B9 on this slip → print → post.
-Skip B8/B9 rows that did not run.
+Do not emit this form because an operation finished.
+Do not emit this form for a Non-conformance.
+
+Release when named: Merge, then Close on this slip, then print, then post.
+Skip rows that did not run.
 
 ```text
 Repo: NestCalc
@@ -24,23 +28,23 @@ Trace:
 Cycle: Full | Lite
 Date:
 
-Seq  Label     Operator     Stamp                 CA taken              Still open
-B1   Plan
-B2   Freeze
-B3   Bind
-B4   Traveler
-B5   Cut
-B6   QC
-B7   Ready
-B8   Merge
-B9   Close
+Seq  Label              Operator     Stamp                 Spot Check           Still open
+     Plan
+     Freeze
+     Bind
+     Cut
+     Send for review
+     Wait
+     Inspection
+     Merge
+     Close
 
-Closed CA:
-Still open: none | NC …
-Next: none | NC-…
+Closed Corrective Action:
+Still open: none | Non-conformance …
+Next: none
 
-Corrective Action: None | closed list only
+Spot Check: None | closed list only
 ```
 
-Stamp is a commit SHA. Skip a row that did not run. A Correction is a new row.
-B1–B4 are history labels only.
+Stamp is a commit SHA. Skip a row that did not run. A Corrective Action is a new row.
+The same operation may appear more than once.
