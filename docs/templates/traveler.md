@@ -20,7 +20,7 @@ Effort:
 Instruction:
 Reason:
 
-Corrective Action: None | Bent | Correction | Non-conformance
+Corrective Action: None | Bent | Corrective Action | Non-conformance
 ```
 
 When the operation must invoke `/goal`, the first word of this copyable block is
