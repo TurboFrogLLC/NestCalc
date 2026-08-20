@@ -4,13 +4,13 @@ NestCalc wrapper. Standard form:
 https://github.com/TurboFrogLLC/wReckless-Grok-Superbrain/blob/main/nerveCenter/templates/packslip.md
 
 Shipped receipt. Not an Instruction. First word is never `/goal`. No Model.
+No Waypoint line. Shipped is not a fork.
 Job number = PR number. Post this on the PR at merge. Worker emits the same
-block when merge completes.
+block when merge completes. Stamp is the retrieve handle.
 
 ```text
 Repo: NestCalc
 Surface: wReckless
-Waypoint: Shipped
 PR:
 Branch:
 Head:
