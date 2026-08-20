@@ -575,12 +575,17 @@ def validate_manifest(root: Path) -> tuple[Result, dict[str, Any] | None]:
         result.errors.append("unsupported manifest schema_version")
     if manifest.get("repository") != REPOSITORY:
         result.errors.append(f"repository must be {REPOSITORY}")
-    for template in ("traveler.md", "packslip.md"):
-        template_path = root / "docs/templates" / template
-        if not template_path.is_file():
-            result.errors.append(f"missing required template: docs/templates/{template}")
+    required_authority = {
+        "glossary": "docs/GLOSSARY.md",
+        "traveler": "docs/templates/traveler.md",
+        "packslip": "docs/templates/packslip.md",
+        "nonconformance": "docs/templates/nonconformance.md",
+    }
+    for label, relative_path in required_authority.items():
+        if not (root / relative_path).is_file():
+            result.errors.append(f"missing required authority: {relative_path}")
         else:
-            result.details[template.removesuffix(".md")] = "required"
+            result.details[label] = "required"
     result.details["execution_sidecar"] = "optional"
     for rel in manifest.get("required_paths", []):
         if not (root / rel).is_file():

@@ -3,160 +3,114 @@
 <!-- nestcalc-governance:start -->
 ```json
 {
-  "active_goal_title": "Align NestCalc governance machine to post-#69 law",
+  "active_goal_title": "Align governance machine and lifecycle recipe to Quality Control and Release",
   "agent_roster": {
     "orchestrator": "codex-cli",
     "read_only_agents": []
   },
-  "branch_intent": "scripts/machine-retune",
+  "branch_intent": "scripts/machine-qc-release-align",
   "execution_route": "codex-cli",
-  "flow_id": "NC-20260818-589a9463",
-  "goal_memory_commit": "c9d01d011a630f44111294188454b8e1b45a0212",
-  "goal_sha256": "sha256:ef7db1b5c267deebb7dbbcbb6144aa39d7da090d5f3093d141407fa67d8e1f4e",
+  "flow_id": "NC-20260820-7c19de45",
+  "goal_memory_commit": "83f7a2bac8c8b69b216eb978b1d0ccbe7fb04a44",
+  "goal_sha256": "sha256:382b1b08472a77806f57ebc4148133235405b6f93286e9de81f98ab0605eba12",
   "protected_surfaces": [
     "UI and chrome, calculator math, engine behavior, nest-session transforms, AutoNest, G-code, presets, Clerk, PWA, routes, service workers, secrets, deployment, and Production",
-    "FLiPIT identity, V3 HTML and SPEC authority, docs/governance/MODE, main, and SuperBrain"
+    "FLiPIT identity, V3 HTML and SPEC authority, docs/governance/MODE, main, flow_id format, schemas, fixtures, sidecar and closeout artifact contracts, and SuperBrain"
   ],
   "publication_route": "feature-pr",
   "repository": "TurboFrogLLC/NestCalc",
   "schema_version": "nestcalc-goal-v1",
   "skills": [
-    "codex-repo-hygiene-gate",
-    "nestcalc-goal-grilling",
-    "codex-goal-prep"
+    "codex-repo-hygiene-gate"
   ]
 }
 ```
 <!-- nestcalc-governance:end -->
 
-## Active Goal: Align NestCalc governance machine to post-#69 law
+## Active Goal: Align governance machine and lifecycle recipe to Quality Control and Release
 
 ### Objective
 
-Retune the repository-local governance checker and its machine contracts to the
-written Surface, traveler, and land law established by NestCalc PR #69 at
-`2d7506f388e7d1017053cbcf39aff0a270cba10f`, without weakening the remaining
-fail-closed controls or changing `docs/governance/MODE` from `advisory`.
+Align the repository-local governance manifest, its fail-closed manifest check,
+and the two lifecycle recipe documents with the employee manual landed by
+NestCalc PR #77 at `a419ea930818542a4de52fa331e003533ffcc476`.
 
-This goal freeze is authored on Surface **Codex App**, model **GPT-5.6 Sol**,
-effort **medium**. Implementation routes next to Surface **Codex CLI**. The
-traveler is the required packet; the `create-handoff` JSON sidecar is optional.
+The machine must pin the glossary and Non-conformance Report template as
+required authority. The lifecycle recipe must use the full-word Quality Control
+and Release operations defined by `AGENTS.md`, `docs/GLOSSARY.md`, and
+`docs/WORKFLOW.md`, without retaining a numeric land identity.
+
+This freeze is authored by Operator **Codex App**, model **GPT-5.6 Sol**,
+effort **medium**, on `scripts/machine-qc-release-align`. It authorizes only the
+bounded implementation below, routed next to Operator **Codex CLI**. It does
+not authorize merge.
 
 ### Scope / Allowed Files
 
 Only these files may change during implementation:
 
+- `docs/governance/manifest.json`
 - `scripts/nestcalc-governance.py`
-- `docs/governance/schemas/*`
-- matching fixtures under `docs/governance/fixtures/*`
-- `docs/governance/goal-template-v1.md`, and only where a changed check requires
-  matching template text
+- `test/governance/test_nestcalc_governance.py`
+- `docs/governance/goal-lifecycle-contract.md`
+- `docs/governance/README.md`
 
 Required outcomes:
 
-- Preserve fail-closed enforcement for the v1 fence, valid `flow_id`, canonical
-  `goal_sha256` hash match, exactly one Active Goal, and secret rejection.
-- Preserve the one historical-title exception exactly: while MODE is
-  `advisory`, only `NestCalc Governed Goal Pipeline v1` may warn for missing v1
-  metadata. Do not broaden the exception and do not flip MODE.
-- Stop requiring `branch_intent` to begin with `codex/`; accept an honest safe
-  feature-branch intent such as `scripts/machine-retune`.
-- Stop requiring `execution_route` or `agent_roster.orchestrator` to equal
-  `codex-cli`; validate honest named Surface and route values without turning
-  old Codex-only pins into law.
-- Stop requiring every read-only lane's `requested_model` to equal
-  `gpt-5.6-terra`; retain honest requested-versus-observed model recording and
-  fail a false `matched` claim.
-- Keep the traveler as the required handoff packet. Keep `create-handoff` as an
-  optional prompt-hash sidecar rather than a required continue-gate.
-- Stop requiring `human_action_required` as a standing Human-merge instruction
-  in closeout artifacts. Permit it only when a real human action is actually
-  required, without weakening closeout disposition, PR-state, commit-separation,
-  or assessment-alignment checks.
-- Add or adjust matching valid and invalid fixtures so each retained hard gate
-  and each relaxed stale pin is explicit and deterministic.
+- Add `docs/GLOSSARY.md` and `docs/templates/nonconformance.md` to the
+  governance manifest's required paths.
+- Make `validate_manifest` require the glossary and Non-conformance Report
+  template directly, alongside the traveler and packslip, so deleting a pin
+  fails closed even if the manifest is weakened.
+- Update the deterministic governance test to prove all four required authority
+  files are enforced by `validate_manifest`.
+- Rewrite `docs/governance/goal-lifecycle-contract.md` and
+  `docs/governance/README.md` so their lifecycle recipe matches current law:
+  Goal prep and Freeze; Traveler; Cut; Quality Control as Send for review,
+  Wait, and Inspection; Release as Merge then Close; Packslip only at job end;
+  Non-conformance Report on a stopped operation.
+- Remove numeric station identity and retired land-ladder vocabulary from those
+  two recipe documents. Use the role and operation terms defined in the glossary.
+- Preserve fail-closed governance behavior and the current `flow_id` format.
+  This goal does not authorize changes to schemas, fixtures, sidecar or closeout
+  artifact shapes, or `docs/governance/MODE`.
 
 ### Protected Surfaces
 
 Do not touch UI or chrome, calculator math, engine behavior, nest-session
 transforms, AutoNest, G-code, presets, Clerk, PWA, routes, service workers,
 secrets, deployment, Production, FLiPIT identity, V3 HTML or SPEC authority,
-`docs/governance/MODE`, `main`, or SuperBrain. Do not add a NestCalc
-`the-Feeler` wrapper.
+`docs/governance/MODE`, `main`, SuperBrain, or any file outside Allowed Files.
+
+Do not change the `flow_id` regex or semantics. Do not change governance
+schemas, fixtures, sidecar or closeout artifact contracts. Do not merge.
 
 ### Required Proof
 
-Run host-first after implementation:
+At Release, from the traveler worktree and after the implementation is on HEAD,
+run the repository host suite named by `AGENTS.md` and `docs/WORKFLOW.md`:
 
-```text
-python3 scripts/nestcalc-governance.py check
-python3 scripts/nestcalc-governance.py validate-goal --goal GOAL.md
-npm run governance:check
-npm run test:governance
-git diff --check
-git status --porcelain=v1
-```
+- `python3 scripts/nestcalc-governance.py check`
+- `python3 scripts/nestcalc-governance.py validate-goal --goal GOAL.md`
+- `npm run governance:check`
+- `npm run test:governance`
+- `git diff --check origin/main...HEAD`
+- `git status --porcelain=v1`
+- `git branch --show-current`
+- `git rev-parse HEAD`
 
-Proof must demonstrate both sides of the retune: the newly honest branch,
-Surface/route, model, traveler/optional-sidecar, and conditional-human-action
-cases pass; malformed fence, flow ID, hash, Active Goal count, secret, false
-model-match, and existing closeout integrity cases still fail closed.
-
-### Grilling Decision Record
-
-```text
-evidence → confidence → decision → residual risk / flagged decisions
-```
-
-- Evidence: PR #69 and current written authority define Surface as the station,
-  traveler as the packet, sidecar as optional machinery, and stale Codex-only
-  route or branch pins as a Corrective Action waypoint rather than Broken.
-- Evidence: the current checker and schemas still hard-code `codex/`,
-  `codex-cli`, and `gpt-5.6-terra`, and closeout schemas still require
-  `human_action_required`.
-- Confidence: freeze-ready. The required proof is reachable inside the Allowed
-  Files; protected surfaces are explicit; exactly one Active Goal is present;
-  no blocking question remains.
-- Decision: Path B. The allowed governance schemas and matching fixtures are
-  broad enough to repair every required proof title. The existing governance
-  unit-test source remains outside scope because its positive legacy cases can
-  remain valid under broadened honest-value acceptance.
-- Flagged decision — reason: this goal must truthfully name
-  `scripts/machine-retune`, but the pre-retune validator rejects that branch
-  prefix. Decision: preserve the honest value and its canonical hash rather than
-  write a false `codex/` intent. Consequence: the freeze-time validator is
-  expected to report only the stale branch-prefix pin until Codex CLI implements
-  this goal; that known waypoint is not evidence that the hash or v1 fence is
-  invalid.
-- Residual risk: machine vocabulary for arbitrary future Surface, route, and
-  model values must remain bounded to non-empty safe strings and honest roster
-  status relationships. The implementation may not convert relaxed stale pins
-  into unvalidated free-form artifacts.
-- Evidence lanes: no delegated read-only agents were used. All evidence was
-  gathered locally by the Codex App planning seat, so the roster records no
-  invented agent or model observation.
-
-### Traveler / Sidecar / Preflight
-
-- The parent emits the traveler from `docs/templates/handoff.md` after this
-  freeze; no sidecar is required for the next waypoint.
-- Codex CLI must start-check branch and freeze commit, re-read authority, echo
-  `flow_id` and `goal_sha256`, and make no implementation edit outside Allowed
-  Files.
-- If a real try has no movement, load SuperBrain `skills/the-feeler` with the
-  traveler packet, evidence, and known set `wReckless`, `SuperGrok`,
-  `Codex App`, `Codex CLI`, and `Grok Build`. The parent writes the traveler.
-  Feeler output is `moved|no-move`, Corrective Action if clear, next or refuse,
-  and one Reason.
+Proof must demonstrate that the glossary and Non-conformance Report template
+are both present in the manifest and independently enforced by
+`validate_manifest`, and that the rewritten lifecycle documents contain no
+numeric station identity or retired land-ladder vocabulary.
 
 ### Stopping Condition
 
-This Codex App hop stops immediately after the goal-only freeze commits are
-created on `scripts/machine-retune` and the final `flow_id` and canonical
-`goal_sha256` are reported. Do not implement, create a sidecar, push, open a PR,
-merge, touch `main`, or choose a later Surface in this hop.
+This Codex App operation stops after the replacement goal-only freeze commits
+are created and the Codex CLI implementation traveler is printed. Codex App
+must not implement the allowed changes.
 
-The Codex CLI implementation is complete only when every required outcome is
-covered by deterministic fixtures and all Required Proof commands pass. Stop as
-Broken if implementation would require a protected surface, MODE change,
-secret, Production action, or edit outside Allowed Files.
+The Codex CLI implementation operation stops after the frozen outcomes are
+implemented inside Allowed Files and committed on
+`scripts/machine-qc-release-align`. Do not merge, touch `main`, or choose the
+next operation.

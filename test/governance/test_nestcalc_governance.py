@@ -28,31 +28,42 @@ class GovernanceContractsTest(unittest.TestCase):
         self.assertEqual(result.details["invalid_fixtures"], 6)
         self.assertTrue(result.details["advisory_mode"])
 
-    def test_manifest_requires_traveler_and_packslip(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
-            root = Path(temporary)
-            docs = root / "docs/governance"
-            docs.mkdir(parents=True)
-            (docs / "manifest.json").write_text(
-                json.dumps(
-                    {
-                        "schema_version": "nestcalc-governance-manifest-v1",
-                        "repository": "TurboFrogLLC/NestCalc",
-                        "required_paths": [
-                            "docs/templates/traveler.md",
-                            "docs/templates/packslip.md",
-                        ],
-                        "contracts": {},
-                    }
+    def test_manifest_requires_all_four_authority_files_directly(self) -> None:
+        required_authority = (
+            "docs/GLOSSARY.md",
+            "docs/templates/traveler.md",
+            "docs/templates/packslip.md",
+            "docs/templates/nonconformance.md",
+        )
+        for missing_path in required_authority:
+            with self.subTest(missing_path=missing_path), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                docs = root / "docs/governance"
+                docs.mkdir(parents=True)
+                (docs / "manifest.json").write_text(
+                    json.dumps(
+                        {
+                            "schema_version": "nestcalc-governance-manifest-v1",
+                            "repository": "TurboFrogLLC/NestCalc",
+                            "required_paths": [],
+                            "contracts": {},
+                        }
+                    )
+                    + "\n",
+                    encoding="utf-8",
                 )
-                + "\n",
-                encoding="utf-8",
-            )
-            result, _ = governance.validate_manifest(root)
-            self.assertFalse(result.ok)
-            joined = " ".join(result.errors)
-            self.assertIn("traveler.md", joined)
-            self.assertIn("packslip.md", joined)
+                for relative_path in required_authority:
+                    if relative_path != missing_path:
+                        path = root / relative_path
+                        path.parent.mkdir(parents=True, exist_ok=True)
+                        path.write_text("required authority\n", encoding="utf-8")
+
+                result, _ = governance.validate_manifest(root)
+                self.assertFalse(result.ok)
+                self.assertIn(f"missing required authority: {missing_path}", result.errors)
+                for present_path in required_authority:
+                    if present_path != missing_path:
+                        self.assertNotIn(f"missing required authority: {present_path}", result.errors)
 
     def test_bootstrap_exception_is_advisory_only(self) -> None:
         """Historical bootstrap title without metadata: warn in advisory, fail in enforce."""
