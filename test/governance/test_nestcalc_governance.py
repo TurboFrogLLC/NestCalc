@@ -28,6 +28,29 @@ class GovernanceContractsTest(unittest.TestCase):
         self.assertEqual(result.details["invalid_fixtures"], 6)
         self.assertTrue(result.details["advisory_mode"])
 
+    def test_manifest_requires_traveler_and_packslip(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            docs = root / "docs/governance"
+            docs.mkdir(parents=True)
+            (docs / "manifest.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": "nestcalc-governance-manifest-v1",
+                        "repository": "TurboFrogLLC/NestCalc",
+                        "required_paths": [],
+                        "contracts": {},
+                    }
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            result, _ = governance.validate_manifest(root)
+            self.assertFalse(result.ok)
+            joined = " ".join(result.errors)
+            self.assertIn("traveler.md", joined)
+            self.assertIn("packslip.md", joined)
+
     def test_bootstrap_exception_is_advisory_only(self) -> None:
         """Historical bootstrap title without metadata: warn in advisory, fail in enforce."""
         with tempfile.TemporaryDirectory() as temporary:
@@ -249,7 +272,6 @@ class GovernanceContractsTest(unittest.TestCase):
             self.assertNotIn("prompt", artifact)
             self.assertRegex(artifact["prompt_sha256"], r"^sha256:[0-9a-f]{64}$")
 
-            # Dirty uncommitted GOAL.md must fail closed and must not rewrite the artifact.
             prior_artifact = output.read_text(encoding="utf-8")
             goal_path.write_text(goal_path.read_text(encoding="utf-8") + "\nDirty edit.\n", encoding="utf-8")
             dirty = governance.create_handoff(root, args)
