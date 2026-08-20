@@ -58,7 +58,7 @@ git rev-parse HEAD
 - Invent the next Surface. Soft-infer. Import NanoTate golden-pipeline / SBOM / env-proxy as continue-gates.
 - Mix engine and chrome unless the GOAL names both.
 - Sandbox-first the host list. Fold host commands into the traveler.
-- Let Codex touch UI / chrome unless the traveler names it.
+- Let Codex touch UI / chrome unless the traveler's Instruction names it.
 - Finish a job silent. No packslip is Broken.
 
 ### Corrective Action
