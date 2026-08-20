@@ -3,13 +3,17 @@
 NestCalc wrapper. Standard form:
 https://github.com/TurboFrogLLC/wReckless-Grok-Superbrain/blob/main/nerveCenter/templates/packslip.md
 
-Shipped receipt. Not an Instruction. First word is never `/goal`. No Model.
-No Waypoint line. Shipped is not a fork.
+Job-end receipt. Mandatory. Not an Instruction. First word is never `/goal`.
+No Model. No Waypoint line. Shipped is not a fork.
 Stamp is the retrieve handle.
 
+Emit when the job stops. Any B. PR or no PR. Merge or no merge.
+Print this block in the CLI. That print is the only closeout.
 Job number = PR when a PR exists. No PR: `PR: —` and the handle is `flow_id`
-or branch. Emit when the job stops, merge or not. Skip merge/ship rows that
-did not run. If a PR exists, post this on that PR.
+or branch. If a PR exists, post this same block on that PR.
+
+B8 when named: packslip → merge → stamp B8 and B9 on this slip → print → post.
+Skip merge/ship rows that did not run.
 
 ```text
 Repo: NestCalc
