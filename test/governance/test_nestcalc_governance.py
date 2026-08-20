@@ -38,7 +38,10 @@ class GovernanceContractsTest(unittest.TestCase):
                     {
                         "schema_version": "nestcalc-governance-manifest-v1",
                         "repository": "TurboFrogLLC/NestCalc",
-                        "required_paths": [],
+                        "required_paths": [
+                            "docs/templates/traveler.md",
+                            "docs/templates/packslip.md",
+                        ],
                         "contracts": {},
                     }
                 )
