@@ -48,7 +48,8 @@ git rev-parse HEAD
 - Post-bootstrap `GOAL.md` carries the v1 fence. Freeze stamp: `flow_id`, `goal_sha256`, hash match, one Active Goal.
 - Preserve calculator math, AutoNest, FLiPIT identity, and V3 HTML + SPEC unless the GOAL or a new wReckless decision names them.
 - Secrets stay out of git. Workers fail-closed on governance files. wReckless + SuperGrok may author them.
-- When the named job ends, emit the packslip to wReckless. Merge or no merge. That return is not inventing a Surface.
+- Job end is the packslip. Every time. Any B. PR or no PR. Merge or no merge.
+  Print it in the CLI. That print is the only closeout. If a PR exists, post the same block on that PR.
 
 ### Never
 
@@ -59,23 +60,23 @@ git rev-parse HEAD
 - Mix engine and chrome unless the GOAL names both.
 - Sandbox-first the host list. Fold host commands into the traveler.
 - Let Codex touch UI / chrome unless the traveler's Instruction names it.
-- Finish a job silent. No packslip is Broken.
+- Finish a job silent. No packslip is Non-conformance.
 
 ### Corrective Action
 
 - **None** — no problem.
 - **Correction** — known fix. Apply it. Continue.
 - **Bent** — unknown break. Continue. Inspect later.
-- **Broken** — hard gate. STOP. Problem only.
+- **Non-conformance** — hard gate. STOP. Problem only.
 
 Hard gates: `main` (except checkout sync), Production, secrets, MODE, FLiPIT name, V3.
-Wrong branch, worktree, or repo is Correction. Draft PR is not Broken.
-Silent job end (no packslip) is Broken.
+Wrong branch, worktree, or repo is Correction. Draft PR is not Non-conformance.
+Silent job end (no packslip) is Non-conformance.
 
 ## Surfaces
 
 wReckless owns the system. No Surface owns freeze, land, or a cycle.
-Surface = station. Waypoint = fork where a decision is required. Traveler = instruction sheet. Packslip = shipped receipt.
+Surface = who runs this operation. Operation = this step. Waypoint = fork where a decision is required. Traveler = instruction sheet. Packslip = shipped receipt.
 Typical first-name is a hint. Any named Surface may run a full cycle.
 
 | Surface | Typical first-name |
@@ -89,9 +90,8 @@ Typical first-name is a hint. Any named Surface may run a full cycle.
 B5 → B6 → B7 → B8 → B9 when independent review is named. B5 is the cut. B6 starts QC. Job closes at B9.
 Route change at B6 → stop. Listen/fix cap: initial + one. Unfixable → escalate.
 B7–B9 travel as one package when repo-backed confidence and named criteria pass.
-B8 on that clearance is not a wReckless seat. wReckless at land only on escalation.
+B8 on that clearance is not a wReckless seat. B8: packslip → merge → B9 stamps on the same slip → print in CLI → post on the PR.
 If next cannot be decided, next is wReckless.
-When a PR exists, post the packslip on that PR at merge.
 PR-write tiers: `docs/WORKFLOW.md` Land. Draft is a tier, not a start gate. Do not auto-spawn Codex.
 
 ## Authority
