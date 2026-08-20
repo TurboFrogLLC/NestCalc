@@ -10,6 +10,7 @@ notices.
 # AGENTS.md — NestCalc
 
 Repo NestCalc. Product FLiPIT. Next.js 16 PWA. Clerk. Serwist. Vercel.
+Terms: `docs/GLOSSARY.md`. Read it with this file.
 Traveler: `docs/templates/traveler.md`. Packslip: `docs/templates/packslip.md`.
 Procedure: `docs/WORKFLOW.md`. Routing here.
 
@@ -56,7 +57,7 @@ git rev-parse HEAD
 - Touch `main` except checkout sync: fetch, switch, ff-only to `origin/main`. No edit, commit, push, or merge.
 - Production, MODE, or identity without the Owner.
 - Merge unless B8 continue is cleared (repo-backed confidence and named criteria).
-- Invent the next Operator. Soft-infer. Import NanoTate golden-pipeline / SBOM / env-proxy as continue-gates.
+- Invent the next operation. Soft-infer. Import NanoTate golden-pipeline / SBOM / env-proxy as continue-gates.
 - Mix engine and chrome unless the GOAL names both.
 - Sandbox-first the host list. Fold host commands into the traveler.
 - Let Codex touch UI / chrome unless the traveler's Instruction names it.
@@ -71,23 +72,19 @@ git rev-parse HEAD
 - **Non-conformance** — hard gate. STOP. Problem only.
 
 Hard gates: `main` (except checkout sync), Production, secrets, MODE, FLiPIT name, V3.
-Wrong branch, worktree, or repo is Correction. Draft PR is not Non-conformance.
+Wrong branch, worktree, or repo is Correction. Draft PR is not a stop.
 Silent job end (no packslip) is Non-conformance.
 
 ## Roles
 
-Only wReckless is Owner. No other role may act as Owner.
-Owner may sit any other seat: Operator, Operations Manager, tool, or operation. Those labels bound everyone else.
-Operations Manager is SuperGrok. Operators do the work.
+Terms are in `docs/GLOSSARY.md`. This table is who runs the work.
 No Operator owns freeze, land, or a cycle. Owner starts the work and receives the packslip.
-Operator = Codex App, Codex CLI, or Grok Build. Operation = the action and its stamp. Tool = a skill the Operator calls (the-Feeler). Machine = a repo script that stamps or checks.
-Waypoint = fork where a decision is required. Traveler = instruction sheet. Packslip = job-end receipt.
 Typical first-name is a hint. Any named Operator may run a full cycle.
 
 | Role | Who |
 | --- | --- |
 | Owner | wReckless only. May do any other role. Gates: Production, identity, MODE, land escalation. |
-| Operations Manager | SuperGrok. Orchestrator only. May author governance. Not an Operator. Not Owner. |
+| Operations Manager | SuperGrok. Orchestrator only. May author governance. |
 | Operator | Codex App. Product freeze and later coding. |
 | Operator | Codex CLI. Full cycle, or escalate after no progress. |
 | Operator | Grok Build. Docs freeze, docs work, B6–B9 land. |
@@ -101,12 +98,12 @@ PR-write tiers: `docs/WORKFLOW.md` Land. Draft is a tier, not a start gate. Do n
 
 ## Authority
 
-1. This file
+1. This file + `docs/GLOSSARY.md`
 2. Active `GOAL.md` — outcomes. Not a command list.
 3. `docs/WORKFLOW.md`
 4. `LESSONS_LEARNED.md`
 5. V3 HTML + SPEC under `docs/howmany-v3-components/`
 
-Traveler Instruction wins over GOAL for which operation runs now.
+Traveler Instruction wins over GOAL for this step.
 Live GitHub wins mutable facts. Conversation memory is advisory.
 `docs/governance/MODE` stays advisory until a dedicated promotion goal. Contracts still fail closed.
