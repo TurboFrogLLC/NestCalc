@@ -1,8 +1,5 @@
 # Packslip
 
-NestCalc wrapper. Standard form:
-https://github.com/TurboFrogLLC/wReckless-Grok-Superbrain/blob/main/nerveCenter/templates/packslip.md
-
 Job-end receipt. Mandatory. Not an Instruction. First word is never `/goal`.
 No Model. No Waypoint line.
 Stamp is the retrieve handle. Returns to Owner.
