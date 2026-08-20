@@ -1,45 +1,47 @@
 # WORKFLOW
 
-Procedure only. Routing lives in AGENTS.md Surfaces.
+Procedure only. Routing lives in AGENTS.md Roles.
 Preferred strengths are not walls.
-No Surface owns freeze, land, or a cycle. wReckless starts the work.
+No Operator owns freeze, land, or a cycle. Owner starts the work.
 
 ## Terms
 
 | Term | Means |
 | --- | --- |
 | **Law** | This file + AGENTS.md. Bounds the roads. |
-| **Surface** | Who runs this operation |
+| **Owner** | wReckless. Not an Operator. |
+| **Operations Manager** | SuperGrok. Orchestrator. Not an Operator. |
+| **Operator** | Codex App, Codex CLI, or Grok Build. Who runs this operation. |
 | **Operation** | This step. The next operation is the next step. |
 | **Waypoint** | Fork. A decision is required to move forward |
 | **Sign** | Posted choices at that fork (CA bands, known next operations) |
-| **Traveler** | Instruction sheet. Records Surface + Instruction after a decision. `docs/templates/traveler.md` |
+| **Traveler** | Instruction sheet. Records Operator + Instruction after a decision. `docs/templates/traveler.md` |
 | **Packslip** | Job-end receipt. Mandatory. `docs/templates/packslip.md` |
 | **Sidecar** | `create-handoff` JSON only |
 
-Planning, the operation, or wReckless decides. Skills are tools for normal work, more information, or a stuck step.
+Planning, the Operator, or Owner decides. Skills are tools for normal work, more information, or a stuck step.
 
-Parent cannot flip itself mid-session. Model bump = new traveler; wReckless pastes it into the next session.
+Parent cannot flip itself mid-session. Model bump = new traveler; Owner pastes it into the next session.
 Continuing while still nonconforming is failure. A Non-conformance stop is containment.
 
 ## Start
 
-Workers do not pick their own start. The traveler's Surface line is this operation.
+Operators do not pick their own start. The traveler's Operator line is this operation.
 
 1. Read the traveler. Instruction is the job for this operation.
 2. Echo `flow_id` and `goal_sha256` every turn when a goal is on.
 3. Stay on the named Branch + Head. Wrong branch or worktree is Correction.
-   Create or switch is host or Orchestrator work, not traveler Instruction.
+   Create or switch is host or Operations Manager work, not traveler Instruction.
 4. Do this operation's Instruction only. Do not run another operation's stamp.
 5. Apply this operation's stamp before the next traveler is written.
 6. When the named job ends, emit the packslip. Any B. PR or no PR. Silent finish is Non-conformance.
 
 One `main` exception: checkout sync only (fetch, switch to `main`, fast-forward
-to `origin/main`). No edits, commits, push, or merge. Any named Surface may
+to `origin/main`). No edits, commits, push, or merge. Any named Operator may
 do that sync. Model and effort are not a gate on it.
 
 Typical first-name: Codex App for product freeze, Grok Build for docs freeze.
-A named Codex CLI (or any other Surface) may run a full cycle including freeze.
+A named Codex CLI (or any other Operator) may run a full cycle including freeze.
 Codex does not touch UI / chrome unless the traveler's Instruction names it.
 
 ## Operation stamps
@@ -66,7 +68,7 @@ The last stamp is the packslip, even if the job stopped at B1–B5.
 - One active `GOAL.md` when the goal workflow is on.
 - Quiet `GOAL.md` when no product goal is open.
 - Docs-only governance can land without a new GOAL after a land;
-  wReckless + SuperGrok may unify surfaces in chat.
+  Owner + Operations Manager may unify operators in chat.
 
 ### v1 metadata
 
@@ -105,7 +107,7 @@ risk. Update the index. Zero Active rows when quiet.
 - Freeze `GOAL.md` with `flow_id` and `goal_sha256`.
 - Commit that freeze before implementation. The freeze commit is not
   the implementation.
-- The traveler's Surface line is who freezes. Typical: Codex App (product), Grok Build (docs).
+- The traveler's Operator line is who freezes. Typical: Codex App (product), Grok Build (docs).
 - Echo `flow_id` and `goal_sha256` every turn.
 - `/goal` is a Codex tooling call (thread loop). It is not the repo freeze.
   If the next operation must invoke `/goal`, the traveler's first word is
@@ -116,8 +118,8 @@ risk. Update the index. Zero Active rows when quiet.
 
 ### Worker-local gates
 
-This operation is the Surface on the traveler. That Surface runs these. They are
-not a decision point back to wReckless or SuperGrok unless confidence fails or a hard gate hits.
+This operation is the Operator on the traveler. That Operator runs these. They are
+not a decision point back to Owner or Operations Manager unless confidence fails or a hard gate hits.
 
 - Read the traveler first.
 - Confirm freeze commit and `goal_sha256` when a goal is on.
@@ -125,19 +127,19 @@ not a decision point back to wReckless or SuperGrok unless confidence fails or a
 - evidence → confidence → continue.
 - Confidence from repo-backed evidence is clearance to continue.
   Invented or missing confidence is not clearance.
-- Flag residual risk. Do not invent extra wReckless interrupts.
+- Flag residual risk. Do not invent extra Owner interrupts.
 - Skills are tools for normal work, more information, or a stuck step.
 - One real try. Progress → continue. No progress → one more pass. Still none → stop.
-  Next from the known set (Surface, effort, model session, or wReckless). Do not churn.
+  Next from the known set (Operator, effort, model session, or Owner). Do not churn.
 
-Route, branch-prefix, or Surface mismatch against the old Codex-only
+Route, branch-prefix, or Operator mismatch against the old Codex-only
 machine pins is a fork. Apply Corrective Action. It is not Non-conformance.
 
 Draft PR on the named branch is not Non-conformance. Draft is a tier, not a start gate.
 
 Fail a worker-local gate: apply Corrective Action on the traveler
 (Correction / Bent / Non-conformance). Non-conformance is STOP. Do not send to us
-unless a wReckless gate is hit or confidence is not cleared.
+unless an Owner gate is hit or confidence is not cleared.
 
 ## Proof
 
@@ -185,29 +187,29 @@ PR-write tiers:
 
 | Tier | Allowed |
 | --- | --- |
-| Draft | Named land Surface opens or updates a draft PR on the named branch. |
-| Ready | Same Surface after B6 cap. Mark ready. Fix review. |
+| Draft | Named land Operator opens or updates a draft PR on the named branch. |
+| Ready | Same Operator after B6 cap. Mark ready. Fix review. |
 | Merge | B8 continue: repo-backed confidence and named criteria. |
 
 Draft is a tier, not a start gate. Open a draft when there is something to
 hang paper on.
 
-- B6 review on the named Surface. Often named: Grok Build.
+- B6 review on the named Operator. Often named: Grok Build.
   A decision that changes the route here → stop; do not enter B7.
 - B6 may listen and fix (cap: initial + one post-fix). Codex App or
   Codex CLI may run the same loop when named. Apply only concrete
   defects still on HEAD. Do not scope-expand. Unfixable after the cap
-  → escalate (wReckless, or named Codex).
+  → escalate (Owner, or named Codex).
 - B7 ready, B8 merge, and B9 post-merge travel as one package when
   repo-backed confidence and named criteria pass.
-- B8 on that clearance is not a wReckless seat.
+- B8 on that clearance is not an Owner seat.
   B8: packslip → merge → B9 on the same slip → print that slip in the CLI → post it on the PR.
   The CLI print is the only closeout. No narrative report.
 - B9 post-merge: sync, prune, persist approved lessons, quiet archive
   when that is the named work. Stamp B9 on the same packslip.
 - Job end is the packslip even when B8/B9 did not run. PR or no PR.
-- If next cannot be decided, next is wReckless.
-- wReckless at land only on escalation: route change at B6, failed or
+- If next cannot be decided, next is the Owner.
+- Owner at land only on escalation: route change at B6, failed or
   missing confidence, failed criteria, or a hard gate.
 
 ## Corrective Action
