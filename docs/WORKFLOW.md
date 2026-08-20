@@ -3,15 +3,15 @@
 Procedure only. Routing lives in AGENTS.md Roles.
 Preferred strengths are not walls.
 No Operator owns freeze, land, or a cycle. Owner starts the work.
-Owner may sit any seat. Those labels bound everyone else.
+Only wReckless is Owner. Owner may sit any other seat. Those labels bound everyone else.
 
 ## Terms
 
 | Term | Means |
 | --- | --- |
 | **Law** | This file + AGENTS.md. Bounds the roads. |
-| **Owner** | wReckless. May act as Operator, Operations Manager, tool, or operation. |
-| **Operations Manager** | SuperGrok. Orchestrator. Not an Operator. |
+| **Owner** | wReckless only. May act as Operator, Operations Manager, tool, or operation. |
+| **Operations Manager** | SuperGrok. Orchestrator. Not an Operator. Not Owner. |
 | **Operator** | Codex App, Codex CLI, or Grok Build. The parent AI on the traveler. |
 | **Operation** | Any action. The stamp/label (B5 Cut, freeze). Not who runs it. |
 | **Tool** | A skill the Operator calls to finish an operation. the-Feeler. `/goal`. Not an Operator. |
@@ -63,7 +63,7 @@ Freeze does not run the land suite. B5 does not re-run freeze.
 Land does not start-check as if it were freeze.
 
 B5 is the cut immediately before B6. It is not job close.
-When independent review is named, the job closes at B9. B6–B9 is QC and ship.
+When independent review is named, the job closes at B9. B6–B9 is QC and close.
 The last stamp is the packslip, even if the job stopped at B1–B5.
 
 ## Goal
