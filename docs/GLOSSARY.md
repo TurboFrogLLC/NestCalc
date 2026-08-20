@@ -22,6 +22,10 @@ Owner may sit any other seat. Those labels bound everyone else.
 | Sidecar | `create-handoff` JSON only. | Traveler. |
 | Product | FLiPIT | HowMany as the product name. |
 | Primary clone | `/Users/computer/wrecklesstoddler/vibe/projects/nestcalc` | |
+| None | No problem. Omit the second CA line. | |
+| Correction | Known fix. Apply it. Continue. | Bent. Non-conformance. |
+| Bent | Something is off. You do not have the fix yet. Continue. Inspect later. | Correction. Non-conformance. Broken. |
+| Non-conformance | Hard gate. STOP. Problem only. No fix on this slip. | Broken. Bent. Correction. |
 
 Do not invent the next operation. Do not invent the next Operator.
 Do not run another operation. A stamp is not something you run.
