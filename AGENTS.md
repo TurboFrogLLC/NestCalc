@@ -56,7 +56,7 @@ git rev-parse HEAD
 - Touch `main` except checkout sync: fetch, switch, ff-only to `origin/main`. No edit, commit, push, or merge.
 - Production, MODE, or identity without the Owner.
 - Merge unless Release is cleared (repo-backed confidence and named criteria) and this traveler does not forbid merge.
-- Invent the next operation. Soft-infer. NanoTate golden-pipeline / SBOM / env-proxy are continue-gates.
+- Invent the next operation. Soft-infer.
 - Rewrite the traveler.
 - Let Codex touch UI / chrome unless the traveler's Instruction names it.
 - Emit a packslip for a Non-conformance.
