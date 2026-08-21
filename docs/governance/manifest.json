@@ -28,8 +28,7 @@
     "docs/governance/pr-closeout-breakdown-disposition.md",
     "docs/governance/lesson-persistence-example.md",
     "scripts/nestcalc-governance.py",
-    "test/governance/test_nestcalc_governance.py",
-    ".agents/skills/nestcalc-goal-grilling/SKILL.md"
+    "test/governance/test_nestcalc_governance.py"
   ],
   "fixtures": {
     "valid": [
