@@ -4,8 +4,7 @@
 | --- | --- |
 | Posture | Enforce-grade contracts; zero soft inference |
 | Runtime mode | `docs/governance/MODE` (`advisory` until promotion; see GAP-AND-HARDENING.md) |
-| Superbrain reference | `NT-20260729-goal-lifecycle-hardened-baseline` (product-agnostic patterns only) |
-| Authority | NestCalc repository files after write; Superbrain does not run NestCalc |
+| Authority | NestCalc repository files after write |
 
 Written law is `AGENTS.md` and `docs/WORKFLOW.md`; terms are defined in
 `docs/GLOSSARY.md`. This file is the lifecycle recipe checked by the Machine.
