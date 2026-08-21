@@ -12,8 +12,7 @@ promotion goal meets `GAP-AND-HARDENING.md`. MODE does not make contracts
 optional. It controls only the historical bootstrap exception for the one
 pre-v1 goal title `NestCalc Governed Goal Pipeline v1`.
 
-Superbrain baseline `NT-20260729-goal-lifecycle-hardened-baseline` is a product-agnostic hardness reference. NestCalc files are sole authority after
-write. NanoTate product facts and enterprise gates are not NestCalc gates.
+NestCalc files are sole authority after write.
 
 ## Authority map
 
