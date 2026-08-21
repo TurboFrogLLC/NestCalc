@@ -22,7 +22,7 @@
 
 - Schema + `scripts/nestcalc-governance.py` still pin `codex-cli` and `codex/`.
 - Closeout `human_action_required` / “Human action”.
-- Skill registry. Still one skill: `nestcalc-goal-grilling`.
+- Skill registry. `nestcalc-goal-grilling` was archived in #86; empty skills remains valid.
 - SuperBrain the-Feeler skill + NestCalc wrapper.
 - SuperBrain `AGENTS-MD-SHAPE` and `05`.
 - GOAL-TRACE backfill. HowMany-as-product wording. MODE promotion.

@@ -15,7 +15,7 @@
 | `docs/governance/MODE` | `advisory` | Correct retention; Superbrain installs enforce by design — NestCalc must not flip without promotion criteria |
 | `scripts/nestcalc-governance.py` | Fail-closed validators; advisory bootstrap exception | Module prose said “advisory seam” (soft); closeout Flow ID was optional warning |
 | Schemas + fixtures | Present and deterministic | Keep; no rewrite |
-| `nestcalc-goal-grilling` | Stop before commit/CLI; `gpt-5.6-terra` medium lanes after Wave A routing alignment | Explicit evidence → confidence → decision → residual-risk loop; unavailable or mismatched routes never count as passing evidence |
+| `nestcalc-goal-grilling` | Historical skill, archived in #86 | Its evidence → confidence → decision → residual-risk loop is retained as historical context; no live skill is required for autonomous NestCalc goal prep. |
 | `AGENTS.md` / `docs/WORKFLOW.md` | Role and skill map | Soft “should” language; handoff/preflight not fail-closed against Superbrain B3/B4 pattern |
 | Closeout B6–B9 | NestCalc-native Grok Build ladder | Keep; do not invent conflicting B codes |
 | Enterprise long-tail (SBOM, env-proxy, golden pipeline) | Not present | Explicit non-goal — do not import |
@@ -26,7 +26,7 @@
 | --- | --- |
 | “Advisory governance seam” as if compliance is optional | Contracts are **enforce-grade**. `MODE=advisory` only relaxes the historical bootstrap exception and active-goal missing-metadata path. |
 | “should follow” / “prefer when available” for governance steps | **MUST** run named gates; failure is a hard stop. |
-| Goal-grilling “when available” fallback as normal path | `nestcalc-goal-grilling` is **required** for autonomous NestCalc goal prep. Generic grilling is outage fallback only and must be recorded as residual risk. |
+| Goal-grilling “when available” fallback as normal path | Historical record only: `nestcalc-goal-grilling` was archived in #86 and is no longer a required live skill. |
 | Closeout Flow ID optional warning | Flow ID is **required** in closeout breakdowns. |
 | Promotion described vaguely | Exact criteria, evidence, and rollback path recorded below (not executed). |
 
@@ -36,7 +36,7 @@
 2. `docs/WORKFLOW.md` — goal cycle, B3-style handoff, B4-style preflight, B6–B9 closeout, fail-closed stops.
 3. `docs/governance/README.md` — contract authority and MODE semantics.
 4. `docs/governance/goal-lifecycle-contract.md` — product-agnostic lifecycle contract.
-5. `.agents/skills/nestcalc-goal-grilling/SKILL.md` — evidence → confidence → decision → residual risk / flagged decisions; `gpt-5.6-terra` read-only lanes at medium reasoning effort; orchestrator write authority only.
+5. Historical `nestcalc-goal-grilling` skill — its evidence → confidence → decision → residual risk / flagged-decision loop is preserved in this record; the live skill was archived in #86.
 6. `scripts/nestcalc-governance.py` — module contract language; required closeout Flow ID.
 7. Tests updated for bootstrap exception (fixture, not live AutoNest GOAL) and Flow ID requirement.
 8. This file — gap record + promotion path.
