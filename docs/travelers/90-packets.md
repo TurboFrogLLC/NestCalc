@@ -4,7 +4,7 @@ Exact SuperGrok emissions and Codex App returns for this probe.
 Do not execute later rows from this file.
 
 Issued against branch tip `facb431f9a3cf27b279d4e99e153cbd76f144f07`.
-This save commit is after that issue.
+Packet-save commits after that issue: `0cd42f8`, `031a7ca`.
 
 ## Seq 1 — checkout sync — issued 2026-08-21
 
@@ -34,13 +34,36 @@ Reason:
 ### Seq 1 output
 
 ```text
+Checkout sync blocked by existing local changes and inability to write `.git/index`/`.git/ORIG_HEAD`.
+
+Completed:
+- Fetched `origin`.
+- Updated local `main` to `091ad99f5bed0af2f70dc1e20049ca4311f5ac96`.
+- Confirmed remote target branch at `facb431f9a3cf27b279d4e99e153cbd76f144f07`.
+
+Not completed:
+- Switching to `docs/employee-manual-mermaid-probe-2`.
+- No edits, commits, pushes, or merges were performed.
+```
+
+## Seq 1b — checkout sync Corrective Action — issued 2026-08-21
+
+Stay on checkout. Do not Freeze.
+
+```text
+(issued in SuperGrok chat; paste is the current operation)
+```
+
+### Seq 1b output
+
+```text
 (await Codex App return)
 ```
 
 ## Seq 2 — Freeze — issued 2026-08-21
 
 Operator: Codex App. Model: GPT-5.6 Terra. Effort: medium.
-Paste after Seq 1 stamps. Switch picker before paste.
+Hold until Seq 1 stamps a switch.
 
 ```text
 Repo: NestCalc
@@ -67,5 +90,5 @@ Quiet goal is on. #90 needs a freeze before Cut.
 ### Seq 2 output
 
 ```text
-(await Codex App return)
+(hold)
 ```
