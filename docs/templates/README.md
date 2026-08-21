@@ -15,13 +15,13 @@ Procedure: `../WORKFLOW.md`.
 ## Traveler
 
 One PR, one traveler. This block is the current operation.
-Three bands. Real blank lines. No YAML `---` fences. No host commands.
+Two bands. Real blank lines. No YAML `---` fences. No host commands.
 Instruction is this operation only.
 Operator is Codex App, Codex CLI, or Grok Build.
 Owner may sit any seat. Operators do not rewrite the traveler. Management may.
 
 When the operation must invoke `/goal`, the first word of the copyable block is `/goal`.
-Then the three-band packet. The executor does not add `/goal` if this packet omits it.
+Then the packet. The executor does not add `/goal` if this packet omits it.
 
 Host-shell: terminal box first (`cd` the worktree), then this block.
 Primary clone: `/Users/computer/wrecklesstoddler/vibe/projects/nestcalc`

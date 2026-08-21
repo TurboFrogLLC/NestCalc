@@ -7,7 +7,7 @@ Repo NestCalc. Product FLiPIT. Next.js 16 PWA. Clerk. Serwist. Vercel.
 - When a term is used → `docs/GLOSSARY.md`
 - When handing work → `docs/templates/traveler.md`
 - When the job ends → `docs/templates/packslip.md`
-- When Spot Check is Non-conformance → `docs/templates/nonconformance.md`
+- When Non-conformance → `docs/templates/nonconformance.md`
 - When operating → `docs/WORKFLOW.md` (procedure)
 - When freezing GOAL → `docs/templates/goal-form.md`
 - When validating GOAL hash → `docs/governance/README.md` (Goal canonicalization)
@@ -51,6 +51,8 @@ git rev-parse HEAD
 - Secrets stay out of git. Operators fail-closed on governance files.
 - One PR, one traveler. Completing an operation is not job-end.
 - Job end is the packslip. Print it in the CLI. If a PR exists, post the same block on that PR.
+- One real try. Progress → continue. No progress → one more pass. Still none → Non-conformance.
+- Wrong branch, worktree, or repo is Corrective Action. Draft PR is not a stop.
 
 ### Never
 
@@ -62,16 +64,7 @@ git rev-parse HEAD
 - Let Codex touch UI / chrome unless the traveler's Instruction names it.
 - Emit a packslip for a Non-conformance.
 - Act as Owner. Only wReckless is Owner.
-
-### Spot Check
-
-- **None** — continue this operation.
-- **Corrective Action** — find a way with known tools. Stay on this operation.
-- **Non-conformance** — stop. Emit the Non-conformance Report. Wait.
-
-One real try. Progress → continue. No progress → one more pass. Still none → Non-conformance.
-Wrong branch, worktree, or repo is Corrective Action. Draft PR is not a stop.
-Silent job end (no packslip) is Non-conformance.
+- Silent job end (no packslip) is Non-conformance.
 
 ## Rails
 

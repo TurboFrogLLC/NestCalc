@@ -21,8 +21,7 @@ Operators do not pick their own start. The traveler's Operator line is who runs 
    Create or switch is host work, not traveler Instruction.
 4. Do this operation only. Do not rewrite the traveler.
 5. Stamp this operation before the next operation runs.
-6. Spot Check. None, Corrective Action, or Non-conformance.
-7. Job end is the packslip. Non-conformance is the Non-conformance Report.
+6. Job end is the packslip. Non-conformance is the Non-conformance Report.
 
 One `main` exception: checkout sync only (fetch, switch to `main`, fast-forward
 to `origin/main`). No edits, commits, push, or merge. Any named Operator may
@@ -100,7 +99,7 @@ Lessons point at an `NCMR-` when a Non-conformance Report exists. Do not paste t
 - Echo `flow_id` and `goal_sha256` every turn.
 - `/goal` is a Codex tool (thread loop). It is not the repo freeze.
   If the next operation must invoke `/goal`, the traveler's first word is
-  `/goal`. Then the three-band packet. Do not bury it in Instruction.
+  `/goal`. Then the packet. Do not bury it in Instruction.
   The executor does not add `/goal` after the fact.
   If the traveler omits `/goal`, the next operation reads `GOAL.md` only.
   Keep any `/goal` line short. Point it at `GOAL.md`. Do not paste the sheet.
@@ -124,7 +123,7 @@ machine pins is a fork. Apply Corrective Action.
 
 Draft PR on the named branch is not a stop. The PR stays draft until Quality Control.
 
-Fail a worker-local gate: Spot Check on this operation.
+Fail a worker-local gate: Corrective Action. Stay on this operation.
 Non-conformance: stop, emit the Non-conformance Report, wait.
 Do not send to us unless an Owner gate is hit or confidence is not cleared.
 
@@ -165,8 +164,7 @@ The PR is draft until this band.
 2. Wait.
 3. Inspection — look at the thread or the pass.
 
-If Inspection needs work: another Spot Check on this traveler, then Inspection again.
-Listen/fix cap sits inside that Spot Check.
+If Inspection needs work: Corrective Action on this operation, then Inspection again.
 If no way: Non-conformance Report.
 If Inspection is clean: Release.
 
@@ -187,9 +185,3 @@ Cycle:
 | --- | --- |
 | Full | Product / machine / Allowed Files. Cut → Quality Control → Release when review is named. |
 | Lite | Skill or docs. Implement, stamp, draft PR, Quality Control. Merge unless this traveler forbids it. |
-
-## Spot Check
-
-- None — omit the second line.
-- Corrective Action — find a way; continue this operation.
-- Non-conformance — stop; Non-conformance Report; wait.

@@ -17,7 +17,6 @@ Owner may sit any other seat. Those labels bound everyone else.
 | Machine | A repo script that stamps or checks. | Tool. Operator. |
 | Traveler | One packet for this PR. Start to end. | Packslip. Entity. |
 | Packslip | Job-end receipt. That is when the job is done. | Traveler. Non-conformance Report. |
-| Spot Check | Band on this operation: None, Corrective Action, or Non-conformance. | Quality Control. |
 | Corrective Action | Find a way with known tools. Stay on this operation. | A rewrite of the traveler. |
 | Non-conformance | No way forward. Stop. Emit the Non-conformance Report. | Packslip. |
 | Non-conformance Report | Facts only. Disposition blank. | Packslip. |
