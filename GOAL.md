@@ -11,8 +11,8 @@
   "branch_intent": "docs/quiet-goal-post-pr82",
   "execution_route": "codex-app",
   "flow_id": "NC-20260820-a20c0de8",
-  "goal_memory_commit": "eaa5b8a9a97338c8d50b2f96ef22786b8d40e13d",
-  "goal_sha256": "sha256:1a8ebf37379bce4b4cdfef64fc4811da5543b9f4e6e494d31477b14da0148724",
+  "goal_memory_commit": "e31838db9ccc5373336a224b1ec4c00f992bc7c8",
+  "goal_sha256": "sha256:8234f00ec5d07087e6af12dd4f31184ce050b8c1f1baf48c3608857bdcec8f23",
   "protected_surfaces": [
     "Calculator math and nesting behavior.",
     "Calculator UI layout and input behavior.",
