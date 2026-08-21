@@ -7,10 +7,6 @@ Next.js 16 Clerk-authenticated calculator PWA.
 
 Workflow and governance:
 
-- `nestcalc-goal-grilling` - repo-local autonomous goal-prep loop for NestCalc:
-  self-grilling in chat, read-only sub-agents launched with `gpt-5.6-terra` at
-  medium reasoning effort, flagged decisions, and stop before commit or CLI
-  prompt unless requested.
 - `ask-matt` - route ambiguous work into goal prep, grilling, implementation,
   review, or cleanup.
 - `codex-goal-prep` - update one active `GOAL.md` and produce thin `/goal`
@@ -108,12 +104,10 @@ Browser plugin:
 For goal prep:
 
 1. `codex-repo-hygiene-gate`
-2. `nestcalc-goal-grilling` for autonomous self-loop goal shaping
-3. `codex-goal-prep` for `GOAL.md` updates, separate goal-memory commits, and
+2. `codex-goal-prep` for `GOAL.md` updates, separate goal-memory commits, and
    thin `/goal` prompts
-4. `grilling` only as the generic fallback when the repo-local skill is
-   unavailable
-5. `vercel-plugin:nextjs` or `clerk-*` only if the goal touches those surfaces
+3. `grilling` when goal shaping needs a generic self-loop
+4. `vercel-plugin:nextjs` or `clerk-*` only if the goal touches those surfaces
 
 For implementation:
 
