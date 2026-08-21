@@ -14,7 +14,7 @@
     "branch_intent": {"type": "string", "minLength": 3, "maxLength": 255, "pattern": "^[a-z0-9](?:[a-z0-9._-]{0,62}[a-z0-9_-])?(?:/[a-z0-9](?:[a-z0-9._-]{0,62}[a-z0-9_-])?)+$"},
     "execution_route": {"type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[A-Za-z0-9][A-Za-z0-9 ._+:/-]*$"},
     "publication_route": {"const": "feature-pr"},
-    "skills": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "skills": {"type": "array", "minItems": 0, "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
     "protected_surfaces": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
     "agent_roster": {
       "type": "object",

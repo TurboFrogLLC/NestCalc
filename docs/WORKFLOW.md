@@ -70,7 +70,7 @@ Missing block **stops**, except the one historical title
 `docs/governance/MODE` is `advisory`.
 Hash mismatch, secrets in the block, or more than one Active Goal still stop.
 The full recipe and hash steps live in `docs/governance/README.md`.
-The copy template is `docs/governance/goal-template-v1.md`.
+The copy template is `docs/templates/goal-form.md`.
 
 `create-handoff` JSON is a sidecar. The traveler is `docs/templates/traveler.md`.
 After freeze, the parent emits the current operation on that traveler.

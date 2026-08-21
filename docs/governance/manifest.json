@@ -19,6 +19,7 @@
     "docs/templates/traveler.md",
     "docs/templates/packslip.md",
     "docs/templates/nonconformance.md",
+    "docs/templates/goal-form.md",
     "docs/governance/MODE",
     "docs/governance/README.md",
     "docs/governance/GAP-AND-HARDENING.md",
@@ -26,10 +27,8 @@
     "docs/governance/closeout-rollback-templates.md",
     "docs/governance/pr-closeout-breakdown-disposition.md",
     "docs/governance/lesson-persistence-example.md",
-    "docs/governance/goal-template-v1.md",
     "scripts/nestcalc-governance.py",
-    "test/governance/test_nestcalc_governance.py",
-    ".agents/skills/nestcalc-goal-grilling/SKILL.md"
+    "test/governance/test_nestcalc_governance.py"
   ],
   "fixtures": {
     "valid": [

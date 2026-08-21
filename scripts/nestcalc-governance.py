@@ -277,12 +277,18 @@ def validate_goal(path: Path, *, allow_bootstrap: bool) -> Result:
         result.errors.append("execution_route must be a safe named route")
     if metadata.get("publication_route") != "feature-pr":
         result.errors.append("publication_route must be feature-pr")
-    for field_name in ("skills", "protected_surfaces"):
-        value = metadata.get(field_name)
-        if not isinstance(value, list) or not value or not all(isinstance(item, str) and item for item in value):
-            result.errors.append(f"{field_name} must be a non-empty string array")
-        elif len(value) != len(set(value)):
-            result.errors.append(f"{field_name} entries must be unique")
+    skills = metadata.get("skills")
+    if not isinstance(skills, list) or not all(isinstance(item, str) and item for item in skills):
+        result.errors.append("skills must be a string array")
+    elif len(skills) != len(set(skills)):
+        result.errors.append("skills entries must be unique")
+    surfaces = metadata.get("protected_surfaces")
+    if not isinstance(surfaces, list) or not surfaces or not all(
+        isinstance(item, str) and item for item in surfaces
+    ):
+        result.errors.append("protected_surfaces must be a non-empty string array")
+    elif len(surfaces) != len(set(surfaces)):
+        result.errors.append("protected_surfaces entries must be unique")
     validate_agent_roster(metadata.get("agent_roster"), result)
     expected_hash = computed_goal_hash(text, metadata)
     result.details["computed_goal_sha256"] = expected_hash

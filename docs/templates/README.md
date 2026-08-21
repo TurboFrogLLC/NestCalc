@@ -7,6 +7,7 @@ Forms only in the sibling files. Rules live here.
 | `traveler.md` | Current operation on the one traveler |
 | `packslip.md` | Job-end receipt |
 | `nonconformance.md` | Non-conformance Report |
+| `goal-form.md` | Copy sheet for `GOAL.md` |
 
 Terms: `../GLOSSARY.md`.
 Procedure: `../WORKFLOW.md`.
@@ -40,3 +41,8 @@ A Corrective Action is a new row. Stamp is a commit SHA.
 
 Facts only. Disposition blank. Management fills it.
 `NCMR-` is the stamp. Do not expand it.
+
+## GOAL form
+
+Copy `goal-form.md` to `GOAL.md`. Replace placeholders. Point; do not paste procedure.
+`skills` stays empty unless this traveler names a skill.
