@@ -24,7 +24,11 @@ Tool: the-Feeler. Parent is the Operator on the traveler. Same class as `/goal`.
   "goal_memory_commit": "0000000000000000000000000000000000000000",
   "goal_sha256": "sha256:<canonical>",
   "protected_surfaces": [
-    "<surface>"
+    "Calculator math and nesting behavior.",
+    "Calculator UI layout and input behavior.",
+    "Clerk auth and request-access policy.",
+    "PWA runtime behavior.",
+    "AGENTS.md, docs/GLOSSARY.md, docs/WORKFLOW.md, and docs/governance/**."
   ],
   "publication_route": "feature-pr",
   "repository": "TurboFrogLLC/NestCalc",
