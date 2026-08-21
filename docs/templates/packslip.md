@@ -14,7 +14,7 @@ Trace:
 Cycle: Full | Lite
 Date:
 
-Seq  Label              Operator     Stamp                 Spot Check           Still open
+Seq  Label              Operator     Stamp                 Still open
      Plan
      Freeze
      Bind
@@ -28,6 +28,4 @@ Seq  Label              Operator     Stamp                 Spot Check           
 Closed Corrective Action:
 Still open: none | Non-conformance …
 Next: none
-
-Spot Check: None | closed list only
 ```

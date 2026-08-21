@@ -47,7 +47,7 @@ manifest's `required_paths` list is weakened.
 3. **Cut** — implement on the named branch and head, within Allowed Files, with
    the Freeze hash unchanged. Finishing Cut is not job end.
 4. **Quality Control** — keep the PR draft through Send for review, Wait, and
-   Inspection. Findings return to another Spot Check on the same Traveler,
+   Inspection. Findings return to Corrective Action on the same operation,
    followed by another Inspection.
 5. **Release** — when repository evidence satisfies confidence and named
    criteria, Merge unless the Traveler forbids it, then Close.

@@ -16,6 +16,4 @@ Effort:
 
 Instruction:
 Reason:
-
-Spot Check: None | Corrective Action | Non-conformance
 ```
