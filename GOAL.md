@@ -3,16 +3,16 @@
 <!-- nestcalc-governance:start -->
 ```json
 {
-  "active_goal_title": "Repository Quiet State - No Active Product Objective",
+  "active_goal_title": "Employee-manual Mermaid reconstruction probe 2",
   "agent_roster": {
     "orchestrator": "Codex App",
     "read_only_agents": []
   },
-  "branch_intent": "docs/quiet-goal-post-pr82",
+  "branch_intent": "docs/employee-manual-mermaid-probe-2",
   "execution_route": "codex-app",
-  "flow_id": "NC-20260820-a20c0de8",
-  "goal_memory_commit": "e31838db9ccc5373336a224b1ec4c00f992bc7c8",
-  "goal_sha256": "sha256:8234f00ec5d07087e6af12dd4f31184ce050b8c1f1baf48c3608857bdcec8f23",
+  "flow_id": "NC-20260821-dd0feb4d",
+  "goal_memory_commit": "0000000000000000000000000000000000000000",
+  "goal_sha256": "sha256:ada0b54edb92e365e92cc672baf4b6868c250a9c480d532c6ef59d902529d9cd",
   "protected_surfaces": [
     "Calculator math and nesting behavior.",
     "Calculator UI layout and input behavior.",
@@ -20,7 +20,9 @@
     "PWA runtime behavior.",
     "FLiPIT identity.",
     "V3 HTML + SPEC under docs/howmany-v3-components/.",
-    "AGENTS.md, docs/GLOSSARY.md, docs/WORKFLOW.md, and docs/governance/**."
+    "AGENTS.md, docs/GLOSSARY.md, docs/WORKFLOW.md, docs/templates/, and docs/governance/**.",
+    "Existing PR #80 audit at docs/audits/employee-manual-mermaid.md.",
+    "Owner-preserved untracked paths: docs/architecture/nestcalc-ui-redesign-package*, e2e/full-surface-audit.authenticated.spec.ts, and output/."
   ],
   "publication_route": "feature-pr",
   "repository": "TurboFrogLLC/NestCalc",
@@ -30,21 +32,24 @@
 ```
 <!-- nestcalc-governance:end -->
 
-## Active Goal: Repository Quiet State - No Active Product Objective
+## Active Goal: Employee-manual Mermaid reconstruction probe 2
 
 ### Objective
 
-Record that the completed Employee-manual Mermaid reconstruction probe is
-archived and that no product objective is active.
+Reconstruct the employee-manual flow from live NestCalc law and add one Mermaid
+flowchart, plus a short legend, to
+`docs/audits/employee-manual-mermaid-probe-2.md`.
 
 ### Scope / Allowed Files
 
 - `GOAL.md`
-- `docs/goals/GOAL-TRACE-INDEX.md`
-- `docs/goals/history/NC-20260820-a20c0de8-employee-manual-mermaid-reconstruction-probe.md`
+- `docs/audits/employee-manual-mermaid-probe-2.md`
 
-This quiet state authorizes goal-memory maintenance only. It does not authorize
-product, law, governance-contract, or preserved-untracked-path changes.
+The next operation may read `AGENTS.md`, `docs/GLOSSARY.md`,
+`docs/WORKFLOW.md`, and `docs/templates/` as source authority only. It must not
+rewrite law, change product behavior, or read the prior employee-manual audit,
+PR #81, GAP, or retired inventories. If authority files disagree, the chart
+must draw both paths and label the collision.
 
 ### Protected Surfaces
 
@@ -54,34 +59,38 @@ product, law, governance-contract, or preserved-untracked-path changes.
 - PWA runtime behavior.
 - FLiPIT identity.
 - V3 HTML + SPEC under `docs/howmany-v3-components/`.
-- `AGENTS.md`, `docs/GLOSSARY.md`, `docs/WORKFLOW.md`, and `docs/governance/**`.
+- `AGENTS.md`, `docs/GLOSSARY.md`, `docs/WORKFLOW.md`, `docs/templates/`, and `docs/governance/**`.
+- `docs/audits/employee-manual-mermaid.md`, PR #81, GAP, and retired inventories.
 - Owner-preserved untracked paths: `docs/architecture/nestcalc-ui-redesign-package*`,
   `e2e/full-surface-audit.authenticated.spec.ts`, and `output/`.
 
 ### Required Proof
 
-The v1 metadata validates with one Active Goal and a matching canonical hash.
-The archived probe records its Flow-ID, GOAL-SHA, implementation and merge
-commits, outcome, proof, and residual risk. The trace index has no Active row.
+The v1 goal metadata validates with one Active Goal and a matching canonical
+hash. The freeze commit changes only `GOAL.md`. The subsequent chart operation
+will verify that the audit contains one Mermaid flowchart and a short legend,
+and no law or product changes.
 
 ### Decision Record
 
 ```text
-PR #80 merged as adc1862277b98107a0893c2165076647b6871588 and the probe GOAL has Flow-ID NC-20260820-a20c0de8 and GOAL-SHA sha256:5b4541ad4d80566fbba941524206593659b24f53fa17722177899d7f7cfe7d07 -> completion evidence supports archival -> replace the completed probe with a quiet goal and preserve its trace -> no new product objective is authorized.
+PR #90's draft audit stub and PR description → live-law-only reconstruction is a
+bounded docs outcome → authorize one chart and legend in the probe-2 audit only
+→ authority may be internally inconsistent; preserve every observed collision
+in the chart rather than resolving it.
 ```
 
-No skill execution is required for this quiet-state freeze.
+No read-only evidence lanes or skill execution are required for this freeze.
 
 ### Traveler / sidecar
 
-- Traveler: `docs/templates/traveler.md`. This Freeze archives the completed
-  probe, validates the quiet goal, commits it, and pushes it to the existing
-  draft PR branch.
+- Traveler: `docs/travelers/90.md`. Freeze only; stop after the origin branch
+  has the freeze commit.
 - No sidecar is required.
 - No `/goal` invocation is required.
 
 ### Stopping Condition
 
-Complete when this valid quiet `GOAL.md`, the completed-probe archive, and the
-trace index are committed and pushed to `origin/docs/quiet-goal-post-pr82`.
-Do not start a product goal or merge PR #85.
+Complete when this valid `GOAL.md` is committed and pushed to
+`origin/docs/employee-manual-mermaid-probe-2`. Do not write the Mermaid chart,
+mark PR #90 ready, or merge during this operation.
