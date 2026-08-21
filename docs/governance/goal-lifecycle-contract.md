@@ -55,7 +55,7 @@ permission to rewrite protected contracts.
 | Freeze | Commit one active `GOAL.md` with v1 metadata, canonical `goal_sha256`, Allowed Files, protected surfaces, proof, and stopping condition. |
 | Traveler | Carry one PR from start to end using `docs/templates/traveler.md`; its Instruction controls the current operation. |
 | Cut | Implement on the named branch, within Allowed Files, with the Freeze hash unchanged. A completed Cut is not job end. |
-| Quality Control | While the PR is draft: Send for review, Wait, then Inspection. If Inspection needs work, apply another Spot Check on the same Traveler and inspect again. |
+| Quality Control | While the PR is draft: Send for review, Wait, then Inspection. If Inspection needs work, apply Corrective Action on the same operation and inspect again. |
 | Release | With repo-backed confidence and named criteria satisfied, Merge unless the Traveler forbids it, then Close. |
 | Job end | Emit the Packslip from `docs/templates/packslip.md` only after Close. Print it in the CLI and, when a PR exists, post the same block there. |
 | Stopped operation | Emit the Non-conformance Report from `docs/templates/nonconformance.md`, leave Disposition blank, and wait. It is not a Packslip. |
@@ -107,9 +107,9 @@ contract does not authorize changing them.
 6. Run npm, Playwright, git, and committed scripts host-first.
 7. Treat missing Clerk auth environment as blocked proof, never a pass.
 
-A failed worker-local gate requires a Spot Check. Apply Corrective Action and
-stay on the current operation when a known path exists. If two passes make no
-progress, stop and emit a Non-conformance Report.
+A failed worker-local gate requires Corrective Action. Stay on the current
+operation when a known path exists. If two passes make no progress, stop and
+emit a Non-conformance Report.
 
 ## MODE semantics
 
