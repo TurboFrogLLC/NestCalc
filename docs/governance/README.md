@@ -12,8 +12,7 @@ promotion goal meets `GAP-AND-HARDENING.md`. MODE does not make contracts
 optional. It controls only the historical bootstrap exception for the one
 pre-v1 goal title `NestCalc Governed Goal Pipeline v1`.
 
-Superbrain baseline `NT-20260729-goal-lifecycle-hardened-baseline` is a
-product-agnostic hardness reference. NestCalc files are sole authority after
+Superbrain baseline `NT-20260729-goal-lifecycle-hardened-baseline` is a product-agnostic hardness reference. NestCalc files are sole authority after
 write. NanoTate product facts and enterprise gates are not NestCalc gates.
 
 ## Authority map
@@ -26,6 +25,7 @@ write. NanoTate product facts and enterprise gates are not NestCalc gates.
 | `docs/templates/traveler.md` | One-PR Traveler and current-operation Instruction |
 | `docs/templates/packslip.md` | Job-end receipt emitted only after Close |
 | `docs/templates/nonconformance.md` | Stopped-operation report with blank Disposition |
+| `docs/templates/goal-form.md` | Copy sheet for `GOAL.md` |
 | `docs/governance/goal-lifecycle-contract.md` | Lifecycle recipe checked by the Machine |
 | `docs/governance/GAP-AND-HARDENING.md` | Hardening record and MODE promotion or rollback criteria |
 | `docs/governance/MODE` | `advisory` or `enforce` token only |
@@ -120,7 +120,7 @@ hash value itself. The metadata title exactly matches the single
 ## Freeze and execution
 
 Goals prepared under this contract copy
-`docs/governance/goal-template-v1.md`, replace every placeholder, commit the
+`docs/templates/goal-form.md`, replace every placeholder, commit the
 goal alone, update `goal_memory_commit` in a second goal-memory commit, then run
 `validate-goal`. When a sidecar is required, run `create-handoff` only after the
 Freeze is valid.
