@@ -12,6 +12,7 @@ Repo NestCalc. Product FLiPIT. Next.js 16 PWA. Clerk. Serwist. Vercel.
 - When freezing GOAL → `docs/templates/goal-form.md`
 - When validating GOAL hash → `docs/governance/README.md` (Goal canonicalization)
 - When writing Next.js → `node_modules/next/dist/docs/` (version-matched).
+- When naming the Operator → `docs/WORKFLOW.md` ## Start (typical first-name).
 
 ## Commands
 
@@ -83,14 +84,14 @@ When Inspection is clean → `docs/WORKFLOW.md` ## Release.
 ## Roles
 
 No Operator owns freeze, land, or a cycle. Owner starts the work and receives the packslip.
-Typical first-name is a hint. Any named Operator may run a full cycle.
+Typical first-name is a hint. The traveler Operator line is who runs this operation. Any named Operator may run a full cycle.
 
 | Role | Who |
 | --- | --- |
 | Owner | wReckless only. Gates: Production, identity, MODE, land escalation. |
-| Operator | Codex App. Product freeze and later coding. |
-| Operator | Codex CLI. Full cycle, or escalate after no progress. |
-| Operator | Grok Build. Docs freeze, docs work, Quality Control and Release. |
+| Operator | Codex App |
+| Operator | Codex CLI |
+| Operator | Grok Build |
 
 Do not auto-spawn Codex.
 
