@@ -28,6 +28,8 @@ Tool: the-Feeler. Parent is the Operator on the traveler. Same class as `/goal`.
     "Calculator UI layout and input behavior.",
     "Clerk auth and request-access policy.",
     "PWA runtime behavior.",
+    "FLiPIT identity.",
+    "V3 HTML + SPEC under docs/howmany-v3-components/.",
     "AGENTS.md, docs/GLOSSARY.md, docs/WORKFLOW.md, and docs/governance/**."
   ],
   "publication_route": "feature-pr",
@@ -55,6 +57,8 @@ Tool: the-Feeler. Parent is the Operator on the traveler. Same class as `/goal`.
 - Calculator UI layout and input behavior.
 - Clerk auth and request-access policy.
 - PWA runtime behavior.
+- FLiPIT identity.
+- V3 HTML + SPEC under `docs/howmany-v3-components/`.
 - `AGENTS.md`, `docs/GLOSSARY.md`, `docs/WORKFLOW.md`, and `docs/governance/**`.
 - <extra, or delete this line>
 
