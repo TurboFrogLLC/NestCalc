@@ -22,7 +22,7 @@ Target: NestCalc AGENTS.md only. Do not rewrite WORKFLOW. Do not edit GOAL.md.
 6. Drop duplicate Never/Always (engine-chrome, sandbox-first, packslip-because-operation-finished, hard-gates echo, second glossary line).
 7. QC ladder: one sentence + `When the PR is draft → docs/WORKFLOW.md ## Quality Control.` Do not paste the full band.
 8. Hash recipe: point `When freezing → docs/governance/README.md` Goal canonicalization. Do not restate hasher flags.
-9. Pair invent-next: `If next is unknown → Owner.` Keep NanoTate rail as one line.
+9. Pair invent-next: `If next is unknown → Owner.` Remove the NanoTate golden-pipeline / SBOM / env-proxy rail from `AGENTS.md`.
 
 ## Out of scope
 
