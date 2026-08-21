@@ -1,19 +1,17 @@
-<!-- BEGIN:nextjs-agent-rules -->
-# This is NOT the Next.js you know
-
-This version has breaking changes. APIs, conventions, and file structure may all
-differ from your training data. Read the relevant guide in
-`node_modules/next/dist/docs/` before writing any code. Heed deprecation
-notices.
-<!-- END:nextjs-agent-rules -->
-
 # AGENTS.md — NestCalc
 
 Repo NestCalc. Product FLiPIT. Next.js 16 PWA. Clerk. Serwist. Vercel.
-Terms: `docs/GLOSSARY.md`. Read it with this file.
-Traveler: `docs/templates/traveler.md`. Packslip: `docs/templates/packslip.md`.
-Non-conformance Report: `docs/templates/nonconformance.md`.
-Procedure: `docs/WORKFLOW.md`. Routing here.
+
+## Pointers
+
+- When a term is used → `docs/GLOSSARY.md`
+- When handing work → `docs/templates/traveler.md`
+- When the job ends → `docs/templates/packslip.md`
+- When Spot Check is Non-conformance → `docs/templates/nonconformance.md`
+- When operating → `docs/WORKFLOW.md` (procedure)
+- When freezing GOAL → `docs/templates/goal-form.md`
+- When validating GOAL hash → `docs/governance/README.md` (Goal canonicalization)
+- When writing Next.js → `node_modules/next/dist/docs/` (version-matched).
 
 ## Commands
 
@@ -58,12 +56,9 @@ git rev-parse HEAD
 - Touch `main` except checkout sync: fetch, switch, ff-only to `origin/main`. No edit, commit, push, or merge.
 - Production, MODE, or identity without the Owner.
 - Merge unless Release is cleared (repo-backed confidence and named criteria) and this traveler does not forbid merge.
-- Invent the next operation. Soft-infer. Import NanoTate golden-pipeline / SBOM / env-proxy as continue-gates.
+- Invent the next operation. Soft-infer.
 - Rewrite the traveler.
-- Mix engine and chrome unless the GOAL names both.
-- Sandbox-first the host list. Fold host commands into the traveler.
 - Let Codex touch UI / chrome unless the traveler's Instruction names it.
-- Emit a packslip because an operation finished.
 - Emit a packslip for a Non-conformance.
 - Act as Owner. Only wReckless is Owner.
 
@@ -75,12 +70,18 @@ git rev-parse HEAD
 
 One real try. Progress → continue. No progress → one more pass. Still none → Non-conformance.
 Wrong branch, worktree, or repo is Corrective Action. Draft PR is not a stop.
-Hard gates: `main` (except checkout sync), Production, secrets, MODE, FLiPIT name, V3.
 Silent job end (no packslip) is Non-conformance.
+
+## Rails
+
+- Quiet and freeze from WORKFLOW. No nestcalc-goal-grilling.
+- If next is unknown → Owner.
+
+Quality Control: Send for review → Wait → Inspection. When the PR is draft → `docs/WORKFLOW.md` ## Quality Control.
+When Inspection is clean → `docs/WORKFLOW.md` ## Release.
 
 ## Roles
 
-Terms are in `docs/GLOSSARY.md`. This table is who runs the work.
 No Operator owns freeze, land, or a cycle. Owner starts the work and receives the packslip.
 Typical first-name is a hint. Any named Operator may run a full cycle.
 
@@ -91,11 +92,6 @@ Typical first-name is a hint. Any named Operator may run a full cycle.
 | Operator | Codex CLI. Full cycle, or escalate after no progress. |
 | Operator | Grok Build. Docs freeze, docs work, Quality Control and Release. |
 
-Quality Control, while the PR is draft: Send for review → Wait → Inspection.
-If Inspection needs work: another Spot Check on this traveler, then Inspection again.
-If no way: Non-conformance Report.
-If Inspection is clean: Release. Merge unless this traveler forbids it. Then Close.
-If next cannot be decided, next is the Owner.
 Do not auto-spawn Codex.
 
 ## Authority
@@ -109,3 +105,12 @@ Do not auto-spawn Codex.
 Traveler Instruction wins over GOAL for this operation.
 Live GitHub wins mutable facts. Conversation memory is advisory.
 `docs/governance/MODE` stays advisory until a dedicated promotion goal. Contracts still fail closed.
+
+<!-- BEGIN:nextjs-agent-rules -->
+# This is NOT the Next.js you know
+
+This version has breaking changes. APIs, conventions, and file structure may all
+differ from your training data. Read the relevant guide in
+`node_modules/next/dist/docs/` before writing any code. Heed deprecation
+notices.
+<!-- END:nextjs-agent-rules -->
