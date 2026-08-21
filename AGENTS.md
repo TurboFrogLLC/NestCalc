@@ -10,7 +10,7 @@ Repo NestCalc. Product FLiPIT. Next.js 16 PWA. Clerk. Serwist. Vercel.
 - When Spot Check is Non-conformance → `docs/templates/nonconformance.md`
 - When operating → `docs/WORKFLOW.md` (procedure)
 - When freezing GOAL → `docs/templates/goal-form.md`
-- When freezing → `docs/governance/README.md` Goal canonicalization.
+- When validating GOAL hash → `docs/governance/README.md` (Goal canonicalization)
 - When writing Next.js → `node_modules/next/dist/docs/` (version-matched).
 
 ## Commands
@@ -77,7 +77,8 @@ Silent job end (no packslip) is Non-conformance.
 - Quiet and freeze from WORKFLOW. No nestcalc-goal-grilling.
 - If next is unknown → Owner.
 
-Quality Control: Send for review → Wait → Inspection → Release. When the PR is draft → `docs/WORKFLOW.md` ## Quality Control.
+Quality Control: Send for review → Wait → Inspection. When the PR is draft → `docs/WORKFLOW.md` ## Quality Control.
+When Inspection is clean → `docs/WORKFLOW.md` ## Release.
 
 ## Roles
 
