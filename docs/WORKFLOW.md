@@ -17,8 +17,9 @@ Operators do not pick their own start. The traveler's Operator line is who runs 
 
 1. Read the traveler. Instruction is this operation.
 2. Echo `flow_id` and `goal_sha256` every turn when a goal is on.
-3. Stay on the named Branch + Head. Wrong branch or worktree is Corrective Action.
-   Create or switch is host work, not traveler Instruction.
+3. Stay on the named Branch + Head. Wrong branch or worktree: host fix or
+   Escalate in Worker Mode; Corrective Action in Specialist Mode. Create or
+   switch is host work, not traveler Instruction.
 4. Do this operation only. Do not rewrite the traveler.
 5. Stamp this operation before the next operation runs.
    After stamp, if the next Station is already named on the job traveler at
@@ -38,7 +39,7 @@ Codex does not touch UI / chrome unless the traveler's Instruction names it.
 
 | Operation | Stamp |
 | --- | --- |
-| Freeze | v1 fence on `GOAL.md`. `flow_id`, `goal_sha256`, hash match, one Active Goal. |
+| Freeze | Product freeze: v1 fence on `GOAL.md` — `flow_id`, `goal_sha256`, hash match, one Active Goal. Non-goal freeze: planning Station stamp on the job traveler (commit SHA), not a `GOAL.md` v1 fence. |
 | Cut | Named branch. Allowed Files only. Freeze hash unchanged. |
 | Send for review | PR marked ready. |
 | Wait | Named review held. |
@@ -59,13 +60,17 @@ The PR stays draft until Quality Control.
 - Quiet `GOAL.md` when no product goal is open.
 - Docs-only governance can land without a new GOAL after a land.
 
+GOAL states outcomes only. The Ops Packet Instruction is the write path for
+this Station. GOAL must not name a concrete write path that disagrees with the
+Ops Packet. Traveler Instruction still wins for this operation.
+
 ### v1 metadata
 
 Post-bootstrap `GOAL.md` must carry the `nestcalc-governance` v1 fence and
 JSON block (`flow_id`, `goal_sha256`, and the other required keys).
 
-That fence is the freeze stamp. GOAL states outcomes. Do not put runnable
-host command fences in a freeze GOAL. The host suite lives under Proof.
+That fence is the freeze stamp. Do not put runnable host command fences in a
+freeze GOAL. The host suite lives under Proof.
 
 Missing block **stops**, except the one historical title
 `NestCalc Governed Goal Pipeline v1` may **warn** while
@@ -95,7 +100,11 @@ Lessons point at an `NCMR-` when a Non-conformance Report exists. Do not paste t
 
 ### Freeze
 
-- Freeze `GOAL.md` with `flow_id` and `goal_sha256`.
+When the goal workflow is on, product freeze is the `GOAL.md` v1 fence. A
+non-goal freeze is a planning Station stamp on the job traveler (commit SHA),
+not a `GOAL.md` v1 fence.
+
+- Freeze `GOAL.md` with `flow_id` and `goal_sha256` when the goal workflow is on.
 - Commit that freeze before implementation. The freeze commit is not
   the implementation.
 - The traveler's Operator line is who freezes. Typical: Codex App (product), Grok Build (docs).
@@ -111,6 +120,10 @@ Lessons point at an `NCMR-` when a Non-conformance Report exists. Do not paste t
 
 This operation is run by the Operator on the traveler.
 
+Corrective Action and the Non-conformance Report are the Specialist ladder
+(Mode Specialist). Worker stop remains Escalate. See `docs/GLOSSARY.md` for
+their meanings.
+
 - Read the traveler first.
 - Confirm freeze commit and `goal_sha256` when a goal is on.
 - Stay inside Allowed Files.
@@ -121,14 +134,15 @@ This operation is run by the Operator on the traveler.
 - Tools are for this operation. A tool is not an Operator.
 - One real try. Progress → continue. No progress → one more pass. Still none → Escalate.
 
-Route, branch-prefix, or Operator mismatch against the old Codex-only
-machine pins is Corrective Action.
-
 Draft PR on the named branch is not a stop. The PR stays draft until Quality Control.
 
-Fail a worker-local gate: Corrective Action. Stay on this operation.
-If the law broke: Non-conformance Report. Stop. Wait.
-If this Station cannot finish the named Instruction: Escalate.
+Worker Mode: fail a worker-local gate or cannot finish the named Instruction →
+Escalate.
+Specialist Mode: fail a worker-local gate with known tools → Corrective Action.
+Stay on this operation.
+Law broke → Non-conformance Report. Stop.
+Wrong branch or worktree: host fix or Escalate in Worker Mode; Corrective
+Action only in Specialist Mode.
 Do not send to us unless an Owner gate is hit or confidence is not cleared.
 
 ## Proof
