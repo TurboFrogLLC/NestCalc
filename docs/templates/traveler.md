@@ -4,6 +4,8 @@ Rules: `README.md`.
 
 ```text
 Repo: NestCalc
+Station:
+Mode: Worker | Specialist
 Operator:
 Branch:
 Head:
