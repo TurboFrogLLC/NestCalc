@@ -12,13 +12,20 @@ Owner may sit any other seat. Those labels bound everyone else.
 | Operations Manager | SuperGrok. Orchestrator. | Operator. Owner. Surface. |
 | Operator | Codex App, Codex CLI, or Grok Build. Parent AI on the traveler. | Surface. Station. Owner. SuperGrok. a tool. |
 | Operation | Any action on the traveler. May appear more than once. | Operator. Surface. Station. |
+| Station | Isolation unit. Bound by this Ops Packet. Operator sits it. Fresh thread + one Mode + one tool envelope. | Role. Operator. Surface. Owner. |
+| Mode | Worker or Specialist. Bound to this Station. | Role. Operator. |
+| Worker | A→B only. Named Instruction. No specialist toolbox. | Specialist. |
+| Specialist | Outcomes + named always-available tools. Still stamps. | Worker. |
+| Escalate | This Station cannot finish the named Instruction. Hand up. | Non-conformance. Corrective Action. |
 | Stamp | Label and retrieve handle (commit SHA, `NCMR-`). | A person. An Operator. A command to run. |
 | Tool | A skill the Operator calls. the-Feeler. `/goal`. Has a parent. | Operator. Machine. |
 | Machine | A repo script that stamps or checks. | Tool. Operator. |
-| Traveler | One packet for this PR. Start to end. | Packslip. Entity. |
+| Ops Packet | Current Station only. Binds this Station. Issued to the Operator. | Traveler. Master. Waypoint. |
+| Traveler | The job. One per PR. Lives on the draft PR. | Ops Packet. Packet. Packslip. |
 | Packslip | Job-end receipt. That is when the job is done. | Traveler. Non-conformance Report. |
-| Corrective Action | Find a way with known tools. Stay on this operation. | A rewrite of the traveler. |
-| Non-conformance | No way forward. Stop. Emit the Non-conformance Report. | Packslip. |
+| Spot Check | Specialist tool. Named when Mode is Specialist. | Quality Control. Band. |
+| Corrective Action | Find a way with known tools. Stay on this operation. Specialist ladder. | A rewrite of the traveler. Worker. Escalate. |
+| Non-conformance | Break in the law. Write the Non-conformance Report. | Escalate. Stuck. |
 | Non-conformance Report | Facts only. Disposition blank. | Packslip. |
 | Quality Control | Send for review, Wait, Inspection. Draft until this band. | Release. |
 | Send for review | Mark the PR ready. Named review. | |
