@@ -116,15 +116,16 @@ This operation is run by the Operator on the traveler.
   Invented or missing confidence is not clearance.
 - Flag residual risk. Do not invent extra Owner interrupts.
 - Tools are for this operation. A tool is not an Operator.
-- One real try. Progress → continue. No progress → one more pass. Still none → Non-conformance.
+- One real try. Progress → continue. No progress → one more pass. Still none → Escalate.
 
 Route, branch-prefix, or Operator mismatch against the old Codex-only
-machine pins is a fork. Apply Corrective Action.
+machine pins is Corrective Action.
 
 Draft PR on the named branch is not a stop. The PR stays draft until Quality Control.
 
 Fail a worker-local gate: Corrective Action. Stay on this operation.
-Non-conformance: stop, emit the Non-conformance Report, wait.
+If the law broke: Non-conformance Report. Stop. Wait.
+If this Station cannot finish the named Instruction: Escalate.
 Do not send to us unless an Owner gate is hit or confidence is not cleared.
 
 ## Proof
@@ -165,7 +166,8 @@ The PR is draft until this band.
 3. Inspection — look at the thread or the pass.
 
 If Inspection needs work: Corrective Action on this operation, then Inspection again.
-If no way: Non-conformance Report.
+If the law broke: Non-conformance Report.
+If this Station cannot finish: Escalate.
 If Inspection is clean: Release.
 
 ## Release
