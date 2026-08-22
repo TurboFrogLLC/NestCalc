@@ -51,7 +51,7 @@ git rev-parse HEAD
 - Secrets stay out of git. Operators fail-closed on governance files.
 - One PR, one traveler. Completing an operation is not job-end.
 - Job end is the packslip. Print it in the CLI. If a PR exists, post the same block on that PR.
-- One real try. Progress → continue. No progress → one more pass. Still none → Non-conformance.
+- One real try. Progress → continue. No progress → one more pass. Still none → Escalate.
 - Wrong branch, worktree, or repo is Corrective Action. Draft PR is not a stop.
 
 ### Never
