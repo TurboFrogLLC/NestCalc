@@ -27,8 +27,6 @@ Owner may sit any other seat. Those labels bound everyone else.
 | Release | Merge, then Close. | Quality Control. |
 | Merge | Onto `main`. Default unless this traveler forbids it. | |
 | Close | Cleanup after Merge. | |
-| Waypoint | Fork. A decision is required. | Entity. Operator. |
-| Sign | Posted choices at that fork. | Law. |
 | Law | `AGENTS.md` + `docs/WORKFLOW.md` | |
 | Sidecar | `create-handoff` JSON only. | Traveler. |
 | Product | FLiPIT | HowMany as the product name. |

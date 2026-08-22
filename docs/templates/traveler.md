@@ -5,7 +5,6 @@ Rules: `README.md`.
 ```text
 Repo: NestCalc
 Operator:
-Waypoint:
 Branch:
 Head:
 flow_id:
