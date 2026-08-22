@@ -59,13 +59,17 @@ The PR stays draft until Quality Control.
 - Quiet `GOAL.md` when no product goal is open.
 - Docs-only governance can land without a new GOAL after a land.
 
+GOAL states outcomes only. The Ops Packet Instruction is the write path for
+this Station. GOAL must not name a concrete write path that disagrees with the
+Ops Packet. Traveler Instruction still wins for this operation.
+
 ### v1 metadata
 
 Post-bootstrap `GOAL.md` must carry the `nestcalc-governance` v1 fence and
 JSON block (`flow_id`, `goal_sha256`, and the other required keys).
 
-That fence is the freeze stamp. GOAL states outcomes. Do not put runnable
-host command fences in a freeze GOAL. The host suite lives under Proof.
+That fence is the freeze stamp. Do not put runnable host command fences in a
+freeze GOAL. The host suite lives under Proof.
 
 Missing block **stops**, except the one historical title
 `NestCalc Governed Goal Pipeline v1` may **warn** while
@@ -95,7 +99,11 @@ Lessons point at an `NCMR-` when a Non-conformance Report exists. Do not paste t
 
 ### Freeze
 
-- Freeze `GOAL.md` with `flow_id` and `goal_sha256`.
+When the goal workflow is on, product freeze is the `GOAL.md` v1 fence. A
+non-goal freeze is a planning Station inside the job traveler scope, not a
+`GOAL.md` v1 fence.
+
+- Freeze `GOAL.md` with `flow_id` and `goal_sha256` when the goal workflow is on.
 - Commit that freeze before implementation. The freeze commit is not
   the implementation.
 - The traveler's Operator line is who freezes. Typical: Codex App (product), Grok Build (docs).
@@ -110,6 +118,10 @@ Lessons point at an `NCMR-` when a Non-conformance Report exists. Do not paste t
 ### Worker-local gates
 
 This operation is run by the Operator on the traveler.
+
+Corrective Action and the Non-conformance Report are the Specialist ladder
+(Mode Specialist). Worker stop remains Escalate. See `docs/GLOSSARY.md` for
+their meanings.
 
 - Read the traveler first.
 - Confirm freeze commit and `goal_sha256` when a goal is on.
