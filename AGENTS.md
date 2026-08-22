@@ -52,6 +52,7 @@ git rev-parse HEAD
 - One PR, one traveler. Completing an operation is not job-end.
 - Job end is the packslip. Print it in the CLI. If a PR exists, post the same block on that PR.
 - One real try. Progress → continue. No progress → one more pass. Still none → Escalate.
+- Escalate vs Non-conformance by Mode → `docs/GLOSSARY.md` and `docs/WORKFLOW.md` Worker-local gates.
 - Wrong branch, worktree, or repo is Corrective Action. Draft PR is not a stop.
 
 ### Never

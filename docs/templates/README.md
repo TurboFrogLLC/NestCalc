@@ -4,7 +4,8 @@ Forms only in the sibling files. Rules live here.
 
 | File | Is |
 | --- | --- |
-| `traveler.md` | Current operation on the one traveler |
+| `traveler.md` | Ops Packet: current Station only |
+| `docs/travelers/<PR>.md` | Job traveler |
 | `packslip.md` | Job-end receipt |
 | `nonconformance.md` | Non-conformance Report |
 | `goal-form.md` | Copy sheet for `GOAL.md` |

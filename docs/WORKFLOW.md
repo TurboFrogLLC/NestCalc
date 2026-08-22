@@ -21,6 +21,9 @@ Operators do not pick their own start. The traveler's Operator line is who runs 
    Create or switch is host work, not traveler Instruction.
 4. Do this operation only. Do not rewrite the traveler.
 5. Stamp this operation before the next operation runs.
+   After stamp, if the next Station is already named on the job traveler at
+   `docs/travelers/<PR>.md`, the finishing Operator emits that Ops Packet from
+   that row; if it is not named, → Owner. Completing a Station is not job-end.
 6. Job end is the packslip. Non-conformance is the Non-conformance Report.
 
 One `main` exception: checkout sync only (fetch, switch to `main`, fast-forward
