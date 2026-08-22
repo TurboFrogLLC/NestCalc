@@ -30,7 +30,7 @@ Operators do not emit the terminal box.
 ## Packslip
 
 Job-end only. That is when the job is done.
-First word is never `/goal`. No Model. No Waypoint line.
+First word is never `/goal`. No Model.
 Print in the CLI. Post on the PR when one exists.
 Do not emit because an operation finished. Do not emit for a Non-conformance.
 Release when named: Merge, then Close on this slip, then print, then post.
