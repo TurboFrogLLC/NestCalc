@@ -20,7 +20,7 @@ Owner may sit any other seat. Those labels bound everyone else.
 | Stamp | Label and retrieve handle (commit SHA, `NCMR-`). | A person. An Operator. A command to run. |
 | Tool | A skill the Operator calls. the-Feeler. `/goal`. Has a parent. | Operator. Machine. |
 | Machine | A repo script that stamps or checks. | Tool. Operator. |
-| Ops Packet | Current Station only. Binds this Station. Issued to the Operator. | Traveler. Master. Waypoint. |
+| Ops Packet | Current Station only. Binds this Station. Issued to the Operator. | Traveler. Master. |
 | Traveler | The job. One per PR. Lives on the draft PR. | Ops Packet. Packet. Packslip. |
 | Packslip | Job-end receipt. That is when the job is done. | Traveler. Non-conformance Report. |
 | Spot Check | Specialist tool. Named when Mode is Specialist. | Quality Control. Band. |
