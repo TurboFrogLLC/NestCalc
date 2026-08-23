@@ -10,7 +10,8 @@ Operator: Grok Build | Model: Grok 4.6 | Effort: low (every Station)
 
 | Seq | Station | Mode | Operator | Stamp | Outcome |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Checkout sync | Worker | Grok Build | 25b4cb55ba7b7771a5905eb8e48584b27450eaf1 | HEAD matched origin; Seq 1 stamped; Cut not started |
+| 1 | Checkout sync | Worker | Grok Build | 25b4cb55 | Session pending capture |
+| 2 | Cut | Worker | Grok Build | — | Ops Packet recorded; Operator return pending |
 
 ---
 
@@ -18,34 +19,38 @@ Operator: Grok Build | Model: Grok 4.6 | Effort: low (every Station)
 
 ### Seq 1 — Checkout sync
 
+See prior return. Stamp `25b4cb55`. Still open was Cut.
+
+### Seq 2 — Cut
+
 **Ops Packet** (management → Grok Build)
 
 ```text
 Repo: NestCalc
-Station: Checkout sync
+Station: Cut
 Mode: Worker
 Operator: Grok Build
 Branch: docs/employee-manual-mermaid-probe-5
-Head: 9b335b7977678bc279e56637f78912443966fa3a
+Head: 992a5e8e33b7a84e21e635d9f0f28dcb88b9d0ab
 job_id: NGJ-20260823-102
 flow_id: —
 goal_sha256: —
-Trace: NestCalc #102; post-#101; low-effort spine; Checkout sync
+Trace: NestCalc #102; Checkout 25b4cb55; Cut
 Model: Grok 4.6
 Effort: low
-Session: fresh
+Session: continued
 
 Instruction:
-Done when: on branch docs/employee-manual-mermaid-probe-5; HEAD matches origin for this branch; Seq 1 Checkout sync stamped with commit SHA on @docs/travelers/102.md; Operator return under Seq 1 in @docs/travelers/102-packets.md; Still open / Next = Cut; Cut not started; pushed Allowed Files only.
-When sync → fetch origin; checkout docs/employee-manual-mermaid-probe-5; fast-forward to origin/docs/employee-manual-mermaid-probe-5; confirm HEAD.
-When traveler → @docs/travelers/102.md Seq 1 only; Stamp = commit SHA (not a calendar date).
-When log → @docs/travelers/102-packets.md Seq 1 only.
+Done when: docs/audits/employee-manual-mermaid-probe-5.md written with exactly one Mermaid flowchart fence and one short legend outside the fence; Seq 2 Cut stamped with commit SHA on @docs/travelers/102.md; Operator return under Seq 2 in @docs/travelers/102-packets.md; Still open / Next = Send for review; Send for review not started; pushed Allowed Files only.
+When chart → read only AGENTS.md, docs/GLOSSARY.md, docs/WORKFLOW.md, and docs/templates/. Reconstruct the employee-manual flow without improving the law. If two files disagree, draw both and label the collision.
+When traveler → @docs/travelers/102.md Seq 2 only; Stamp = chart commit SHA (not a calendar date).
+When log → @docs/travelers/102-packets.md Seq 2 only.
 This Station only. Mode Worker: do not spawn subagents; do not open plan mode; do not load files outside named paths.
-Allowed write: docs/travelers/102.md, docs/travelers/102-packets.md.
-No chart. No AGENTS/WORKFLOW/GLOSSARY/GOAL/product edits. No Cut. No merge.
+Allowed write: docs/audits/employee-manual-mermaid-probe-5.md, docs/travelers/102.md, docs/travelers/102-packets.md.
+No AGENTS/WORKFLOW/GLOSSARY/GOAL/product edits. No mark ready. No merge.
 
 Reason:
-Seed traveler is on the branch. Checkout sync binds the worktree before Cut.
+Checkout bound. Cut is the reconstruct Station for probe-5 (pair to #101 high).
 
 Return (this Station only):
 Repo:
@@ -64,15 +69,5 @@ Facts:
 **Operator return**
 
 ```text
-Repo: NestCalc
-Station: Checkout sync
-Mode: Worker
-Operator: Grok Build
-Branch: docs/employee-manual-mermaid-probe-5
-Head: 25b4cb55ba7b7771a5905eb8e48584b27450eaf1
-job_id: NGJ-20260823-102
-flow_id: —
-goal_sha256: —
-Stamp: 25b4cb55ba7b7771a5905eb8e48584b27450eaf1
-Facts: fetch origin; already on docs/employee-manual-mermaid-probe-5; ff-only already up to date; HEAD == origin/docs/employee-manual-mermaid-probe-5 == 25b4cb55ba7b7771a5905eb8e48584b27450eaf1; Seq 1 stamped with that SHA; Still open / Next = Cut; Cut not started; only 102.md and 102-packets.md written.
+(pending — paste Grok Build return here on stamp)
 ```
