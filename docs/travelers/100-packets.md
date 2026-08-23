@@ -3,7 +3,7 @@
 Owner expedite. Every management Ops Packet and every Operator return is recorded here.
 Do not delete rows. Append only.
 
-Record Head: 63458ae
+Record Head: 50b8894
 job_id: NGJ-20260822-100
 
 ## Index
@@ -13,6 +13,7 @@ job_id: NGJ-20260822-100
 | 1 | Checkout sync | Worker | Grok Build | 493aaa1 | Stamped; advanced to Cut |
 | 2 | Cut | Worker | Grok Build | 47629f2 | AGENTS second main exception; Wait pointer; WORKFLOW defers to AGENTS |
 | 3 | Send for review | Worker | Grok Build | 63458ae | PR marked ready; @codex review posted; agents-pr-review not runnable on this Surface; advanced to Wait |
+| 4 | Wait | Worker | Grok Build | 50b8894 | Named review held (Codex clean; agents-pr-review COMMENT); advanced to Inspection |
 
 ---
 
@@ -155,4 +156,47 @@ Seq 3 Send for review stamped with 63458ae.
 Still open: Wait.
 Next: Wait.
 Inspection was not started. Merge was not performed.
+```
+
+### Seq 4 — Wait
+
+**Ops Packet**
+
+```text
+Repo: NestCalc
+Station: Wait
+Mode: Worker
+Operator: Grok Build
+Branch: docs/agents-main-exception-agents-pr-review
+Head: 50b88945e110974caafb06df94575bce84abd776
+job_id: NGJ-20260822-100
+flow_id: —
+goal_sha256: —
+Trace: NestCalc #100; Send for review 63458ae; Codex clean; agents-pr-review COMMENT held
+Model: Grok 4.6
+Effort: high
+Orchestration: Single-agent
+Session: Fresh
+
+Instruction:
+When stamping Wait → docs/WORKFLOW.md → ## Quality Control → step 2.
+When traveler → docs/travelers/100.md Seq 4 only.
+When log → docs/travelers/100-packets.md append only.
+
+Confirm named review held (Codex and/or agents-pr-review). Stamp Seq 4 Wait with this pass short SHA. Advance Still open / Next to Inspection on the same pass. Append Ops Packet + facts-only return to 100-packets.md. Push Allowed Files only. Do not merge. Do not start Inspection work beyond the stamp.
+
+Reason:
+Wait is hold for named review. Both companion paths are held. Pointer-only.
+```
+
+**Operator return**
+
+```text
+Named review held on both companion paths.
+Codex: clean. Comment https://github.com/TurboFrogLLC/NestCalc/pull/100#issuecomment-5384114127 on 63458ae899.
+agents-pr-review: COMMENT. Review https://github.com/TurboFrogLLC/NestCalc/pull/100#pullrequestreview-5001621187 on 50b88945e110974caafb06df94575bce84abd776.
+Seq 4 Wait stamped with 50b8894.
+Still open: Inspection.
+Next: Inspection.
+Inspection was not started. Merge was not performed. Allowed Files only: docs/travelers/100.md, docs/travelers/100-packets.md.
 ```
