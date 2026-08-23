@@ -10,6 +10,7 @@ Do not delete rows. Append only.
 | 1 | Checkout sync | Worker | Codex App | d27c056 | Stamped; advanced to Cut |
 | 2 | Cut | Worker | Codex App | 63ebd2b | Mermaid audit written; stamped; advanced to Send for review |
 | 3 | Send for review | Worker | Codex App | abf9462 | PR marked ready; `@codex review` posted; advanced to Wait |
+| 4 | Corrective Action | Specialist | Codex App | c759ea9 | Three P2 reconstruction findings corrected; advanced to Inspection |
 
 ---
 
@@ -132,4 +133,50 @@ Pass commit: abf9462.
 Seq 3 Send for review stamped with abf9462.
 Still open: Wait.
 Next: Wait.
+```
+
+### Seq 4 — Corrective Action
+
+**Ops Packet**
+
+```text
+Repo: NestCalc
+Station: Corrective Action
+Mode: Specialist
+Operator: Codex App
+Branch: docs/employee-manual-mermaid-probe-3
+Head: 111ce03
+flow_id: —
+goal_sha256: —
+Trace: NestCalc #98; Codex review COMMENTED 5001428500 on 6344bb6; three P2s on employee-manual-mermaid-probe-3.md
+Model: GPT-5.6 Terra
+Effort: medium
+Orchestration: Single-agent
+Session: Fresh
+
+Instruction:
+Corrective Action for the three open Codex P2 threads on PR 98. Edit only docs/audits/employee-manual-mermaid-probe-3.md (and traveler/packet log stamps). Keep exactly one Mermaid fence plus one legend. Do not improve floor law — only fix the reconstruction so it matches AGENTS.md, docs/WORKFLOW.md, docs/GLOSSARY.md, and docs/templates/.
+
+1. Wrong-branch edge: host fix success returns to the branch/worktree check; only Escalate stops the Station.
+2. Post-stamp routing: after stamp, emit the next named Station on the traveler — do not route every packet into Quality Control.
+3. Packet-handling: remove the false collision; those statements are not a governance conflict.
+
+Reply on each of the three review threads with what changed. Resolve each thread after the fix. Stamp this Corrective Action on docs/travelers/98.md (commit short SHA). Append Ops Packet + Operator return to docs/travelers/98-packets.md. Advance Still open / Next to Inspection on the same pass. Push Allowed Files only. Do not merge. Do not start Inspection work beyond the stamp advance.
+
+Reason:
+Named review held COMMENTED with three P2s on the audit chart. Inspection cannot clear until Corrective Action restores the reconstruct to WORKFLOW.
+```
+
+**Operator return**
+
+```text
+Corrected the audit reconstruction in c759ea9.
+The successful Worker host-fix edge returns to the branch/worktree check; only Escalate stops the Station.
+Post-stamp routing emits the traveler’s named next Station packet and dispatches by that Station instead of entering Quality Control unconditionally.
+Removed the false packet-handling collision: the emitted next packet is current for, and describes, that next Station only.
+Confirmed exactly one Mermaid fence and one external legend.
+Seq 4 Corrective Action stamped with c759ea9.
+Still open: Inspection.
+Next: Inspection.
+Inspection was not started. Merge was not performed.
 ```
