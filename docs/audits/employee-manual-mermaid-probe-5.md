@@ -13,20 +13,26 @@ flowchart TD
   BRANCH{"Named Branch + Head?"}
   BRANCH -->|no COLLISION A| WRONG
   WRONG["COLLISION A wrong branch/worktree/repo"]
+  WRONG --> HOSTQ{"Host can correct?"}
+  HOSTQ -->|yes| HOSTFIX["Host fix then recheck BRANCH"]
+  HOSTFIX --> BRANCH
+  HOSTQ -->|no Worker| WESCBR["Escalate"]
+  HOSTQ -->|no Specialist| CABR["Corrective Action"]
   WRONG --> WRONG_AGENTS["AGENTS Always: Corrective Action"]
-  WRONG --> WRONG_WF["WORKFLOW Start + Worker-local: Worker Escalate; Specialist Corrective Action"]
   BRANCH -->|yes| DOOP["Do this operation only. Do not rewrite traveler"]
   DOOP --> MODE{"Mode"}
-  MODE -->|Worker| WGATES["Worker-local gates: Allowed Files; one try then one more; fail → Escalate"]
-  MODE -->|Specialist| SGATES["Known tools; fail gate → Corrective Action; law broke → NCMR"]
-  WGATES --> STAMP
-  SGATES --> STAMP
-  STAMP["Stamp this Station SHA or NCMR-"]
+  MODE -->|Worker| WGATES["Worker-local gates: Allowed Files; one try then one more"]
+  MODE -->|Specialist| SGATES["Known tools"]
+  WGATES -->|pass| STAMP
+  WGATES -->|fail| WESC["Escalate"]
+  SGATES -->|pass| STAMP
+  SGATES -->|fail gate| SCA["Corrective Action; stay on this operation"]
+  SGATES -->|law broke| SNCMR["NCMR; stop"]
+  STAMP["Stamp this Station SHA"]
   STAMP --> NEXTNAMED{"Next Station named on job traveler?"}
   NEXTNAMED -->|yes| EMIT["Finishing Operator emits that Ops Packet"]
-  NEXTNAMED -->|no| NEXTUNK["Next unknown → Owner"]
-  EMIT --> SPINE
-  NEXTUNK --> SPINE
+  NEXTNAMED -->|no| OWNERUNK["Owner"]
+  EMIT --> NAMEDROW["Dispatch packet to named next Station"]
 
   SPINE["Spine from WORKFLOW stamps + QC + Release"]
   SPINE --> FREEZE["Freeze"]
