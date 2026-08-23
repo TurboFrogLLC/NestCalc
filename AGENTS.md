@@ -13,6 +13,7 @@ Repo NestCalc. Product FLiPIT. Next.js 16 PWA. Clerk. Serwist. Vercel.
 - When validating GOAL hash → `docs/governance/README.md` (Goal canonicalization)
 - When writing Next.js → `node_modules/next/dist/docs/` (version-matched).
 - When naming the Operator → `docs/WORKFLOW.md` ## Start (typical first-name).
+- When named review is requested → `@codex review` and `agents-pr-review` (companion).
 
 ## Commands
 
@@ -57,7 +58,7 @@ git rev-parse HEAD
 
 ### Never
 
-- Touch `main` except checkout sync: fetch, switch, ff-only to `origin/main`. No edit, commit, push, or merge.
+- Touch `main` except checkout sync (fetch, switch, ff-only to `origin/main`; no edit, commit, push, or merge) and docs-only traveler and packslip stamps after merge when this traveler names Owner authorization.
 - Production, MODE, or identity without the Owner.
 - Merge unless Release is cleared (repo-backed confidence and named criteria) and this traveler does not forbid merge.
 - Invent the next operation. Soft-infer.
