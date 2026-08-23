@@ -143,7 +143,7 @@ Instruction (this Station): stamp Close on main; align Merge stamp to 5f2f81a; S
 ## Seq 7 Close — Facts return
 
 - `main` @ squash `5f2f81af1a6abd2f9db13b037a16db57407a87ed`. Owner authorized docs-only traveler+packets stamps on main.
-- Merge row aligned to `5f2f81af1a6abd2f9db13b037a16db57407a87ed`. Close stamped (fill SHA of this docs-only commit after push).
+- Merge row aligned to `5f2f81af1a6abd2f9db13b037a16db57407a87ed`. Close stamp fill: `0288da31c53a6db2cb339c2f3516fe6d663f667f`.
 - Still open / Next: none.
 - Remote `docs/p0f-runner-residual` deleted on Close. Local `-D` (squash not ancestor of post-merge feature tip `4a7d6eb`).
 - Audit body not rewritten. Billing residual remains Owner-side outside this traveler. Admin land remains temporary until runners execute steps.
