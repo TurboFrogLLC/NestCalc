@@ -125,3 +125,29 @@ Pause P0-F pull_request trigger (free-tier). Checkout sync is Owner terminal.
 - `docs/travelers/108.md`: Send for review restamped `cf7c018bafbac21843afe9d5295d3243a247d261`; Still open / Next = Wait.
 - This Surface cannot run `agents-pr-review`; reported only.
 - Not done this Station: Wait, Inspection, Merge, Close, packslip.
+
+## Station: Wait (after CA)
+
+### Ops Packet
+
+- Repo: NestCalc
+- Station: Wait
+- Mode: Worker
+- Operator: Grok Build
+- Branch: docs/p0f-workflow-pause
+- Head in: b84ab3e84c8bf83d1f6d945a99ea90bd4e33a788
+- job_id: NGJ-20260823-p0f-pause
+- flow_id: —
+- goal_sha256: —
+- Trace: NestCalc #108; re-Wait after CA + re-review
+- Instruction: Done when named Codex review receipt recorded on the CA tip; open threads counted; Seq Wait stamped; Still open / Next = Inspection if no work required, or Corrective Action if findings require work.
+
+### Facts return
+
+- Named review: `chatgpt-codex-connector[bot]` issue comment `5388343701` at https://github.com/TurboFrogLLC/NestCalc/pull/108#issuecomment-5388343701 — "Didn't find any major issues."
+- SHA reviewed: `b84ab3e84c8bf83d1f6d945a99ea90bd4e33a788` (Send-for-review tip after CA).
+- Open threads: 0 unresolved (prior P2 `PRRT_kwDOTJAVIM6bh7xz` is resolved). P0=0 P1=0 P2=0 P3=0.
+- Findings require work: no. Still open / Next = Inspection.
+- Wait did not fix. This Surface cannot run `agents-pr-review`; reported only.
+- `docs/travelers/108.md`: Wait restamped `b84ab3e84c8bf83d1f6d945a99ea90bd4e33a788`.
+- Not done this Station: Inspection, Merge, Close, packslip.
