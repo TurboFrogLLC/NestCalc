@@ -48,3 +48,30 @@ Pause P0-F pull_request trigger (free-tier). Checkout sync is Owner terminal.
 - `docs/travelers/108.md`: Send for review row stamped `0a46d446a2cfbb9f5523b34cec79b2a35ea4c554`; Still open / Next = Wait.
 - This Surface cannot run `agents-pr-review`; reported only.
 - Not done this Station: Wait, Inspection, Merge, Close, packslip.
+
+## Station: Wait
+
+### Ops Packet
+
+- Repo: NestCalc
+- Station: Wait
+- Mode: Worker
+- Operator: Grok Build
+- Branch: docs/p0f-workflow-pause
+- Head in: 3705eef9efc39a5fd104601a305d2b0e1eaccd53
+- job_id: NGJ-20260823-p0f-pause
+- flow_id: —
+- goal_sha256: —
+- Trace: NestCalc #108; Owner expedite chain after Send for review
+- Instruction: Done when named Codex review receipt recorded; open threads counted; Seq Wait stamped; Still open / Next = Inspection if no work required, or Corrective Action if findings require work.
+
+### Facts return
+
+- Named review: `chatgpt-codex-connector[bot]` review `5003301513` state `COMMENTED` at https://github.com/TurboFrogLLC/NestCalc/pull/108#pullrequestreview-5003301513
+- SHA reviewed: `3705eef9efc39a5fd104601a305d2b0e1eaccd53` (Send-for-review tip).
+- Open threads: 1 unresolved, not outdated. P0=0 P1=0 P2=1 P3=0.
+- P2 thread: `.github/workflows/p0-f-minimum-ci.yml` `p0f-evidence` still reads `github.event.pull_request.*` under `workflow_dispatch` — https://github.com/TurboFrogLLC/NestCalc/pull/108#discussion_r3839521976
+- Findings require work: yes (live non-stale P2). Still open / Next = Corrective Action.
+- Wait did not fix. This Surface cannot run `agents-pr-review`; reported only.
+- `docs/travelers/108.md`: Wait row stamped `3705eef9efc39a5fd104601a305d2b0e1eaccd53`.
+- Not done this Station: Corrective Action, Inspection, Merge, Close, packslip.
