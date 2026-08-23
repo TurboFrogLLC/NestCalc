@@ -19,6 +19,7 @@ Operator: Grok Build | Model: Grok 4.6 | Effort: low (every Station)
 | CA2 | Corrective Action | Specialist | Grok Build | e99b2a9 | Seq 1–2 transcripts restored; Next=Inspection |
 | 5 | Inspection (re-run) | Worker | Grok Build | bfd8304 | clean; Next=Merge |
 | 6 | Merge | Worker | Grok Build | 65d1334 | squash-merged; admin override P0-F UNSTABLE |
+| 7 | Close | Worker | Grok Build | 5713168 | stamped; Next=none |
 
 ---
 
@@ -619,5 +620,73 @@ Facts:
 - Seq 6 stamped with merge SHA. Still open / Next = Close. Close not started.
 - Docs-only main traveler stamp after merge (AGENTS Never second exception). Prior stations not collapsed.
 ```
+
+### Seq 7 — Close
+
+**Ops Packet** (management → Grok Build)
+
+```text
+Repo: NestCalc
+Station: Close
+Mode: Worker
+Operator: Grok Build
+Branch: main
+Head: 57131686fcc3180576df2cc866011d8e4d3b82a7
+job_id: NGJ-20260823-102
+flow_id: —
+goal_sha256: —
+Trace: NestCalc #102 squash-merged 65d1334; Owner authorizes docs-only main traveler+packslip stamps (AGENTS Never second exception)
+Model: Grok 4.6
+Effort: low
+Session: continued
+
+Instruction:
+Done when: Seq 7 Close stamped with commit SHA on @docs/travelers/102.md; Operator return under Seq 7 in @docs/travelers/102-packets.md; Still open / Next = none; remote feature branch docs/employee-manual-mermaid-probe-5 deleted; local branch deleted if present; packslip printed and posted on PR 102; pushed Allowed Files only on main under AGENTS Never second exception.
+When close → confirm origin/main includes merge 65d1334; stamp Close; footer none/none.
+When branch cleanup → delete remote docs/employee-manual-mermaid-probe-5; local -d or -D if squash is not an ancestor.
+When packslip → print packslip in CLI and post on PR 102.
+When log → append only to @docs/travelers/102-packets.md. Do not collapse prior stations.
+This Station only. Mode Worker: do not spawn subagents; do not open plan mode.
+Allowed write: docs/travelers/102.md, docs/travelers/102-packets.md.
+No AGENTS/WORKFLOW/GLOSSARY/GOAL/product edits.
+
+Reason:
+Merge is on main. Close completes the job and posts the packslip.
+
+Return (this Station only):
+Repo:
+Station:
+Mode:
+Operator:
+Branch:
+Head:
+job_id:
+flow_id:
+goal_sha256:
+Stamp:
+Facts:
+```
+
+**Operator return**
+
+```text
+Repo: NestCalc
+Station: Close
+Mode: Worker
+Operator: Grok Build
+Branch: main
+Head: 57131686fcc3180576df2cc866011d8e4d3b82a7
+job_id: NGJ-20260823-102
+flow_id: —
+goal_sha256: —
+Stamp: 57131686fcc3180576df2cc866011d8e4d3b82a7
+Facts:
+- origin/main includes merge 65d1334ddd556c9c0d5ac70bfa288baf043c2e9c.
+- Seq 7 Close stamped. Still open / Next = none.
+- Remote and local docs/employee-manual-mermaid-probe-5 deleted (local -D; squash not ancestor).
+- Packslip printed and posted on PR 102.
+- Prior stations not collapsed. Allowed Files only on main.
+```
+
 
 
