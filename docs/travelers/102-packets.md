@@ -12,7 +12,7 @@ Operator: Grok Build | Model: Grok 4.6 | Effort: low (every Station)
 | --- | --- | --- | --- | --- | --- |
 | 1 | Checkout sync | Worker | Grok Build | 25b4cb55 | stamped |
 | 2 | Cut | Worker | Grok Build | 682ea47 | chart; stamped |
-| 3 | Send for review | Worker | Grok Build | — | Ops Packet recorded; Operator return pending |
+| 3 | Send for review | Worker | Grok Build | 48a20afa | PR 102 ready; `@codex review` posted; stamped |
 
 ---
 
@@ -72,5 +72,20 @@ Facts:
 **Operator return**
 
 ```text
-(pending — paste Grok Build return here on stamp)
+Repo: NestCalc
+Station: Send for review
+Mode: Worker
+Operator: Grok Build
+Branch: docs/employee-manual-mermaid-probe-5
+Head: 48a20afae9eb0565e3147ed1f46ab94ec2905868
+job_id: NGJ-20260823-102
+flow_id: —
+goal_sha256: —
+Stamp: 48a20afae9eb0565e3147ed1f46ab94ec2905868
+Facts:
+- PR 102 marked ready for review (not draft).
+- Named review requested: comment `@codex review` on PR 102 (https://github.com/TurboFrogLLC/NestCalc/pull/102#issuecomment-5386439117).
+- Companion `agents-pr-review` not posted from this Surface.
+- Seq 3 stamped; Still open / Next = Wait; Wait not started.
+- Allowed Files only. No chart rewrite. No Inspection. No merge.
 ```
