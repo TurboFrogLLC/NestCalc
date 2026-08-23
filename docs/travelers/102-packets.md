@@ -10,7 +10,7 @@ Operator: Grok Build | Model: Grok 4.6 | Effort: low (every Station)
 
 | Seq | Station | Mode | Operator | Stamp | Outcome |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Checkout sync | Worker | Grok Build | — | Ops Packet recorded; Operator return pending |
+| 1 | Checkout sync | Worker | Grok Build | 25b4cb55ba7b7771a5905eb8e48584b27450eaf1 | HEAD matched origin; Seq 1 stamped; Cut not started |
 
 ---
 
@@ -64,5 +64,15 @@ Facts:
 **Operator return**
 
 ```text
-(pending — paste Grok Build return here on stamp)
+Repo: NestCalc
+Station: Checkout sync
+Mode: Worker
+Operator: Grok Build
+Branch: docs/employee-manual-mermaid-probe-5
+Head: 25b4cb55ba7b7771a5905eb8e48584b27450eaf1
+job_id: NGJ-20260823-102
+flow_id: —
+goal_sha256: —
+Stamp: 25b4cb55ba7b7771a5905eb8e48584b27450eaf1
+Facts: fetch origin; already on docs/employee-manual-mermaid-probe-5; ff-only already up to date; HEAD == origin/docs/employee-manual-mermaid-probe-5 == 25b4cb55ba7b7771a5905eb8e48584b27450eaf1; Seq 1 stamped with that SHA; Still open / Next = Cut; Cut not started; only 102.md and 102-packets.md written.
 ```
