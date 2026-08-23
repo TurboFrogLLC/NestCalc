@@ -10,7 +10,7 @@ job_id: NGJ-20260822-101
 
 | Seq | Station | Mode | Operator | Stamp | Outcome |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Checkout sync | Worker | Grok Build | — | Ops Packet recorded; Operator return pending |
+| 1 | Checkout sync | Worker | Grok Build | 2026-08-22 | Verified 51bc5e72 ancestor; synced on c94fce2; Seq 1 stamped; Cut not started. |
 
 ---
 
@@ -62,5 +62,15 @@ Facts:
 **Operator return**
 
 ```text
-(pending — paste Grok Build return here on stamp)
+Repo: NestCalc
+Station: Checkout sync
+Mode: Worker
+Operator: Grok Build
+Branch: docs/employee-manual-mermaid-probe-4
+Head: c94fce2ccfc5bcebd4ade9e5c5428e05b1f2f719
+job_id: NGJ-20260822-101
+flow_id: —
+goal_sha256: —
+Stamp: 2026-08-22
+Facts: Named Head 51bc5e72d61cba7a0ed5ef6555e665ebc0aff048 is ancestor. Live origin had management Ops Packet c94fce2ccfc5bcebd4ade9e5c5428e05b1f2f719. Synced onto that commit. Seq 1 Checkout sync stamped. Operator return filled in pending fence. Cut not started. No merge.
 ```
