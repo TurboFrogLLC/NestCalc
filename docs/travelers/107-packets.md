@@ -61,3 +61,33 @@ Instruction (this Station): mark PR 107 ready; post `@codex review`; stamp Send 
 - Audit body not rewritten. Not merge.
 - Still open / Next: Wait.
 
+## Seq 4 Wait — Ops Packet
+
+```
+Repo: NestCalc
+Station: Wait
+Mode: Worker
+Operator: Grok Build
+Branch: docs/p0f-runner-residual
+Head: d9dc3dca0bbab06989897884d0216592eb4d411a
+job_id: NGJ-20260823-p0f
+flow_id: —
+goal_sha256: —
+Trace: NestCalc #107; Send for review ready; @codex review posted
+Model: Grok 4.6
+Effort: medium
+Session: continuous
+```
+
+Instruction (this Station): hold for named `@codex review` on PR 107 against `d9dc3dc` (or tip); record receipt; count open threads by P0/P1/P2/P3; stamp Wait; route Next from findings. Do not fix.
+
+## Seq 4 Wait — Facts return
+
+- Branch `docs/p0f-runner-residual` @ `d9dc3dca0bbab06989897884d0216592eb4d411a` (PR tip at Wait).
+- Named review receipt: `chatgpt-codex-connector[bot]` review [5003219834](https://github.com/TurboFrogLLC/NestCalc/pull/107#pullrequestreview-5003219834), state **COMMENTED**, submitted 2026-08-23T19:46:39Z.
+- Commit SHA reviewed: `49baddab9f811205ceef311bf61b0c2cc5dbb0c0` (Send for review Head; behind Wait tip `d9dc3dc`).
+- Open review threads: P0=0, P1=0, P2=1, P3=0. Resolved=0. Total open=1.
+- Open P2 thread [PRRT_kwDOTJAVIM6bhsGI](https://github.com/TurboFrogLLC/NestCalc/pull/107#discussion_r3839429437) (`isResolved=false`, `isOutdated=false` on API): “Emit the Send for review handoff packet” on `docs/travelers/107-packets.md` @ 49badda. Ask is that Cut Facts ended without Seq 3 Ops Packet.
+- Findings require work: **no additional work**. Seq 3 Send for review Ops Packet + Facts already exist on tip `d9dc3dc` (this Wait Head). Wait did not fix, did not resolve the thread, did not edit the audit.
+- Still open / Next: Inspection. Not merge.
+
