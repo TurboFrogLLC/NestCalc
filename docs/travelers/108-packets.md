@@ -151,3 +151,30 @@ Pause P0-F pull_request trigger (free-tier). Checkout sync is Owner terminal.
 - Wait did not fix. This Surface cannot run `agents-pr-review`; reported only.
 - `docs/travelers/108.md`: Wait restamped `b84ab3e84c8bf83d1f6d945a99ea90bd4e33a788`.
 - Not done this Station: Inspection, Merge, Close, packslip.
+
+## Station: Inspection
+
+### Ops Packet
+
+- Repo: NestCalc
+- Station: Inspection
+- Mode: Worker
+- Operator: Grok Build
+- Branch: docs/p0f-workflow-pause
+- Head in: 45f3c9207745f8627197434710cdaba19b353523
+- job_id: NGJ-20260823-p0f-pause
+- flow_id: —
+- goal_sha256: —
+- Trace: NestCalc #108; CA 04f652c; Wait clean; 0 open threads
+- Instruction: Done when Inspection criteria checked and stamped; Still open / Next = Merge if clean, or Corrective Action if work remains.
+
+### Facts return
+
+- (1) Open review threads requiring work = 0. Pass. Thread `PRRT_kwDOTJAVIM6bh7xz` is resolved.
+- (2) Closed Corrective Action lists `04f652c478f9018982a5d2c45414d2f37c758098` P2 p0f-evidence dispatch. Pass.
+- (3) `.github/workflows/p0-f-minimum-ci.yml`: `on: workflow_dispatch` only; jobs `p0f-lint` `p0f-unit` `p0f-build` `p0f-governance` `p0f-evidence` retained; all `github.event.pull_request.*` uses gated on `github.event_name == 'pull_request'`. Pass.
+- (4) `docs/audits/p0f-workflow-pause.md` documents pause + restore. Pass.
+- (5) Allowed Files only vs `origin/main`: `.github/workflows/p0-f-minimum-ci.yml`, `docs/audits/p0f-workflow-pause.md`, `docs/travelers/108.md`, `docs/travelers/108-packets.md`. Pass.
+- Clean. Still open / Next = Merge.
+- `docs/travelers/108.md`: Inspection stamped `45f3c9207745f8627197434710cdaba19b353523`.
+- Not done this Station: Merge, Close, packslip.
