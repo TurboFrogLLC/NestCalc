@@ -135,3 +135,57 @@ NEXT: Merge
 - Not done this Station: Close, packslip, branch delete.
 NEXT: Close
 
+## Station: Close
+
+### Ops Packet
+
+- Repo: NestCalc
+- Station: Close
+- Mode: Worker
+- Operator: Grok Build
+- Branch: main
+- Head in: 7fac8209f94b4e4d127d8eaae8de38309919e5fe
+- job_id: NGJ-20260823-gtc-land
+- flow_id: —
+- goal_sha256: —
+- Trace: NestCalc #109 merged; Owner authorizes docs-only main traveler+packslip stamps
+- Instruction: Done when: Close stamped; packslip posted; local main == origin/main; feature branch deleted last.
+
+### Facts return
+
+- `git fetch origin`; `git checkout main`; `git pull --ff-only origin main`. Merge SHA `7fac8209f94b4e4d127d8eaae8de38309919e5fe` present on main.
+- Merge row aligned to squash `7fac8209f94b4e4d127d8eaae8de38309919e5fe`. Close stamp fill: `335b213e1abedfceffbccd641669ba52ea089eb5`.
+- Still open / Next = none.
+- Packslip printed in CLI and posted on PR 109.
+- Remote `docs/grok-thoughts-continuous-land` deleted after this commit is on origin/main.
+NEXT: none
+
+### Packslip
+
+```text
+Repo: NestCalc
+Owner: wReckless
+PR: 109
+Branch: docs/grok-thoughts-continuous-land
+Head: 7fac8209f94b4e4d127d8eaae8de38309919e5fe
+job_id: NGJ-20260823-gtc-land
+flow_id: —
+goal_sha256: —
+Trace: Land continuous grok-thoughts dumps + REGISTRY on main; post #107/#108
+Cycle: Lite
+Date: 2026-08-23
+
+Seq  Label              Operator     Stamp                                    Still open
+     Checkout sync      Owner        108ee2cd402d2cc46053f2452d7a2ec530c2e345  none
+     Cut                Grok Build   f59a141273842da86185c0edb4fb61347ebc3e4f  none
+     Send for review    Grok Build   921575dbb92b8240d46783c27e0bda723f6be175  none
+     Wait               Grok Build   86e65dad21adfa99646df203d0bbda787324fbd3  none
+     Inspection         Grok Build   1b948a9abc5dff34ca756a79989be16d6df9900d  none
+     Merge              Grok Build   7fac8209f94b4e4d127d8eaae8de38309919e5fe  none
+     Close              Grok Build   335b213e1abedfceffbccd641669ba52ea089eb5  none
+
+Closed Corrective Action: none
+Still open: none
+Next: none
+```
+
