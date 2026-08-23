@@ -30,3 +30,28 @@ Land continuous grok-thoughts dumps on main. Checkout sync is Owner terminal.
 - `docs/travelers/109.md`: Cut row stamped `f59a141273842da86185c0edb4fb61347ebc3e4f`; Still open / Next = Send for review.
 - Not done this Station: Send for review, Wait, Inspection, Merge, Close, ready, packslip.
 
+## Station: Send for review
+
+### Ops Packet
+
+- Repo: NestCalc
+- Station: Send for review
+- Mode: Worker
+- Operator: Grok Build
+- Branch: docs/grok-thoughts-continuous-land
+- Head in: 921575dbb92b8240d46783c27e0bda723f6be175
+- job_id: NGJ-20260823-gtc-land
+- flow_id: —
+- goal_sha256: —
+- Trace: NestCalc #109; Owner expedite stack experiment; Ops Manager review signal
+- Instruction: Done when: PR 109 is ready (not draft); a short PR comment states Wait holds for Operations Manager signal (not Codex); Seq Send for review stamped; Still open / Next = Wait.
+
+### Facts return
+
+- PR 109 marked ready (not draft): https://github.com/TurboFrogLLC/NestCalc/pull/109
+- Did not post `@codex review`.
+- Wait comment: https://github.com/TurboFrogLLC/NestCalc/pull/109#issuecomment-5388553510 — Wait holds for Operations Manager (SuperGrok) thumbs-up or Corrective Action signal (not Codex).
+- `docs/travelers/109.md`: Send for review row stamped `921575dbb92b8240d46783c27e0bda723f6be175`; Still open / Next = Wait.
+- Not done this Station: Wait, Inspection, Merge, Close, packslip.
+NEXT: Wait
+
