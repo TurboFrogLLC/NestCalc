@@ -13,6 +13,7 @@ Operator: Grok Build | Model: Grok 4.6 | Effort: low
 | 2 | Cut | Worker | Grok Build | 02e285ab | corpus + draft PR 105 |
 | 3 | Send for review | Worker | Grok Build | ccaf496bc4b5cc6419263197db6170de595872cd | ready; @codex review |
 | 4 | Wait | Worker | Grok Build | a7d0e9506326d34eaccf3ffd493792c057bab06b | COMMENTED P2=1; Next=CA |
+| CA | Corrective Action | Specialist | Grok Build | STAMP_PENDING | P2 README prefix; Next=Inspection |
 
 ---
 
@@ -183,5 +184,58 @@ Finding is the README future-dump filename `NGJ-<job_id>.md` double-prefix note 
 Findings require work. Still open / Next = Corrective Action. Inspection not started.
 Did not rewrite docs/audits/grok-thoughts/**. Did not fix code. Did not edit AGENTS/WORKFLOW/GOAL/product/.github.
 Pushed Allowed Files only (105.md, 105-packets.md).
+```
+
+### Corrective Action
+
+**Ops Packet** (management → Grok Build)
+
+```text
+Repo: NestCalc
+Station: Corrective Action
+Mode: Specialist
+Operator: Grok Build
+Branch: docs/grok-thoughts-continuous
+Head: c336624
+job_id: NGJ-20260823-gtc
+flow_id: —
+goal_sha256: —
+Trace: NestCalc #105; Wait a7d0e95; Codex COMMENTED 3dda728; open P2 README double-prefix
+Model: Grok 4.6
+Effort: low
+
+Instruction:
+Done when: open P2 on PR 105 is fixed; facts-only reply on the thread; thread resolved on tip; Closed Corrective Action lists this CA SHA; Still open / Next = Inspection.
+When finding → https://github.com/TurboFrogLLC/NestCalc/pull/105#discussion_r3839277560 (README future dump name NGJ-<job_id>.md double-prefix). Fix only @docs/audits/grok-thoughts/README.md wording so the job file name is a single NGJ-<job_id>.md pattern with no double prefix.
+When stamp → @docs/travelers/105.md → Corrective Action / Closed Corrective Action only.
+When log → @docs/travelers/105-packets.md append only this Station Ops Packet + Facts return.
+When review → facts-only reply on that thread; resolve after tip includes the fix.
+This Station only. Mode Specialist: do not open plan mode; do not expand scope past the named P2.
+Do not rewrite NGJ-20260822-101.md or NGJ-20260823-102.md bodies. Do not edit AGENTS/WORKFLOW/GOAL/product/.github. Inspection and merge not started.
+Push Allowed Files only (README under grok-thoughts/, 105.md, 105-packets.md).
+
+Reason:
+Wait held one open P2. Corrective Action closes it before Inspection. Owner named Effort low. Session was continuous (skill field not installed yet).
+```
+
+**Operator return**
+
+```text
+Repo: NestCalc
+Station: Corrective Action
+Mode: Specialist
+Operator: Grok Build
+Branch: docs/grok-thoughts-continuous
+Head: STAMP_PENDING
+job_id: NGJ-20260823-gtc
+flow_id: —
+goal_sha256: —
+Stamp: STAMP_PENDING
+Facts:
+Fixed docs/audits/grok-thoughts/README.md future-dump step: write `<job_id>.md` (job_id already has NGJ- prefix; one prefix; glob NGJ-*.md). Did not write NGJ-<job_id>.md.
+Did not rewrite NGJ-20260822-101.md or NGJ-20260823-102.md. Did not edit AGENTS/WORKFLOW/GOAL/product/.github.
+Facts-only reply on discussion_r3839277560. Thread resolved after tip included the fix.
+Closed Corrective Action lists this SHA. Still open / Next = Inspection. Inspection not started.
+Pushed Allowed Files only (README, 105.md, 105-packets.md).
 ```
 

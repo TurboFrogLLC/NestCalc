@@ -17,7 +17,7 @@ Do **not** add split `pr101-*` / `pr102-*` dumps under `docs/audits/` for new jo
 
 1. Append one row to `REGISTRY.md` (job, PR, effort, session count, merge SHA, dump filename).
 2. Copy Session ID table into `REGISTRY.md` (or point at the job file and keep a short table here).
-3. Write **only** a new `NGJ-<job_id>.md` under this folder.
+3. Write **only** a new `<job_id>.md` under this folder (`job_id` already starts with `NGJ-`; one prefix; glob `NGJ-*.md`). Do not write `NGJ-<job_id>.md`.
 4. Do not rewrite old job files unless Owner names a re-dump of that `job_id`.
 
 ## Baseline (locked)
