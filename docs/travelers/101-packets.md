@@ -3,15 +3,15 @@
 Employee-manual mermaid probe-4. Every management Ops Packet and every Operator return is recorded here.
 Do not delete rows. Append only.
 
-Record Head: 3aa41db44885e85f8aba3584714cf9ca8fa9948e
+Record Head: f98603a9282d4ee947ab8568b3fa989799bf3cc6
 job_id: NGJ-20260822-101
 
 ## Index
 
 | Seq | Station | Mode | Operator | Stamp | Outcome |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Checkout sync | Worker | Grok Build | 1c9310c (traveler cell: 2026-08-22) | Synced c94fce2; stamped; push tip 1c9310c; Cut not started. Session: docs/audits/pr101-checkout-session.md |
-| 2 | Cut | Worker | Grok Build | fa689fa | Chart written; Seq 2 stamped fa689fa; Operator return filled; Send for review not started. |
+| 1 | Checkout sync | Worker | Grok Build | 1c9310c (traveler cell: 2026-08-22) | Synced c94fce2; stamped; push tip 1c9310c. Session: docs/audits/pr101-checkout-session.md |
+| 2 | Cut | Worker | Grok Build | fa689fa | Chart + stamp push tip f98603a; Send for review not started. Session: docs/audits/pr101-cut-session.md |
 
 ---
 
@@ -78,7 +78,7 @@ Facts: Named Head 51bc5e72d61cba7a0ed5ef6555e665ebc0aff048 is ancestor. Live ori
 
 **Session capture (thoughts / tools)**
 
-See `docs/audits/pr101-checkout-session.md` — Owner paste of UI thought/tool surface + analysis notes (stamp date vs SHA, worktree path, tip race).
+See `docs/audits/pr101-checkout-session.md`.
 
 Post-push tip: `1c9310c369e07f94c656ed6505c68ff897bcf812`.
 
@@ -92,11 +92,11 @@ Station: Cut
 Mode: Worker
 Operator: Grok Build
 Branch: docs/employee-manual-mermaid-probe-4
-Head: 3aa41db44885e85f8aba3584714cf9ca8fa9948e
+Head: 772e9bdcbd4a85924e8320858191606f2e31831f
 job_id: NGJ-20260822-101
 flow_id: —
 goal_sha256: —
-Trace: NestCalc #101; Seq 1 Checkout complete 1c9310c; session capture on branch; Cut
+Trace: NestCalc #101; Seq 1 Checkout complete 1c9310c; Cut ops packet recorded 772e9bd
 Model: Grok 4.6
 Effort: high
 
@@ -127,7 +127,7 @@ Stamp:
 Facts:
 ```
 
-**Operator return**
+**Operator return** (UI)
 
 ```text
 Repo: NestCalc
@@ -135,10 +135,16 @@ Station: Cut
 Mode: Worker
 Operator: Grok Build
 Branch: docs/employee-manual-mermaid-probe-4
-Head: fa689fa159ba5964d9dd31eac8bd71fd1f5d2f44
+Head: f98603a9282d4ee947ab8568b3fa989799bf3cc6
 job_id: NGJ-20260822-101
 flow_id: —
 goal_sha256: —
 Stamp: fa689fa159ba5964d9dd31eac8bd71fd1f5d2f44
-Facts: Wrote docs/audits/employee-manual-mermaid-probe-4.md with exactly one Mermaid flowchart fence and one short legend outside the fence. Sources read only: AGENTS.md, docs/GLOSSARY.md, docs/WORKFLOW.md, docs/templates/. Collisions labeled on chart. Seq 2 Cut stamped fa689fa. Send for review not started. No merge. No mark ready.
+Facts: Wrote docs/audits/employee-manual-mermaid-probe-4.md with exactly one Mermaid flowchart fence and one short legend outside the fence. Sources read only: AGENTS.md, docs/GLOSSARY.md, docs/WORKFLOW.md, docs/templates/. Collisions labeled on the chart (packslip Plan/Bind vs WORKFLOW stamps; freeze/land authority; stamp meaning; Inspection rework; Law ranking). Seq 2 Cut stamped fa689fa on docs/travelers/101.md. Operator return filled under Seq 2 in docs/travelers/101-packets.md. Pushed Allowed Files only (772e9bd..f98603a). Send for review not started. No merge. No mark ready.
 ```
+
+**Session capture (thoughts / tools)**
+
+See `docs/audits/pr101-cut-session.md`.
+
+Chart commit: `fa689fa159ba5964d9dd31eac8bd71fd1f5d2f44`. Post-push tip: `f98603a9282d4ee947ab8568b3fa989799bf3cc6`.
