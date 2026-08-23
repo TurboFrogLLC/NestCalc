@@ -16,7 +16,7 @@ flowchart TD
   station -->|"COLLISION: packslip form lists Plan and Bind; WORKFLOW stamps table does not"| planBind["Plan / Bind appear on packslip rows only"]
 
   station -->|"Freeze"| freeze["Product freeze: GOAL.md v1 fence, flow_id, goal_sha256, hash match, one Active Goal. Commit freeze before implementation. Non-goal freeze: planning Station stamp on the job traveler is a commit SHA, not a GOAL.md v1 fence."]
-  freeze --> freezeAuth["COLLISION freeze authority: AGENTS Roles: No Operator owns freeze, land, or a cycle. WORKFLOW: the traveler Operator line is who freezes."]
+  freeze --> freezeAuth["Freeze ownership vs execution: AGENTS: no Operator owns freeze, land, or a cycle. Traveler Operator line is who runs freeze."]
 
   station -->|"Cut"| cut["Named branch. Allowed Files only. Freeze hash unchanged. Draft PR is not a stop. Cut does not re-run freeze. Cut does not run the land suite."]
 
@@ -35,11 +35,20 @@ flowchart TD
   station -->|"Merge"| merge
   station -->|"Close"| closeSt
   release --> merge["Merge onto main when repo-backed confidence and named criteria pass, unless this traveler forbids merge."]
-  merge --> landAuth["COLLISION land: AGENTS Roles: No Operator owns land. WORKFLOW: Merge is not an Owner seat when that clearance holds. Owner at land only on escalation."]
+  merge --> landAuth["Land ownership vs execution: AGENTS: no Operator owns land. Traveler Operator line is who runs merge. Merge is not an Owner seat when that clearance holds. Owner at land only on escalation."]
   merge --> closeSt["Close: sync, prune, persist approved lessons, quiet archive when that is the named work."]
   closeSt --> packslip["Packslip is job-end. Print in the CLI. Post on the PR when one exists. First word is never /goal. No Model. Skip a row that did not run."]
 
-  doOp --> gates{"Worker-local gates"}
+  planBind --> gates
+  freezeAuth --> gates
+  cut --> gates
+  sfr --> gates
+  wait --> gates
+  release --> gates
+  landAuth --> gates
+  closeSt --> gates
+
+  gates{"Worker-local gates"}
   gates -->|"pass"| stampOp["Stamp this operation before the next operation runs."]
   gates -->|"law broke"| ncmr
   gates -->|"Worker cannot finish"| esc
