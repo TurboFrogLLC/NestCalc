@@ -222,3 +222,77 @@ Still open: Merge.
 Next: Merge.
 Merge and Close were not performed.
 ```
+
+### Seq 6 — Merge
+
+**Ops Packet**
+
+```text
+Repo: NestCalc
+Station: Merge
+Mode: Worker
+Operator: Codex App
+Branch: docs/employee-manual-mermaid-probe-3
+Head: 6721d0a
+flow_id: —
+goal_sha256: —
+Trace: NestCalc #98; Inspection 6721d0a clean; Owner land override P0-F no-runner (docs); job traveler docs/travelers/98.md
+Model: GPT-5.6 Luna
+Effort: low
+Orchestration: Single-agent
+Session: Fresh
+
+Instruction:
+Squash-merge PR 98 onto main. Stamp Seq Merge on docs/travelers/98.md with the merge commit short SHA. Advance Still open / Next to Close on the same pass. Append Ops Packet + Operator return to docs/travelers/98-packets.md. Do not Close. Do not delete the branch yet.
+
+Reason:
+Inspection clean. Owner authorizes land despite P0-F UNSTABLE (infra no-runner; not product failure). Release Merge is named next on the traveler.
+```
+
+**Operator return**
+
+```text
+PR 98 squash-merged onto main.
+Merge commit: 3e766ef5fc8d1edefafb7211cad1bc3aac525924.
+Seq 6 Merge stamped with 3e766ef.
+Still open: Close.
+Next: Close.
+The source branch docs/employee-manual-mermaid-probe-3 was not deleted. Close was not performed.
+```
+
+### Seq 7 — Close
+
+**Ops Packet**
+
+```text
+Repo: NestCalc
+Station: Close
+Mode: Worker
+Operator: Codex App
+Branch: main
+Head: 3e766ef
+flow_id: —
+goal_sha256: —
+Trace: NestCalc #98 squash-merged 3e766ef; Owner authorizes docs-only main commit for traveler/packet stamps
+Model: GPT-5.6 Luna
+Effort: low
+Orchestration: Single-agent
+Session: Fresh
+
+Instruction:
+Owner authorizes one documentation commit on main. Allowed Files only: docs/travelers/98.md and docs/travelers/98-packets.md. Stamp Merge with 3e766ef and Close with this commit short SHA. Advance Still open / Next to none. Append this Ops Packet and Operator return to 98-packets.md. Commit and push that docs-only pair. Delete local and remote branch docs/employee-manual-mermaid-probe-3 if still present. Print the packslip in the CLI. Post the same packslip on PR 98. Do not edit GOAL.md, AGENTS.md, WORKFLOW, GLOSSARY, templates, or product code.
+
+Reason:
+Job end. Packslip is Close. Traveler stamps need the named main docs exception.
+```
+
+**Operator return**
+
+```text
+Docs-only Close changes were committed and pushed on main.
+Seq 7 Close stamped with 892d459.
+Still open: none.
+Next: none.
+Local and remote branch docs/employee-manual-mermaid-probe-3 were deleted.
+Packslip printed in the CLI and posted on PR 98.
+```
