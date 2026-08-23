@@ -3,7 +3,7 @@
 Owner expedite. Every management Ops Packet and every Operator return is recorded here.
 Do not delete rows. Append only.
 
-Record Head: 07c251b
+Record Head: a7d1d22
 job_id: NGJ-20260822-100
 
 ## Index
@@ -16,7 +16,7 @@ job_id: NGJ-20260822-100
 | 4 | Wait | Worker | Grok Build | f96b974 | Named review held (Codex clean; agents-pr-review COMMENT); advanced to Inspection |
 | 5 | Inspection | Worker | Grok Build | 9925630 | Clean; named reviews held; no open blocking threads; advanced to Merge |
 | 6 | Merge | Worker | Grok Build | f260b63 | Squash-merged onto main; P0-F no-runner land override; advanced to Close |
-| 7 | Close | Worker | Grok Build | 07c251b | Docs-only Close stamped on main; job ended |
+| 7 | Close | Worker | Grok Build | a7d1d22 | Docs-only Close stamped on main; job ended |
 
 ---
 
@@ -360,4 +360,13 @@ Docs-only Close commit pushed on main.
 Remote branch docs/agents-main-exception-agents-pr-review deleted.
 Packslip printed in the CLI and posted on PR 100.
 GOAL.md and product code were not edited.
+```
+
+**Stamp supplement**
+
+```text
+Pass commit: a7d1d22.
+Seq 7 Close stamped with a7d1d22.
+Still open: none.
+Next: none.
 ```
