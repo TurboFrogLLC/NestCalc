@@ -154,7 +154,7 @@ NEXT: Close
 ### Facts return
 
 - `git fetch origin`; `git checkout main`; `git pull --ff-only origin main`. Merge SHA `7fac8209f94b4e4d127d8eaae8de38309919e5fe` present on main.
-- Merge row aligned to squash `7fac8209f94b4e4d127d8eaae8de38309919e5fe`. Close stamp fill: `335b213e1abedfceffbccd641669ba52ea089eb5`.
+- Merge row aligned to squash `7fac8209f94b4e4d127d8eaae8de38309919e5fe`. Close stamp fill: `195ac4aa72888faaa08912f7c7e97d4b8f8fc1c0`.
 - Still open / Next = none.
 - Packslip printed in CLI and posted on PR 109.
 - Remote `docs/grok-thoughts-continuous-land` deleted after this commit is on origin/main.
@@ -182,7 +182,7 @@ Seq  Label              Operator     Stamp                                    St
      Wait               Grok Build   86e65dad21adfa99646df203d0bbda787324fbd3  none
      Inspection         Grok Build   1b948a9abc5dff34ca756a79989be16d6df9900d  none
      Merge              Grok Build   7fac8209f94b4e4d127d8eaae8de38309919e5fe  none
-     Close              Grok Build   335b213e1abedfceffbccd641669ba52ea089eb5  none
+     Close              Grok Build   195ac4aa72888faaa08912f7c7e97d4b8f8fc1c0  none
 
 Closed Corrective Action: none
 Still open: none
