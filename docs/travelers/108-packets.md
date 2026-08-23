@@ -22,7 +22,5 @@ Pause P0-F pull_request trigger (free-tier). Checkout sync is Owner terminal.
 
 - `.github/workflows/p0-f-minimum-ci.yml`: `on:` is `workflow_dispatch` only; jobs and steps kept; file not deleted; no second CI system.
 - `docs/audits/p0f-workflow-pause.md`: written (why = free-tier billing block / #107; what changed; restore = `on: pull_request` when minutes/payments allow; Owner must clear required-check names if protection still lists `p0f-*`).
-- `docs/travelers/108.md`: Cut row stamped; Still open / Next = Send for review.
+- `docs/travelers/108.md`: Cut row stamped `8c43e486fa82f5045b1ed4551671c04ea77c5779`; Still open / Next = Send for review.
 - Not done this Station: Send for review, Wait, Inspection, Merge, Close, ready, packslip.
-
-
