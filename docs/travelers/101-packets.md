@@ -3,7 +3,7 @@
 Employee-manual mermaid probe-4. Every management Ops Packet and every Operator return is recorded here.
 Do not delete rows. Append only.
 
-Record Head: f98603a9282d4ee947ab8568b3fa989799bf3cc6
+Record Head: 715d66e04fa91e143dc1587a6e32b5eca3b577d4
 job_id: NGJ-20260822-101
 
 ## Index
@@ -12,6 +12,7 @@ job_id: NGJ-20260822-101
 | --- | --- | --- | --- | --- | --- |
 | 1 | Checkout sync | Worker | Grok Build | 1c9310c (traveler cell: 2026-08-22) | Synced c94fce2; stamped; push tip 1c9310c. Session: docs/audits/pr101-checkout-session.md |
 | 2 | Cut | Worker | Grok Build | fa689fa | Chart + stamp push tip f98603a; Send for review not started. Session: docs/audits/pr101-cut-session.md |
+| 3 | Send for review | Worker | Grok Build | — | Ops Packet recorded; Operator return pending |
 
 ---
 
@@ -148,3 +149,54 @@ Facts: Wrote docs/audits/employee-manual-mermaid-probe-4.md with exactly one Mer
 See `docs/audits/pr101-cut-session.md`.
 
 Chart commit: `fa689fa159ba5964d9dd31eac8bd71fd1f5d2f44`. Post-push tip: `f98603a9282d4ee947ab8568b3fa989799bf3cc6`.
+
+### Seq 3 — Send for review
+
+**Ops Packet** (management → Grok Build)
+
+```text
+Repo: NestCalc
+Station: Send for review
+Mode: Worker
+Operator: Grok Build
+Branch: docs/employee-manual-mermaid-probe-4
+Head: 715d66e04fa91e143dc1587a6e32b5eca3b577d4
+job_id: NGJ-20260822-101
+flow_id: —
+goal_sha256: —
+Trace: NestCalc #101; Cut fa689fa / tip f98603a; session captures on branch; Send for review
+Model: Grok 4.6
+Effort: high
+
+Instruction:
+Done when: PR 101 is open and not draft (ready for review); named review requested with comment `@codex review` on the PR; Seq 3 Send for review stamped with commit SHA on @docs/travelers/101.md; this return under Operator return in @docs/travelers/101-packets.md Seq 3; pushed Allowed Files only; Wait and Inspection not started; merge not performed.
+When PR → NestCalc pull 101 mark ready; post `@codex review`.
+When agents-pr-review → if this Surface cannot run it, report that fact only; do not invent the skill body; management posts the companion review.
+When traveler → @docs/travelers/101.md Seq 3 only; Stamp = commit SHA (not a date).
+When log → @docs/travelers/101-packets.md append Operator return under Seq 3 only.
+This Station only. Mode Worker: do not spawn subagents; do not open plan mode; do not load files outside the named paths.
+Allowed write: docs/travelers/101.md, docs/travelers/101-packets.md.
+No chart rewrite. No AGENTS/WORKFLOW/GLOSSARY/GOAL/product edits. No merge. No Wait work.
+
+Reason:
+Cut chart is on fa689fa. Named review starts Quality Control path.
+
+Return (this Station only):
+Repo:
+Station:
+Mode:
+Operator:
+Branch:
+Head:
+job_id:
+flow_id:
+goal_sha256:
+Stamp:
+Facts:
+```
+
+**Operator return**
+
+```text
+(pending — paste Grok Build return here on stamp)
+```
