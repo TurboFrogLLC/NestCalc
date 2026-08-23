@@ -19,6 +19,7 @@ Owner may sit any other seat. Those labels bound everyone else.
 | Escalate | This Station cannot finish the named Instruction. Hand up. | Non-conformance. Corrective Action. |
 | Stamp | Label and retrieve handle (commit SHA, `NCMR-`). | A person. An Operator. A command to run. |
 | Tool | A skill the Operator calls. the-Feeler. `/goal`. Has a parent. | Operator. Machine. |
+| agents-pr-review | Named-review companion on Wait, with `@codex review`. | |
 | Machine | A repo script that stamps or checks. | Tool. Operator. |
 | job_id | `NGJ-` handle for a non-goal job. | flow_id. |
 | Ops Packet | Current Station only. Binds this Station. Issued to the Operator. | Traveler. Master. |
@@ -29,7 +30,7 @@ Owner may sit any other seat. Those labels bound everyone else.
 | Non-conformance | Break in the law. Write the Non-conformance Report. | Escalate. Stuck. |
 | Non-conformance Report | Facts only. Disposition blank. | Packslip. |
 | Quality Control | Send for review, Wait, Inspection. Draft until this band. | Release. |
-| Send for review | Mark the PR ready. Named review. | |
+| Send for review | Mark the PR ready. Named review: `@codex review` and `agents-pr-review` (companion). | |
 | Wait | Hold for that review. | |
 | Inspection | Look at what came back. | |
 | Release | Merge, then Close. | Quality Control. |

@@ -27,9 +27,10 @@ Operators do not pick their own start. The traveler's Operator line is who runs 
    that row; if it is not named, → Owner. Completing a Station is not job-end.
 6. Job end is the packslip. Non-conformance is the Non-conformance Report.
 
-One `main` exception: checkout sync only (fetch, switch to `main`, fast-forward
-to `origin/main`). No edits, commits, push, or merge. Any named Operator may
-do that sync. Model and effort are not a gate on it.
+First `main` exception: checkout sync (fetch, switch to `main`, fast-forward
+to `origin/main`). No edits, commits, push, or merge on that path. Any named
+Operator may do that sync. Model and effort are not a gate on it.
+The second `main` exception lives in AGENTS Never.
 
 Typical first-name: Codex App for product freeze, Grok Build for docs freeze.
 A named Codex CLI (or any other Operator) may run a full cycle including freeze.
@@ -178,7 +179,7 @@ Use the strongest verification the touched surface warrants.
 
 The PR is draft until this band.
 
-1. Send for review — mark ready. Named review.
+1. Send for review — mark ready. Named review: `@codex review` and `agents-pr-review` (companion). Pointer only.
 2. Wait.
 3. Inspection — look at the thread or the pass.
 
@@ -193,7 +194,7 @@ Merge, then Close. Two operations.
 
 - Merge when repo-backed confidence and named criteria pass, unless this traveler forbids merge.
 - Merge is not an Owner seat when that clearance holds.
-- Owner may authorize a docs-only main commit after merge for traveler + packslip stamps only.
+- After merge, docs-only traveler and packslip stamps on `main`: AGENTS Never second exception, when this traveler names Owner authorization.
 - Close: sync, prune, persist approved lessons, quiet archive when that is the named work.
 - Packslip after Close when this is job-end. Print. Post on the PR.
 - If next cannot be decided, next is the Owner.
