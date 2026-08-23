@@ -14,6 +14,7 @@ job_id: NGJ-20260822-98
 | 2 | Cut | Worker | Codex App | 63ebd2b | Mermaid audit written; stamped; advanced to Send for review |
 | 3 | Send for review | Worker | Codex App | abf9462 | PR marked ready; `@codex review` posted; advanced to Wait |
 | 4 | Wait | Worker | Codex App | 5001428500 (COMMENTED on 6344bb6) | Codex review held; advanced to Inspection |
+| 4 | Corrective Action | Specialist | Codex App | c759ea9 | Three P2 reconstruction findings corrected; advanced to Inspection |
 | 5 | Inspection | Worker | Codex App | 4216692 | Three P2 threads resolved; audit gate clean; advanced to Merge |
 | 6 | Merge | Worker | Codex App | 3e766ef | PR squash-merged; advanced to Close |
 | 7 | Close | Worker | Codex App | 104ed9a | Docs-only Close stamped; job ended |
