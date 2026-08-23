@@ -11,6 +11,7 @@ Do not delete rows. Append only.
 | 2 | Cut | Worker | Codex App | 63ebd2b | Mermaid audit written; stamped; advanced to Send for review |
 | 3 | Send for review | Worker | Codex App | abf9462 | PR marked ready; `@codex review` posted; advanced to Wait |
 | 4 | Corrective Action | Specialist | Codex App | c759ea9 | Three P2 reconstruction findings corrected; advanced to Inspection |
+| 5 | Inspection | Worker | Codex App | 4216692 | Three P2 threads resolved; audit gate clean; advanced to Merge |
 
 ---
 
@@ -179,4 +180,45 @@ Seq 4 Corrective Action stamped with c759ea9.
 Still open: Inspection.
 Next: Inspection.
 Inspection was not started. Merge was not performed.
+```
+
+### Seq 5 — Inspection
+
+**Ops Packet**
+
+```text
+Repo: NestCalc
+Station: Inspection
+Mode: Worker
+Operator: Codex App
+Branch: docs/employee-manual-mermaid-probe-3
+Head: 4216692
+flow_id: —
+goal_sha256: —
+Trace: NestCalc #98; CA c759ea9; Codex threads resolved; job traveler docs/travelers/98.md
+Model: GPT-5.6 Terra
+Effort: medium
+Orchestration: Single-agent
+Session: Fresh
+
+Instruction:
+Inspect PR 98 after Corrective Action c759ea9. Confirm the three Codex P2 threads are resolved and the audit still has exactly one Mermaid fence plus one legend. Confirm no open review threads remain that block this Station. Stamp Seq Inspection on docs/travelers/98.md with this pass short SHA (or HEAD if stamp-only). Advance Still open / Next to Merge on the same pass only if Inspection is clean. Append Ops Packet + Operator return to docs/travelers/98-packets.md. If Inspection is not clean: stop, report facts, do not advance to Merge. Do not merge. Do not Close.
+
+Reason:
+WORKFLOW Quality Control — Inspection after CA. Clean Inspection → Release (Merge named next on traveler).
+```
+
+**Operator return**
+
+```text
+Branch confirmed: docs/employee-manual-mermaid-probe-3.
+HEAD confirmed: 4216692.
+All three Codex P2 review threads are resolved and outdated; each has its c759ea9 fix reply.
+The audit contains exactly one Mermaid fence and one external legend.
+No unresolved review threads remain on PR 98.
+Seq 5 Inspection stamped with 4216692.
+Inspection is clean on its stated review gates.
+Still open: Merge.
+Next: Merge.
+Merge and Close were not performed.
 ```
