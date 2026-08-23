@@ -75,3 +75,29 @@ Pause P0-F pull_request trigger (free-tier). Checkout sync is Owner terminal.
 - Wait did not fix. This Surface cannot run `agents-pr-review`; reported only.
 - `docs/travelers/108.md`: Wait row stamped `3705eef9efc39a5fd104601a305d2b0e1eaccd53`.
 - Not done this Station: Corrective Action, Inspection, Merge, Close, packslip.
+
+## Station: Corrective Action
+
+### Ops Packet
+
+- Repo: NestCalc
+- Station: Corrective Action
+- Mode: Specialist
+- Operator: Grok Build
+- Branch: docs/p0f-workflow-pause
+- Head in: 8448e5e84cb5d5464ec323537874d7ca7f8619bd
+- job_id: NGJ-20260823-p0f-pause
+- flow_id: —
+- goal_sha256: —
+- Trace: NestCalc #108; Wait P2 p0f-evidence under workflow_dispatch
+- Instruction: Done when P2 fixed on tip; facts-only reply on the thread; thread resolved when tip includes the fix; Closed Corrective Action lists this stamp; Still open / Next = Send for review.
+
+### Facts return
+
+- Finding: https://github.com/TurboFrogLLC/NestCalc/pull/108#discussion_r3839521976
+- `.github/workflows/p0-f-minimum-ci.yml`: `on:` remains `workflow_dispatch`; jobs kept; `p0f-evidence` gates `github.event.pull_request.*` on `github.event_name == 'pull_request'` and uses `github.sha` / `github.event_name` on dispatch. File not deleted. Trigger not restored.
+- `docs/audits/p0f-workflow-pause.md`: one evidence-gating line added.
+- Closed Corrective Action: `04f652c478f9018982a5d2c45414d2f37c758098` P2 p0f-evidence dispatch.
+- Still open / Next = Send for review.
+- Thread reply + resolve: after this tip is on origin.
+- Not done this Station: Send for review, Wait, Inspection, Merge, Close, packslip.
