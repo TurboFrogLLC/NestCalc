@@ -3,7 +3,7 @@
 Employee-manual mermaid probe-4. Every management Ops Packet and every Operator return is recorded here.
 Do not delete rows. Append only.
 
-Record Head: bfdddec712f7fe269f0edd7c9503a9e646035e58
+Record Head: 378ef7e43c0b6a1dffa2435640cccdc81f70ca66
 job_id: NGJ-20260822-101
 
 ## Index
@@ -13,44 +13,65 @@ job_id: NGJ-20260822-101
 | 1 | Checkout sync | Worker | Grok Build | 1c9310c | Session: docs/audits/pr101-checkout-session.md |
 | 2 | Cut | Worker | Grok Build | fa689fa | Session: docs/audits/pr101-cut-session.md |
 | 3 | Send for review | Worker | Grok Build | 178b12c | Session: docs/audits/pr101-send-for-review-session.md |
-| CA | Corrective Action | Specialist | Grok Build | 52d5535 | tip bfdddec; three P2s fixed; PR unparked. Session: docs/audits/pr101-ca-session.md |
+| CA | Corrective Action | Specialist | Grok Build | 52d5535 | tip bfdddec; Session: docs/audits/pr101-ca-session.md |
+| 5 | Inspection | Worker | Grok Build | — | Ops Packet recorded; Operator return pending |
 
 ---
 
 ## Log
 
-### Seq 1 — Checkout sync
+### Seq 1–3 + CA
 
-Session: `docs/audits/pr101-checkout-session.md`. Seq 1 Stamp corrected to `1c9310c` under CA.
+See prior sessions. Closed Corrective Action: `52d5535`. Three Codex P2 threads resolved.
 
-### Seq 2 — Cut
+### Seq 5 — Inspection
 
-Session: `docs/audits/pr101-cut-session.md`.
-
-### Seq 3 — Send for review
-
-Session: `docs/audits/pr101-send-for-review-session.md`.
-
-### Corrective Action — Codex 3×P2 + unpark
-
-**Ops Packet** (management → Grok Build) — Head `3db9014` (recorded on branch).
-
-**Operator return** (UI)
+**Ops Packet** (management → Grok Build)
 
 ```text
 Repo: NestCalc
-Station: Corrective Action
-Mode: Specialist
+Station: Inspection
+Mode: Worker
 Operator: Grok Build
 Branch: docs/employee-manual-mermaid-probe-4
-Head: bfdddec712f7fe269f0edd7c9503a9e646035e58
+Head: 378ef7e43c0b6a1dffa2435640cccdc81f70ca66
 job_id: NGJ-20260822-101
 flow_id: —
 goal_sha256: —
-Stamp: 52d5535b0e3be2a68699dc50f9f6074bb497290a
-Facts: Three Codex P2s fixed on 52d5535. Chart: completed Freeze (freezeAuth), Cut, and peer Station outcomes connect into gates → stampOp; doOp no longer branches directly to gates. Freeze/land labeled ownership vs execution, not COLLISION. One Mermaid fence + one legend. Seq 1 Stamp is 1c9310c. Closed Corrective Action: 52d5535. Still open / Next: Inspection. Job-rule dropped "Cut not started this Station". PR 101 title/body no longer say parked/PARKED. Facts-only replies on three Codex threads; resolved on tip bfdddec. Pushed Allowed Files only (3db9014..bfdddec). Inspection and merge not started.
+Trace: NestCalc #101; CA 52d5535; Codex threads resolved; Inspection
+Model: Grok 4.6
+Effort: high
+
+Instruction:
+Done when: Inspection complete; Seq 5 Inspection stamped with commit SHA on @docs/travelers/101.md; Operator return under Seq 5 in @docs/travelers/101-packets.md; if clean, Still open / Next = Merge; pushed Allowed Files only; merge not performed.
+When inspect → confirm: (1) three Codex P2 threads resolved; (2) Closed Corrective Action lists 52d5535; (3) Seq 1 Stamp is 1c9310c; (4) chart has exactly one Mermaid fence + one legend; (5) PR title/body have no parked/PARKED; (6) no unresolved review threads requiring work.
+When clean → stamp Inspection; advance footer to Merge.
+When not clean → stamp facts only; Still open stays Inspection or name Corrective Action; do not invent merge.
+When traveler → @docs/travelers/101.md Seq 5 only; Stamp = commit SHA.
+When log → @docs/travelers/101-packets.md Seq 5 only.
+This Station only. Mode Worker: do not spawn subagents; do not open plan mode; do not load files outside named paths.
+Allowed write: docs/travelers/101.md, docs/travelers/101-packets.md.
+No chart rewrite unless a new open finding requires Owner-named CA. No AGENTS/WORKFLOW/GLOSSARY/GOAL/product edits. No merge.
+
+Reason:
+CA closed the three P2s. Inspection decides clean vs more work before Merge.
+
+Return (this Station only):
+Repo:
+Station:
+Mode:
+Operator:
+Branch:
+Head:
+job_id:
+flow_id:
+goal_sha256:
+Stamp:
+Facts:
 ```
 
-**Session capture:** `docs/audits/pr101-ca-session.md`
+**Operator return**
 
-Tip: `bfdddec712f7fe269f0edd7c9503a9e646035e58`.
+```text
+(pending — paste Grok Build return here on stamp)
+```
