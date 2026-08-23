@@ -108,3 +108,30 @@ NEXT: Inspection
 - Not done this Station: Merge, Close, packslip.
 NEXT: Merge
 
+## Station: Merge
+
+### Ops Packet
+
+- Repo: NestCalc
+- Station: Merge
+- Mode: Worker
+- Operator: Grok Build
+- Branch: docs/grok-thoughts-continuous-land
+- Head in: 7eaf0d60c2b156f1397cac404f61faf34ce1d9bf
+- job_id: NGJ-20260823-gtc-land
+- flow_id: —
+- goal_sha256: —
+- Trace: NestCalc #109; only if Inspection clean
+- Instruction: Done when: PR 109 squash-merged onto main; Seq Merge stamped with merge SHA; Still open / Next = Close.
+
+### Facts return
+
+- Inspection Next was Merge. Gate passed.
+- PR 109 squash-merged onto main without `--admin`. mergeStateStatus was UNSTABLE (Vercel pending). `gh pr merge 109 --squash --match-head-commit 7eaf0d60c2b156f1397cac404f61faf34ce1d9bf`.
+- Squash SHA: `7fac8209f94b4e4d127d8eaae8de38309919e5fe`.
+- Admin override: not used.
+- Docs-only Merge stamp on main after squash (Owner authorization for traveler/packets). Close not started in the Merge commit.
+- Feature branch not deleted this Station.
+- Not done this Station: Close, packslip, branch delete.
+NEXT: Close
+
