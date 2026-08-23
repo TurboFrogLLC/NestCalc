@@ -101,3 +101,27 @@ Pause P0-F pull_request trigger (free-tier). Checkout sync is Owner terminal.
 - Still open / Next = Send for review.
 - Thread reply + resolve: after this tip is on origin.
 - Not done this Station: Send for review, Wait, Inspection, Merge, Close, packslip.
+
+## Station: Send for review (after CA)
+
+### Ops Packet
+
+- Repo: NestCalc
+- Station: Send for review
+- Mode: Worker
+- Operator: Grok Build
+- Branch: docs/p0f-workflow-pause
+- Head in: cf7c018bafbac21843afe9d5295d3243a247d261
+- job_id: NGJ-20260823-p0f-pause
+- flow_id: —
+- goal_sha256: —
+- Trace: NestCalc #108; CA tip; re-review after evidence gate
+- Instruction: Done when PR 108 remains ready (or is marked ready if needed); `@codex review` posted on the CA tip; Seq Send for review stamped; Still open / Next = Wait.
+
+### Facts return
+
+- PR 108 remains ready (not draft) at https://github.com/TurboFrogLLC/NestCalc/pull/108.
+- `@codex review` posted on PR 108 against the CA tip.
+- `docs/travelers/108.md`: Send for review restamped `cf7c018bafbac21843afe9d5295d3243a247d261`; Still open / Next = Wait.
+- This Surface cannot run `agents-pr-review`; reported only.
+- Not done this Station: Wait, Inspection, Merge, Close, packslip.
