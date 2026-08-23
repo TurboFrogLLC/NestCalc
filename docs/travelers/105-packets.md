@@ -16,7 +16,7 @@ Operator: Grok Build | Model: Grok 4.6 | Effort: low
 | CA | Corrective Action | Specialist | Grok Build | efa7f7d61d87bf8d996b50f712f35785011d9368 | P2 README prefix; Next=Inspection |
 | 5 | Inspection | Worker | Grok Build | ec32e756f952f5d5b0a0a7670092b127bd400730 | clean; Next=Merge |
 | 6 | Merge | Worker | Grok Build | bbda2b22 | squash; admin override P0-F (logged on branch path; aligned on Close) |
-| 7 | Close | Worker | Grok Build | beededc22cec86c6c46cf9c0a25c2d947d92ef93 | stamped; Next=none |
+| 7 | Close | Worker | Grok Build | 5ef629da53d4e82b783aa7ccb0d43af6c354ca2e | stamped; Next=none |
 
 ---
 
@@ -339,11 +339,11 @@ Station: Close
 Mode: Worker
 Operator: Grok Build
 Branch: main
-Head: beededc22cec86c6c46cf9c0a25c2d947d92ef93
+Head: 5ef629da53d4e82b783aa7ccb0d43af6c354ca2e
 job_id: NGJ-20260823-gtc
 flow_id: —
 goal_sha256: —
-Stamp: beededc22cec86c6c46cf9c0a25c2d947d92ef93
+Stamp: 5ef629da53d4e82b783aa7ccb0d43af6c354ca2e
 Facts:
 Fetched origin; checkout main; fast-forward to origin/main bbda2b2272f217b6beee409bd2254cfbd64314a1.
 Owner docs-only main stamp (AGENTS Never second exception) for traveler + packets only.
@@ -363,7 +363,7 @@ Repo: NestCalc
 Owner: wReckless
 PR: 105
 Branch: main
-Head: beededc22cec86c6c46cf9c0a25c2d947d92ef93
+Head: 5ef629da53d4e82b783aa7ccb0d43af6c354ca2e
 job_id: NGJ-20260823-gtc
 flow_id: —
 goal_sha256: —
@@ -378,7 +378,7 @@ Seq  Label              Operator     Mode         Stamp      Still open
 4    Wait               Grok Build   Worker       a7d0e9506326d34eaccf3ffd493792c057bab06b  Codex COMMENTED P2=1
 5    Inspection         Grok Build   Worker       ec32e756f952f5d5b0a0a7670092b127bd400730  clean
 6    Merge              Grok Build   Worker       bbda2b2272f217b6beee409bd2254cfbd64314a1  squash; admin override P0-F
-7    Close              Grok Build   Worker       beededc22cec86c6c46cf9c0a25c2d947d92ef93  —
+7    Close              Grok Build   Worker       5ef629da53d4e82b783aa7ccb0d43af6c354ca2e  —
 
 Closed Corrective Action: efa7f7d61d87bf8d996b50f712f35785011d9368
 Still open: none
