@@ -14,7 +14,7 @@ job_id: NGJ-20260822-101
 | 2 | Cut | Worker | Grok Build | fa689fa | Session: docs/audits/pr101-cut-session.md |
 | 3 | Send for review | Worker | Grok Build | 178b12c | Session: docs/audits/pr101-send-for-review-session.md |
 | CA | Corrective Action | Specialist | Grok Build | 52d5535 | tip bfdddec; Session: docs/audits/pr101-ca-session.md |
-| 5 | Inspection | Worker | Grok Build | — | Ops Packet recorded; Operator return pending |
+| 5 | Inspection | Worker | Grok Build | 9995764 | clean; Next Merge; merge not performed |
 
 ---
 
@@ -73,5 +73,21 @@ Facts:
 **Operator return**
 
 ```text
-(pending — paste Grok Build return here on stamp)
+Repo: NestCalc
+Station: Inspection
+Mode: Worker
+Operator: Grok Build
+Branch: docs/employee-manual-mermaid-probe-4
+Head: 9995764855965ee26e7bdb101c8ecbaf201aeca9
+job_id: NGJ-20260822-101
+flow_id: —
+goal_sha256: —
+Stamp: 9995764
+Facts:
+(1) Three Codex P2 review threads resolved: PRRT_kwDOTJAVIM6bdtN2 (gates path), PRRT_kwDOTJAVIM6bdtN3 (own vs execute), PRRT_kwDOTJAVIM6bdtN4 (Seq 1 stamp SHA). All is_resolved=true; totalCount=3; no further pages.
+(2) Closed Corrective Action lists 52d5535.
+(3) Seq 1 Stamp is 1c9310c.
+(4) Chart docs/audits/employee-manual-mermaid-probe-4.md has exactly one Mermaid fence and one Legend.
+(5) Live PR #101 title "docs: employee-manual mermaid probe-4"; title and body contain no parked/PARKED.
+(6) No unresolved review threads requiring work. Codex review COMMENTED on 178b12c; agents-pr-review nits (PARKED text; Cut-not-started job-rule) are already gone on live PR/traveler. Merge not performed. Still open / Next = Merge.
 ```
