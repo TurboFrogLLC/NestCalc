@@ -14,7 +14,7 @@ Operator: Grok Build | Model: Grok 4.6 | Effort: low (every Station)
 | 2 | Cut | Worker | Grok Build | 682ea47 | chart; stamped |
 | 3 | Send for review | Worker | Grok Build | 48a20afa | ready; @codex review |
 | 4 | Wait | Worker | Grok Build | 304cc01 | P1=1 P2=3; Next=CA |
-| CA | Corrective Action | Specialist | Grok Build | — | P1+P2 addressed; Next=Inspection pending stamp |
+| CA | Corrective Action | Specialist | Grok Build | e970090 | P1 transcripts restored; P2 chart edges; Next=Inspection |
 
 ---
 
@@ -330,5 +330,20 @@ Facts:
 **Operator return**
 
 ```text
-(pending — paste Grok Build return here on stamp)
+Repo: NestCalc
+Station: Corrective Action
+Mode: Specialist
+Operator: Grok Build
+Branch: docs/employee-manual-mermaid-probe-5
+Head: e97009073f6d6fe08763f5d811f9ee0cc60b7faa
+job_id: NGJ-20260823-102
+flow_id: —
+goal_sha256: —
+Stamp: e97009073f6d6fe08763f5d811f9ee0cc60b7faa
+Facts:
+- P1: Seq 1 and Seq 2 full Ops Packet + Operator return restored in docs/travelers/102-packets.md from git history (992a5e8 / bc9e192). Optional session files not added.
+- P2 wrong-branch: host-fix success returns to BRANCH; Escalate/CA only when host cannot fix; COLLISION A still labeled.
+- P2 failed gates: Worker fail → Escalate; Specialist fail → CA stay; law broke → NCMR stop; those paths do not enter STAMP.
+- P2 EMIT: named next Station dispatch; unknown-next → Owner; EMIT no longer feeds SPINE/Freeze.
+- One Mermaid fence + one legend. Closed Corrective Action e97009073f6d6fe08763f5d811f9ee0cc60b7faa. Still open / Next = Inspection. Inspection and merge not started.
 ```
