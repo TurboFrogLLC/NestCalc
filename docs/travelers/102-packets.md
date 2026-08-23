@@ -15,48 +15,51 @@ Operator: Grok Build | Model: Grok 4.6 | Effort: low (every Station)
 | 3 | Send for review | Worker | Grok Build | 48a20afa | ready |
 | 4 | Wait | Worker | Grok Build | 304cc01 | findings |
 | CA | Corrective Action | Specialist | Grok Build | e970090 | closed |
-| 5 | Inspection | Worker | Grok Build | c04c1cc | not clean: Seq 1–2 transcripts missing; Next=CA |
+| 5 | Inspection | Worker | Grok Build | c04c1cc | not clean |
+| CA2 | Corrective Action | Specialist | Grok Build | — | Ops Packet recorded; Operator return pending |
 
 ---
 
 ## Log
 
-### Prior stations
+### Prior stations (collapsed once — CA2 must restore)
 
-See full returns above. Closed CA: `e970090`. All four Codex threads resolved on tip `ab5a167`.
+Seq 1–CA full Ops Packet + Operator return text lived at commits `e970090` / `ab5a167` and was collapsed by management commit `c04c1cc`. Inspection failed criterion (3) for that reason.
 
-### Seq 5 — Inspection
+### Seq 5 — Inspection (operator return on tip)
+
+Stamp `c04c1cc`. Not clean. Next = Corrective Action.
+
+### Corrective Action 2
 
 **Ops Packet** (management → Grok Build)
 
 ```text
 Repo: NestCalc
-Station: Inspection
-Mode: Worker
+Station: Corrective Action
+Mode: Specialist
 Operator: Grok Build
 Branch: docs/employee-manual-mermaid-probe-5
-Head: ab5a16799c0c35eeb251fc43bc18f911ffd4bcff
+Head: 5b3aab00f572e5d67422bc3942411e6c07565662
 job_id: NGJ-20260823-102
 flow_id: —
 goal_sha256: —
-Trace: NestCalc #102; CA e970090; Inspection
+Trace: NestCalc #102; Inspection not clean; CA2 restore Seq 1–2 transcripts
 Model: Grok 4.6
 Effort: low
 Session: continued
 
 Instruction:
-Done when: Inspection complete; Seq 5 Inspection stamped with commit SHA on @docs/travelers/102.md; Operator return under Seq 5 in @docs/travelers/102-packets.md; if clean, Still open / Next = Merge; pushed Allowed Files only; merge not performed.
-When inspect → confirm: (1) four Codex threads resolved; (2) Closed Corrective Action lists e970090; (3) Seq 1–2 full packet/return text present in 102-packets.md; (4) chart has exactly one Mermaid fence + one legend; (5) no unresolved review threads requiring work.
-When clean → stamp Inspection; advance footer to Merge.
-When not clean → stamp facts only; Still open stays Inspection or name Corrective Action; do not invent merge.
-When traveler → @docs/travelers/102.md Seq 5 only; Stamp = commit SHA.
-When log → @docs/travelers/102-packets.md Seq 5 only.
-This Station only. Mode Worker: do not spawn subagents; do not open plan mode.
+Done when: docs/travelers/102-packets.md again contains the full Ops Packet + Operator return text for Seq 1 and Seq 2 (and keep Seq 3, 4, CA, Seq 5); Closed Corrective Action lists this CA2 commit SHA on @docs/travelers/102.md (append or replace list to include both e970090 and this SHA); Operator return under CA2 in @docs/travelers/102-packets.md; Still open / Next = Inspection; pushed Allowed Files only; Inspection re-run and merge not started.
+When restore → recover Seq 1 and Seq 2 full packet/return bodies from git history at e970090 or ab5a167 into @docs/travelers/102-packets.md. Append-only: do not delete Seq 3+ rows. Do not collapse any station to a one-line summary.
+When traveler → @docs/travelers/102.md; Closed Corrective Action includes this CA2 SHA; Still open / Next = Inspection.
+When log → @docs/travelers/102-packets.md CA2 only for the new return.
+This Station only. Mode Specialist: do not spawn subagents; do not open plan mode.
 Allowed write: docs/travelers/102.md, docs/travelers/102-packets.md.
-No chart rewrite unless a new open finding requires Owner-named CA. No AGENTS/WORKFLOW/GLOSSARY/GOAL/product edits. No merge.
+No chart rewrite. No AGENTS/WORKFLOW/GLOSSARY/GOAL/product edits. No merge.
 
 Reason:
-CA closed P1+P2. Inspection decides clean vs more work before Merge.
+Management commit c04c1cc collapsed Seq 1–2 transcripts after CA had restored them. Inspection correctly failed criterion (3). CA2 restores append-only integrity before re-Inspection.
 
 Return (this Station only):
 Repo:
@@ -75,21 +78,5 @@ Facts:
 **Operator return**
 
 ```text
-Repo: NestCalc
-Station: Inspection
-Mode: Worker
-Operator: Grok Build
-Branch: docs/employee-manual-mermaid-probe-5
-Head: c04c1cc0a56c2578d166e512ce95bb654f87cfac
-job_id: NGJ-20260823-102
-flow_id: —
-goal_sha256: —
-Stamp: c04c1cc0a56c2578d166e512ce95bb654f87cfac
-Facts:
-- (1) Four Codex threads resolved (all is_resolved=true).
-- (2) Closed Corrective Action lists e97009073f6d6fe08763f5d811f9ee0cc60b7faa.
-- (3) Fail: Seq 1–2 full Ops Packet + Operator return text not present in current docs/travelers/102-packets.md (collapsed to "See full returns above" on c04c1cc). Full text remains in git history at e970090 / ab5a167.
-- (4) Chart has exactly one Mermaid fence and one legend.
-- (5) No unresolved GitHub review threads. Criterion (3) still requires work.
-- Inspection not clean. Still open / Next = Corrective Action. Merge not performed.
+(pending — paste Grok Build return here on stamp)
 ```
