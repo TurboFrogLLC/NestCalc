@@ -3,7 +3,7 @@
 Owner expedite. Every management Ops Packet and every Operator return is recorded here.
 Do not delete rows. Append only.
 
-Record Head: 96ef9e9
+Record Head: 63458ae
 job_id: NGJ-20260822-100
 
 ## Index
@@ -12,7 +12,7 @@ job_id: NGJ-20260822-100
 | --- | --- | --- | --- | --- | --- |
 | 1 | Checkout sync | Worker | Grok Build | 493aaa1 | Stamped; advanced to Cut |
 | 2 | Cut | Worker | Grok Build | 47629f2 | AGENTS second main exception; Wait pointer; WORKFLOW defers to AGENTS |
-| 3 | Send for review | Worker | Grok Build | 96ef9e9 | Stamped; agents-pr-review not runnable on this Surface; advanced to Wait |
+| 3 | Send for review | Worker | Grok Build | 63458ae | PR marked ready; @codex review posted; agents-pr-review not runnable on this Surface; advanced to Wait |
 
 ---
 
@@ -141,5 +141,18 @@ Seq 3 Send for review stamped with 96ef9e9.
 Still open: Wait.
 Next: Wait.
 This Operator cannot run agents-pr-review from this Surface. No substitute review body was posted.
+Inspection was not started. Merge was not performed.
+```
+
+**Stamp supplement**
+
+```text
+PR #100 marked ready for review.
+Named Codex review requested by posting “@codex review”.
+Comment: https://github.com/TurboFrogLLC/NestCalc/pull/100#issuecomment-5384105386
+Pass commit: 63458ae.
+Seq 3 Send for review stamped with 63458ae.
+Still open: Wait.
+Next: Wait.
 Inspection was not started. Merge was not performed.
 ```
