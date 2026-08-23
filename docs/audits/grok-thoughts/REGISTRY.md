@@ -9,6 +9,7 @@ Not product law. Append a row + new dump file; do not split per-probe PRs.
 | --- | --- | --- | --- | --- | --- |
 | NGJ-20260822-101 | 101 | high | 7 | `9bb091db3c63d29e36d5e1465a375952d3abdbad` | [NGJ-20260822-101.md](./NGJ-20260822-101.md) |
 | NGJ-20260823-102 | 102 | low | 3 (C multi-op, 8 Stations) | `65d1334ddd556c9c0d5ac70bfa288baf043c2e9c` | [NGJ-20260823-102.md](./NGJ-20260823-102.md) |
+| NGJ-20260823-p0f | 107 | medium | 1 (A multi-op, 6 Stations) | `5f2f81af1a6abd2f9db13b037a16db57407a87ed` | [NGJ-20260823-p0f.md](./NGJ-20260823-p0f.md) |
 
 Wait: **absent on 101** (Seq 4 stamp empty; never an Ops Packet). Present on 102 (Session C).
 
@@ -84,3 +85,35 @@ Packslip: https://github.com/TurboFrogLLC/NestCalc/pull/102#issuecomment-5386783
 | 7 | Close | Worker | C | `5713168` | ~1m26s |
 
 Session **C** is multi-op: split on Ops Packet boundaries (8 Stations in one thread). A and B are single-op.
+
+---
+
+## NGJ-20260823-p0f — Session IDs
+
+Source: Owner-named Session ID + `grok export` / `~/.grok/sessions/.../2026-08-23-0479dcbe/01a03021-d91e-77a1-9660-b23ec39e8174`. Do not invent IDs.
+
+Operator: Grok Build. Model / effort: **Grok 4.6 / medium** (every Station in this session).  
+Close stamp: `0288da31c53a6db2cb339c2f3516fe6d663f667f`.  
+Packslip: https://github.com/TurboFrogLLC/NestCalc/pull/107#issuecomment-5388174286
+
+### Sessions (one continuous thread)
+
+| Key | Title | Session ID | Worktree suffix | Turns | Context |
+| --- | --- | --- | --- | --- | --- |
+| A | P0-F runner residual: billing-blocked PR 107 merge | `01a03021-d91e-77a1-9660-b23ec39e8174` | `2026-08-23-0479dcbe` | 6 | 128.7k / 500k (25%) |
+
+Duplicate check: **none**. One Session ID.
+
+### Station → session map
+
+| Seq | Station | Mode | Session | Stamp (short) | Notes |
+| --- | --- | --- | --- | --- | --- |
+| 1 | Checkout sync | Worker | — | — | Owner terminal; not in named session |
+| 2 | Cut | Worker | A | `e87dc84` | `gh pr checks` exit 1 continued |
+| 3 | Send for review | Worker | A | `49badda` | |
+| 4 | Wait | Worker | A | `585428c` | Python poll SyntaxError retried |
+| 5 | Inspection | Worker | A | `488daeb` | clean |
+| 6 | Merge | Worker | A | `5f2f81a` | admin land override |
+| 7 | Close | Worker | A | `0288da3` | docs-only main stamps |
+
+Session **A** is multi-op: split on Ops Packet boundaries (6 Stations in one thread).
