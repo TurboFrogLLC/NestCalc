@@ -13,8 +13,9 @@ Not product law. Append a row + new dump file; do not split per-probe PRs.
 | NGJ-20260823-p0f | 107 | medium | 1 (A multi-op, 6 Stations) | `5f2f81af1a6abd2f9db13b037a16db57407a87ed` | [NGJ-20260823-p0f.md](./NGJ-20260823-p0f.md) |
 | NGJ-20260823-p0f-pause | 108 | medium | 1 (multi-op, 9 Stations; Checkout Owner terminal) | `041c3760e07efe323aebd29c77c009e1e072cda3` | [NGJ-20260823-p0f-pause.md](./NGJ-20260823-p0f-pause.md) |
 | NGJ-20260823-p0f-pause-meta | 108 | medium | 1 (grok-thoughts dump of p0f-pause dump session; not floor spine) | — | [NGJ-20260823-p0f-pause-meta.md](./NGJ-20260823-p0f-pause-meta.md) |
+| NGJ-20260823-gtc-land | 109 | medium | 1 (A multi-op, 6 Stations; Checkout Owner terminal) | `7fac8209f94b4e4d127d8eaae8de38309919e5fe` | [NGJ-20260823-gtc-land.md](./NGJ-20260823-gtc-land.md) |
 
-Wait: **absent on 101** (Seq 4 stamp empty; never an Ops Packet). Present on 102 (Session C). Present on 105 (Session A). Checkout sync: **absent as an Ops Packet on 105** (index starts Seq 2 Cut). Present on 108 (Session A, twice). Present on 108 floor dump (`NGJ-20260823-p0f-pause`, leftover commit `7dcc717`; not rewritten here).
+Wait: **absent on 101** (Seq 4 stamp empty; never an Ops Packet). Present on 102 (Session C). Present on 105 (Session A). Present on 109 (Session A). Checkout sync: **absent as an Ops Packet on 105** (index starts Seq 2 Cut). Present on 108 (Session A, twice). Present on 108 floor dump (`NGJ-20260823-p0f-pause`, leftover commit `7dcc717`; not rewritten here). Absent as an Ops Packet on 109 (Owner terminal).
 
 ---
 
@@ -216,3 +217,41 @@ Duplicate check: **none**. One Session ID.
 | Seq | Station | Mode | Session | Stamp (short) | Notes |
 | --- | --- | --- | --- | --- | --- |
 | — | grok-thoughts dump | — | A | `7dcc717` | not a floor Station; leftover commit on `docs/p0f-workflow-pause`; not pushed |
+
+---
+
+## NGJ-20260823-gtc-land — Session IDs
+
+Source: Owner-named Session ID + `grok export` + `~/.grok/sessions/…/2026-08-23-d40aca83/01a0307b-7667-7073-88c2-630f0b401cdd/`. Do not invent IDs.
+
+Operator: Grok Build. Model / effort: **Grok 4.6 / medium**.
+
+Merge: `7fac8209f94b4e4d127d8eaae8de38309919e5fe`.
+
+Close stamp (packslip / Operator return): `195ac4aa72888faaa08912f7c7e97d4b8f8fc1c0`.
+
+Packslip: https://github.com/TurboFrogLLC/NestCalc/pull/109#issuecomment-5388591323
+
+Dump: [NGJ-20260823-gtc-land.md](./NGJ-20260823-gtc-land.md)
+
+### Sessions (one continuous thread)
+
+| Key | Title | Session ID | Worktree suffix | Turns | Context |
+| --- | --- | --- | --- | --- | --- |
+| A | Land grok-thoughts dumps on NestCalc 109 | `01a0307b-7667-7073-88c2-630f0b401cdd` | `2026-08-23-d40aca83` | 3 | 113.3k / 500k (22%) |
+
+Duplicate check: **none**. One Session ID.
+
+### Station → session map
+
+| Seq | Station | Mode | Session | Stamp (short) | Notes |
+| --- | --- | --- | --- | --- | --- |
+| 1 | Checkout sync | Owner | — | `108ee2c` | Owner terminal; not in this Session ID |
+| 2 | Cut | Worker | A | `f59a141` | |
+| 3 | Send for review | Worker | A | `921575d` | stacked with Wait–Close; `NEXT: Wait` |
+| 4 | Wait | Worker | A | `86e65da` | Ops Manager thumbs-up → Inspection |
+| 5 | Inspection | Worker | A | `1b948a9` | clean |
+| 6 | Merge | Worker | A | `7fac820` | normal squash; `--admin` not used |
+| 7 | Close | Worker | A | `195ac4a` | docs-only main stamps; branch deleted last |
+
+Session **A** is multi-op: two `## User` prompts, six Ops Packets, split on packet headers and `NEXT:` lines (not monitor wakes).
