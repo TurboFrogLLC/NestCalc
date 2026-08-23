@@ -9,8 +9,9 @@ Not product law. Append a row + new dump file; do not split per-probe PRs.
 | --- | --- | --- | --- | --- | --- |
 | NGJ-20260822-101 | 101 | high | 7 | `9bb091db3c63d29e36d5e1465a375952d3abdbad` | [NGJ-20260822-101.md](./NGJ-20260822-101.md) |
 | NGJ-20260823-102 | 102 | low | 3 (C multi-op, 8 Stations) | `65d1334ddd556c9c0d5ac70bfa288baf043c2e9c` | [NGJ-20260823-102.md](./NGJ-20260823-102.md) |
+| NGJ-20260823-gtc | 105 | low | 1 (A multi-op, 7 Stations) | `bbda2b2272f217b6beee409bd2254cfbd64314a1` | [NGJ-20260823-gtc.md](./NGJ-20260823-gtc.md) |
 
-Wait: **absent on 101** (Seq 4 stamp empty; never an Ops Packet). Present on 102 (Session C).
+Wait: **absent on 101** (Seq 4 stamp empty; never an Ops Packet). Present on 102 (Session C). Present on 105 (Session A). Checkout sync: **absent as an Ops Packet on 105** (index starts Seq 2 Cut).
 
 ---
 
@@ -84,3 +85,34 @@ Packslip: https://github.com/TurboFrogLLC/NestCalc/pull/102#issuecomment-5386783
 | 7 | Close | Worker | C | `5713168` | ~1m26s |
 
 Session **C** is multi-op: split on Ops Packet boundaries (8 Stations in one thread). A and B are single-op.
+
+---
+
+## NGJ-20260823-gtc — Session IDs
+
+Source: `grok export` + `~/.grok/sessions/.../2026-08-23-94aaae8d/01a02fdf-2283-7120-8f65-a35cb8356b51`. Do not invent IDs.
+
+Operator: Grok Build. Model / effort: **Grok 4.6 / low**.  
+Merge: `bbda2b2272f217b6beee409bd2254cfbd64314a1`.  
+Dump: [NGJ-20260823-gtc.md](./NGJ-20260823-gtc.md).
+
+### Sessions (one continuous thread)
+
+| Key | Title (dashboard) | Session ID | Worktree suffix | Turns | Context |
+| --- | --- | --- | --- | --- | --- |
+| A | NestCalc #105 continuous grok-thoughts home QC | `01a02fdf-2283-7120-8f65-a35cb8356b51` | `2026-08-23-94aaae8d` | 7 | ~128.6k / 500k |
+
+### Station → session map
+
+| Seq | Station | Mode | Session | Stamp (short) | Notes |
+| --- | --- | --- | --- | --- | --- |
+| 1 | Checkout sync | Worker | — | — | **absent** — never an Ops Packet on this job |
+| 2 | Cut | Worker | A | `02e285ab` | |
+| 3 | Send for review | Worker | A | `ccaf496` | |
+| 4 | Wait | Worker | A | `a7d0e95` | COMMENTED P2=1 → CA |
+| CA | Corrective Action | Specialist | A | `efa7f7d` | README prefix |
+| 5 | Inspection | Worker | A | `ec32e75` | clean |
+| 6 | Merge | Worker | A | `bbda2b2` | admin squash override |
+| 7 | Close | Worker | A | `5ef629d` | |
+
+Session **A** is multi-op: split on Ops Packet boundaries (7 Stations in one thread).
