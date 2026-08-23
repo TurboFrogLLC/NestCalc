@@ -178,3 +178,28 @@ Pause P0-F pull_request trigger (free-tier). Checkout sync is Owner terminal.
 - Clean. Still open / Next = Merge.
 - `docs/travelers/108.md`: Inspection stamped `45f3c9207745f8627197434710cdaba19b353523`.
 - Not done this Station: Merge, Close, packslip.
+
+## Station: Merge
+
+### Ops Packet
+
+- Repo: NestCalc
+- Station: Merge
+- Mode: Worker
+- Operator: Grok Build
+- Branch: docs/p0f-workflow-pause
+- Head in: c61b137cd3cddf8b9e70bfe4533ed87938d5e939
+- job_id: NGJ-20260823-p0f-pause
+- flow_id: —
+- goal_sha256: —
+- Trace: NestCalc #108; Inspection clean required before this Station
+- Instruction: Done when PR 108 is squash-merged onto main; Seq Merge stamped with merge SHA; Still open / Next = Close; Close not started this Station.
+
+### Facts return
+
+- Inspection Next was Merge. Gate passed.
+- PR 108 squash-merged onto main without `--admin`. mergeStateStatus was UNSTABLE (Vercel pending; no p0f-* required-check block). `gh pr merge 108 --squash --match-head-commit c61b137cd3cddf8b9e70bfe4533ed87938d5e939`.
+- Squash SHA: `041c3760e07efe323aebd29c77c009e1e072cda3`.
+- Admin override: not used.
+- Docs-only Merge stamp path: traveler Merge row + this packet committed on main after squash (Owner Close authorization for docs-only traveler/packets on main). Close not started in the Merge commit.
+- Not done this Station: Close, packslip, branch delete, post-Close sync.
