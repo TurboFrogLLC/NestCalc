@@ -3,6 +3,9 @@
 Regular job. Every management Ops Packet and every Operator return is recorded here.
 Do not delete rows. Append only.
 
+Record Head: 104ed9a
+job_id: NGJ-20260822-98
+
 ## Index
 
 | Seq | Station | Mode | Operator | Stamp | Outcome |
@@ -10,8 +13,11 @@ Do not delete rows. Append only.
 | 1 | Checkout sync | Worker | Codex App | d27c056 | Stamped; advanced to Cut |
 | 2 | Cut | Worker | Codex App | 63ebd2b | Mermaid audit written; stamped; advanced to Send for review |
 | 3 | Send for review | Worker | Codex App | abf9462 | PR marked ready; `@codex review` posted; advanced to Wait |
+| 4 | Wait | Worker | Codex App | 5001428500 (COMMENTED on 6344bb6) | Codex review held; advanced to Inspection |
 | 4 | Corrective Action | Specialist | Codex App | c759ea9 | Three P2 reconstruction findings corrected; advanced to Inspection |
 | 5 | Inspection | Worker | Codex App | 4216692 | Three P2 threads resolved; audit gate clean; advanced to Merge |
+| 6 | Merge | Worker | Codex App | 3e766ef | PR squash-merged; advanced to Close |
+| 7 | Close | Worker | Codex App | 104ed9a | Docs-only Close stamped; job ended |
 
 ---
 
@@ -134,6 +140,17 @@ Pass commit: abf9462.
 Seq 3 Send for review stamped with abf9462.
 Still open: Wait.
 Next: Wait.
+```
+
+### Seq 4 — Wait
+
+**Review receipt**
+
+```text
+Codex review 5001428500 COMMENTED on 6344bb6.
+Seq 4 Wait stamped with 5001428500 (COMMENTED on 6344bb6).
+Still open: Inspection.
+Next: Inspection.
 ```
 
 ### Seq 4 — Corrective Action
@@ -290,7 +307,7 @@ Job end. Packslip is Close. Traveler stamps need the named main docs exception.
 
 ```text
 Docs-only Close changes were committed and pushed on main.
-Seq 7 Close stamped with 892d459.
+Seq 7 Close stamped with 104ed9a.
 Still open: none.
 Next: none.
 Local and remote branch docs/employee-manual-mermaid-probe-3 were deleted.
