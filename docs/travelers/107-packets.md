@@ -120,3 +120,59 @@ Instruction (this Station): check four criteria; stamp Inspection; if clean, Sti
 - (4) **pass.** Cut stamp `e87dc843288d44048e361a030967f1a486cf3e61`; Send for review stamp `49baddab9f811205ceef311bf61b0c2cc5dbb0c0`.
 - Clean. Still open / Next: Merge. Not merge this Station.
 
+## Seq 7 Close — Ops Packet
+
+```
+Repo: NestCalc
+Station: Close
+Mode: Worker
+Operator: Grok Build
+Branch: main
+Head: 5f2f81af1a6abd2f9db13b037a16db57407a87ed
+job_id: NGJ-20260823-p0f
+flow_id: —
+goal_sha256: —
+Trace: NestCalc #107 squash-merged 5f2f81a; Owner authorizes docs-only main traveler+packslip stamps (AGENTS Never second exception)
+Model: Grok 4.6
+Effort: medium
+Session: continuous
+```
+
+Instruction (this Station): stamp Close on main; align Merge stamp to 5f2f81a; Still open / Next = none; delete origin `docs/p0f-runner-residual`; print and post packslip. Docs-only main commits for traveler + packets only.
+
+## Seq 7 Close — Facts return
+
+- `main` @ squash `5f2f81af1a6abd2f9db13b037a16db57407a87ed`. Owner authorized docs-only traveler+packets stamps on main.
+- Merge row aligned to `5f2f81af1a6abd2f9db13b037a16db57407a87ed`. Close stamped (fill SHA of this docs-only commit after push).
+- Still open / Next: none.
+- Remote `docs/p0f-runner-residual` deleted on Close. Local `-D` (squash not ancestor of post-merge feature tip `4a7d6eb`).
+- Audit body not rewritten. Billing residual remains Owner-side outside this traveler. Admin land remains temporary until runners execute steps.
+- Packslip printed in CLI and posted on PR 107.
+
+## Packslip — NGJ-20260823-p0f
+
+```
+Repo: NestCalc
+PR: 107
+https://github.com/TurboFrogLLC/NestCalc/pull/107
+job_id: NGJ-20260823-p0f
+flow_id: —
+goal_sha256: —
+Owner: wReckless
+Operator: Grok Build
+Cycle: Lite
+Date: 2026-08-23
+Merge SHA: 5f2f81af1a6abd2f9db13b037a16db57407a87ed
+Branch: docs/p0f-runner-residual (deleted on Close)
+
+Outcome: Job closed. Facts-only diagnosis: p0f-* jobs fail with runner_id 0 and 0 steps because GitHub does not start them (account payments failed or spending limit). Workflow YAML was not rewritten. Named Codex review COMMENTED (P2 stale vs tip). Squash-merged with Owner-authorized admin override while UNSTABLE solely from that billing block. Admin land remains temporary until runners execute steps. Billing residual is Owner-side outside this traveler.
+
+Landed:
+- docs/audits/p0f-runner-residual.md
+- docs/travelers/107.md
+- docs/travelers/107-packets.md
+
+Still open: none
+Next: none
+```
+
