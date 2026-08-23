@@ -12,7 +12,7 @@ job_id: NGJ-20260822-101
 | --- | --- | --- | --- | --- | --- |
 | 1 | Checkout sync | Worker | Grok Build | 1c9310c (traveler cell: 2026-08-22) | Synced c94fce2; stamped; push tip 1c9310c. Session: docs/audits/pr101-checkout-session.md |
 | 2 | Cut | Worker | Grok Build | fa689fa | Chart + stamp push tip f98603a; Send for review not started. Session: docs/audits/pr101-cut-session.md |
-| 3 | Send for review | Worker | Grok Build | — | Ops Packet recorded; Operator return pending |
+| 3 | Send for review | Worker | Grok Build | 178b12c | PR 101 ready; @codex review posted; Wait not started |
 
 ---
 
@@ -198,5 +198,15 @@ Facts:
 **Operator return**
 
 ```text
-(pending — paste Grok Build return here on stamp)
+Repo: NestCalc
+Station: Send for review
+Mode: Worker
+Operator: Grok Build
+Branch: docs/employee-manual-mermaid-probe-4
+Head: 178b12c8000a1f78977b225e56a8650bb4be5099
+job_id: NGJ-20260822-101
+flow_id: —
+goal_sha256: —
+Stamp: 178b12c8000a1f78977b225e56a8650bb4be5099
+Facts: PR 101 marked ready (open, draft=false). Posted comment `@codex review` (https://github.com/TurboFrogLLC/NestCalc/pull/101#issuecomment-5384712141). Seq 3 Send for review stamped 178b12c on docs/travelers/101.md. Operator return filled under Seq 3 in docs/travelers/101-packets.md. Pushed Allowed Files only. This Surface cannot run agents-pr-review; management posts the companion review. Wait and Inspection not started. Merge not performed.
 ```
