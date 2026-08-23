@@ -13,48 +13,52 @@ Operator: Grok Build | Model: Grok 4.6 | Effort: low (every Station)
 | 1 | Checkout sync | Worker | Grok Build | 25b4cb55 | stamped |
 | 2 | Cut | Worker | Grok Build | 682ea47 | chart; stamped |
 | 3 | Send for review | Worker | Grok Build | 48a20afa | ready; @codex review |
-| 4 | Wait | Worker | Grok Build | 304cc01 | Codex COMMENTED on 48a20afa; P1=1 P2=3 open; Next=Corrective Action |
+| 4 | Wait | Worker | Grok Build | 304cc01 | P1=1 P2=3; Next=CA |
+| CA | Corrective Action | Specialist | Grok Build | — | Ops Packet recorded; Operator return pending |
 
 ---
 
 ## Log
 
-### Seq 1–3
+### Seq 1–4
 
-See prior returns. Send for review tip `ab2424a`.
+See prior returns. Wait tip `67ffb34`.
 
-### Seq 4 — Wait
+### Corrective Action
 
 **Ops Packet** (management → Grok Build)
 
 ```text
 Repo: NestCalc
-Station: Wait
-Mode: Worker
+Station: Corrective Action
+Mode: Specialist
 Operator: Grok Build
 Branch: docs/employee-manual-mermaid-probe-5
-Head: ab2424a799e1b7637373341f121cbc4263c196a8
+Head: 67ffb341a9c7a495f7c0c39e34374bd404a09d54
 job_id: NGJ-20260823-102
 flow_id: —
 goal_sha256: —
-Trace: NestCalc #102; Send for review ab2424a; Wait
+Trace: NestCalc #102; Wait 304cc01; CA for Codex P1+P2
 Model: Grok 4.6
 Effort: low
 Session: continued
 
 Instruction:
-Done when: named Codex review receipt recorded; Seq 4 Wait stamped with commit SHA on @docs/travelers/102.md; Operator return under Seq 4 in @docs/travelers/102-packets.md; Still open / Next named from findings; pushed Allowed Files only.
-When hold → confirm Codex review on PR 102 (COMMENTED on 48a20afae9). Record open thread counts by severity.
-When findings require work → Still open / Next = Corrective Action.
-When clean → Still open / Next = Inspection.
-When traveler → @docs/travelers/102.md Seq 4 only; Stamp = commit SHA.
-When log → @docs/travelers/102-packets.md Seq 4 only.
-This Station only. Mode Worker: do not spawn subagents; do not open plan mode.
-Do not fix chart or resolve threads on this Station. Allowed write: docs/travelers/102.md, docs/travelers/102-packets.md.
+Done when: all four open Codex threads addressed; Closed Corrective Action lists the CA commit SHA on @docs/travelers/102.md; Operator return under CA in @docs/travelers/102-packets.md; Still open / Next = Inspection; facts-only replies on each thread; threads resolved on tip; pushed Allowed Files only; Inspection and merge not started.
+When P1 (packets transcripts) → restore full Ops Packet + Operator return text for Seq 1 and Seq 2 in @docs/travelers/102-packets.md (no placeholder summary). Optional: add docs/audits/pr102-checkout-session.md and docs/audits/pr102-cut-session.md if session bodies are available; otherwise full packet/return text in the log is enough for this Station.
+When P2 chart (wrong-branch) → on @docs/audits/employee-manual-mermaid-probe-5.md add host-fix success path back to BRANCH check; Escalate only when host cannot fix (WORKFLOW wrong-branch ladder).
+When P2 chart (failed gates) → separate pass vs failure edges so failed Worker/Specialist/NCMR paths do not advance through STAMP to the next Station.
+When P2 chart (EMIT dispatch) → dispatch emitted packet by named next Station; unknown-next terminates at Owner (not restart Freeze).
+When chart → keep exactly one Mermaid fence + one legend; reconstruct only; no law improvement.
+When traveler → @docs/travelers/102.md; Closed Corrective Action = CA commit SHA; Still open / Next = Inspection.
+When log → @docs/travelers/102-packets.md CA row only.
+When threads → facts-only reply on each of the four threads; resolve on tip.
+This Station only. Mode Specialist: do not spawn subagents; do not open plan mode.
+Allowed write: docs/audits/employee-manual-mermaid-probe-5.md, docs/audits/pr102-*-session.md (optional), docs/travelers/102.md, docs/travelers/102-packets.md.
 No AGENTS/WORKFLOW/GLOSSARY/GOAL/product edits. No merge.
 
 Reason:
-Named review is in. Wait records the hold and routes on findings.
+Wait held review with open findings. CA closes P1+P2 before Inspection.
 
 Return (this Station only):
 Repo:
@@ -73,19 +77,5 @@ Facts:
 **Operator return**
 
 ```text
-Repo: NestCalc
-Station: Wait
-Mode: Worker
-Operator: Grok Build
-Branch: docs/employee-manual-mermaid-probe-5
-Head: 304cc0186ff29db8477f5a06051038e39bd992a2
-job_id: NGJ-20260823-102
-flow_id: —
-goal_sha256: —
-Stamp: 304cc0186ff29db8477f5a06051038e39bd992a2
-Facts:
-- Named Codex review receipt: COMMENTED on 48a20afae9eb0565e3147ed1f46ab94ec2905868 (review https://github.com/TurboFrogLLC/NestCalc/pull/102#pullrequestreview-5002578835).
-- Open threads by severity: P0=0, P1=1 (unresolved, outdated), P2=3 (unresolved), P3=0; total open=4. None resolved.
-- Findings require work. Still open / Next = Corrective Action. Inspection not started.
-- Did not fix chart or resolve threads. Allowed Files only. No merge.
+(pending — paste Grok Build return here on stamp)
 ```
