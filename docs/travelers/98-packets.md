@@ -1,6 +1,6 @@
 # PR 98 packets — prompt + return log
 
-Owner expedite. Every management Ops Packet and every Operator return is recorded here.
+Regular job. Every management Ops Packet and every Operator return is recorded here.
 Do not delete rows. Append only.
 
 ## Index
