@@ -13,7 +13,7 @@ Operator: Grok Build | Model: Grok 4.6 | Effort: low (every Station)
 | 1 | Checkout sync | Worker | Grok Build | 25b4cb55 | stamped |
 | 2 | Cut | Worker | Grok Build | 682ea47 | chart; stamped |
 | 3 | Send for review | Worker | Grok Build | 48a20afa | ready; @codex review |
-| 4 | Wait | Worker | Grok Build | — | Ops Packet recorded; Operator return pending |
+| 4 | Wait | Worker | Grok Build | 304cc01 | Codex COMMENTED on 48a20afa; P1=1 P2=3 open; Next=Corrective Action |
 
 ---
 
@@ -73,5 +73,19 @@ Facts:
 **Operator return**
 
 ```text
-(pending — paste Grok Build return here on stamp)
+Repo: NestCalc
+Station: Wait
+Mode: Worker
+Operator: Grok Build
+Branch: docs/employee-manual-mermaid-probe-5
+Head: 304cc0186ff29db8477f5a06051038e39bd992a2
+job_id: NGJ-20260823-102
+flow_id: —
+goal_sha256: —
+Stamp: 304cc0186ff29db8477f5a06051038e39bd992a2
+Facts:
+- Named Codex review receipt: COMMENTED on 48a20afae9eb0565e3147ed1f46ab94ec2905868 (review https://github.com/TurboFrogLLC/NestCalc/pull/102#pullrequestreview-5002578835).
+- Open threads by severity: P0=0, P1=1 (unresolved, outdated), P2=3 (unresolved), P3=0; total open=4. None resolved.
+- Findings require work. Still open / Next = Corrective Action. Inspection not started.
+- Did not fix chart or resolve threads. Allowed Files only. No merge.
 ```
