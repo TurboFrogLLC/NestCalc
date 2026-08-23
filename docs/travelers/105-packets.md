@@ -15,6 +15,8 @@ Operator: Grok Build | Model: Grok 4.6 | Effort: low
 | 4 | Wait | Worker | Grok Build | a7d0e9506326d34eaccf3ffd493792c057bab06b | COMMENTED P2=1; Next=CA |
 | CA | Corrective Action | Specialist | Grok Build | efa7f7d61d87bf8d996b50f712f35785011d9368 | P2 README prefix; Next=Inspection |
 | 5 | Inspection | Worker | Grok Build | ec32e756f952f5d5b0a0a7670092b127bd400730 | clean; Next=Merge |
+| 6 | Merge | Worker | Grok Build | bbda2b22 | squash; admin override P0-F (logged on branch path; aligned on Close) |
+| 7 | Close | Worker | Grok Build | beededc22cec86c6c46cf9c0a25c2d947d92ef93 | stamped; Next=none |
 
 ---
 
@@ -294,4 +296,93 @@ Inspection clean. Still open / Next = Merge. Merge not started.
 Did not rewrite dump bodies. Did not edit AGENTS/WORKFLOW/GOAL/product/.github.
 Pushed Allowed Files only (105.md, 105-packets.md).
 ```
+
+### Seq 7 — Close
+
+**Ops Packet** (management → Grok Build)
+
+```text
+Repo: NestCalc
+Station: Close
+Mode: Worker
+Operator: Grok Build
+Branch: main
+Head: bbda2b2272f217b6beee409bd2254cfbd64314a1
+job_id: NGJ-20260823-gtc
+flow_id: —
+goal_sha256: —
+Trace: NestCalc #105 squash-merged bbda2b2; Owner authorizes docs-only main traveler+packslip stamps (AGENTS Never second exception)
+Model: Grok 4.6
+Effort: low
+
+Instruction:
+Done when: Seq Close stamped on main; Still open / Next = none; remote docs/grok-thoughts-continuous deleted; packslip printed and posted on PR 105.
+When stamp → @docs/travelers/105.md → Close row; prior Merge stamp aligned to bbda2b2; Still open / Next = none.
+When log → @docs/travelers/105-packets.md append only this Station Ops Packet + Facts return + packslip body.
+When main → Owner authorizes docs-only commits on main for traveler + packets only. No other paths.
+When branch → delete origin docs/grok-thoughts-continuous; local delete (-D if squash not ancestor).
+When packslip → print CLI packslip; post on https://github.com/TurboFrogLLC/NestCalc/pull/105.
+When drafts → comment on PR 103 and PR 104 that content is superseded by #105 continuous home; do not merge 103/104.
+This Station only. Mode Worker: do not spawn subagents; do not open plan mode; do not load files outside the named paths.
+Do not edit AGENTS/WORKFLOW/GOAL/product/.github. Do not rewrite grok-thoughts dump bodies on Close.
+Push Allowed Files only (docs/travelers/105.md, docs/travelers/105-packets.md).
+
+Reason:
+Merge is on main as bbda2b2. Close ends the job and supersedes split dumps #103/#104. Owner named Effort low and docs-only main stamp auth.
+```
+
+**Operator return**
+
+```text
+Repo: NestCalc
+Station: Close
+Mode: Worker
+Operator: Grok Build
+Branch: main
+Head: beededc22cec86c6c46cf9c0a25c2d947d92ef93
+job_id: NGJ-20260823-gtc
+flow_id: —
+goal_sha256: —
+Stamp: beededc22cec86c6c46cf9c0a25c2d947d92ef93
+Facts:
+Fetched origin; checkout main; fast-forward to origin/main bbda2b2272f217b6beee409bd2254cfbd64314a1.
+Owner docs-only main stamp (AGENTS Never second exception) for traveler + packets only.
+Seq 6 Merge stamp aligned to bbda2b2272f217b6beee409bd2254cfbd64314a1.
+Seq 7 Close stamped. Still open / Next = none.
+Remote branch docs/grok-thoughts-continuous deleted. Local branch deleted (-D if needed).
+Packslip printed and posted on PR 105.
+Commented on PR 103 and PR 104: content superseded by #105 continuous home; did not merge 103/104.
+Did not edit AGENTS/WORKFLOW/GOAL/product/.github. Did not rewrite grok-thoughts dump bodies.
+Pushed Allowed Files only (docs/travelers/105.md, docs/travelers/105-packets.md).
+```
+
+**Packslip**
+
+```text
+Repo: NestCalc
+Owner: wReckless
+PR: 105
+Branch: main
+Head: beededc22cec86c6c46cf9c0a25c2d947d92ef93
+job_id: NGJ-20260823-gtc
+flow_id: —
+goal_sha256: —
+Trace: Consolidate NestCalc #103+#104 grok dumps into continuous home; supersede split audits
+Cycle: Lite
+Date: 2026-08-23
+
+Seq  Label              Operator     Mode         Stamp      Still open
+1    Checkout sync      Grok Build   Worker       —          —
+2    Cut                Grok Build   Worker       02e285ab348c4eee9825856f4b31320b0c84fa73  —
+3    Send for review    Grok Build   Worker       ccaf496bc4b5cc6419263197db6170de595872cd  —
+4    Wait               Grok Build   Worker       a7d0e9506326d34eaccf3ffd493792c057bab06b  Codex COMMENTED P2=1
+5    Inspection         Grok Build   Worker       ec32e756f952f5d5b0a0a7670092b127bd400730  clean
+6    Merge              Grok Build   Worker       bbda2b2272f217b6beee409bd2254cfbd64314a1  squash; admin override P0-F
+7    Close              Grok Build   Worker       beededc22cec86c6c46cf9c0a25c2d947d92ef93  —
+
+Closed Corrective Action: efa7f7d61d87bf8d996b50f712f35785011d9368
+Still open: none
+Next: none
+```
+
 
