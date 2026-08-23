@@ -20,6 +20,7 @@ Two bands. Real blank lines. No YAML `---` fences. No host commands.
 Instruction is this operation only.
 Operator is Codex App, Codex CLI, or Grok Build.
 Station binds the room. Mode is Worker or Specialist.
+Use `job_id` for a non-goal job; use `flow_id` and `goal_sha256` when a goal is on.
 Owner may sit any seat. Operators do not rewrite the traveler. Management may.
 
 When the operation must invoke `/goal`, the first word of the copyable block is `/goal`.

@@ -16,7 +16,7 @@ Parent cannot flip itself mid-session. Model bump = Owner pastes the same travel
 Operators do not pick their own start. The traveler's Operator line is who runs this operation.
 
 1. Read the traveler. Instruction is this operation.
-2. Echo `flow_id` and `goal_sha256` every turn when a goal is on.
+2. Echo `job_id` every turn when no goal is on; echo `flow_id` and `goal_sha256` every turn when a goal is on.
 3. Stay on the named Branch + Head. Wrong branch or worktree: host fix or
    Escalate in Worker Mode; Corrective Action in Specialist Mode. Create or
    switch is host work, not traveler Instruction.
@@ -193,6 +193,7 @@ Merge, then Close. Two operations.
 
 - Merge when repo-backed confidence and named criteria pass, unless this traveler forbids merge.
 - Merge is not an Owner seat when that clearance holds.
+- Owner may authorize a docs-only main commit after merge for traveler + packslip stamps only.
 - Close: sync, prune, persist approved lessons, quiet archive when that is the named work.
 - Packslip after Close when this is job-end. Print. Post on the PR.
 - If next cannot be decided, next is the Owner.
