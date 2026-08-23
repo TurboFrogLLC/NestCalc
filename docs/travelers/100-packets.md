@@ -14,6 +14,7 @@ job_id: NGJ-20260822-100
 | 2 | Cut | Worker | Grok Build | 47629f2 | AGENTS second main exception; Wait pointer; WORKFLOW defers to AGENTS |
 | 3 | Send for review | Worker | Grok Build | 63458ae | PR marked ready; @codex review posted; agents-pr-review not runnable on this Surface; advanced to Wait |
 | 4 | Wait | Worker | Grok Build | f96b974 | Named review held (Codex clean; agents-pr-review COMMENT); advanced to Inspection |
+| 5 | Inspection | Worker | Grok Build | d7eb32e | Clean; named reviews held; no open blocking threads; advanced to Merge |
 
 ---
 
@@ -210,4 +211,49 @@ Seq 4 Wait stamped with f96b974.
 Still open: Inspection.
 Next: Inspection.
 Inspection was not started. Merge was not performed.
+```
+
+### Seq 5 — Inspection
+
+**Ops Packet**
+
+```text
+Repo: NestCalc
+Station: Inspection
+Mode: Worker
+Operator: Grok Build
+Branch: docs/agents-main-exception-agents-pr-review
+Head: d7eb32e
+job_id: NGJ-20260822-100
+flow_id: —
+goal_sha256: —
+Trace: NestCalc #100; Wait f96b974; Codex clean; agents-pr-review COMMENT
+Model: Grok 4.6
+Effort: high
+Orchestration: Single-agent
+Session: Fresh
+
+Instruction:
+When Inspection → docs/WORKFLOW.md → ## Quality Control → step 3.
+When traveler → docs/travelers/100.md Seq 5 only.
+When log → docs/travelers/100-packets.md append only.
+
+Confirm named reviews held and no open blocking threads on this job’s scope. agents-pr-review [should]/[nit] are non-blocking unless Owner names a fix. Stamp Seq 5 Inspection with this pass short SHA. Advance Still open / Next to Merge on the same pass only if Inspection is clean. Append Ops Packet + facts-only return. Push Allowed Files only. If not clean: stop, report, do not advance. Do not merge. Do not Close.
+
+Reason:
+Inspection after Wait. Clean → Release. Pointer-only.
+```
+
+**Operator return**
+
+```text
+Named reviews held. No open review threads. Inspection clean.
+Codex: clean. Comment https://github.com/TurboFrogLLC/NestCalc/pull/100#issuecomment-5384114127 on 63458ae899.
+agents-pr-review: COMMENT. Review https://github.com/TurboFrogLLC/NestCalc/pull/100#pullrequestreview-5001621187 on 50b88945e110974caafb06df94575bce84abd776.
+Findings: [should] agents-pr-review product path; [nit] job_id echo on AGENTS Always. Owner did not name a fix. Non-blocking.
+Open review threads: 0.
+Seq 5 Inspection stamped with d7eb32e.
+Still open: Merge.
+Next: Merge.
+Merge was not performed. Close was not performed. Allowed Files only: docs/travelers/100.md, docs/travelers/100-packets.md.
 ```
