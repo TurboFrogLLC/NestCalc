@@ -3,7 +3,7 @@
 Employee-manual mermaid probe-4. Every management Ops Packet and every Operator return is recorded here.
 Do not delete rows. Append only.
 
-Record Head: 2fbed32ff9da507bc3cf19ae37be3ea5b89920c0
+Record Head: 75aabb3d446bb4ca53bac0e17c1c1c90221577cb
 job_id: NGJ-20260822-101
 
 ## Index
@@ -15,7 +15,8 @@ job_id: NGJ-20260822-101
 | 3 | Send for review | Worker | Grok Build | 178b12c | Session: docs/audits/pr101-send-for-review-session.md |
 | CA | Corrective Action | Specialist | Grok Build | 52d5535 | Session: docs/audits/pr101-ca-session.md |
 | 5 | Inspection | Worker | Grok Build | 9995764 | clean; Session: docs/audits/pr101-inspection-session.md |
-| 6 | Merge | Worker | Grok Build | 9bb091d | squash-merged onto main; P0-F UNSTABLE land override; advanced to Close |
+| 6 | Merge | Worker | Grok Build | 9bb091d | squash; land override; Session: docs/audits/pr101-merge-session.md |
+| 7 | Close | Worker | Grok Build | — | Ops Packet recorded; Operator return pending |
 
 ---
 
@@ -23,38 +24,39 @@ job_id: NGJ-20260822-101
 
 ### Prior stations
 
-See session captures. Inspection clean. Closed CA: 52d5535.
+See session captures. Merge `9bb091d`. Still open was Close.
 
-### Seq 6 — Merge
+### Seq 7 — Close
 
 **Ops Packet** (management → Grok Build)
 
 ```text
 Repo: NestCalc
-Station: Merge
+Station: Close
 Mode: Worker
 Operator: Grok Build
-Branch: docs/employee-manual-mermaid-probe-4
-Head: 2fbed32ff9da507bc3cf19ae37be3ea5b89920c0
+Branch: main
+Head: 75aabb3d446bb4ca53bac0e17c1c1c90221577cb
 job_id: NGJ-20260822-101
 flow_id: —
 goal_sha256: —
-Trace: NestCalc #101; Inspection clean 9995764; Merge
+Trace: NestCalc #101 squash-merged 9bb091d; Owner authorizes docs-only main traveler+packslip stamps (AGENTS Never second exception)
 Model: Grok 4.6
-Effort: high
+Effort: medium
 
 Instruction:
-Done when: PR 101 is squash-merged onto main; Seq 6 Merge stamped with the merge commit SHA on @docs/travelers/101.md; Operator return under Seq 6 in @docs/travelers/101-packets.md; Still open / Next = Close; Close not started.
-When merge → squash-merge NestCalc pull 101 onto main.
-When checks block → Owner authorizes land override for this docs-only job: `gh pr merge 101 --admin --squash` (P0-F unstable pattern).
-When traveler stamp after merge → Owner authorizes AGENTS Never second exception: docs-only traveler and packets stamps on main after merge when this traveler names Owner authorization. Allowed: docs/travelers/101.md, docs/travelers/101-packets.md only.
-When traveler → @docs/travelers/101.md Seq 6 only; Stamp = merge commit SHA.
-When log → @docs/travelers/101-packets.md Seq 6 only.
+Done when: Seq 7 Close stamped with commit SHA on @docs/travelers/101.md; Operator return under Seq 7 in @docs/travelers/101-packets.md; Still open / Next = none; remote feature branch docs/employee-manual-mermaid-probe-4 deleted; packslip printed and posted as a comment on PR 101; pushed Allowed Files only.
+When sync → fetch origin; checkout main; fast-forward to origin/main; confirm HEAD matches origin/main.
+When traveler → @docs/travelers/101.md Seq 7 only; Stamp = this Close commit SHA; footer Still open / Next = none.
+When log → @docs/travelers/101-packets.md Seq 7 only.
+When prune → delete remote branch docs/employee-manual-mermaid-probe-4; delete local branch if present (force only if Git refuses normal delete and facts record why).
+When packslip → print the closed traveler block and post it on PR 101 as a comment.
+Owner authorizes AGENTS Never second exception: docs-only traveler and packets stamps on main after merge when this traveler names Owner authorization. Allowed: docs/travelers/101.md, docs/travelers/101-packets.md only.
 This Station only. Mode Worker: do not spawn subagents; do not open plan mode.
-No Close. No GOAL edit. No product code. Do not delete the feature branch on this Station (Close owns prune).
+No GOAL edit. No product code. No new feature work.
 
 Reason:
-Inspection clean. Release Merge. Owner land override named if P0-F blocks docs-only.
+Merge complete. Close is job-end: stamp, prune, packslip.
 
 Return (this Station only):
 Repo:
@@ -73,24 +75,5 @@ Facts:
 **Operator return**
 
 ```text
-Repo: NestCalc
-Station: Merge
-Mode: Worker
-Operator: Grok Build
-Branch: docs/employee-manual-mermaid-probe-4
-Head: 9bb091db3c63d29e36d5e1465a375952d3abdbad
-job_id: NGJ-20260822-101
-flow_id: —
-goal_sha256: —
-Stamp: 9bb091d
-Facts:
-PR 101 squash-merged onto main.
-Merge commit: 9bb091db3c63d29e36d5e1465a375952d3abdbad.
-Seq 6 Merge stamped with 9bb091d.
-Still open: Close.
-Next: Close.
-P0-F checks p0f-lint, p0f-unit, p0f-build, p0f-governance, p0f-evidence concluded FAILURE; mergeStateStatus UNSTABLE.
-Owner land override used (gh pr merge 101 --admin --squash --match-head-commit cdc5b5d81fb2a82b446e7dd9766e04d380c8c42e).
-Feature branch docs/employee-manual-mermaid-probe-4 was not deleted.
-Close was not started. GOAL.md was not edited. Product code was not edited.
+(pending — paste Grok Build return here on stamp)
 ```
