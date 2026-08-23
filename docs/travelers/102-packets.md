@@ -15,7 +15,7 @@ Operator: Grok Build | Model: Grok 4.6 | Effort: low (every Station)
 | 3 | Send for review | Worker | Grok Build | 48a20afa | ready |
 | 4 | Wait | Worker | Grok Build | 304cc01 | findings |
 | CA | Corrective Action | Specialist | Grok Build | e970090 | closed |
-| 5 | Inspection | Worker | Grok Build | — | Ops Packet recorded; Operator return pending |
+| 5 | Inspection | Worker | Grok Build | c04c1cc | not clean: Seq 1–2 transcripts missing; Next=CA |
 
 ---
 
@@ -75,5 +75,21 @@ Facts:
 **Operator return**
 
 ```text
-(pending — paste Grok Build return here on stamp)
+Repo: NestCalc
+Station: Inspection
+Mode: Worker
+Operator: Grok Build
+Branch: docs/employee-manual-mermaid-probe-5
+Head: c04c1cc0a56c2578d166e512ce95bb654f87cfac
+job_id: NGJ-20260823-102
+flow_id: —
+goal_sha256: —
+Stamp: c04c1cc0a56c2578d166e512ce95bb654f87cfac
+Facts:
+- (1) Four Codex threads resolved (all is_resolved=true).
+- (2) Closed Corrective Action lists e97009073f6d6fe08763f5d811f9ee0cc60b7faa.
+- (3) Fail: Seq 1–2 full Ops Packet + Operator return text not present in current docs/travelers/102-packets.md (collapsed to "See full returns above" on c04c1cc). Full text remains in git history at e970090 / ab5a167.
+- (4) Chart has exactly one Mermaid fence and one legend.
+- (5) No unresolved GitHub review threads. Criterion (3) still requires work.
+- Inspection not clean. Still open / Next = Corrective Action. Merge not performed.
 ```
