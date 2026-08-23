@@ -14,13 +14,15 @@ flowchart TD
   E -- no --> G[Stay on named branch and head]
   F --> G
   G --> H{Branch or worktree wrong?}
-  H -- AGENTS.md --> I[Corrective Action]
-  H -- WORKFLOW.md Worker Mode --> J[Host fix or Escalate]
+  H -- Specialist Mode --> I[Corrective Action]
   I --> H
-  J --> K[Stop this Station]
+  H -- Worker Mode --> J[Host fix]
+  J -- success --> H
+  J -- cannot finish --> K[Escalate; stop this Station]
   H -- no --> L[Do this operation only; stay in Allowed Files]
   L --> M{Worker-local gate passes?}
-  M -- no --> J
+  M -- Worker Mode: cannot finish --> K
+  M -- Specialist Mode: known tools --> I
   M -- law broke --> N[Non-conformance Report; NCMR-; stop]
   M -- yes --> O{Named operation}
   O -- Cut --> P[Named branch; Allowed Files only; freeze hash unchanged]
@@ -28,21 +30,22 @@ flowchart TD
   P --> R[Stamp the operation]
   Q --> R
   R --> S[Advance traveler Still open and Next on the same pass]
-  S --> T{Packet handling after the stamp}
-  T -- WORKFLOW.md --> U[Emit the next named Ops Packet]
-  T -- templates --> V[Ops Packet is the current Station only]
-  U --> W[Quality Control: Send for review, Wait, Inspection]
-  V --> W
+  S --> T{Next Station named on the traveler?}
+  T -- yes --> U[Emit that named Station's Ops Packet]
+  T -- no --> AA[Owner]
+  U --> V{Next named Station}
+  V -- Send for review / Wait / Inspection --> W[Quality Control: Send for review, Wait, Inspection]
+  V -- Corrective Action --> I
+  V -- Merge / Close --> Y[Release: Merge, then Close]
   W --> X{Inspection clean?}
   X -- needs work --> I
   X -- clean --> Y[Release: Merge, then Close]
   Y --> Z[Job end: print Packslip in CLI and post on PR]
 ```
 
-Legend: Solid arrows show stated flow. The two arrows from “Branch or worktree
-wrong?” are a collision: `AGENTS.md` requires Corrective Action, while
-`docs/WORKFLOW.md` routes a Worker to a host fix or Escalate. The two packet
-arrows are also a collision: `docs/WORKFLOW.md` says the finishing Operator
-emits the next named packet after stamping, while `docs/templates/README.md`
-defines the Ops Packet as the current Station only. Both are drawn without
-selecting a new rule. “Non-conformance” stops and does not produce a Packslip.
+Legend: Solid arrows show stated flow. For a wrong branch or worktree, a
+successful Worker host fix returns to the branch/worktree check; only
+“Escalate” stops the Station. After a stamp, the finishing Operator emits the
+packet for the next Station named on the traveler; that packet is current for
+that Station and describes that Station only. “Non-conformance” stops and does
+not produce a Packslip.
