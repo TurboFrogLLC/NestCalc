@@ -30,4 +30,5 @@ Instruction (this Station): Facts-only diagnosis of why p0f-* jobs show `runner_
 - YAML `.github/workflows/p0-f-minimum-ci.yml` not rewritten: same file assigned runners and executed 6–10 steps on success run 32551786132 (2026-08-22).
 - Out: `docs/audits/p0f-runner-residual.md` (symptoms, evidence, Owner checklist: Actions enablement / minutes / spending limit; admin land temporary until runners execute steps).
 - Still open / Next: Send for review. Not ready. Not merge.
+- Cut landing SHA (after Allowed Files push): `e87dc843288d44048e361a030967f1a486cf3e61`.
 
