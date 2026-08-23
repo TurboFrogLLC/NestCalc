@@ -11,6 +11,7 @@ Operator: Grok Build | Model: Grok 4.6 | Effort: low
 | Seq | Station | Mode | Operator | Stamp | Outcome |
 | --- | --- | --- | --- | --- | --- |
 | 2 | Cut | Worker | Grok Build | 02e285ab | corpus + draft PR 105 |
+| 3 | Send for review | Worker | Grok Build | 7d3981542ea670707a752ebaf8970a6d893513a6 | ready; @codex review |
 
 ---
 
@@ -76,3 +77,57 @@ Draft PR 105 opened: docs: continuous grok-thoughts home (101+102); body superse
 Pushed Allowed Files only. Merge not performed.
 Still open / Next: Send for review.
 ```
+
+### Seq 3 — Send for review
+
+**Ops Packet** (management → Grok Build)
+
+```text
+Repo: NestCalc
+Station: Send for review
+Mode: Worker
+Operator: Grok Build
+Branch: docs/grok-thoughts-continuous
+Head: 3dda72842df85858a0feb5e39c10929170b5dcdd
+job_id: NGJ-20260823-gtc
+flow_id: —
+goal_sha256: —
+Trace: NestCalc #105 continuous grok-thoughts; supersedes #103+#104
+Model: Grok 4.6
+Effort: low
+
+Instruction:
+Done when: PR 105 is ready (not draft); @codex review posted; Seq Send for review stamped; Still open / Next = Wait.
+When stamp → @docs/travelers/105.md → Send for review row only.
+When log → @docs/travelers/105-packets.md append only this Station Ops Packet + Facts return.
+When PR → https://github.com/TurboFrogLLC/NestCalc/pull/105 mark ready; comment `@codex review`.
+This Station only. Mode Worker: do not spawn subagents; do not open plan mode; do not load files outside the named paths.
+Do not rewrite docs/audits/grok-thoughts/**. Do not edit AGENTS/WORKFLOW/GOAL/product/.github. Wait, Inspection, merge not started. agents-pr-review is management Surface only.
+Push Allowed Files only (105.md, 105-packets.md).
+
+Reason:
+Cut tip 3dda728. Continuous home already on draft. QC path only. Owner named Effort low.
+```
+
+**Operator return**
+
+```text
+Repo: NestCalc
+Station: Send for review
+Mode: Worker
+Operator: Grok Build
+Branch: docs/grok-thoughts-continuous
+Head: 7d3981542ea670707a752ebaf8970a6d893513a6
+job_id: NGJ-20260823-gtc
+flow_id: —
+goal_sha256: —
+Stamp: 7d3981542ea670707a752ebaf8970a6d893513a6
+Facts:
+PR 105 marked ready (draft=false).
+Posted @codex review: https://github.com/TurboFrogLLC/NestCalc/pull/105#issuecomment-5387752611
+Seq 3 Send for review stamped. Still open / Next = Wait.
+Did not rewrite docs/audits/grok-thoughts/**. Did not edit AGENTS/WORKFLOW/GOAL/product/.github.
+Wait, Inspection, merge not started.
+Pushed Allowed Files only (105.md, 105-packets.md).
+```
+
