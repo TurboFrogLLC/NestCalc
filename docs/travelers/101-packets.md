@@ -16,7 +16,7 @@ job_id: NGJ-20260822-101
 | CA | Corrective Action | Specialist | Grok Build | 52d5535 | Session: docs/audits/pr101-ca-session.md |
 | 5 | Inspection | Worker | Grok Build | 9995764 | clean; Session: docs/audits/pr101-inspection-session.md |
 | 6 | Merge | Worker | Grok Build | 9bb091d | squash; land override; Session: docs/audits/pr101-merge-session.md |
-| 7 | Close | Worker | Grok Build | — | Ops Packet recorded; Operator return pending |
+| 7 | Close | Worker | Grok Build | — | Docs-only Close on main; stamp pending |
 
 ---
 
@@ -75,5 +75,13 @@ Facts:
 **Operator return**
 
 ```text
-(pending — paste Grok Build return here on stamp)
+Main at start of Close: 180f51d56c511ff4d847f7c0bc8c69c9cf9fd31f.
+Fetched origin; already on main; fast-forward: already up to date.
+HEAD matched origin/main: 180f51d56c511ff4d847f7c0bc8c69c9cf9fd31f.
+Squash merge: 9bb091db3c63d29e36d5e1465a375952d3abdbad.
+Seq 7 Close footer Still open / Next = none.
+Remote branch docs/employee-manual-mermaid-probe-4 deleted.
+Local branch docs/employee-manual-mermaid-probe-4 deleted with -D because squash-merge 9bb091d is not an ancestor of main (git branch -d refused: not fully merged).
+Packslip printed in the CLI and posted on PR 101.
+GOAL.md and product code were not edited.
 ```
