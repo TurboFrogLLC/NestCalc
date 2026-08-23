@@ -12,7 +12,7 @@ Operator: Grok Build | Model: Grok 4.6 | Effort: low
 | --- | --- | --- | --- | --- | --- |
 | 2 | Cut | Worker | Grok Build | 02e285ab | corpus + draft PR 105 |
 | 3 | Send for review | Worker | Grok Build | ccaf496bc4b5cc6419263197db6170de595872cd | ready; @codex review |
-| 4 | Wait | Worker | Grok Build | STAMP_PENDING | COMMENTED P2=1; Next=CA |
+| 4 | Wait | Worker | Grok Build | a7d0e9506326d34eaccf3ffd493792c057bab06b | COMMENTED P2=1; Next=CA |
 
 ---
 
@@ -171,11 +171,11 @@ Station: Wait
 Mode: Worker
 Operator: Grok Build
 Branch: docs/grok-thoughts-continuous
-Head: STAMP_PENDING
+Head: a7d0e9506326d34eaccf3ffd493792c057bab06b
 job_id: NGJ-20260823-gtc
 flow_id: —
 goal_sha256: —
-Stamp: STAMP_PENDING
+Stamp: a7d0e9506326d34eaccf3ffd493792c057bab06b
 Facts:
 Named Codex review: COMMENTED on 3dda72842df85858a0feb5e39c10929170b5dcdd (review https://github.com/TurboFrogLLC/NestCalc/pull/105#pullrequestreview-5003083286).
 Open threads: P0=0, P1=0, P2=1 (unresolved, not outdated), P3=0; total open=1. None resolved.
