@@ -3,7 +3,7 @@
 Owner expedite. Every management Ops Packet and every Operator return is recorded here.
 Do not delete rows. Append only.
 
-Record Head: 50b8894
+Record Head: f96b974
 job_id: NGJ-20260822-100
 
 ## Index
@@ -13,7 +13,7 @@ job_id: NGJ-20260822-100
 | 1 | Checkout sync | Worker | Grok Build | 493aaa1 | Stamped; advanced to Cut |
 | 2 | Cut | Worker | Grok Build | 47629f2 | AGENTS second main exception; Wait pointer; WORKFLOW defers to AGENTS |
 | 3 | Send for review | Worker | Grok Build | 63458ae | PR marked ready; @codex review posted; agents-pr-review not runnable on this Surface; advanced to Wait |
-| 4 | Wait | Worker | Grok Build | 50b8894 | Named review held (Codex clean; agents-pr-review COMMENT); advanced to Inspection |
+| 4 | Wait | Worker | Grok Build | f96b974 | Named review held (Codex clean; agents-pr-review COMMENT); advanced to Inspection |
 
 ---
 
@@ -199,4 +199,15 @@ Seq 4 Wait stamped with 50b8894.
 Still open: Inspection.
 Next: Inspection.
 Inspection was not started. Merge was not performed. Allowed Files only: docs/travelers/100.md, docs/travelers/100-packets.md.
+```
+
+**Stamp supplement**
+
+```text
+Named review held on both companion paths.
+Pass commit: f96b974.
+Seq 4 Wait stamped with f96b974.
+Still open: Inspection.
+Next: Inspection.
+Inspection was not started. Merge was not performed.
 ```
