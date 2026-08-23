@@ -91,3 +91,32 @@ Instruction (this Station): hold for named `@codex review` on PR 107 against `d9
 - Findings require work: **no additional work**. Seq 3 Send for review Ops Packet + Facts already exist on tip `d9dc3dc` (this Wait Head). Wait did not fix, did not resolve the thread, did not edit the audit.
 - Still open / Next: Inspection. Not merge.
 
+## Seq 5 Inspection — Ops Packet
+
+```
+Repo: NestCalc
+Station: Inspection
+Mode: Worker
+Operator: Grok Build
+Branch: docs/p0f-runner-residual
+Head: 585428c4d01ba3678e7b813a9dcc6d5f4e24f937
+job_id: NGJ-20260823-p0f
+flow_id: —
+goal_sha256: —
+Trace: NestCalc #107; Wait COMMENTED; P2 Seq-3 packet already on d9dc3dc
+Model: Grok 4.6
+Effort: medium
+Session: continuous
+```
+
+Instruction (this Station): check four criteria; stamp Inspection; if clean, Still open / Next = Merge. Do not merge.
+
+## Seq 5 Inspection — Facts return
+
+- Branch `docs/p0f-runner-residual` @ `585428c4d01ba3678e7b813a9dcc6d5f4e24f937`.
+- (1) **pass.** Open threads requiring work = 0. One open P2 [PRRT_kwDOTJAVIM6bhsGI](https://github.com/TurboFrogLLC/NestCalc/pull/107#discussion_r3839429437) remains unresolved on API (`isOutdated=false`) but is stale vs tip: Seq 3 Ops Packet + Facts exist on `d9dc3dc` and later (`git show d9dc3dc:docs/travelers/107-packets.md`). Inspection did not resolve the thread and did not rewrite the audit.
+- (2) **pass.** `docs/audits/p0f-runner-residual.md` states `runner_id` 0 / payment-or-spending as root cause; line 12: admin land is temporary until runners execute steps.
+- (3) **pass.** `origin/main...HEAD` files: `docs/audits/p0f-runner-residual.md`, `docs/travelers/107.md`, `docs/travelers/107-packets.md` only. No AGENTS/WORKFLOW/GOAL/product/.github.
+- (4) **pass.** Cut stamp `e87dc843288d44048e361a030967f1a486cf3e61`; Send for review stamp `49baddab9f811205ceef311bf61b0c2cc5dbb0c0`.
+- Clean. Still open / Next: Merge. Not merge this Station.
+
