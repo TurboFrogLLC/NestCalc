@@ -11,7 +11,7 @@ Operator: Grok Build | Model: Grok 4.6 | Effort: low (every Station)
 | Seq | Station | Mode | Operator | Stamp | Outcome |
 | --- | --- | --- | --- | --- | --- |
 | 1 | Checkout sync | Worker | Grok Build | 25b4cb55 | Session pending capture |
-| 2 | Cut | Worker | Grok Build | — | Ops Packet recorded; Operator return pending |
+| 2 | Cut | Worker | Grok Build | 682ea47 | Chart committed; Seq 2 stamped; Send for review not started |
 
 ---
 
@@ -69,5 +69,15 @@ Facts:
 **Operator return**
 
 ```text
-(pending — paste Grok Build return here on stamp)
+Repo: NestCalc
+Station: Cut
+Mode: Worker
+Operator: Grok Build
+Branch: docs/employee-manual-mermaid-probe-5
+Head: 682ea4770a0c4678ae70b3189e031d5b88788ef7
+job_id: NGJ-20260823-102
+flow_id: —
+goal_sha256: —
+Stamp: 682ea4770a0c4678ae70b3189e031d5b88788ef7
+Facts: Wrote docs/audits/employee-manual-mermaid-probe-5.md with one Mermaid flowchart fence and one legend. Reconstruct from AGENTS.md, GLOSSARY, WORKFLOW, templates only. Collisions A–D labeled (wrong-branch ladder; Authority vs Law; traveler.md vs Ops Packet; packslip Plan/Bind vs stamp table). Seq 2 Cut stamped 682ea4770a0c4678ae70b3189e031d5b88788ef7. Still open / Next = Send for review. Send for review not started. Allowed Files only. No AGENTS/WORKFLOW/GLOSSARY/GOAL/product edits. No mark ready. No merge.
 ```
