@@ -1,9 +1,9 @@
-# PR 102 — grok-thoughts smoke (draft)
+# PR 102 — grok-thoughts smoke (re-smoke)
 
 job_id: `NGJ-20260823-102`  
 Operator: Grok Build  
 Model / effort: Grok 4.6 / low  
-Skill: grok-thoughts (draft smoke; skill not installed)  
+Skill: grok-thoughts (re-smoke after skill harden; skill not installed)  
 Source: host session store + `grok export`; Ops Packet text also in `docs/travelers/102-packets.md`  
 Registry: `docs/audits/pr102-session-registry.md`
 
@@ -15,14 +15,16 @@ Registry: `docs/audits/pr102-session-registry.md`
 | B | `01a02ef0-3657-7173-aa65-8a72dcbdab11` | `~/.grok/sessions/.../2026-08-23-4efbbe09/` | opened | 1 |
 | C | `01a02ef4-f2f7-7cf0-8523-ff6e83ee5026` | `~/.grok/sessions/.../2026-08-23-2bb4eece/` | opened | 8 |
 
-**Failed list:** none. All three IDs opened via `grok export`.
+**Failed sessions:** none. All three IDs opened via `grok export`.
 
 **Harness notes (for skill harden):**
 
 - `events.jsonl` has `tool_started` / `tool_completed` / `phase_changed` / `turn_started` / `turn_ended`. No `thinking` event type. Visible “thoughts” are assistant narration in `chat_history` / Markdown export.
-- Session **C** is one thread, eight `## User` Ops Packets. Split on `Repo:` / `Station:` packet start.
+- Every `tool_completed` on this corpus has `outcome: success` (A: 7, B: 17, C: 131). `mcp_init_completed` reports `failed: 0` (not a tool).
+- Session **C** is one thread, eight `## User` Ops Packets. Split on full Ops Packet `## User` starts, not bare `Station:` lines (CA2 python rebuild embeds extra `Station:` strings).
 - Packet **Head** in the live prompt can differ from the later packets-log copy (Seq 1: session Head `25b4cb55…`; packets.md log Head `9b335b79…`). Smoke used **session paste** as received; packets.md is canonical when paste is thin (not the case here).
 - Close Station export has no pre-tool assistant narration; tools then packslip + return.
+- Station outcome from Operator return Facts first: Inspection fail → `not clean`; Merge admin land → `override`.
 
 ---
 
@@ -54,7 +56,11 @@ Instruction (session): bind worktree to origin; stamp Seq 1 SHA; log Seq 1 only;
 
 **Thoughts (assistant narration):** Checkout sync only: fetch, fast-forward, stamp Seq 1. Then: HEAD matches origin; stamp Seq 1 and write Operator return.
 
-**Tools:** `git fetch` / checkout / ff-only / status / rev-parse; Edit `102.md` (×3), `102-packets.md` (×2); commit+push Allowed Files.
+**Tools:** `run_terminal_command` ×2, `search_replace` ×5. All `tool_completed` success.
+
+**Failed tools:** none.
+
+**Station outcome:** clean.
 
 **Edits:** `docs/travelers/102.md`, `docs/travelers/102-packets.md`. Push `992a5e8`.
 
@@ -88,7 +94,11 @@ Instruction: one Mermaid fence + legend; reconstruct from AGENTS/GLOSSARY/WORKFL
 
 **Thoughts:** Reconstruct from named law files, write chart, stamp Seq 2. Then: write chart, stamp with chart commit SHA.
 
-**Tools:** Read WORKFLOW, GLOSSARY, Agents.md, templates (traveler, packslip, nonconformance, README, handoff, goal-form); ListDir templates; Write chart; commit chart `682ea47`; Edit traveler+packets; commit+push `bc9e192`.
+**Tools:** `read_file` ×9, `list_dir` ×1, `write` ×1, `run_terminal_command` ×2, `search_replace` ×4. All success.
+
+**Failed tools:** none.
+
+**Station outcome:** clean.
 
 **Edits:** `docs/audits/employee-manual-mermaid-probe-5.md`, `docs/travelers/102.md`, `docs/travelers/102-packets.md`.
 
@@ -98,7 +108,7 @@ Instruction: one Mermaid fence + legend; reconstruct from AGENTS/GLOSSARY/WORKFL
 
 ## Session C — `01a02ef4-f2f7-7cf0-8523-ff6e83ee5026`
 
-Multi-op. Split on Ops Packet `## User` / `Station:` boundaries.
+Multi-op. Split on Ops Packet `## User` boundaries (8 packets).
 
 ### Segment — Seq 3 Send for review — Stamp `48a20afae9eb0565e3147ed1f46ab94ec2905868`
 
@@ -106,7 +116,11 @@ Multi-op. Split on Ops Packet `## User` / `Station:` boundaries.
 
 **Thoughts:** Verify PR, mark ready, named review, stamp Seq 3 only.
 
-**Tools:** Read WORKFLOW; git status; MCP search; `gh pr view`; `github__update_pull_request`; `github__add_issue_comment`; Edit traveler+packets; commit; checkout restore then `git push`; verify isDraft.
+**Tools:** `search_tool`, `read_file`, `run_terminal_command` ×5, `grep`, `use_tool` ×2, `search_replace` ×9. All success.
+
+**Failed tools:** none.
+
+**Station outcome:** clean.
 
 **Edits:** `docs/travelers/102.md`, `docs/travelers/102-packets.md`. Tip after stamp `ab2424a`.
 
@@ -118,7 +132,11 @@ Multi-op. Split on Ops Packet `## User` / `Station:` boundaries.
 
 **Thoughts:** Confirm named review, count threads by severity, stamp Seq 4 only.
 
-**Tools:** MCP search; git fetch/ff; `github__pull_request_read` ×3; Edit traveler+packets; commit+push `67ffb34`.
+**Tools:** `search_tool` ×2, `run_terminal_command` ×4, `use_tool` ×3, `read_file` ×2, `search_replace` ×5. All success.
+
+**Failed tools:** none.
+
+**Station outcome:** clean.
 
 **Operator return:** COMMENTED review-5002578835; open P0=0 P1=1 P2=3 P3=0; Next = Corrective Action.
 
@@ -128,7 +146,11 @@ Multi-op. Split on Ops Packet `## User` / `Station:` boundaries.
 
 **Thoughts:** Restore Seq 1–2, fix three chart findings, stamp CA, reply+resolve four threads.
 
-**Tools:** git show `992a5e8` / `bc9e192` / `ab2424a`; Edit chart + packets + traveler; commits `e970090` then SHA-stamp; GitHub replies + `pull_request_review_write` ×4; mermaid search; PR read.
+**Tools:** `read_file` ×4, `run_terminal_command` ×5, `write` ×2, `search_replace` ×6, `use_tool` ×9, `grep`. All success.
+
+**Failed tools:** none.
+
+**Station outcome:** clean.
 
 **Edits:** `docs/audits/employee-manual-mermaid-probe-5.md`, `docs/travelers/102.md`, `docs/travelers/102-packets.md`. Head `ab5a167`. Optional session files not added.
 
@@ -140,9 +162,15 @@ Multi-op. Split on Ops Packet `## User` / `Station:` boundaries.
 
 **Thoughts:** Inspect five checks; then: not clean — Seq 1–2 missing after management record commit; stamp and route CA; no merge.
 
-**Tools:** git ff to `c04c1cc`; PR read; mermaid/legend/Closed CA/Seq 1–2 searches; Edit traveler+packets; commit+push `5b3aab0`.
+**Tools:** `grep` ×4, `use_tool`, `run_terminal_command` ×2, `read_file` ×2, `search_replace` ×5. All success.
 
-**Operator return:** Stamp `c04c1cc…`; criterion (3) fail (collapsed on `c04c1cc`); Next = Corrective Action.
+**Failed tools:** none.
+
+**Station outcome:** not clean.
+
+**Edits:** `docs/travelers/102.md`, `docs/travelers/102-packets.md`. commit+push `5b3aab0`.
+
+**Operator return:** Stamp `c04c1cc…`; criterion (3) fail (collapsed on `c04c1cc`); Facts: Inspection not clean; Next = Corrective Action.
 
 ### Segment — CA2 Corrective Action — Stamp `e99b2a9dae7a4f51eb71ac1d073312cd0d34d7fa`
 
@@ -150,7 +178,11 @@ Multi-op. Split on Ops Packet `## User` / `Station:` boundaries.
 
 **Thoughts:** Recover Seq 1–2 from history, stamp CA2 with both Closed CA SHAs.
 
-**Tools:** git show `ab5a167` vs `5b3aab0`; python rebuild of `102-packets.md`; commits restore then `e99b2a9` stamp; push; `rg` Station Checkout/Cut counts.
+**Tools:** `run_terminal_command` ×6, `read_file` ×3, `search_replace` ×6. All success.
+
+**Failed tools:** none.
+
+**Station outcome:** clean.
 
 **Edits:** `docs/travelers/102.md`, `docs/travelers/102-packets.md`. Head after stamp `bfd8304`.
 
@@ -162,9 +194,15 @@ Multi-op. Split on Ops Packet `## User` / `Station:` boundaries.
 
 **Thoughts:** Re-check five criteria; then: all pass; restamp Seq 5; Next Merge; do not collapse.
 
-**Tools:** git ff; PR read; mermaid + transcript searches; Edit traveler+packets; commit+push `e5e3655`.
+**Tools:** `read_file` ×2, `grep` ×2, `use_tool`, `run_terminal_command` ×2, `search_replace` ×5. All success.
 
-**Operator return:** Stamp `bfd8304…`; criteria (1)–(5) pass; Next = Merge; merge not performed.
+**Failed tools:** none.
+
+**Station outcome:** clean.
+
+**Edits:** traveler+packets; commit+push `e5e3655`.
+
+**Operator return:** Stamp `bfd8304…`; criteria (1)–(5) pass; Facts: Inspection clean; Next = Merge; merge not performed.
 
 ### Segment — Seq 6 Merge — Stamp `65d1334ddd556c9c0d5ac70bfa288baf043c2e9c`
 
@@ -172,7 +210,11 @@ Multi-op. Split on Ops Packet `## User` / `Station:` boundaries.
 
 **Thoughts:** Check merge state, squash (admin if UNSTABLE), stamp Seq 6 on main.
 
-**Tools:** `gh pr view`; `gh pr merge 102 --admin --squash --match-head-commit e5e3655…`; fetch main; `git switch main`; Edit traveler+packets; push `origin main` (`5713168`).
+**Tools:** `read_file` ×2, `run_terminal_command` ×7, `search_replace` ×5. All success. Narration: `mergeStateStatus` UNSTABLE (P0-F); Owner land via `gh pr merge --admin`.
+
+**Failed tools:** none.
+
+**Station outcome:** override.
 
 **Operator return:** Stamp `65d1334…`; UNSTABLE P0-F; Owner admin land; Next = Close. Head after docs stamp `5713168`.
 
@@ -182,7 +224,11 @@ Multi-op. Split on Ops Packet `## User` / `Station:` boundaries.
 
 **Thoughts:** None in export before tools.
 
-**Tools:** Read packslip template, traveler, packets, `pr101-close-session.md`; git ancestor check; Edit traveler+packets; commit+push main; delete remote+local feature branch; `github__add_issue_comment`.
+**Tools:** `read_file` ×5, `run_terminal_command` ×2, `grep`, `search_replace` ×5, `use_tool`. All success.
+
+**Failed tools:** none.
+
+**Station outcome:** clean.
 
 **Edits:** `docs/travelers/102.md`, `docs/travelers/102-packets.md`. Head `2a0246f`.
 
@@ -192,6 +238,7 @@ Multi-op. Split on Ops Packet `## User` / `Station:` boundaries.
 
 ## Skill-smoke residuals (record only)
 
-- Draft skill file was not on disk; shape taken from this Operation Instruction.
-- Thoughts must be recovered from assistant text, not `events.jsonl`.
-- Session C CA2 export embeds a second `Station: Corrective Action` block inside a python string (packets rebuild). Split on `## User` packet starts, not every `Station:` line.
+- Skill file was not on disk; shape taken from this Operation Instruction plus prior draft.
+- Thoughts recovered from assistant narration, not `events.jsonl`.
+- Session C CA2 export embeds extra `Station:` lines inside a python string. Split on `## User` packet starts only.
+- Tool-failure surface: this low multi-op corpus has **no** failed `tool_completed` rows; Station outcomes still split (`not clean` Inspection fail, `override` Merge admin).
