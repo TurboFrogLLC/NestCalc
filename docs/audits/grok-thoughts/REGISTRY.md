@@ -1,6 +1,6 @@
 # Grok thoughts — REGISTRY
 
-Index only. Full dumps: one `NGJ-*.md` per `job_id` in this folder.  
+Index only. Full dumps: one `NGJ-*.md` per `job_id` in this folder.
 Not product law. Append a row + new dump file; do not split per-probe PRs.
 
 ## Jobs
@@ -19,7 +19,7 @@ Wait: **absent on 101** (Seq 4 stamp empty; never an Ops Packet). Present on 102
 
 Source: `origin/docs/pr101-session-registry` `docs/audits/pr101-session-registry.md`. Do not invent IDs.
 
-Operator: Grok Build. Model / effort: **Grok 4.6 / high** (Close **medium** per Close packet).  
+Operator: Grok Build. Model / effort: **Grok 4.6 / high** (Close **medium** per Close packet).
 Close stamp: `c9aa93efb35f986181e326db7ad8405523d791a4`.
 
 ### Sessions (seven fresh threads — all IDs unique)
@@ -57,8 +57,8 @@ Unlike #102 Session C, **#101 used one Session ID per Station**.
 
 Source: `origin/docs/pr102-session-registry` `docs/audits/pr102-session-registry.md`. Do not invent IDs.
 
-Operator: Grok Build. Model / effort: **Grok 4.6 / low** (every Station).  
-Close stamp: `57131686fcc3180576df2cc866011d8e4d3b82a7`.  
+Operator: Grok Build. Model / effort: **Grok 4.6 / low** (every Station).
+Close stamp: `57131686fcc3180576df2cc866011d8e4d3b82a7`.
 Packslip: https://github.com/TurboFrogLLC/NestCalc/pull/102#issuecomment-5386783030
 
 ### Sessions (three fresh threads)
@@ -92,8 +92,8 @@ Session **C** is multi-op: split on Ops Packet boundaries (8 Stations in one thr
 
 Source: Owner-named Session ID + `grok export` / `~/.grok/sessions/.../2026-08-23-0479dcbe/01a03021-d91e-77a1-9660-b23ec39e8174`. Do not invent IDs.
 
-Operator: Grok Build. Model / effort: **Grok 4.6 / medium** (every Station in this session).  
-Close stamp: `0288da31c53a6db2cb339c2f3516fe6d663f667f`.  
+Operator: Grok Build. Model / effort: **Grok 4.6 / medium** (every Station in this session).
+Close stamp: `0288da31c53a6db2cb339c2f3516fe6d663f667f`.
 Packslip: https://github.com/TurboFrogLLC/NestCalc/pull/107#issuecomment-5388174286
 
 ### Sessions (one continuous thread)
