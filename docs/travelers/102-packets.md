@@ -17,6 +17,7 @@ Operator: Grok Build | Model: Grok 4.6 | Effort: low (every Station)
 | CA | Corrective Action | Specialist | Grok Build | e970090 | closed |
 | 5 | Inspection | Worker | Grok Build | c04c1cc | not clean |
 | CA2 | Corrective Action | Specialist | Grok Build | e99b2a9 | Seq 1–2 transcripts restored; Next=Inspection |
+| 5 | Inspection (re-run) | Worker | Grok Build | bfd8304 | clean; Next=Merge |
 
 ---
 
@@ -482,3 +483,73 @@ Facts:
 - Closed Corrective Action: e97009073f6d6fe08763f5d811f9ee0cc60b7faa, e99b2a9dae7a4f51eb71ac1d073312cd0d34d7fa.
 - Still open / Next = Inspection. Inspection re-run and merge not started. No chart rewrite.
 ```
+
+### Seq 5 — Inspection (re-run after CA2)
+
+**Ops Packet** (management → Grok Build)
+
+```text
+Repo: NestCalc
+Station: Inspection
+Mode: Worker
+Operator: Grok Build
+Branch: docs/employee-manual-mermaid-probe-5
+Head: bfd8304e5e7172444855ac2fa82832f5a712bd5c
+job_id: NGJ-20260823-102
+flow_id: —
+goal_sha256: —
+Trace: NestCalc #102; CA2 e99b2a9; re-Inspection
+Model: Grok 4.6
+Effort: low
+Session: continued
+
+Instruction:
+Done when: Inspection complete; Seq 5 Inspection re-stamp (or new Inspection stamp) with commit SHA on @docs/travelers/102.md; Operator return appended under this Inspection in @docs/travelers/102-packets.md without deleting or collapsing any prior station; if clean, Still open / Next = Merge; pushed Allowed Files only; merge not performed.
+When inspect → confirm: (1) four Codex threads resolved; (2) Closed Corrective Action lists both e970090 and e99b2a9; (3) Seq 1–2 full Ops Packet + Operator return text present now in 102-packets.md (not a one-line summary); (4) chart has exactly one Mermaid fence + one legend; (5) no unresolved review threads requiring work.
+When clean → stamp Inspection; advance footer to Merge.
+When not clean → stamp facts only; name Corrective Action; do not invent merge.
+When traveler → @docs/travelers/102.md Seq 5 only; Stamp = commit SHA.
+When log → append only to @docs/travelers/102-packets.md. Do not collapse Seq 1–CA2.
+This Station only. Mode Worker: do not spawn subagents; do not open plan mode.
+Allowed write: docs/travelers/102.md, docs/travelers/102-packets.md.
+No chart rewrite. No AGENTS/WORKFLOW/GLOSSARY/GOAL/product edits. No merge.
+
+Reason:
+CA2 restored Seq 1–2 transcripts. Re-Inspection verifies criterion (3) before Merge.
+
+Return (this Station only):
+Repo:
+Station:
+Mode:
+Operator:
+Branch:
+Head:
+job_id:
+flow_id:
+goal_sha256:
+Stamp:
+Facts:
+```
+
+**Operator return**
+
+```text
+Repo: NestCalc
+Station: Inspection
+Mode: Worker
+Operator: Grok Build
+Branch: docs/employee-manual-mermaid-probe-5
+Head: bfd8304e5e7172444855ac2fa82832f5a712bd5c
+job_id: NGJ-20260823-102
+flow_id: —
+goal_sha256: —
+Stamp: bfd8304e5e7172444855ac2fa82832f5a712bd5c
+Facts:
+- (1) Four Codex threads resolved (all is_resolved=true).
+- (2) Closed Corrective Action lists e97009073f6d6fe08763f5d811f9ee0cc60b7faa and e99b2a9dae7a4f51eb71ac1d073312cd0d34d7fa.
+- (3) Seq 1 and Seq 2 full Ops Packet + Operator return text present in docs/travelers/102-packets.md (not a one-line summary).
+- (4) Chart has exactly one Mermaid fence and one legend.
+- (5) No unresolved review threads requiring work.
+- Inspection clean. Still open / Next = Merge. Merge not performed. Seq 1–CA2 not collapsed.
+```
+
