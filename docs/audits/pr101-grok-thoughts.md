@@ -1,17 +1,17 @@
-# PR 101 — grok-thoughts (draft smoke)
+# PR 101 — grok-thoughts (re-smoke)
 
 job_id: `NGJ-20260822-101`
 Operator: Grok Build
 Model / effort: Grok 4.6 / high (Close medium)
 PR: 101
-Source: `grok export <session-id>` (2026-08-23). Assistant narration only; `events.jsonl` has no `thinking` type.
+Source: `grok export <session-id>` + `events.jsonl` `tool_completed` (2026-08-23). Assistant narration only; no `thinking` event type.
 Do not invent turns. Not product law.
 
-**Failed:** none. All seven Session IDs opened via `grok export`.
+**Open:** all seven Session IDs opened via `grok export`. Legacy `docs/audits/pr101-*-session.md` not used.
 
-**Wait evidence in C or D:** none as an Ops Packet. Session C Instruction/Facts say Wait was **not started**. Session D mentions `wait` only as a Mermaid node on the chart (gates path), not a Wait Station packet. Registry Seq 4 Wait stamp remains empty.
+**Wait:** still absent as an Ops Packet. Session C Instruction/Facts: Wait **not started**. Session D `wait` is a Mermaid node on the chart (gates path), not a Wait Station packet. Registry Seq 4 stamp remains empty.
 
-**Multi-op:** each export has **one** management Ops Packet (`## User` + Repo/Station/Mode/Operator). No intra-session split.
+**Multi-op:** each export has **one** management Ops Packet. No intra-session split.
 
 ---
 
@@ -19,7 +19,9 @@ Do not invent turns. Not product law.
 
 ### Segment 1 — Station: Checkout sync · Stamp: `1c9310c`
 
-**Ops Packet received** (export; matches traveler Seq 1 envelope)
+**Station outcome:** clean
+
+**Ops Packet received**
 
 ```text
 Repo: NestCalc
@@ -36,7 +38,7 @@ Model: Grok 4.6
 Effort: high
 ```
 
-Done when: on named branch at named Head; Seq 1 stamped; packets log appended; pushed; Cut not started. Allowed: `docs/travelers/101.md`, `docs/travelers/101-packets.md`.
+Done when: on named branch at named Head; Seq 1 stamped; packets log appended; pushed; Cut not started.
 
 **Thoughts (assistant narration, in order)**
 
@@ -47,11 +49,21 @@ Done when: on named branch at named Head; Seq 1 stamped; packets log appended; p
 5. Management already logged the Checkout ops packet on origin. Resetting to that commit and filling the pending Operator return instead of duplicating the packet.
 6. Return: Stamp `2026-08-22` (date, not SHA). Named Head is ancestor. Synced onto management Ops Packet `c94fce2`. Seq 1 stamped. Operator return filled. Pushed `1c9310c`. Cut not started.
 
+**Tools:** successes: `read_file`, `run_terminal_command`, `search_replace`.
+
+**Failed tools**
+
+| name | error summary | after |
+| --- | --- | --- |
+| `run_terminal_command` (`git push`) | rejected: remote contains work not present locally | retried after reset onto origin packets commit; push succeeded |
+
 ---
 
 ## `01a02d41-de84-73f3-9fd6-319c8d555cf0` — Cut · stamp `fa689fa`
 
 ### Segment 1 — Station: Cut · Stamp: `fa689fa`
+
+**Station outcome:** clean
 
 **Ops Packet received**
 
@@ -79,11 +91,17 @@ Done when: one Mermaid flowchart + legend; Seq 2 stamped with commit SHA; Operat
 5. Chart commit is `fa689fa`. Stamping Seq 2 with that SHA and filling the Operator return.
 6. Return: Stamp `fa689fa159ba5964d9dd31eac8bd71fd1f5d2f44`. Head `f98603a`. Collisions labeled. Pushed `772e9bd..f98603a`. Send for review not started.
 
+**Tools:** successes: `grep`, `list_dir`, `read_file`, `run_terminal_command`, `search_replace`.
+
+**Failed tools:** none
+
 ---
 
 ## `01a02d63-db87-7991-a11c-882f55564e71` — Send for review · stamp `178b12c`
 
 ### Segment 1 — Station: Send for review · Stamp: `178b12c`
+
+**Station outcome:** clean
 
 **Ops Packet received**
 
@@ -113,13 +131,24 @@ Done when: PR 101 open not draft; `@codex review`; Seq 3 stamped with commit SHA
 7. Stamp commit is Allowed Files only. Pushing the branch.
 8. Return: Stamp `178b12c`. Head `a9fd689`. PR ready. `@codex review` posted. Surface cannot run agents-pr-review. **Wait and Inspection not started.** Merge not performed.
 
-**Wait note:** Session C records Wait as *not started*. No Wait Ops Packet. Traveler Seq 4 remains unstamped.
+**Wait note:** Session C records Wait as *not started*. No Wait Ops Packet.
+
+**Tools:** successes: `run_terminal_command`, `search_replace`, `search_tool`, `use_tool` (after owner retry).
+
+**Failed tools**
+
+| name | error summary | after |
+| --- | --- | --- |
+| `use_tool` (`github__pull_request_read`) | 404 GET `wReckless/NestCalc` pulls/101 | retried against `TurboFrogLLC/NestCalc`; continued |
+| `run_terminal_command` (`git diff --check origin/main...HEAD`) | exit 2 trailing whitespace on prior `docs/audits/pr101-*-session.md` (not this stamp) | continued; Allowed Files only; push proceeded |
 
 ---
 
 ## `01a02d70-25f5-7782-971f-2f6c82671e33` — Corrective Action · stamp `52d5535`
 
 ### Segment 1 — Station: Corrective Action · Stamp: `52d5535`
+
+**Station outcome:** clean
 
 **Ops Packet received**
 
@@ -147,11 +176,17 @@ Done when: three Codex P2s fixed; PR unparked; CA stamped; Inspection not starte
 
 **Wait note:** `wait` appears as a **chart node** in the CA return, not as a Wait Station packet or Wait work.
 
+**Tools:** successes: `grep`, `list_dir`, `read_file`, `run_terminal_command`, `search_replace`, `search_tool`, `todo_write`, `use_tool`.
+
+**Failed tools:** none
+
 ---
 
 ## `01a02d81-7fda-70f2-bc12-3a50982b3e57` — Inspection · stamp `9995764`
 
 ### Segment 1 — Station: Inspection · Stamp: `9995764`
+
+**Station outcome:** clean
 
 **Ops Packet received**
 
@@ -179,11 +214,23 @@ Effort: high
 7. Updating the stamp cell to this stamp commit (`42afebc`) so it matches the Seq 1 handle pattern Inspection just confirmed. Then restored stamp commit and dropped self-SHA edits.
 8. Return: Stamp `9995764`. Head `42afebc`. Clean. Still open / Next = Merge. Merge not performed.
 
+**Tools:** successes: `grep`, `read_file`, `run_terminal_command`, `search_replace`, `search_tool`, `use_tool` (after owner retry).
+
+**Failed tools**
+
+| name | error summary | after |
+| --- | --- | --- |
+| `use_tool` (`github__pull_request_read`) ×4 | 404 / unresolved repo `wreckless-labs/NestCalc` (PR, reviews, threads, comments) | retried against `TurboFrogLLC/NestCalc`; continued |
+
 ---
 
 ## `01a02eb8-dec2-7a61-9c61-29a98a2874ab` — Merge · stamp `9bb091d`
 
 ### Segment 1 — Station: Merge · Stamp: `9bb091d`
+
+**Station outcome:** override
+
+Facts name Owner land override: `gh pr merge 101 --admin --squash` because P0-F UNSTABLE.
 
 **Ops Packet received**
 
@@ -200,8 +247,6 @@ Model: Grok 4.6
 Effort: high
 ```
 
-Land override named: `gh pr merge 101 --admin --squash` if P0-F unstable. Close not started.
-
 **Thoughts**
 
 1. I'll run the Merge station for PR 101: confirm repo/PR state, squash-merge, then stamp Seq 6 on the traveler and packets.
@@ -211,13 +256,19 @@ Land override named: `gh pr merge 101 --admin --squash` if P0-F unstable. Close 
 5. PR 101 is squash-merged as `9bb091d`. I'll check out `main` and stamp Seq 6 on the traveler and packets only.
 6. Return: Stamp `9bb091d`. Admin squash used. Docs-only stamp `51345b8` on main. Still open / Next = Close. Feature branch kept. Close not started.
 
+**Tools:** successes: `grep`, `read_file`, `run_terminal_command`, `search_replace`.
+
+**Failed tools:** none
+
 ---
 
 ## `01a02ec6-4803-72e1-bead-b16c328994c0` — Close · stamp `c9aa93e`
 
 ### Segment 1 — Station: Close · Stamp: `c9aa93e`
 
-**Ops Packet received** (export Head `180f51d`; packets log Seq 7 records a different named Head `75aabb3` in the paste — live export used)
+**Station outcome:** clean
+
+**Ops Packet received** (export Head `180f51d`; packets log Seq 7 paste named Head `75aabb3` — live export used)
 
 ```text
 Repo: NestCalc
@@ -241,9 +292,17 @@ Effort: medium
 5. Close commit is `c9aa93e`. I’ll stamp Seq 7 with that SHA and record the supplement.
 6. Return: Stamp `c9aa93e`. Head `b6bad36`. Still open / Next = none. Remote branch deleted. Local `-D`. Packslip posted `issuecomment-5386227832`.
 
+**Tools:** successes: `grep`, `list_dir`, `read_file`, `run_terminal_command`, `search_replace`.
+
+**Failed tools**
+
+| name | error summary | after |
+| --- | --- | --- |
+| `run_terminal_command` (`git log 07c251b`) | exit 128: `07c251b` unknown revision (traveler-100 Close SHA not in this clone) | continued; used `51345b8` / live HEAD pattern instead |
+
 ---
 
-## Failed list
+## Failed list (open)
 
 | Session ID | Open | Fallback |
 | --- | --- | --- |
@@ -255,14 +314,29 @@ Effort: medium
 | `01a02eb8-dec2-7a61-9c61-29a98a2874ab` | ok | — |
 | `01a02ec6-4803-72e1-bead-b16c328994c0` | ok | — |
 
-No ID required `docs/audits/pr101-*-session.md` fallback. Those paste files are not Session IDs.
+No ID required `docs/audits/pr101-*-session.md` fallback.
+
+## Station outcomes (summary)
+
+| Session | Station | Outcome | Failed tools |
+| --- | --- | --- | --- |
+| A | Checkout sync | clean | `run_terminal_command` push reject → retried |
+| B | Cut | clean | none |
+| C | Send for review | clean | `use_tool` 404 wrong owner → retried; `git diff --check` whitespace on prior audits → continued |
+| D | Corrective Action | clean | none |
+| E | Inspection | clean | `use_tool` ×4 404 `wreckless-labs` → retried |
+| F | Merge | override | none |
+| G | Close | clean | `git log 07c251b` missing SHA → continued |
+
+Wait Station: **none** (no Ops Packet in any of the seven exports).
 
 ---
 
-## Harness notes (draft smoke)
+## Harness notes (re-smoke)
 
-- Seven unique Session IDs, one Station each (unlike #102 Session C multi-op).
-- Split rule exercised: zero extra Ops Packet starts inside any export.
+- Seven unique Session IDs, one Station each.
+- Split rule: zero extra Ops Packet starts inside any export.
 - Thoughts = assistant `## Assistant` blocks only.
+- Failed tools from `events.jsonl` `tool_completed.outcome=error` plus `chat_history.jsonl` tool_result text.
 - Packets log Seq 7 paste Head (`75aabb3`) differs from Close export Head (`180f51d`); thoughts follow export.
 - Skill `grok-thoughts` was **not** installed.
