@@ -15,7 +15,7 @@ job_id: NGJ-20260822-101
 | 3 | Send for review | Worker | Grok Build | 178b12c | Session: docs/audits/pr101-send-for-review-session.md |
 | CA | Corrective Action | Specialist | Grok Build | 52d5535 | Session: docs/audits/pr101-ca-session.md |
 | 5 | Inspection | Worker | Grok Build | 9995764 | clean; Session: docs/audits/pr101-inspection-session.md |
-| 6 | Merge | Worker | Grok Build | — | Ops Packet recorded; Operator return pending |
+| 6 | Merge | Worker | Grok Build | 9bb091d | squash-merged onto main; P0-F UNSTABLE land override; advanced to Close |
 
 ---
 
@@ -73,5 +73,24 @@ Facts:
 **Operator return**
 
 ```text
-(pending — paste Grok Build return here on stamp)
+Repo: NestCalc
+Station: Merge
+Mode: Worker
+Operator: Grok Build
+Branch: docs/employee-manual-mermaid-probe-4
+Head: 9bb091db3c63d29e36d5e1465a375952d3abdbad
+job_id: NGJ-20260822-101
+flow_id: —
+goal_sha256: —
+Stamp: 9bb091d
+Facts:
+PR 101 squash-merged onto main.
+Merge commit: 9bb091db3c63d29e36d5e1465a375952d3abdbad.
+Seq 6 Merge stamped with 9bb091d.
+Still open: Close.
+Next: Close.
+P0-F checks p0f-lint, p0f-unit, p0f-build, p0f-governance, p0f-evidence concluded FAILURE; mergeStateStatus UNSTABLE.
+Owner land override used (gh pr merge 101 --admin --squash --match-head-commit cdc5b5d81fb2a82b446e7dd9766e04d380c8c42e).
+Feature branch docs/employee-manual-mermaid-probe-4 was not deleted.
+Close was not started. GOAL.md was not edited. Product code was not edited.
 ```
