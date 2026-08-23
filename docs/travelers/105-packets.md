@@ -13,7 +13,7 @@ Operator: Grok Build | Model: Grok 4.6 | Effort: low
 | 2 | Cut | Worker | Grok Build | 02e285ab | corpus + draft PR 105 |
 | 3 | Send for review | Worker | Grok Build | ccaf496bc4b5cc6419263197db6170de595872cd | ready; @codex review |
 | 4 | Wait | Worker | Grok Build | a7d0e9506326d34eaccf3ffd493792c057bab06b | COMMENTED P2=1; Next=CA |
-| CA | Corrective Action | Specialist | Grok Build | STAMP_PENDING | P2 README prefix; Next=Inspection |
+| CA | Corrective Action | Specialist | Grok Build | efa7f7d61d87bf8d996b50f712f35785011d9368 | P2 README prefix; Next=Inspection |
 
 ---
 
@@ -226,11 +226,11 @@ Station: Corrective Action
 Mode: Specialist
 Operator: Grok Build
 Branch: docs/grok-thoughts-continuous
-Head: STAMP_PENDING
+Head: efa7f7d61d87bf8d996b50f712f35785011d9368
 job_id: NGJ-20260823-gtc
 flow_id: —
 goal_sha256: —
-Stamp: STAMP_PENDING
+Stamp: efa7f7d61d87bf8d996b50f712f35785011d9368
 Facts:
 Fixed docs/audits/grok-thoughts/README.md future-dump step: write `<job_id>.md` (job_id already has NGJ- prefix; one prefix; glob NGJ-*.md). Did not write NGJ-<job_id>.md.
 Did not rewrite NGJ-20260822-101.md or NGJ-20260823-102.md. Did not edit AGENTS/WORKFLOW/GOAL/product/.github.
