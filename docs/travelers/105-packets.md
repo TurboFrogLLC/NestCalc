@@ -12,6 +12,7 @@ Operator: Grok Build | Model: Grok 4.6 | Effort: low
 | --- | --- | --- | --- | --- | --- |
 | 2 | Cut | Worker | Grok Build | 02e285ab | corpus + draft PR 105 |
 | 3 | Send for review | Worker | Grok Build | ccaf496bc4b5cc6419263197db6170de595872cd | ready; @codex review |
+| 4 | Wait | Worker | Grok Build | STAMP_PENDING | COMMENTED P2=1; Next=CA |
 
 ---
 
@@ -128,6 +129,59 @@ Posted @codex review: https://github.com/TurboFrogLLC/NestCalc/pull/105#issuecom
 Seq 3 Send for review stamped. Still open / Next = Wait.
 Did not rewrite docs/audits/grok-thoughts/**. Did not edit AGENTS/WORKFLOW/GOAL/product/.github.
 Wait, Inspection, merge not started.
+Pushed Allowed Files only (105.md, 105-packets.md).
+```
+
+### Seq 4 — Wait
+
+**Ops Packet** (management → Grok Build)
+
+```text
+Repo: NestCalc
+Station: Wait
+Mode: Worker
+Operator: Grok Build
+Branch: docs/grok-thoughts-continuous
+Head: a798ab707c54553fd6a00ebfc3b2c90c0b3b2fd5
+job_id: NGJ-20260823-gtc
+flow_id: —
+goal_sha256: —
+Trace: NestCalc #105; Send for review ccaf496; @codex review posted
+Model: Grok 4.6
+Effort: low
+
+Instruction:
+Done when: named Codex review result is recorded on the traveler; Seq Wait stamped; Still open / Next advances to Inspection if clean or Corrective Action if open findings require work.
+When stamp → @docs/travelers/105.md → Wait row only.
+When log → @docs/travelers/105-packets.md append only this Station Ops Packet + Facts return.
+When review → hold PR 105 named path @codex review only; record COMMENTED / clean / open P1/P2 counts and head SHA reviewed. Do not invent findings.
+This Station only. Mode Worker: do not spawn subagents; do not open plan mode; do not load files outside the named paths.
+Do not rewrite docs/audits/grok-thoughts/**. Do not edit AGENTS/WORKFLOW/GOAL/product/.github. Do not fix code on Wait. Inspection and merge not started.
+Push Allowed Files only (105.md, 105-packets.md).
+
+Reason:
+Send for review is on tip a798ab7. Wait holds the named review receipt only. Owner named Effort low.
+```
+
+**Operator return**
+
+```text
+Repo: NestCalc
+Station: Wait
+Mode: Worker
+Operator: Grok Build
+Branch: docs/grok-thoughts-continuous
+Head: STAMP_PENDING
+job_id: NGJ-20260823-gtc
+flow_id: —
+goal_sha256: —
+Stamp: STAMP_PENDING
+Facts:
+Named Codex review: COMMENTED on 3dda72842df85858a0feb5e39c10929170b5dcdd (review https://github.com/TurboFrogLLC/NestCalc/pull/105#pullrequestreview-5003083286).
+Open threads: P0=0, P1=0, P2=1 (unresolved, not outdated), P3=0; total open=1. None resolved.
+Finding is the README future-dump filename `NGJ-<job_id>.md` double-prefix note (thread https://github.com/TurboFrogLLC/NestCalc/pull/105#discussion_r3839277560). No other named-path findings recorded.
+Findings require work. Still open / Next = Corrective Action. Inspection not started.
+Did not rewrite docs/audits/grok-thoughts/**. Did not fix code. Did not edit AGENTS/WORKFLOW/GOAL/product/.github.
 Pushed Allowed Files only (105.md, 105-packets.md).
 ```
 
