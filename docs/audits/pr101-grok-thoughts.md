@@ -1,10 +1,12 @@
-# PR 101 — grok-thoughts (re-smoke)
+# PR 101 — grok-thoughts (post-install re-dump)
 
 job_id: `NGJ-20260822-101`
 Operator: Grok Build
 Model / effort: Grok 4.6 / high (Close medium)
 PR: 101
-Source: `grok export <session-id>` + `events.jsonl` `tool_completed` (2026-08-23). Assistant narration only; no `thinking` event type.
+Source: `grok export <session-id>` + `~/.grok/sessions/` `events.jsonl` `tool_completed` (2026-08-23). Assistant narration only; no `thinking` event type.
+Registry: `docs/audits/pr101-session-registry.md`
+Packets log: `docs/travelers/101-packets.md`
 Do not invent turns. Not product law.
 
 **Open:** all seven Session IDs opened via `grok export`. Legacy `docs/audits/pr101-*-session.md` not used.
@@ -82,7 +84,7 @@ Effort: high
 
 Done when: one Mermaid flowchart + legend; Seq 2 stamped with commit SHA; Operator return under Seq 2; Send for review not started.
 
-**Thoughts**
+**Thoughts (assistant narration, in order)**
 
 1. Cut station only: reconstruct the employee-manual flow from the named sources, write one Mermaid chart, stamp Seq 2 with the commit SHA, and record the Operator return. Verifying branch/HEAD and reading the allowed sources.
 2. Branch and HEAD match. Next I’ll read the templates and reconstruct the employee-manual flow from those sources only.
@@ -93,7 +95,7 @@ Done when: one Mermaid flowchart + legend; Seq 2 stamped with commit SHA; Operat
 
 **Tools:** successes: `grep`, `list_dir`, `read_file`, `run_terminal_command`, `search_replace`.
 
-**Failed tools:** none
+**Failed tools:** none.
 
 ---
 
@@ -120,7 +122,7 @@ Effort: high
 
 Done when: PR 101 open not draft; `@codex review`; Seq 3 stamped with commit SHA; Wait and Inspection not started. **No Wait work.**
 
-**Thoughts**
+**Thoughts (assistant narration, in order)**
 
 1. Send for review on PR 101: I'll confirm branch/HEAD and PR draft state, then mark it ready, post `@codex review`, and stamp Seq 3.
 2. Branch and HEAD match. Next I’ll inspect PR 101 and mark it ready if it’s still draft.
@@ -167,7 +169,7 @@ Effort: high
 
 Done when: three Codex P2s fixed; PR unparked; CA stamped; Inspection not started.
 
-**Thoughts**
+**Thoughts (assistant narration, in order)**
 
 1. I'll start from the traveler and current HEAD, then fix the three Codex P2s, unpark PR metadata, and stamp this Corrective Action without starting Inspection.
 2. HEAD matches the named commit. Next I’ll pull the Codex P2s, PR title/body, and traveler rules so the CA stays on those three findings only.
@@ -178,7 +180,7 @@ Done when: three Codex P2s fixed; PR unparked; CA stamped; Inspection not starte
 
 **Tools:** successes: `grep`, `list_dir`, `read_file`, `run_terminal_command`, `search_replace`, `search_tool`, `todo_write`, `use_tool`.
 
-**Failed tools:** none
+**Failed tools:** none.
 
 ---
 
@@ -203,7 +205,7 @@ Model: Grok 4.6
 Effort: high
 ```
 
-**Thoughts**
+**Thoughts (assistant narration, in order)**
 
 1. Inspection station for PR 101. I’ll verify branch/HEAD, then check the six inspection items against the traveler, chart, and live GitHub.
 2. Branch and HEAD match. Chart has one Mermaid fence and one legend. Next I’ll pull PR 101 title, body, and review threads from GitHub.
@@ -247,7 +249,7 @@ Model: Grok 4.6
 Effort: high
 ```
 
-**Thoughts**
+**Thoughts (assistant narration, in order)**
 
 1. I'll run the Merge station for PR 101: confirm repo/PR state, squash-merge, then stamp Seq 6 on the traveler and packets.
 2. PR 101 is mergeable but UNSTABLE on P0-F, so I'll use the named Owner land override and follow the PR 100 post-merge stamp pattern.
@@ -258,7 +260,7 @@ Effort: high
 
 **Tools:** successes: `grep`, `read_file`, `run_terminal_command`, `search_replace`.
 
-**Failed tools:** none
+**Failed tools:** none.
 
 ---
 
@@ -283,7 +285,7 @@ Model: Grok 4.6
 Effort: medium
 ```
 
-**Thoughts**
+**Thoughts (assistant narration, in order)**
 
 1. Close is job-end: I'll read the packslip template and Close procedure, then sync main, stamp Seq 7, prune the feature branch, and post the packslip.
 2. Sync is next: fetch and fast-forward `main`, then I’ll match prior Close stamp patterns before writing Seq 7.
@@ -302,7 +304,7 @@ Effort: medium
 
 ---
 
-## Failed list (open)
+## Failed sessions
 
 | Session ID | Open | Fallback |
 | --- | --- | --- |
@@ -314,7 +316,7 @@ Effort: medium
 | `01a02eb8-dec2-7a61-9c61-29a98a2874ab` | ok | — |
 | `01a02ec6-4803-72e1-bead-b16c328994c0` | ok | — |
 
-No ID required `docs/audits/pr101-*-session.md` fallback.
+No ID failed to open. Legacy `docs/audits/pr101-*-session.md` not used.
 
 ## Station outcomes (summary)
 
@@ -332,11 +334,12 @@ Wait Station: **none** (no Ops Packet in any of the seven exports).
 
 ---
 
-## Harness notes (re-smoke)
+## Harness notes (post-install re-dump)
 
 - Seven unique Session IDs, one Station each.
 - Split rule: zero extra Ops Packet starts inside any export.
-- Thoughts = assistant `## Assistant` blocks only.
-- Failed tools from `events.jsonl` `tool_completed.outcome=error` plus `chat_history.jsonl` tool_result text.
-- Packets log Seq 7 paste Head (`75aabb3`) differs from Close export Head (`180f51d`); thoughts follow export.
-- Skill `grok-thoughts` was **not** installed.
+- Thoughts = assistant `## Assistant` blocks only. No `thinking` event type in `events.jsonl`.
+- Failed tools from `events.jsonl` `tool_completed.outcome=error` plus export narration. Failed-then-retry rows kept (Checkout push; Send-for-review GitHub owner; Inspection GitHub owner).
+- Packet **Head** in packets-log paste can differ from live export (Close Seq 7: log `75aabb3` vs export `180f51d`). Thoughts follow export.
+- Station outcome from Operator return Facts first: Merge admin land → `override`. Wait never present → not scored.
+- Skill `grok-thoughts` SKILL.md was not on disk in this worktree skill roots; shape taken from this Operation Instruction plus the PR 102 post-install dump (`## Failed sessions`, per-segment Station outcome + Failed tools).
