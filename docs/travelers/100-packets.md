@@ -3,7 +3,7 @@
 Owner expedite. Every management Ops Packet and every Operator return is recorded here.
 Do not delete rows. Append only.
 
-Record Head: 493aaa1
+Record Head: 47629f2
 job_id: NGJ-20260822-100
 
 ## Index
@@ -11,6 +11,7 @@ job_id: NGJ-20260822-100
 | Seq | Station | Mode | Operator | Stamp | Outcome |
 | --- | --- | --- | --- | --- | --- |
 | 1 | Checkout sync | Worker | Grok Build | 493aaa1 | Stamped; advanced to Cut |
+| 2 | Cut | Worker | Grok Build | 47629f2 | AGENTS second main exception; Wait pointer; WORKFLOW defers to AGENTS |
 
 ---
 
@@ -55,4 +56,52 @@ Seq 1 Checkout sync stamped with 493aaa1.
 Still open: Cut.
 Next: Cut.
 AGENTS.md and docs/WORKFLOW.md were not edited. Cut was not started. Merge was not performed.
+```
+
+### Seq 2 — Cut
+
+**Ops Packet**
+
+```text
+Repo: NestCalc
+Station: Cut
+Mode: Worker
+Operator: Grok Build
+Branch: docs/agents-main-exception-agents-pr-review
+Head: 77e5ec7
+job_id: NGJ-20260822-100
+flow_id: —
+goal_sha256: —
+Trace: NestCalc #100; post-#99 P1 residual; job traveler docs/travelers/100.md; packets docs/travelers/100-packets.md
+Model: Grok 4.6
+Effort: high
+Orchestration: Single-agent
+Session: Fresh
+
+Instruction:
+Cut only the named outcomes. Allowed Files: AGENTS.md, docs/WORKFLOW.md, docs/GLOSSARY.md, docs/templates/traveler.md, docs/templates/README.md, docs/travelers/100.md, docs/travelers/100-packets.md. Do not edit GOAL.md or product code.
+
+1. AGENTS.md Never: add a second main exception — docs-only traveler and packslip stamps after merge when this traveler names Owner authorization. Keep checkout sync as the first exception. One meaning; no synonym stack.
+
+2. Quality Control / Wait path: when named review is requested, point at agents-pr-review as a companion to the named Codex review. Pointer only; do not paste the skill body into AGENTS or WORKFLOW.
+
+3. docs/WORKFLOW.md: Release/Close docs-only main line must point at the AGENTS exception (resolve dual authority from #99 P1). Do not invent a third main path.
+
+Stamp Seq 2 Cut on docs/travelers/100.md with the Cut commit short SHA. Advance Still open / Next to Send for review on the same pass. Append this Ops Packet and Operator return to docs/travelers/100-packets.md. Push Allowed Files only. Keep PR draft. Do not merge. Do not start Send for review.
+
+Reason:
+Owner expedite. Promote the post-merge stamp path into AGENTS; Wait gets agents-pr-review pointer; WORKFLOW defers to AGENTS for one meaning.
+```
+
+**Operator return**
+
+```text
+AGENTS Never now has two main exceptions: (1) checkout sync; (2) docs-only traveler and packslip stamps after merge when this traveler names Owner authorization.
+Quality Control / Wait named review points at @codex review and agents-pr-review (companion). Skill body was not pasted.
+WORKFLOW Start calls checkout sync the first main exception and points the second at AGENTS Never. Release/Close docs-only main line points at the AGENTS Never second exception. No third main path.
+GLOSSARY Send for review and agents-pr-review carry the same named-review meaning. Templates were not edited.
+Seq 2 Cut stamped with 47629f2.
+Still open: Send for review.
+Next: Send for review.
+PR remains draft. Send for review was not started. Merge was not performed. GOAL.md and product code were not edited.
 ```
