@@ -13,7 +13,7 @@ job_id: NGJ-20260822-101
 | 1 | Checkout sync | Worker | Grok Build | 1c9310c (traveler cell was date) | Session: docs/audits/pr101-checkout-session.md |
 | 2 | Cut | Worker | Grok Build | fa689fa | Session: docs/audits/pr101-cut-session.md |
 | 3 | Send for review | Worker | Grok Build | 178b12c | ready; @codex review. Session: docs/audits/pr101-send-for-review-session.md |
-| CA | Corrective Action | Specialist | Grok Build | — | Ops Packet recorded; Operator return pending |
+| CA | Corrective Action | Specialist | Grok Build | 52d5535 | three Codex P2s fixed; PR unparked; Next Inspection |
 
 ---
 
@@ -82,5 +82,15 @@ Facts:
 **Operator return**
 
 ```text
-(pending — paste Grok Build return here on stamp)
+Repo: NestCalc
+Station: Corrective Action
+Mode: Specialist
+Operator: Grok Build
+Branch: docs/employee-manual-mermaid-probe-4
+Head: 52d5535b0e3be2a68699dc50f9f6074bb497290a
+job_id: NGJ-20260822-101
+flow_id: —
+goal_sha256: —
+Stamp: 52d5535b0e3be2a68699dc50f9f6074bb497290a
+Facts: Chart connects completed Freeze (freezeAuth), Cut, and peer Station outcomes (planBind, sfr, wait, release, landAuth, closeSt) into gates → stampOp. doOp no longer branches directly to gates. Freeze/land nodes are ownership vs execution (AGENTS: no Operator owns freeze/land/cycle; traveler Operator line is who runs freeze/merge), not COLLISION. One Mermaid fence + one legend. Seq 1 Stamp is 1c9310c. Closed Corrective Action: 52d5535. Still open / Next: Inspection. Job-rule dropped "Cut not started this Station". PR title/body no longer say parked/PARKED; probe-4 in QC after Owner release (ops-packet-grok land 1cd418a). Facts-only replies on the three Codex P2 threads after this stamp is on the tip. Pushed Allowed Files only. Inspection and merge not started.
 ```
