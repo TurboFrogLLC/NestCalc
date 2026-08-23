@@ -17,6 +17,7 @@ File: `.github/workflows/p0-f-minimum-ci.yml`
 - `on:` is `workflow_dispatch` only (was `pull_request`).
 - All jobs and steps are unchanged (`p0f-lint`, `p0f-unit`, `p0f-build`, `p0f-governance`, `p0f-evidence`).
 - The workflow file is retained.
+- Pause-path evidence: `p0f-evidence` gates `github.event.pull_request.*` on `github.event_name == 'pull_request'`; `workflow_dispatch` uses `github.sha` / `github.event_name`.
 
 P0-F no longer starts on pull request. Manual dispatch remains available when Actions minutes are restored enough for an on-demand run.
 
