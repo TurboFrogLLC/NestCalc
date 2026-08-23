@@ -1,7 +1,7 @@
 name: P0-F Minimum CI Baseline
 
 on:
-  pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -165,12 +165,13 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       - name: create manifest
         env:
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          EVENT_NAME: ${{ github.event_name }}
+          PR_NUMBER: ${{ github.event_name == 'pull_request' && github.event.pull_request.number || '' }}
+          HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          BASE_REF: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.ref || github.ref_name }}
           LINT_RESULT: ${{ needs.p0f-lint.result }}
           UNIT_RESULT: ${{ needs.p0f-unit.result }}
           BUILD_RESULT: ${{ needs.p0f-build.result }}
@@ -182,12 +183,16 @@ jobs:
           node - <<'NODE'
           const fs = require("node:fs");
 
+          const eventName = process.env.EVENT_NAME || "";
+          const isPullRequest = eventName === "pull_request";
+          const prRaw = process.env.PR_NUMBER || "";
+
           const manifest = {
             schema_version: "p0f-evidence-v1",
             repository: "TurboFrogLLC/NestCalc",
-            event: "pull_request",
+            event: eventName,
             base_ref: process.env.BASE_REF,
-            pull_request_number: Number(process.env.PR_NUMBER),
+            pull_request_number: isPullRequest && prRaw ? Number(prRaw) : null,
             head_sha: process.env.HEAD_SHA,
             workflow: "P0-F Minimum CI Baseline",
             jobs: [
@@ -211,7 +216,7 @@ jobs:
       - name: upload head-SHA manifest
         uses: actions/upload-artifact@v4
         with:
-          name: p0f-evidence-${{ github.event.pull_request.head.sha }}
+          name: p0f-evidence-${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
           path: p0f-evidence/manifest.json
           if-no-files-found: error
           retention-days: 14
