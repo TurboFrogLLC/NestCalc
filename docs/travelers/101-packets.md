@@ -3,14 +3,14 @@
 Employee-manual mermaid probe-4. Every management Ops Packet and every Operator return is recorded here.
 Do not delete rows. Append only.
 
-Record Head: 51bc5e72d61cba7a0ed5ef6555e665ebc0aff048
+Record Head: 1c9310c369e07f94c656ed6505c68ff897bcf812
 job_id: NGJ-20260822-101
 
 ## Index
 
 | Seq | Station | Mode | Operator | Stamp | Outcome |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Checkout sync | Worker | Grok Build | 2026-08-22 | Verified 51bc5e72 ancestor; synced on c94fce2; Seq 1 stamped; Cut not started. |
+| 1 | Checkout sync | Worker | Grok Build | 1c9310c (traveler cell: 2026-08-22) | Synced c94fce2; stamped; push tip 1c9310c; Cut not started. Session: docs/audits/pr101-checkout-session.md |
 
 ---
 
@@ -74,3 +74,9 @@ goal_sha256: —
 Stamp: 2026-08-22
 Facts: Named Head 51bc5e72d61cba7a0ed5ef6555e665ebc0aff048 is ancestor. Live origin had management Ops Packet c94fce2ccfc5bcebd4ade9e5c5428e05b1f2f719. Synced onto that commit. Seq 1 Checkout sync stamped. Operator return filled in pending fence. Cut not started. No merge.
 ```
+
+**Session capture (thoughts / tools)**
+
+See `docs/audits/pr101-checkout-session.md` — Owner paste of UI thought/tool surface + analysis notes (stamp date vs SHA, worktree path, tip race).
+
+Post-push tip: `1c9310c369e07f94c656ed6505c68ff897bcf812`.
