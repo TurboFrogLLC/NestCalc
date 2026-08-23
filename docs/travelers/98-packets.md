@@ -9,6 +9,7 @@ Do not delete rows. Append only.
 | --- | --- | --- | --- | --- | --- |
 | 1 | Checkout sync | Worker | Codex App | d27c056 | Stamped; advanced to Cut |
 | 2 | Cut | Worker | Codex App | 63ebd2b | Mermaid audit written; stamped; advanced to Send for review |
+| 3 | Send for review | Worker | Codex App | abf9462 | PR marked ready; `@codex review` posted; advanced to Wait |
 
 ---
 
@@ -122,4 +123,13 @@ Quality Control starts. Traveler already names this Station after Cut.
 PR #98 marked ready for review.
 Named review requested by posting “@codex review”.
 Inspection was not started. Merge was not performed.
+```
+
+**Stamp supplement**
+
+```text
+Pass commit: abf9462.
+Seq 3 Send for review stamped with abf9462.
+Still open: Wait.
+Next: Wait.
 ```
