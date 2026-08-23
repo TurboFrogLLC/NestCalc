@@ -89,3 +89,37 @@ Still open: Send for review.
 Next: Send for review.
 GOAL.md and law files were not edited. Send for review was not started. Merge was not performed.
 ```
+
+### Seq 3 — Send for review
+
+**Ops Packet**
+
+```text
+Repo: NestCalc
+Station: Send for review
+Mode: Worker
+Operator: Codex App
+Branch: docs/employee-manual-mermaid-probe-3
+Head: 6344bb6
+flow_id: —
+goal_sha256: —
+Trace: NestCalc #98; mermaid probe-3; job traveler docs/travelers/98.md
+Model: GPT-5.6 Terra
+Effort: medium
+Orchestration: Single-agent
+Session: Continue
+
+Instruction:
+Mark PR 98 ready for review. Request named review (@codex review). Stamp Seq 3 Send for review on docs/travelers/98.md with this pass commit short SHA. Advance Still open / Next to Wait on the same pass. Append this Station to docs/travelers/98-packets.md (Ops Packet + Operator return). Push Allowed Files only. Do not merge. Do not start Inspection.
+
+Reason:
+Quality Control starts. Traveler already names this Station after Cut.
+```
+
+**Operator return**
+
+```text
+PR #98 marked ready for review.
+Named review requested by posting “@codex review”.
+Inspection was not started. Merge was not performed.
+```
