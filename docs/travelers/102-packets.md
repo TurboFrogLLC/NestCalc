@@ -18,6 +18,7 @@ Operator: Grok Build | Model: Grok 4.6 | Effort: low (every Station)
 | 5 | Inspection | Worker | Grok Build | c04c1cc | not clean |
 | CA2 | Corrective Action | Specialist | Grok Build | e99b2a9 | Seq 1–2 transcripts restored; Next=Inspection |
 | 5 | Inspection (re-run) | Worker | Grok Build | bfd8304 | clean; Next=Merge |
+| 6 | Merge | Worker | Grok Build | 65d1334 | squash-merged; admin override P0-F UNSTABLE |
 
 ---
 
@@ -552,4 +553,71 @@ Facts:
 - (5) No unresolved review threads requiring work.
 - Inspection clean. Still open / Next = Merge. Merge not performed. Seq 1–CA2 not collapsed.
 ```
+
+### Seq 6 — Merge
+
+**Ops Packet** (management → Grok Build)
+
+```text
+Repo: NestCalc
+Station: Merge
+Mode: Worker
+Operator: Grok Build
+Branch: docs/employee-manual-mermaid-probe-5
+Head: e5e36558061606816f5ac6f9d66b25560297e944
+job_id: NGJ-20260823-102
+flow_id: —
+goal_sha256: —
+Trace: NestCalc #102; Inspection clean e5e3655; Merge
+Model: Grok 4.6
+Effort: low
+Session: continued
+
+Instruction:
+Done when: PR 102 squash-merged onto main; Seq 6 Merge stamped with merge commit SHA on @docs/travelers/102.md; Operator return under Seq 6 in @docs/travelers/102-packets.md; Still open / Next = Close; Close not started; docs-only main stamp for traveler if required by AGENTS Never second exception; pushed Allowed Files only for stamps.
+When merge → squash-merge PR 102. If P0-F / mergeStateStatus UNSTABLE blocks normal merge, use Owner land override: gh pr merge 102 --admin --squash (match-head-commit current tip). Record override in Facts.
+When traveler → @docs/travelers/102.md Seq 6 only; Stamp = merge commit SHA on main.
+When log → append only to @docs/travelers/102-packets.md Seq 6. Do not collapse prior stations.
+When main stamp → if traveler/packslip stamps must land on main after merge, use the AGENTS Never docs-only main exception already named on this job family; Allowed Files traveler paths only.
+This Station only. Mode Worker: do not spawn subagents; do not open plan mode.
+Allowed write: docs/travelers/102.md, docs/travelers/102-packets.md.
+No AGENTS/WORKFLOW/GLOSSARY/GOAL/product edits. Close not started.
+
+Reason:
+Inspection clean. Owner authorizes admin land if P0-F remains unstable (same residual as #101; infra out of scope this cycle).
+
+Return (this Station only):
+Repo:
+Station:
+Mode:
+Operator:
+Branch:
+Head:
+job_id:
+flow_id:
+goal_sha256:
+Stamp:
+Facts:
+```
+
+**Operator return**
+
+```text
+Repo: NestCalc
+Station: Merge
+Mode: Worker
+Operator: Grok Build
+Branch: docs/employee-manual-mermaid-probe-5
+Head: 65d1334ddd556c9c0d5ac70bfa288baf043c2e9c
+job_id: NGJ-20260823-102
+flow_id: —
+goal_sha256: —
+Stamp: 65d1334ddd556c9c0d5ac70bfa288baf043c2e9c
+Facts:
+- PR 102 squash-merged onto main as 65d1334ddd556c9c0d5ac70bfa288baf043c2e9c.
+- mergeStateStatus UNSTABLE (P0-F Minimum CI Baseline failed). Owner land override used: gh pr merge 102 --admin --squash --match-head-commit e5e36558061606816f5ac6f9d66b25560297e944.
+- Seq 6 stamped with merge SHA. Still open / Next = Close. Close not started.
+- Docs-only main traveler stamp after merge (AGENTS Never second exception). Prior stations not collapsed.
+```
+
 
