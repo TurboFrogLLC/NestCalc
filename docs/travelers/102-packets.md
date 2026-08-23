@@ -16,7 +16,7 @@ Operator: Grok Build | Model: Grok 4.6 | Effort: low (every Station)
 | 4 | Wait | Worker | Grok Build | 304cc01 | findings |
 | CA | Corrective Action | Specialist | Grok Build | e970090 | closed |
 | 5 | Inspection | Worker | Grok Build | c04c1cc | not clean |
-| CA2 | Corrective Action | Specialist | Grok Build | CA2_SHA_PENDING | Seq 1–2 transcripts restored; Next=Inspection |
+| CA2 | Corrective Action | Specialist | Grok Build | e99b2a9 | Seq 1–2 transcripts restored; Next=Inspection |
 
 ---
 
@@ -467,5 +467,18 @@ Facts:
 **Operator return**
 
 ```text
-(pending — paste Grok Build return here on stamp)
+Repo: NestCalc
+Station: Corrective Action
+Mode: Specialist
+Operator: Grok Build
+Branch: docs/employee-manual-mermaid-probe-5
+Head: e99b2a9dae7a4f51eb71ac1d073312cd0d34d7fa
+job_id: NGJ-20260823-102
+flow_id: —
+goal_sha256: —
+Stamp: e99b2a9dae7a4f51eb71ac1d073312cd0d34d7fa
+Facts:
+- Restored Seq 1 and Seq 2 full Ops Packet + Operator return from ab5a167. Seq 3, 4, CA, and Seq 5 kept in full. No station collapsed to a one-line summary.
+- Closed Corrective Action: e97009073f6d6fe08763f5d811f9ee0cc60b7faa, e99b2a9dae7a4f51eb71ac1d073312cd0d34d7fa.
+- Still open / Next = Inspection. Inspection re-run and merge not started. No chart rewrite.
 ```
