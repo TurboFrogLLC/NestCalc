@@ -3,7 +3,7 @@
 Employee-manual mermaid probe-4. Every management Ops Packet and every Operator return is recorded here.
 Do not delete rows. Append only.
 
-Record Head: 75aabb3d446bb4ca53bac0e17c1c1c90221577cb
+Record Head: c9aa93efb35f986181e326db7ad8405523d791a4
 job_id: NGJ-20260822-101
 
 ## Index
@@ -16,7 +16,7 @@ job_id: NGJ-20260822-101
 | CA | Corrective Action | Specialist | Grok Build | 52d5535 | Session: docs/audits/pr101-ca-session.md |
 | 5 | Inspection | Worker | Grok Build | 9995764 | clean; Session: docs/audits/pr101-inspection-session.md |
 | 6 | Merge | Worker | Grok Build | 9bb091d | squash; land override; Session: docs/audits/pr101-merge-session.md |
-| 7 | Close | Worker | Grok Build | — | Docs-only Close on main; stamp pending |
+| 7 | Close | Worker | Grok Build | c9aa93e | Docs-only Close stamped on main; job ended |
 
 ---
 
@@ -79,9 +79,19 @@ Main at start of Close: 180f51d56c511ff4d847f7c0bc8c69c9cf9fd31f.
 Fetched origin; already on main; fast-forward: already up to date.
 HEAD matched origin/main: 180f51d56c511ff4d847f7c0bc8c69c9cf9fd31f.
 Squash merge: 9bb091db3c63d29e36d5e1465a375952d3abdbad.
+Seq 7 Close stamped with c9aa93e.
 Seq 7 Close footer Still open / Next = none.
 Remote branch docs/employee-manual-mermaid-probe-4 deleted.
 Local branch docs/employee-manual-mermaid-probe-4 deleted with -D because squash-merge 9bb091d is not an ancestor of main (git branch -d refused: not fully merged).
 Packslip printed in the CLI and posted on PR 101.
 GOAL.md and product code were not edited.
+```
+
+**Stamp supplement**
+
+```text
+Pass commit: c9aa93e.
+Seq 7 Close stamped with c9aa93e.
+Still open: none.
+Next: none.
 ```
