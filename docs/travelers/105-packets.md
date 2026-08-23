@@ -14,6 +14,7 @@ Operator: Grok Build | Model: Grok 4.6 | Effort: low
 | 3 | Send for review | Worker | Grok Build | ccaf496bc4b5cc6419263197db6170de595872cd | ready; @codex review |
 | 4 | Wait | Worker | Grok Build | a7d0e9506326d34eaccf3ffd493792c057bab06b | COMMENTED P2=1; Next=CA |
 | CA | Corrective Action | Specialist | Grok Build | efa7f7d61d87bf8d996b50f712f35785011d9368 | P2 README prefix; Next=Inspection |
+| 5 | Inspection | Worker | Grok Build | STAMP_PENDING | clean; Next=Merge |
 
 ---
 
@@ -237,5 +238,60 @@ Did not rewrite NGJ-20260822-101.md or NGJ-20260823-102.md. Did not edit AGENTS/
 Facts-only reply on discussion_r3839277560. Thread resolved after tip included the fix.
 Closed Corrective Action lists this SHA. Still open / Next = Inspection. Inspection not started.
 Pushed Allowed Files only (README, 105.md, 105-packets.md).
+```
+
+### Seq 5 — Inspection
+
+**Ops Packet** (management → Grok Build)
+
+```text
+Repo: NestCalc
+Station: Inspection
+Mode: Worker
+Operator: Grok Build
+Branch: docs/grok-thoughts-continuous
+Head: 888e3199389cacb791566422c934ed476d1fc51b
+job_id: NGJ-20260823-gtc
+flow_id: —
+goal_sha256: —
+Trace: NestCalc #105; CA efa7f7d; P2 README double-prefix resolved
+Model: Grok 4.6
+Effort: low
+
+Instruction:
+Done when: Inspection criteria checked; Seq Inspection stamped; Still open / Next = Merge if clean, else Corrective Action if work remains.
+When stamp → @docs/travelers/105.md → Inspection row only.
+When log → @docs/travelers/105-packets.md append only this Station Ops Packet + Facts return.
+When criteria → verify only: (1) open GitHub review threads on PR 105 requiring work = 0; (2) Closed Corrective Action lists efa7f7d; (3) docs/audits/grok-thoughts/README.md uses single job_id.md / NGJ-*.md pattern, not NGJ-<job_id>.md; (4) continuous home still has REGISTRY.md + NGJ-20260822-101.md + NGJ-20260823-102.md; (5) no pr101-* / pr102-* files introduced on this branch tip.
+This Station only. Mode Worker: do not spawn subagents; do not open plan mode; do not load files outside the named paths.
+Do not rewrite dump bodies. Do not edit AGENTS/WORKFLOW/GOAL/product/.github. Merge not started.
+Push Allowed Files only (105.md, 105-packets.md).
+
+Reason:
+CA closed the only open P2. Inspection is receipt-only. Owner named Effort low.
+```
+
+**Operator return**
+
+```text
+Repo: NestCalc
+Station: Inspection
+Mode: Worker
+Operator: Grok Build
+Branch: docs/grok-thoughts-continuous
+Head: STAMP_PENDING
+job_id: NGJ-20260823-gtc
+flow_id: —
+goal_sha256: —
+Stamp: STAMP_PENDING
+Facts:
+(1) Open GitHub review threads requiring work = 0. Thread PRRT_kwDOTJAVIM6bhSi0 is resolved.
+(2) Closed Corrective Action lists efa7f7d61d87bf8d996b50f712f35785011d9368.
+(3) README future-dump step uses `<job_id>.md` / glob `NGJ-*.md`; explicitly does not write `NGJ-<job_id>.md`.
+(4) docs/audits/grok-thoughts/ has REGISTRY.md, NGJ-20260822-101.md, NGJ-20260823-102.md.
+(5) origin/main...HEAD introduced no pr101-* / pr102-* files (legacy pr101-* session files already on main).
+Inspection clean. Still open / Next = Merge. Merge not started.
+Did not rewrite dump bodies. Did not edit AGENTS/WORKFLOW/GOAL/product/.github.
+Pushed Allowed Files only (105.md, 105-packets.md).
 ```
 
