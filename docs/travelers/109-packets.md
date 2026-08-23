@@ -55,3 +55,29 @@ Land continuous grok-thoughts dumps on main. Checkout sync is Owner terminal.
 - Not done this Station: Wait, Inspection, Merge, Close, packslip.
 NEXT: Wait
 
+## Station: Wait
+
+### Ops Packet
+
+- Repo: NestCalc
+- Station: Wait
+- Mode: Worker
+- Operator: Grok Build
+- Branch: docs/grok-thoughts-continuous-land
+- Head in: 86e65dad21adfa99646df203d0bbda787324fbd3
+- job_id: NGJ-20260823-gtc-land
+- flow_id: —
+- goal_sha256: —
+- Trace: NestCalc #109; Wait for Operations Manager GitHub signal
+- Instruction: Done when: Operations Manager signal is on PR 109; Seq Wait stamped; Still open / Next routed from that signal.
+
+### Facts return
+
+- Signal author: TurboFrogLLC (Operations Manager / SuperGrok). Not Codex.
+- Signal: https://github.com/TurboFrogLLC/NestCalc/pull/109#issuecomment-5388573672
+- Body: thumbs-up — ready for Inspection. Wait may route NEXT: Inspection.
+- Route chosen: Inspection. Wait did not fix.
+- `docs/travelers/109.md`: Wait row stamped `86e65dad21adfa99646df203d0bbda787324fbd3`; Still open / Next = Inspection.
+- Not done this Station: Inspection, Merge, Close, packslip.
+NEXT: Inspection
+
