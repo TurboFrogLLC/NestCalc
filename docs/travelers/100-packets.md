@@ -3,7 +3,7 @@
 Owner expedite. Every management Ops Packet and every Operator return is recorded here.
 Do not delete rows. Append only.
 
-Record Head: 47629f2
+Record Head: 96ef9e9
 job_id: NGJ-20260822-100
 
 ## Index
@@ -12,6 +12,7 @@ job_id: NGJ-20260822-100
 | --- | --- | --- | --- | --- | --- |
 | 1 | Checkout sync | Worker | Grok Build | 493aaa1 | Stamped; advanced to Cut |
 | 2 | Cut | Worker | Grok Build | 47629f2 | AGENTS second main exception; Wait pointer; WORKFLOW defers to AGENTS |
+| 3 | Send for review | Worker | Grok Build | 96ef9e9 | Stamped; agents-pr-review not runnable on this Surface; advanced to Wait |
 
 ---
 
@@ -104,4 +105,41 @@ Seq 2 Cut stamped with 47629f2.
 Still open: Send for review.
 Next: Send for review.
 PR remains draft. Send for review was not started. Merge was not performed. GOAL.md and product code were not edited.
+```
+
+### Seq 3 — Send for review
+
+**Ops Packet**
+
+```text
+Repo: NestCalc
+Station: Send for review
+Mode: Worker
+Operator: Grok Build
+Branch: docs/agents-main-exception-agents-pr-review
+Head: 96ef9e9
+job_id: NGJ-20260822-100
+flow_id: —
+goal_sha256: —
+Trace: NestCalc #100; Cut 47629f2; job traveler docs/travelers/100.md; packets docs/travelers/100-packets.md
+Model: Grok 4.6
+Effort: high
+Orchestration: Single-agent
+Session: Fresh
+
+Instruction:
+Mark PR 100 ready for review. Request named Codex review (@codex review). Stamp Seq 3 Send for review on docs/travelers/100.md with this pass short SHA. Advance Still open / Next to Wait on the same pass. Append this Ops Packet and Operator return to docs/travelers/100-packets.md. Push Allowed Files only. Do not merge. Do not start Inspection. If this Operator cannot run agents-pr-review from this Surface, report that fact only — do not invent a substitute review body.
+
+Reason:
+Quality Control starts. Named review includes Codex; agents-pr-review is the companion path (management may run that skill if this Surface cannot).
+```
+
+**Operator return**
+
+```text
+Seq 3 Send for review stamped with 96ef9e9.
+Still open: Wait.
+Next: Wait.
+This Operator cannot run agents-pr-review from this Surface. No substitute review body was posted.
+Inspection was not started. Merge was not performed.
 ```
