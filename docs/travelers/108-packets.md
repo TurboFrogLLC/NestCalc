@@ -203,3 +203,57 @@ Pause P0-F pull_request trigger (free-tier). Checkout sync is Owner terminal.
 - Admin override: not used.
 - Docs-only Merge stamp path: traveler Merge row + this packet committed on main after squash (Owner Close authorization for docs-only traveler/packets on main). Close not started in the Merge commit.
 - Not done this Station: Close, packslip, branch delete, post-Close sync.
+
+## Station: Close
+
+### Ops Packet
+
+- Repo: NestCalc
+- Station: Close
+- Mode: Worker
+- Operator: Grok Build
+- Branch: main
+- Head in: 3863e738166e442d0ef9076400d2c57f196eb4d6
+- job_id: NGJ-20260823-p0f-pause
+- flow_id: —
+- goal_sha256: —
+- Trace: NestCalc #108 squash-merged; Owner authorizes docs-only main traveler+packslip stamps (AGENTS Never second exception)
+- Instruction: Done when Seq Close stamped on main; Still open / Next = none; remote docs/p0f-workflow-pause deleted; packslip printed and posted on PR 108; local main matches origin/main at the Close tip.
+
+### Facts return
+
+- Merge stamp aligned to squash SHA `041c3760e07efe323aebd29c77c009e1e072cda3`.
+- Close stamped on main at Merge-stamp parent `3863e738166e442d0ef9076400d2c57f196eb4d6` (docs-only traveler+packets).
+- Still open / Next = none.
+- Remote `docs/p0f-workflow-pause` deleted after this commit is on origin/main.
+- Packslip printed in CLI and posted on PR 108.
+- Post-Close sync recorded after push.
+
+### Packslip
+
+```text
+Repo: NestCalc
+Owner: wReckless
+PR: 108
+Branch: docs/p0f-workflow-pause
+Head: 041c3760e07efe323aebd29c77c009e1e072cda3
+job_id: NGJ-20260823-p0f-pause
+flow_id: —
+goal_sha256: —
+Trace: Pause P0-F on free-tier billing block; keep workflow file; post #107 diagnosis
+Cycle: Lite
+Date: 2026-08-23
+
+Seq  Label              Operator     Stamp                                    Still open
+     Checkout sync      Owner        49f693d3c134e0425d618d171eadead3f737f020  none
+     Cut                Grok Build   8c43e486fa82f5045b1ed4551671c04ea77c5779  none
+     Send for review    Grok Build   cf7c018bafbac21843afe9d5295d3243a247d261  none
+     Wait               Grok Build   b84ab3e84c8bf83d1f6d945a99ea90bd4e33a788  none
+     Inspection         Grok Build   45f3c9207745f8627197434710cdaba19b353523  none
+     Merge              Grok Build   041c3760e07efe323aebd29c77c009e1e072cda3  none
+     Close              Grok Build   3863e738166e442d0ef9076400d2c57f196eb4d6  none
+
+Closed Corrective Action: 04f652c478f9018982a5d2c45414d2f37c758098 P2 p0f-evidence dispatch
+Still open: none
+Next: none
+```
