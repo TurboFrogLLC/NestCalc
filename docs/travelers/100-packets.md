@@ -15,6 +15,7 @@ job_id: NGJ-20260822-100
 | 3 | Send for review | Worker | Grok Build | 63458ae | PR marked ready; @codex review posted; agents-pr-review not runnable on this Surface; advanced to Wait |
 | 4 | Wait | Worker | Grok Build | f96b974 | Named review held (Codex clean; agents-pr-review COMMENT); advanced to Inspection |
 | 5 | Inspection | Worker | Grok Build | 9925630 | Clean; named reviews held; no open blocking threads; advanced to Merge |
+| 6 | Merge | Worker | Grok Build | f260b63 | Squash-merged onto main; P0-F no-runner land override; advanced to Close |
 
 ---
 
@@ -267,4 +268,48 @@ Seq 5 Inspection stamped with 9925630.
 Still open: Merge.
 Next: Merge.
 Merge was not performed. Close was not performed.
+```
+
+### Seq 6 — Merge
+
+**Ops Packet**
+
+```text
+Repo: NestCalc
+Station: Merge
+Mode: Worker
+Operator: Grok Build
+Branch: docs/agents-main-exception-agents-pr-review
+Head: 53f1480
+job_id: NGJ-20260822-100
+flow_id: —
+goal_sha256: —
+Trace: NestCalc #100; Inspection 9925630 clean; Owner land override P0-F no-runner when that is infra only
+Model: Grok 4.6
+Effort: high
+Orchestration: Single-agent
+Session: Fresh
+
+Instruction:
+When Merge → docs/WORKFLOW.md → ## Release.
+When traveler → docs/travelers/100.md Seq 6 only.
+When log → docs/travelers/100-packets.md append only.
+
+Squash-merge PR 100 onto main. Stamp Seq 6 Merge with the merge commit short SHA. Advance Still open / Next to Close on the same pass. Append Ops Packet + facts-only return. Do not Close. Do not delete the branch yet. Do not edit AGENTS.md beyond what is already on this branch.
+
+Reason:
+Inspection clean. Owner authorizes land despite P0-F UNSTABLE when that is infra no-runner only.
+```
+
+**Operator return**
+
+```text
+PR 100 squash-merged onto main.
+Merge commit: f260b63fa756273018298ec67efd8ed47d6399f6.
+Seq 6 Merge stamped with f260b63.
+Still open: Close.
+Next: Close.
+P0-F jobs p0f-build, p0f-lint, p0f-unit, p0f-governance, p0f-evidence: runner_id 0, steps 0.
+Owner land override used (gh pr merge --admin --squash).
+The source branch docs/agents-main-exception-agents-pr-review was not deleted. Close was not performed. AGENTS.md was not edited on this Station.
 ```
