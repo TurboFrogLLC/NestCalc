@@ -3,7 +3,7 @@
 Owner expedite. Every management Ops Packet and every Operator return is recorded here.
 Do not delete rows. Append only.
 
-Record Head: 9925630
+Record Head: 07c251b
 job_id: NGJ-20260822-100
 
 ## Index
@@ -16,6 +16,7 @@ job_id: NGJ-20260822-100
 | 4 | Wait | Worker | Grok Build | f96b974 | Named review held (Codex clean; agents-pr-review COMMENT); advanced to Inspection |
 | 5 | Inspection | Worker | Grok Build | 9925630 | Clean; named reviews held; no open blocking threads; advanced to Merge |
 | 6 | Merge | Worker | Grok Build | f260b63 | Squash-merged onto main; P0-F no-runner land override; advanced to Close |
+| 7 | Close | Worker | Grok Build | 07c251b | Docs-only Close stamped on main; job ended |
 
 ---
 
@@ -312,4 +313,51 @@ Next: Close.
 P0-F jobs p0f-build, p0f-lint, p0f-unit, p0f-governance, p0f-evidence: runner_id 0, steps 0.
 Owner land override used (gh pr merge --admin --squash).
 The source branch docs/agents-main-exception-agents-pr-review was not deleted. Close was not performed. AGENTS.md was not edited on this Station.
+```
+
+### Seq 7 — Close
+
+**Ops Packet**
+
+```text
+Repo: NestCalc
+Station: Close
+Mode: Worker
+Operator: Grok Build
+Branch: main
+Head: f260b63fa756273018298ec67efd8ed47d6399f6
+job_id: NGJ-20260822-100
+flow_id: —
+goal_sha256: —
+Trace: NestCalc #100 squash-merged f260b63; Owner authorizes docs-only main traveler+packslip stamps (AGENTS Never second exception)
+Model: Grok 4.6
+Effort: high
+Orchestration: Single-agent
+Session: Fresh
+
+Instruction:
+When Close → docs/WORKFLOW.md → ## Release → Close / Packslip.
+When AGENTS second main exception → AGENTS.md → ### Never (docs-only traveler and packslip stamps after merge when this traveler names Owner authorization).
+When traveler → docs/travelers/100.md Seq 7 only.
+When log → docs/travelers/100-packets.md append only.
+
+Owner authorizes one documentation commit on main for traveler + packslip stamps only. Stamp Merge f260b63 and Close with this commit short SHA. Advance Still open / Next to none. Append Ops Packet + facts-only return. Push that docs-only commit. Delete remote branch docs/agents-main-exception-agents-pr-review if still present. Print packslip in CLI. Post the same packslip on PR 100. Do not edit product code or GOAL.md.
+
+Reason:
+Job end. Packslip is Close. Stamps use the AGENTS Never second exception named on this traveler.
+```
+
+**Operator return**
+
+```text
+Main at start of Close: 9add975 (Seq 6 Merge already stamped f260b63).
+Squash merge: f260b63fa756273018298ec67efd8ed47d6399f6.
+Seq 6 Merge remains f260b63.
+Seq 7 Close stamped with 07c251b.
+Still open: none.
+Next: none.
+Docs-only Close commit pushed on main.
+Remote branch docs/agents-main-exception-agents-pr-review deleted.
+Packslip printed in the CLI and posted on PR 100.
+GOAL.md and product code were not edited.
 ```
