@@ -81,3 +81,30 @@ NEXT: Wait
 - Not done this Station: Inspection, Merge, Close, packslip.
 NEXT: Inspection
 
+## Station: Inspection
+
+### Ops Packet
+
+- Repo: NestCalc
+- Station: Inspection
+- Mode: Worker
+- Operator: Grok Build
+- Branch: docs/grok-thoughts-continuous-land
+- Head in: 1b948a9abc5dff34ca756a79989be16d6df9900d
+- job_id: NGJ-20260823-gtc-land
+- flow_id: —
+- goal_sha256: —
+- Trace: NestCalc #109; only if Wait routed Inspection
+- Instruction: Done when: criteria checked; Seq Inspection stamped; Still open / Next = Merge if clean else Corrective Action.
+
+### Facts return
+
+- Wait Next was Inspection. Gate passed.
+- (1) pass. Dumps present: NGJ-20260823-gtc.md, NGJ-20260823-p0f.md, NGJ-20260823-p0f-pause.md, NGJ-20260823-p0f-pause-meta.md.
+- (2) pass. REGISTRY.md lists gtc, p0f, p0f-pause, p0f-pause-meta job rows and session tables.
+- (3) pass. NGJ-20260822-101.md and NGJ-20260823-102.md: `git diff --stat origin/main` empty (bodies not rewritten).
+- (4) pass. `origin/main...HEAD` files: `docs/audits/grok-thoughts/NGJ-20260823-gtc.md`, `NGJ-20260823-p0f.md`, `NGJ-20260823-p0f-pause.md`, `NGJ-20260823-p0f-pause-meta.md`, `REGISTRY.md`, `docs/travelers/109.md`, `docs/travelers/109-packets.md` only.
+- Clean. `docs/travelers/109.md`: Inspection row stamped `1b948a9abc5dff34ca756a79989be16d6df9900d`; Still open / Next = Merge.
+- Not done this Station: Merge, Close, packslip.
+NEXT: Merge
+
