@@ -58,7 +58,7 @@ git rev-parse HEAD
 
 ### Never
 
-- Touch `main` except checkout sync (fetch, switch, ff-only to `origin/main`; no edit, commit, push, or merge) and docs-only traveler and packslip stamps after merge when this traveler names Owner authorization.
+- Touch `main` except Start-branch at job start and the main-side sync at Close after Merge (and docs-only traveler / packslip stamps after merge when this traveler names Owner authorization). Mid-job main thrash is prohibited.
 - Production, MODE, or identity without the Owner.
 - Merge unless Release is cleared (repo-backed confidence and named criteria) and this traveler does not forbid merge.
 - Invent the next operation. Soft-infer.
