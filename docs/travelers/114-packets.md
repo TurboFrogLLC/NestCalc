@@ -39,3 +39,14 @@ Facts:
 - Posted the requested hold: Wait is for an Operations Manager / SuperGrok signal, not a Codex review request.
 
 NEXT: Wait
+
+### Seq 4 Wait — completion
+
+Operator: Codex CLI
+Stamp: cc336fab922682edbb7e2b625059d7c943ed126f
+
+Facts:
+- PR 114 received the Operations Manager / SuperGrok signal: “Ready for Inspection” and “Not Codex.”
+- Wait routes to Inspection; no corrective action was requested.
+
+NEXT: Inspection
