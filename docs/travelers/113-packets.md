@@ -156,7 +156,7 @@ NEXT: Close
 ## Seq 7 Close
 
 Operator: Grok Build
-Stamp: 936ff763c5cfcc5e1f9b6a7a1824f76b0e0247de
+Stamp: 986bad37c60e2517875f6433697d2ce84a0a9272
 
 ### Ops Packet
 
@@ -175,7 +175,7 @@ Stamp: 936ff763c5cfcc5e1f9b6a7a1824f76b0e0247de
 ### Facts return
 
 - `git fetch origin`; `git checkout main`; `git pull --ff-only origin main`. Merge SHA `9b74a50296eef14b603de1cb6291b573288f5afd` present on main.
-- Merge row aligned to squash `9b74a50296eef14b603de1cb6291b573288f5afd`. Close stamp: `936ff763c5cfcc5e1f9b6a7a1824f76b0e0247de` (HEAD at Close start / Merge stamp commit). Close work commit recorded after push.
+- Merge row aligned to squash `9b74a50296eef14b603de1cb6291b573288f5afd`. Close stamp fill: `986bad37c60e2517875f6433697d2ce84a0a9272`.
 - Still open / Next = none.
 - Packslip printed in CLI and posted on PR 113.
 - Feature branch `docs/mermaid-probe-a-grok` retained (traveler does not name prune).
@@ -203,7 +203,7 @@ Seq  Label              Operator     Stamp                                    St
      Wait               Grok Build   8e71bf1152074764379b438e67201dc380b62a77  none
      Inspection         Grok Build   98992272c6d469ff4fd993fc5b854e15786a3855  none
      Merge              Grok Build   9b74a50296eef14b603de1cb6291b573288f5afd  none
-     Close              Grok Build   936ff763c5cfcc5e1f9b6a7a1824f76b0e0247de  none
+     Close              Grok Build   986bad37c60e2517875f6433697d2ce84a0a9272  none
 
 Closed Corrective Action: none
 Still open: none
