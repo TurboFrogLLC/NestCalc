@@ -19,8 +19,6 @@ Contrast probes A/B (Lite): full adds **Freeze** before Cut.
 
 ## Diagram
 
-<!-- Cut fills the mermaid block below. Do not invent Stations. -->
-
 ```mermaid
 flowchart TD
   startBranch["Start-branch (host) at job start"]

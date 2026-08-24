@@ -16,3 +16,14 @@ Facts:
 - Branch: `docs/mermaid-probe-c-codex-app`.
 
 NEXT: Cut
+
+### Seq 3 Cut — completion
+
+Operator: Codex App
+Stamp: 4119787b9ff06d108dc0baa8739a39c10d9d6569
+
+Facts:
+- Finalized one real Mermaid Full-cycle diagram: Start-branch → Freeze → Cut → Send for review → Wait → Inspection → Merge → Close.
+- The diagram records host-only Start-branch, non-goal traveler Freeze, mid-job main-thrash prohibition, and branch retention unless the traveler names prune.
+
+NEXT: Send for review
