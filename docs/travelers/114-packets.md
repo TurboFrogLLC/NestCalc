@@ -50,3 +50,16 @@ Facts:
 - Wait routes to Inspection; no corrective action was requested.
 
 NEXT: Inspection
+
+### Seq 5 Inspection — completion
+
+Operator: Codex CLI
+Stamp: 54cef726392c2db9418173fe4d63902b0cf714a2
+
+Facts:
+- `mermaid-probe-b.md` contains one real Mermaid Lite-cycle diagram and no placeholder.
+- The diagram names Start-branch and Close retaining the feature branch unless the traveler names prune.
+- `git diff --check origin/main...HEAD` passed; the branch diff contains only the three Allowed Files.
+- `AGENTS.md`, `docs/WORKFLOW.md`, `GOAL.md`, `product`, and `.github` are unchanged versus `origin/main`.
+
+NEXT: Merge
