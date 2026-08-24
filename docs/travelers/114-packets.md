@@ -78,8 +78,39 @@ NEXT: Close
 ### Seq 7 Close — completion
 
 Operator: Codex CLI
-Stamp: pending
+Stamp: 211bf526fef8df89e91ac7e475ae77a03663c612
 
 Facts:
 - Refreshed `origin/main`, checked out local `main`, and fast-forwarded it to `263e4115ca8bc329832740e03050c8c6c15482d0`.
 - The retained feature branch is unchanged by Close.
+
+NEXT: none
+
+### Packslip
+
+```text
+Repo: NestCalc
+Owner: wReckless
+PR: 114
+Branch: docs/mermaid-probe-b-codex
+Head: 263e4115ca8bc329832740e03050c8c6c15482d0
+job_id: NGJ-20260824-mp-b
+flow_id: —
+goal_sha256: —
+Trace: Mermaid probe B — Codex CLI lite cycle flowchart
+Cycle: Lite
+Date: 2026-08-24
+
+Seq  Label              Operator     Stamp                                    Still open
+1    Start-branch       Owner        —                                         none
+2    Cut                Codex CLI    7697b846e87e95834c9ba5df1139a4b3222bed37  none
+3    Send for review    Codex CLI    f81a382f88b3d3aa8a4e24119b440df1fef4b88e  none
+4    Wait               Codex CLI    cc336fab922682edbb7e2b625059d7c943ed126f  none
+5    Inspection         Codex CLI    54cef726392c2db9418173fe4d63902b0cf714a2  none
+6    Merge              Codex CLI    263e4115ca8bc329832740e03050c8c6c15482d0  none
+7    Close              Codex CLI    211bf526fef8df89e91ac7e475ae77a03663c612  none
+
+Closed Corrective Action: none
+Still open: none
+Next: none
+```
