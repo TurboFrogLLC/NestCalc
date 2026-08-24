@@ -27,9 +27,7 @@ Operators do not pick their own start. The traveler's Operator line is who runs 
    that row; if it is not named, → Owner. Completing a Station is not job-end.
 6. Job end is the packslip. Non-conformance is the Non-conformance Report.
 
-First `main` exception: checkout sync (fetch, switch to `main`, fast-forward
-to `origin/main`). No edits, commits, push, or merge on that path. Any named
-Operator may do that sync. Model and effort are not a gate on it.
+First `main` exception: Start-branch at job start only (host). Create or switch is host work, not traveler Instruction. Model and effort are not a gate on it.
 The second `main` exception lives in AGENTS Never.
 
 Typical first-name: Codex App for product freeze, Grok Build for docs freeze.
@@ -195,7 +193,7 @@ Merge, then Close. Two operations.
 - Merge when repo-backed confidence and named criteria pass, unless this traveler forbids merge.
 - Merge is not an Owner seat when that clearance holds.
 - After merge, docs-only traveler and packslip stamps on `main`: AGENTS Never second exception, when this traveler names Owner authorization.
-- Close: sync, prune, persist approved lessons, quiet archive when that is the named work.
+- Close: main-side sync after Merge, then stamps / packslip. Branch delete last, or retain until Owner names prune safe. Persist approved lessons; quiet archive when that is the named work.
 - Packslip after Close when this is job-end. Print. Post on the PR.
 - If next cannot be decided, next is the Owner.
 - Owner at land only on escalation: route change, failed or missing confidence, failed criteria, or a hard gate.
