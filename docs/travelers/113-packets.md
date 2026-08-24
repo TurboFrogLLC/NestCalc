@@ -152,3 +152,60 @@ Stamp: 9b74a50296eef14b603de1cb6291b573288f5afd
 - Feature branch `docs/mermaid-probe-a-grok` not deleted this Station.
 - Not done this Station: Close, packslip, branch delete.
 NEXT: Close
+
+## Seq 7 Close
+
+Operator: Grok Build
+Stamp: 936ff763c5cfcc5e1f9b6a7a1824f76b0e0247de
+
+### Ops Packet
+
+- Repo: NestCalc
+- Station: Close
+- Mode: Worker
+- Operator: Grok Build
+- Branch: main
+- Head in: 9b74a50296eef14b603de1cb6291b573288f5afd
+- job_id: NGJ-20260824-mp-a
+- flow_id: —
+- goal_sha256: —
+- Trace: NestCalc #113 merged; docs-only main traveler+packslip stamps; retain feature branch
+- Instruction: Done when: local main synced to origin/main; Seq Close stamped; packslip printed and posted on PR 113; packets log complete. Retain feature branch docs/mermaid-probe-a-grok — do not delete.
+
+### Facts return
+
+- `git fetch origin`; `git checkout main`; `git pull --ff-only origin main`. Merge SHA `9b74a50296eef14b603de1cb6291b573288f5afd` present on main.
+- Merge row aligned to squash `9b74a50296eef14b603de1cb6291b573288f5afd`. Close stamp: `936ff763c5cfcc5e1f9b6a7a1824f76b0e0247de` (HEAD at Close start / Merge stamp commit). Close work commit recorded after push.
+- Still open / Next = none.
+- Packslip printed in CLI and posted on PR 113.
+- Feature branch `docs/mermaid-probe-a-grok` retained (traveler does not name prune).
+NEXT: none
+
+### Packslip
+
+```text
+Repo: NestCalc
+Owner: wReckless
+PR: 113
+Branch: docs/mermaid-probe-a-grok
+Head: 9b74a50296eef14b603de1cb6291b573288f5afd
+job_id: NGJ-20260824-mp-a
+flow_id: —
+goal_sha256: —
+Trace: Mermaid probe A — Grok Build lite cycle flowchart
+Cycle: Lite
+Date: 2026-08-24
+
+Seq  Label              Operator     Stamp                                    Still open
+     Start-branch       Owner        —                                         none
+     Cut                Grok Build   ea41910ac68e6475f7eb02e6e8db91686e3167f1  none
+     Send for review    Grok Build   1c97e6b3aac2e2959c4f3b53db875be4a6f84deb  none
+     Wait               Grok Build   8e71bf1152074764379b438e67201dc380b62a77  none
+     Inspection         Grok Build   98992272c6d469ff4fd993fc5b854e15786a3855  none
+     Merge              Grok Build   9b74a50296eef14b603de1cb6291b573288f5afd  none
+     Close              Grok Build   936ff763c5cfcc5e1f9b6a7a1824f76b0e0247de  none
+
+Closed Corrective Action: none
+Still open: none
+Next: none
+```
