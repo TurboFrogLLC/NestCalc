@@ -63,3 +63,23 @@ Facts:
 - `AGENTS.md`, `docs/WORKFLOW.md`, `GOAL.md`, `product`, and `.github` are unchanged versus `origin/main`.
 
 NEXT: Merge
+
+### Seq 6 Merge — completion
+
+Operator: Codex CLI
+Stamp: 263e4115ca8bc329832740e03050c8c6c15482d0
+
+Facts:
+- PR 114 squash-merged onto `main` as `263e4115ca8bc329832740e03050c8c6c15482d0`.
+- The traveler retains feature branch `docs/mermaid-probe-b-codex` because it names no prune.
+
+NEXT: Close
+
+### Seq 7 Close — completion
+
+Operator: Codex CLI
+Stamp: pending
+
+Facts:
+- Refreshed `origin/main`, checked out local `main`, and fast-forwarded it to `263e4115ca8bc329832740e03050c8c6c15482d0`.
+- The retained feature branch is unchanged by Close.
