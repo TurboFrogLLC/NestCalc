@@ -73,3 +73,44 @@ Facts:
 - The feature branch `docs/mermaid-probe-c-codex-app` remains retained; no prune was requested.
 
 NEXT: Close
+
+### Seq 8 Close — completion
+
+Operator: Codex App
+Stamp: 8742220dcb5f620c172fad3fa73afba611539c82
+
+Facts:
+- Refreshed `origin/main`, checked out local `main`, and fast-forwarded it to the PR 115 squash merge `5d2f26fa059031eadf632093624b6594e1c8c2bf`.
+- The retained feature branch `docs/mermaid-probe-c-codex-app` was not pruned.
+
+NEXT: none
+
+### Packslip
+
+```text
+Repo: NestCalc
+Owner: wReckless
+PR: 115
+Branch: docs/mermaid-probe-c-codex-app
+Head: 5d2f26fa059031eadf632093624b6594e1c8c2bf
+job_id: NGJ-20260824-mp-c
+flow_id: —
+goal_sha256: —
+Trace: Mermaid probe C — Codex App full cycle flowchart
+Cycle: Full
+Date: 2026-08-24
+
+Seq  Label              Operator     Stamp                                    Still open
+1    Start-branch       Owner        —                                        none
+2    Freeze             Codex App    7f615419dd697adb0d0c803e866e0b111a6cc687  none
+3    Cut                Codex App    cbf30403ea84846e29c866c30ff1fc95b28c9968  none
+4    Send for review    Codex App    f4ed62b8b865ae0e52ae10bbcb0527a1bba017e3  none
+5    Wait               Codex App    7c01c364e53fff73c83a0b6e27c929b49b9df23a  none
+6    Inspection         Codex App    62d5a6a513aac9d2c4d7109579368bb3f6f07a2c  none
+7    Merge              Codex App    5d2f26fa059031eadf632093624b6594e1c8c2bf  none
+8    Close              Codex App    8742220dcb5f620c172fad3fa73afba611539c82  none
+
+Closed Corrective Action: none
+Still open: none
+Next: none
+```

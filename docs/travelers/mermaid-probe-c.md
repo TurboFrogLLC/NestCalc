@@ -18,11 +18,11 @@ Seq  Label              Operator     Mode         Stamp  Still open
 5    Wait               Codex App    Worker       7c01c364e53fff73c83a0b6e27c929b49b9df23a  Inspection
 6    Inspection         Codex App    Worker       62d5a6a513aac9d2c4d7109579368bb3f6f07a2c  Merge
 7    Merge              Codex App    Worker       5d2f26fa059031eadf632093624b6594e1c8c2bf  Close
-8    Close              Codex App    Worker       —      none
+8    Close              Codex App    Worker       8742220dcb5f620c172fad3fa73afba611539c82  none
 
 Closed Corrective Action: none
-Still open: Close (next)
-Next: Close
+Still open: none
+Next: none
 
 Allowed Files:
 - docs/audits/mermaid-probe-c.md
