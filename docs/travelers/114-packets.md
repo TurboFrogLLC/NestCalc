@@ -63,3 +63,14 @@ Facts:
 - `AGENTS.md`, `docs/WORKFLOW.md`, `GOAL.md`, `product`, and `.github` are unchanged versus `origin/main`.
 
 NEXT: Merge
+
+### Seq 6 Merge — completion
+
+Operator: Codex CLI
+Stamp: 263e4115ca8bc329832740e03050c8c6c15482d0
+
+Facts:
+- PR 114 was normal-squash merged onto `main` as `263e4115ca8bc329832740e03050c8c6c15482d0`.
+- The feature branch `docs/mermaid-probe-b-codex` is retained.
+
+NEXT: Close
