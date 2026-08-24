@@ -193,7 +193,7 @@ Merge, then Close. Two operations.
 - Merge when repo-backed confidence and named criteria pass, unless this traveler forbids merge.
 - Merge is not an Owner seat when that clearance holds.
 - After merge, docs-only traveler and packslip stamps on `main`: AGENTS Never second exception, when this traveler names Owner authorization.
-- Close after Merge: main-side sync, then stamps / packslip. Branch delete last, or retain until Owner names prune safe.
+- Close after Merge: main-side sync, then stamps / packslip. Retain the feature branch unless this traveler names prune.
 - Persist approved lessons; quiet archive when that is the named work.
 - Packslip after Close when this is job-end. Print. Post on the PR.
 - If next cannot be decided, next is the Owner.
