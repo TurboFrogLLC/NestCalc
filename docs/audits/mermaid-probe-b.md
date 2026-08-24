@@ -17,9 +17,13 @@ Same shape as Probe A (`NGJ-20260824-mp-a`). One mermaid flowchart of the NestCa
 
 ## Diagram
 
-<!-- Cut fills the mermaid block below. Do not invent Stations. -->
-
 ```mermaid
 flowchart LR
-  placeholder[Cut fills this diagram]
+  start[Start-branch\nhost at job start] --> cut[Cut]
+  cut --> review[Send for review\nmark PR ready]
+  review --> wait[Wait\nhold for Operations Manager / SuperGrok signal]
+  wait --> inspection[Inspection]
+  inspection --> merge[Merge\nonto main]
+  merge --> close[Close\nsync main]
+  close --> retain[Retain feature branch\nunless traveler names prune]
 ```
