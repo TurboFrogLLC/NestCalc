@@ -12,7 +12,7 @@ Date: 2026-08-24
 
 Seq  Label              Operator     Mode         Stamp  Still open
 1    Start-branch       Owner        Worker       —      none
-2    Freeze             Codex App    Worker       —      Cut
+2    Freeze             Codex App    Worker       7f615419dd697adb0d0c803e866e0b111a6cc687  Cut
 3    Cut                Codex App    Worker       —      Send for review
 4    Send for review    Codex App    Worker       —      Wait
 5    Wait               Codex App    Worker       —      Inspection
@@ -21,8 +21,8 @@ Seq  Label              Operator     Mode         Stamp  Still open
 8    Close              Codex App    Worker       —      none
 
 Closed Corrective Action: none
-Still open: Freeze (next)
-Next: Freeze
+Still open: Cut (next)
+Next: Cut
 
 Allowed Files:
 - docs/audits/mermaid-probe-c.md
