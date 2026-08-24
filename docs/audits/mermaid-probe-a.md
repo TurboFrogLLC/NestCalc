@@ -19,6 +19,14 @@ One mermaid flowchart of the NestCalc lite cycle using **current** law:
 <!-- Cut fills the mermaid block below. Do not invent Stations. -->
 
 ```mermaid
-flowchart LR
-  placeholder[Cut fills this diagram]
+flowchart TD
+  startBranch["Start-branch (host) at job start"]
+  startBranch --> cut["Cut"]
+  cut --> sfr["Send for review"]
+  sfr --> wait["Wait"]
+  wait --> insp["Inspection"]
+  insp --> merge["Merge"]
+  merge --> close["Close retains feature branch unless traveler names prune"]
+
+  startBranch -.-> midJob["Mid-job main thrash prohibited"]
 ```
