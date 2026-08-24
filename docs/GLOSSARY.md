@@ -36,6 +36,7 @@ Owner may sit any other seat. Those labels bound everyone else.
 | Release | Merge, then Close. | Quality Control. |
 | Merge | Onto `main`. Default unless this traveler forbids it. | |
 | Close | Cleanup after Merge. | |
+| Start-branch | Job-start host action. See control-surface GLOSSARY / live `06`. | Checkout-sync. |
 | Law | `AGENTS.md` + `docs/WORKFLOW.md` | |
 | Sidecar | `create-handoff` JSON only. | Traveler. |
 | Product | FLiPIT | HowMany as the product name. |
