@@ -122,3 +122,33 @@ Stamp: 98992272c6d469ff4fd993fc5b854e15786a3855
 - Clean. `docs/travelers/113.md`: Seq 5 Inspection stamped `98992272c6d469ff4fd993fc5b854e15786a3855`; Still open / Next = Merge.
 - Not done this Station: Merge, Close, packslip.
 NEXT: Merge
+
+## Seq 6 Merge
+
+Operator: Grok Build
+Stamp: 9b74a50296eef14b603de1cb6291b573288f5afd
+
+### Ops Packet
+
+- Repo: NestCalc
+- Station: Merge
+- Mode: Worker
+- Operator: Grok Build
+- Branch: docs/mermaid-probe-a-grok
+- Head in: a97e2f6c9ec67e2239cfdffb44d7f9db0e5aa8dc
+- job_id: NGJ-20260824-mp-a
+- flow_id: —
+- goal_sha256: —
+- Trace: NestCalc #113; only if Inspection clean
+- Instruction: Done when: PR 113 squash-merged onto main; Seq Merge stamped with merge SHA; packets log appended. Prefer normal squash. Do not start Close this Station. Do not delete the feature branch.
+
+### Facts return
+
+- Inspection Next was Merge. Gate passed.
+- PR 113 squash-merged onto main without admin. mergeable_state was UNSTABLE (Vercel pending). GitHub squash merge succeeded.
+- Squash SHA: `9b74a50296eef14b603de1cb6291b573288f5afd`.
+- Admin override: not used.
+- Docs-only Merge stamp on main after squash (Owner authorization for traveler/packets). Close not started in the Merge commit.
+- Feature branch `docs/mermaid-probe-a-grok` not deleted this Station.
+- Not done this Station: Close, packslip, branch delete.
+NEXT: Close
