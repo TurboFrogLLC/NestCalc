@@ -63,3 +63,32 @@ Stamp: 1c97e6b3aac2e2959c4f3b53db875be4a6f84deb
 - `docs/travelers/113.md`: Seq 3 Send for review stamped `1c97e6b3aac2e2959c4f3b53db875be4a6f84deb`; Still open / Next = Wait.
 - Not done this Station: Wait, Inspection, Merge, Close, packslip.
 NEXT: Wait
+
+## Seq 4 Wait
+
+Operator: Grok Build
+Stamp: 8e71bf1152074764379b438e67201dc380b62a77
+
+### Ops Packet
+
+- Repo: NestCalc
+- Station: Wait
+- Mode: Worker
+- Operator: Grok Build
+- Branch: docs/mermaid-probe-a-grok
+- Head in: 8e71bf1152074764379b438e67201dc380b62a77
+- job_id: NGJ-20260824-mp-a
+- flow_id: —
+- goal_sha256: —
+- Trace: NestCalc #113; Wait for Operations Manager GitHub signal
+- Instruction: Done when: Operations Manager / SuperGrok signal seen on PR 113 (not Codex); Seq Wait stamped; packets log appended. Thumbs-up / ready for Inspection → Inspection. Corrective Action required → Corrective Action and stop. Do not fix on Wait.
+
+### Facts return
+
+- Signal author: TurboFrogLLC (Operations Manager / SuperGrok). Not Codex.
+- Signal: https://github.com/TurboFrogLLC/NestCalc/pull/113#issuecomment-5390617580
+- Body: thumbs-up — ready for Inspection. Wait may route NEXT: Inspection.
+- Route chosen: Inspection. Wait did not fix.
+- `docs/travelers/113.md`: Seq 4 Wait stamped `8e71bf1152074764379b438e67201dc380b62a77`; Still open / Next = Inspection.
+- Not done this Station: Inspection, Merge, Close, packslip.
+NEXT: Inspection
