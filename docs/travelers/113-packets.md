@@ -35,3 +35,31 @@ Stamp: ea41910ac68e6475f7eb02e6e8db91686e3167f1
 - Allowed Files only. AGENTS/WORKFLOW/GOAL/product/.github untouched.
 - Not done this Station: Send for review, Wait, Inspection, Merge, Close, ready, packslip.
 NEXT: Send for review
+
+## Seq 3 Send for review
+
+Operator: Grok Build
+Stamp: 1c97e6b3aac2e2959c4f3b53db875be4a6f84deb
+
+### Ops Packet
+
+- Repo: NestCalc
+- Station: Send for review
+- Mode: Worker
+- Operator: Grok Build
+- Branch: docs/mermaid-probe-a-grok
+- Head in: 1c97e6b3aac2e2959c4f3b53db875be4a6f84deb
+- job_id: NGJ-20260824-mp-a
+- flow_id: —
+- goal_sha256: —
+- Trace: NestCalc #113; stacked continuous
+- Instruction: Done when: PR 113 marked ready (not draft); short PR comment that Wait holds for Operations Manager / SuperGrok signal (not Codex); Seq Send for review stamped; packets log appended; pushed Allowed Files only. Do not post @codex review.
+
+### Facts return
+
+- PR 113 marked ready (not draft): https://github.com/TurboFrogLLC/NestCalc/pull/113
+- Did not post `@codex review`.
+- Wait comment: https://github.com/TurboFrogLLC/NestCalc/pull/113#issuecomment-5390610165 — Wait holds for Operations Manager / SuperGrok signal (not Codex).
+- `docs/travelers/113.md`: Seq 3 Send for review stamped `1c97e6b3aac2e2959c4f3b53db875be4a6f84deb`; Still open / Next = Wait.
+- Not done this Station: Wait, Inspection, Merge, Close, packslip.
+NEXT: Wait
