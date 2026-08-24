@@ -92,3 +92,33 @@ Stamp: 8e71bf1152074764379b438e67201dc380b62a77
 - `docs/travelers/113.md`: Seq 4 Wait stamped `8e71bf1152074764379b438e67201dc380b62a77`; Still open / Next = Inspection.
 - Not done this Station: Inspection, Merge, Close, packslip.
 NEXT: Inspection
+
+## Seq 5 Inspection
+
+Operator: Grok Build
+Stamp: 98992272c6d469ff4fd993fc5b854e15786a3855
+
+### Ops Packet
+
+- Repo: NestCalc
+- Station: Inspection
+- Mode: Worker
+- Operator: Grok Build
+- Branch: docs/mermaid-probe-a-grok
+- Head in: 98992272c6d469ff4fd993fc5b854e15786a3855
+- job_id: NGJ-20260824-mp-a
+- flow_id: —
+- goal_sha256: —
+- Trace: NestCalc #113; only if Wait routed Inspection
+- Instruction: Done when: Inspection criteria checked; Seq Inspection stamped; packets log appended; pushed Allowed Files only. Clean → NEXT: Merge. Fail → NEXT: Corrective Action and stop. Do not merge this Station.
+
+### Facts return
+
+- Wait Next was Inspection. Gate passed.
+- (1) pass. `docs/audits/mermaid-probe-a.md` has a real mermaid cycle diagram (not placeholder).
+- (2) pass. Diagram names Start-branch and Close retains feature branch unless traveler names prune.
+- (3) pass. `origin/main...HEAD` files: `docs/audits/mermaid-probe-a.md`, `docs/travelers/113.md`, `docs/travelers/113-packets.md` only.
+- (4) pass. AGENTS/WORKFLOW/GOAL/product/.github untouched.
+- Clean. `docs/travelers/113.md`: Seq 5 Inspection stamped `98992272c6d469ff4fd993fc5b854e15786a3855`; Still open / Next = Merge.
+- Not done this Station: Merge, Close, packslip.
+NEXT: Merge
