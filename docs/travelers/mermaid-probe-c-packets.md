@@ -38,3 +38,14 @@ Facts:
 - Posted the required Wait hold for an Operations Manager / SuperGrok signal, not Codex, before Inspection or Merge.
 
 NEXT: Wait
+
+### Seq 5 Wait — completion
+
+Operator: Codex App
+Stamp: 7c01c364e53fff73c83a0b6e27c929b49b9df23a
+
+Facts:
+- PR 115 received the Operations Manager / SuperGrok signal: “Ready for Inspection” and “not Codex.”
+- Wait routes to Inspection; no corrective action was requested.
+
+NEXT: Inspection
