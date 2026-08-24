@@ -16,3 +16,15 @@ Operator: Codex CLI
 Stamp: —
 
 (append Operator returns below as Stations complete)
+
+### Seq 2 Cut — completion
+
+Operator: Codex CLI
+Stamp: 7697b846e87e95834c9ba5df1139a4b3222bed37
+
+Facts:
+- Replaced the placeholder with one Lite-cycle mermaid diagram: Start-branch → Cut → Send for review → Wait → Inspection → Merge → Close.
+- The diagram names host-only Start-branch and feature-branch retention unless the traveler names prune.
+- Only `docs/audits/mermaid-probe-b.md` changed in the Cut commit.
+
+NEXT: Send for review
