@@ -1,6 +1,6 @@
 # FlipIt — Composition host — Living SPEC
 
-**Status:** Living (residual R13 — preset write-mode + OK apply, single rail, XYZR 4dp, front surface)  
+**Status:** Living (residual R14 — combined HUD ↔ Auto-Size ↔ FLiPIT module)
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
@@ -60,6 +60,7 @@ Wordmarks stay as locked: **FLiP** white 700 + **IT** amber 800 · **tool** whit
 | **R11** | Preset everyday load vs explicit edit/write · rails butted to origin, filled full length + far overhang | `[data-pre-edit]` · Confirm/Cancel only in edit · rails from 0,0 |
 | **R12** | Compact single-row HUD height · 4-side frost frame · FlipIt-center / HUD-right glide · token-aware highlight · default part 1.250×3.375 + Flip visual + nest box | remasure `offsetHeight` · 420ms glide · `G`+digits only · `#lb-part` / `#lb-nest-box` |
 | **R13** | Preset write-mode visible · Confirm stores armed slot only · main OK applies live fields to HUD + bed · single frost rail · XYZR 4dp black · front surface | `commitLiveFields` · `__bedSetBlank` · no lip/double-line · `.tok-axis` |
+| **R14** | One combined HUD ↔ Auto-Size ↔ FLiPIT module. Expanded HUD is the hub; calculator and collapsed HUD are HUD-only states; toolPath remains orthogonal. | `window.__combinedModule` · five locked states · shared `data-drag-identity` |
 
 Hide primitives stay surface-owned (`ALIGNMENT-v3` §4). Host does not invent a shared hide API.
 
@@ -93,6 +94,20 @@ Hide primitives stay surface-owned (`ALIGNMENT-v3` §4). Host does not invent a 
 | HUD height | Single-row Margin (`0.250 all`) uses the compact 28.6 ticker. Stage height is remasured from in-flow `offsetHeight` (not popover `scrollHeight`). Opening/closing a popover returns HUD to the current ticker-row height. Two-row margin still grows live. |
 | Source highlight | Token-aware: letter + digits, not in-word matches. `Go to part` / `PAR` stay uncolored. Magenta G + green comments stay the palette bases. X/Y/Z/R letters **and** values render black and format to **4 decimal places** in the highlighted view only. |
 | Bed part | Default **1.250 × 3.375**. `#lb-part` follows HUD part size. Flip IT rotates it on the bed. Dotted `#lb-nest-box` is the margin-inset reference nest. |
+
+### R14 combined-module state table
+
+`window.__combinedModule` is host-only coordination. It does not become a shared runtime module and does not alter the four standalone locks.
+
+| State | Visible module surface | Allowed transitions | Guard / contract |
+| --- | --- | --- | --- |
+| **Collapsed HUD** | HUD header + ticker | ↔ Expanded HUD | HUD collapse/expand only. No direct Calculator or FLiPIT transition. |
+| **Expanded HUD** | HUD parameters | ↔ Collapsed HUD; ↔ Calculator; → Auto-Size; → Expanded FLiPIT | The only hub state. `#bt-calc` lives on this HUD side. |
+| **Calculator** | HUD calculator | ↔ Expanded HUD | Never jumps directly into either FLiPIT state. A FLiPIT/AUTO-SIZE request first returns to Expanded HUD. |
+| **Auto-Size** | Collapsed FLiPIT | ↔ Expanded FLiPIT; → Expanded HUD | HUD AUTO-SIZE opens collapsed FLiPIT; its second click closes to the hub, preserving R4. |
+| **Expanded FLiPIT** | Expanded FLiPIT | ↔ Auto-Size; → Expanded HUD | HUD FLiPIT preserves R1–R3: expanded closes to the hub; in-panel collapse enters Auto-Size. |
+
+`#btn-detect` is state-preserving and runs only inside Auto-Size or Expanded FLiPIT. `toolPath` remains a separate orthogonal surface. HUD and FLiPIT share drag identity `r14-combined-hud-flipit`; toolPath retains its own drag identity.
 
 ---
 
@@ -129,12 +144,13 @@ Do not require `file://`.
 1. Open the composition URL above.
 2. Verify LaserBed fills the viewport (BL origin, 48×48 fit, blank 12×8, right-pin ticker, Fit does not reset blank).
 3. Verify Numeric HUD (16,16) is the only card open. FLiPIT and toolPath are absent.
-4. HUD **FLiPIT** opens FLiPIT expanded. If FlipIt is already open and collapsed, FLiPIT expands it. If expanded, FLiPIT closes it. X closes from any state.
-5. HUD **AUTO-SIZE** opens FLiPIT **collapsed** and toasts if no program. A second click while collapsed **closes** FlipIt. `#btn-detect` still sizes. HUD FLiPIT cycle from R3 is unchanged.
-6. FLiPIT Open picks a real local `.txt` / `.nc` / `.cnc` file and loads Source. No sample program.
-7. HUD tickers open popovers; placement stays outside the HUD and clamps off open FLiPIT and the bed blank. Collapse/expand holds left/top (R30).
-8. FLiPIT waypoints still toggle toolPath (R17 / R27). When toolPath + FlipIt + HUD are all open, they re-pack in a 25px top band (toolPath · FlipIt · HUD) every time that set becomes complete. User drag wins until the next three-open rearrange.
-9. Any residual that changes a **surface** belongs in that surface’s individual package first; then re-assemble.
+4. HUD collapse/expand stays within the two HUD states. Calculator toggles only with Expanded HUD; `#bt-calc` from collapsed expands to HUD parameters first.
+5. HUD **FLiPIT** opens FLiPIT expanded. If FlipIt is already open and collapsed, FLiPIT expands it. If expanded, FLiPIT closes to Expanded HUD. X closes from either FLiPIT state.
+6. HUD **AUTO-SIZE** opens FLiPIT **collapsed** and toasts if no program. A second click while collapsed closes to Expanded HUD. `#btn-detect` still sizes inside FLiPIT. Calculator never jumps into FLiPIT.
+7. FLiPIT Open picks a real local `.txt` / `.nc` / `.cnc` file and loads Source. No sample program.
+8. HUD tickers open popovers; placement stays outside the HUD and clamps off open FLiPIT and the bed blank. Collapse/expand holds left/top (R30).
+9. FLiPIT waypoints still toggle toolPath (R17 / R27). When toolPath + FlipIt + HUD are all open, they re-pack in a 25px top band (toolPath · FlipIt · HUD) every time that set becomes complete. HUD and FLiPIT share one drag identity; toolPath remains separate.
+10. Any residual that changes a **surface** belongs in that surface’s individual package first; then re-assemble.
 
 ---
 
@@ -156,3 +172,4 @@ Do not require `file://`.
 | 2026-08-17 | **R11** `NC-FLIPIT-20260817-R11`. Filled preset chips load only. Pencil Edit is required to write a slot via Confirm/Cancel. Rails start on the origin, fill the band, and overhang the far end only. |
 | 2026-08-17 | **R12** `NC-FLIPIT-20260817-R12`. Compact HUD height after popover close. Four-side frost frame; numbers inside the blue. FlipIt centers and HUD rights with a 420ms glide. Token-aware G-code highlight. Default part 1.250×3.375, Flip visual rotate, dotted nest box. |
 | 2026-08-17 | **R13** `NC-FLIPIT-20260817-R13`. Blank/Gap/Margin: Edit is a visible write mode; Confirm stores the armed slot from live fields; Cancel exits without writing; main OK applies live values to HUD + bed and never writes a preset (Blank 12×12 no longer reverts). Enter settles a numeric field without closing the popover. Single equal-width frost-blue rail (no outer lip). Highlighted X/Y/Z/R are black at 4 decimal places. Ticker + calc, HUD, and zoom share the front surface; `#bt-calc` hover stays visible. |
+| 2026-08-25 | **R14** `NGJ-20260825-r14`. Locked the composition-host state machine: one HUD ↔ Auto-Size ↔ FLiPIT module with Expanded HUD as hub; collapsed HUD and calculator are HUD-only states; Auto-Size and Expanded FLiPIT preserve R1–R4 transitions; detect stays in FLiPIT; toolPath remains separate; HUD/FLiPIT share one drag identity. |
