@@ -50,6 +50,7 @@ Bridges in this host:
         Token-aware NC highlight · default part 1.250×3.375 + Flip visual
   · R13 Preset write-mode + OK applies live fields to HUD/bed
         Single frost-blue bed rail · XYZR 4dp black · front surface
+  · R14 One HUD ↔ Auto-Size ↔ FLiPIT module state machine
 
 Not wired: sandbox isolator · child-spec · Post → HUD/bed hydrate.
 Prior composition/lock archives stay on disk.
@@ -3186,10 +3187,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
 
   btnChevron.addEventListener('click', function () {
+    if (window.__combinedModule) return window.__combinedModule.transition('HUD_TOGGLE');
     if (state.collapsed) { setCollapsed(false); setCalc(false); }
     else setCollapsed(true);
   });
   calcToggle.addEventListener('click', function () {
+    if (window.__combinedModule) return window.__combinedModule.transition('CALCULATOR_TOGGLE');
     if (state.calc) setCalc(false); else setCalc(true);
   });
 
@@ -3220,8 +3223,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (!state.drag) return;
     var r = hud.getBoundingClientRect();
     if (Math.abs(r.left - state.drag.sl) > 4 || Math.abs(r.top - state.drag.st) > 4) {
-      window.__cardUserDrag = window.__cardUserDrag || { hud: false, flipit: false, toolpath: false };
-      window.__cardUserDrag.hud = true;
+      window.__cardUserDrag = window.__cardUserDrag || { combined: false, toolpath: false };
+      window.__cardUserDrag.combined = true;
     }
     try { hudHeader.releasePointerCapture(state.drag.pid); } catch (_) {}
     hud.classList.remove('is-dragging');
@@ -3813,7 +3816,14 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   };
   window.__hudToggleCalc = function () { setCalc(!state.calc); };
   window.__hudExitCalc = function () { if (state.calc) setCalc(false); };
+  window.__hudShowExpanded = function () { setCollapsed(false); setCalc(false); };
+  window.__hudShowCollapsed = function () { setCalc(false); setCollapsed(true); };
+  window.__hudShowCalculator = function () { setCollapsed(false); setCalc(true); };
+  window.__hudModuleState = function () {
+    return isHudCollapsed() ? 'HUD_COLLAPSED' : (state.calc ? 'CALCULATOR' : 'HUD_EXPANDED');
+  };
   window.__hudFromBedCalc = function () {
+    if (window.__combinedModule) return window.__combinedModule.transition('BED_CALCULATOR');
     if (isHudCollapsed()) {
       clearMotionTimer();
       state.calc = false;
@@ -3829,11 +3839,13 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
   document.getElementById('btn-auto-size').addEventListener('click', function () {
     closeAllParamPopovers();
+    if (window.__combinedModule) return window.__combinedModule.transition('AUTO_SIZE');
     if (typeof window.__hudExitCalc === 'function') window.__hudExitCalc();
     if (typeof window.__flipitAutoSize === 'function') window.__flipitAutoSize();
   });
   document.getElementById('btn-gcode').addEventListener('click', function () {
     closeAllParamPopovers();
+    if (window.__combinedModule) return window.__combinedModule.transition('FLIPIT_TOGGLE');
     if (typeof window.__flipitToggle === 'function') window.__flipitToggle();
   });
 
@@ -4197,12 +4209,19 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }
   }
   btnExpand.addEventListener('click', function () {
+    if (window.__combinedModule) return window.__combinedModule.transition('FLIPIT_EXPAND');
     if (panel.classList.contains('is-expanded')) return;
     setExpanded(true);
   });
-  btnCollapse.addEventListener('click', collapseGcode);
+  btnCollapse.addEventListener('click', function () {
+    if (window.__combinedModule) return window.__combinedModule.transition('FLIPIT_COLLAPSE');
+    collapseGcode();
+  });
   if (btnSurfaceChevron) {
-    btnSurfaceChevron.addEventListener('click', collapseGcode);
+    btnSurfaceChevron.addEventListener('click', function () {
+      if (window.__combinedModule) return window.__combinedModule.transition('FLIPIT_COLLAPSE');
+      collapseGcode();
+    });
   }
 
   function syncProgClear() {
@@ -4279,8 +4298,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       var r = panel.getBoundingClientRect();
       lastGcodePos = { left: Math.round(r.left), top: Math.round(r.top) };
       if (Math.abs(r.left - ol) > 4 || Math.abs(r.top - ot) > 4) {
-        window.__cardUserDrag = window.__cardUserDrag || { hud: false, flipit: false, toolpath: false };
-        window.__cardUserDrag.flipit = true;
+        window.__cardUserDrag = window.__cardUserDrag || { combined: false, toolpath: false };
+        window.__cardUserDrag.combined = true;
       }
     }
     dragBar.addEventListener('pointerup', end);
@@ -4337,7 +4356,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     else if (!isGcodeExpanded()) openGcode(true);
     else closeGcode();
   }
-  document.getElementById('btn-close').addEventListener('click', closeGcode);
+  document.getElementById('btn-close').addEventListener('click', function () {
+    if (window.__combinedModule) return window.__combinedModule.transition('FLIPIT_CLOSE');
+    closeGcode();
+  });
 
   /* Resize */
   (function () {
@@ -4611,6 +4633,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   });
 
   btnDetect.addEventListener('click', function () {
+    if (window.__combinedModule) window.__combinedModule.transition('IN_FLIPIT_DETECT');
     if (detectPart()) showToast('Part sized');
     syncDetectArm();
   });
@@ -4643,8 +4666,13 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   document.getElementById('btn-open').addEventListener('click', openLocalProgram);
 
   window.__flipitOpen = function (expanded) { openGcode(expanded !== false); };
+  window.__flipitOpenExpanded = function () { openGcode(true); };
+  window.__flipitOpenCollapsed = function () { openGcode(false); };
   window.__flipitClose = closeGcode;
   window.__flipitToggle = toggleGcode;
+  window.__flipitModuleState = function () {
+    return !isGcodeOpen() ? 'CLOSED' : (isGcodeExpanded() ? 'FLIPIT_EXPANDED' : 'AUTO_SIZE');
+  };
   window.__flipitAutoSize = function () {
     var wasOpen = isGcodeOpen();
     var wasCollapsed = wasOpen && !panel.classList.contains('is-expanded');
@@ -4732,7 +4760,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       pid = null;
       var r = card.getBoundingClientRect();
       if (Math.abs(r.left - ol) > 4 || Math.abs(r.top - ot) > 4) {
-        window.__cardUserDrag = window.__cardUserDrag || { hud: false, flipit: false, toolpath: false };
+        window.__cardUserDrag = window.__cardUserDrag || { combined: false, toolpath: false };
         window.__cardUserDrag.toolpath = true;
       }
     }
@@ -4758,7 +4786,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       if (typeof window.__hostArrange === 'function') window.__hostArrange('toolpath');
     } else {
       card.classList.add('is-hidden');
-      window.__cardUserDrag = window.__cardUserDrag || { hud: false, flipit: false, toolpath: false };
+      window.__cardUserDrag = window.__cardUserDrag || { combined: false, toolpath: false };
       window.__cardUserDrag.toolpath = false;
     }
     ['btn-toolpath-src', 'btn-toolpath-out'].forEach(function (wid) {
@@ -4787,8 +4815,89 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 })();
 </script>
 <script>
-/* ── Host residual R1–R8 — LaserBed calc chip → HUD + card arrange ── */
+/* ── Host residual R1–R14 — combined HUD ↔ Auto-Size ↔ FLiPIT module ── */
 (function () {
+  var MODULE = {
+    HUD_COLLAPSED: 'HUD_COLLAPSED',
+    HUD_EXPANDED: 'HUD_EXPANDED',
+    CALCULATOR: 'CALCULATOR',
+    AUTO_SIZE: 'AUTO_SIZE',
+    FLIPIT_EXPANDED: 'FLIPIT_EXPANDED'
+  };
+
+  function moduleState() {
+    var flipit = typeof window.__flipitModuleState === 'function' ? window.__flipitModuleState() : 'CLOSED';
+    if (flipit === 'AUTO_SIZE') return MODULE.AUTO_SIZE;
+    if (flipit === 'FLIPIT_EXPANDED') return MODULE.FLIPIT_EXPANDED;
+    return typeof window.__hudModuleState === 'function' ? window.__hudModuleState() : MODULE.HUD_EXPANDED;
+  }
+  function showHudExpanded() { window.__hudShowExpanded(); }
+  function showHudCollapsed() { window.__hudShowCollapsed(); }
+  function showCalculator() { window.__hudShowCalculator(); }
+  function openAutoSize() { window.__flipitOpenCollapsed(); }
+  function openExpandedFlipit() { window.__flipitOpenExpanded(); }
+  function closeFlipitToHud() {
+    window.__flipitClose();
+    showHudExpanded();
+  }
+
+  window.__combinedModule = {
+    states: MODULE,
+    state: moduleState,
+    transition: function (event) {
+      var from = moduleState();
+      switch (event) {
+        /* HUD owns its own two-state collapse/expand edge. */
+        case 'HUD_TOGGLE':
+          if (from === MODULE.HUD_COLLAPSED) showHudExpanded();
+          else if (from === MODULE.HUD_EXPANDED) showHudCollapsed();
+          break;
+        /* Calculator has a single edge: Calculator ↔ Expanded HUD. */
+        case 'CALCULATOR_TOGGLE':
+        case 'BED_CALCULATOR':
+          if (from === MODULE.HUD_EXPANDED) showCalculator();
+          else if (from === MODULE.CALCULATOR) showHudExpanded();
+          else if (from === MODULE.HUD_COLLAPSED) showHudExpanded();
+          break;
+        /* HUD FLiPIT preserves R1–R4: closed→expanded, collapsed→expanded, expanded→closed. */
+        case 'FLIPIT_TOGGLE':
+          if (from === MODULE.HUD_EXPANDED) openExpandedFlipit();
+          else if (from === MODULE.AUTO_SIZE) openExpandedFlipit();
+          else if (from === MODULE.FLIPIT_EXPANDED) closeFlipitToHud();
+          else if (from === MODULE.CALCULATOR || from === MODULE.HUD_COLLAPSED) showHudExpanded();
+          break;
+        /* AUTO-SIZE never enters from Calculator; its first click returns to the hub. */
+        case 'AUTO_SIZE':
+          if (from === MODULE.HUD_EXPANDED || from === MODULE.FLIPIT_EXPANDED) openAutoSize();
+          else if (from === MODULE.AUTO_SIZE) closeFlipitToHud();
+          else if (from === MODULE.CALCULATOR || from === MODULE.HUD_COLLAPSED) showHudExpanded();
+          break;
+        case 'FLIPIT_EXPAND':
+          if (from === MODULE.AUTO_SIZE) openExpandedFlipit();
+          break;
+        case 'FLIPIT_COLLAPSE':
+          if (from === MODULE.FLIPIT_EXPANDED) openAutoSize();
+          break;
+        case 'FLIPIT_CLOSE':
+          if (from === MODULE.AUTO_SIZE || from === MODULE.FLIPIT_EXPANDED) closeFlipitToHud();
+          break;
+        /* Detect is intentionally state-preserving and only runs in FLiPIT. */
+        case 'IN_FLIPIT_DETECT':
+          if (from !== MODULE.AUTO_SIZE && from !== MODULE.FLIPIT_EXPANDED) return null;
+          break;
+        default:
+          return null;
+      }
+      return moduleState();
+    }
+  };
+
+  /* HUD and FLiPIT are one draggable module; toolPath remains a separate surface. */
+  var moduleHud = document.getElementById('hud');
+  var moduleFlipit = document.getElementById('gcode');
+  if (moduleHud) moduleHud.dataset.dragIdentity = 'r14-combined-hud-flipit';
+  if (moduleFlipit) moduleFlipit.dataset.dragIdentity = 'r14-combined-hud-flipit';
+
   var btCalc = document.getElementById('bt-calc');
   if (btCalc) {
     btCalc.addEventListener('click', function (e) {
@@ -4799,7 +4908,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }, true);
   }
 
-  window.__cardUserDrag = window.__cardUserDrag || { hud: false, flipit: false, toolpath: false };
+  var priorDragIdentity = window.__cardUserDrag || {};
+  window.__cardUserDrag = {
+    combined: !!(priorDragIdentity.combined || priorDragIdentity.hud || priorDragIdentity.flipit),
+    toolpath: !!priorDragIdentity.toolpath
+  };
 
   function overlaps(a, b, pad) {
     pad = pad == null ? 12 : pad;
@@ -4862,8 +4975,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         var leftSlot = Math.max(TOP_BAND, ((vw - gW) / 2 - tW) / 2);
         placeCard(tp, leftSlot, top);
       }
-      flags.flipit = false;
-      flags.hud = false;
+      flags.combined = false;
       if (tpOpen) flags.toolpath = false;
       return;
     }
