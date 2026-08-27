@@ -20,13 +20,21 @@ FLiPIT is one of **three flagship products** (so far) on the manufacturing / sho
 
 Standalone module SKUs are a later Robot look, after this product is introduced and Owner names a channel.
 
+## Shell
+
+V3 was built **on purpose** as a UI/UX composition host with the engine out. Same pattern as V2: make the chrome, then drop the engine in. Hardcoded detect, copy-paste Flip, fixture toolPath, no count — that is the shell, not a failed product.
+
+Do not score the host as slop because nest math is not in it yet.
+
+V2 Auto-Size / FLiPIT chrome is garbage. Do not clone it onto V3. V3 + HUD morph + **Detach** is the path. Detach is not leftover. #116 five-state is leftover.
+
 ## Now vs this picture
 
 | Now | This picture |
 | --- | --- |
-| Live V2 has the nest engine and count. Shirt still says HowMany. | Engine stays. V3 is where the family assembles. |
-| V3 shell chrome: HUD / AutoSize / FLiPIT. Engine not joined there yet. | Nest engine + count visible on the V3 host. |
-| Calculator is a calculator. R14 (#116) holds a five-state chrome machine. | Calculator slot becomes **presets**. #116 stays draft chrome residual. |
+| Live V2 has the nest engine and count. Shirt still says HowMany. V2 Flipit chrome is garbage. | Engine stays. V3 chrome is the trajectory. |
+| V3 shell chrome: HUD / AutoSize / FLiPIT. Engine not joined there yet. On purpose. | Nest engine + count visible on the V3 host. |
+| Calculator is a calculator. R14 (#116) holds a five-state chrome machine. | Calculator slot becomes **presets**. #116 stays draft chrome residual. Detach stays. |
 | HexNest is lab only. | HexNest is a HUD mode. Lab equation ran in SuperBrain. |
 | toolPath is separate. | toolPath still pops out. Window is the part only. Collapse HUD pulls it back too. |
 
@@ -114,6 +122,9 @@ Basic assembled set = nest engine + count + this HUD. Paid later: NC import + He
 ## Do not
 
 - Merge #116 as this concept
+- Score the V3 host as a failed product because the engine is not in it yet
+- Clone V2 Auto-Size / FLiPIT chrome onto V3
+- Kill Detach
 - Treat V2 as junk because Robot formed later
 - Treat V3 as optional because V2 is live
 - Open a Robot channel from this file
@@ -124,4 +135,3 @@ Basic assembled set = nest engine + count + this HUD. Paid later: NC import + He
 - Treat the lab F5 fixture as a finished HexNest product
 - Treat shadcn as a locked design system
 - Draw the part profile as a bbox inside the toolPath window
-- Implement from this document without a named NestCalc Station
