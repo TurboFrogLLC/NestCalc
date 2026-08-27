@@ -6,13 +6,13 @@ Umbrella name for now: **FLiPIT**. Owner may rename.
 
 ## Place
 
-FLiPIT is an **intro** to the product line. Owner 2026-08-27: wReckless Toddler has **three flagship products** (so far). FLiPIT is one. The other two are not named in this file.
+FLiPIT is one of **three flagship products** (so far) for wReckless Toddler LLC on the manufacturing / shop-tool side. The other two are not named in this file. Do not title FLiPIT "gateway flagship."
 
-Two uses at once:
-- Gateway into the larger flagship products.
-- Simple occasional use of a few tools.
+This combined HUD is how a shop meets the tools: occasional use of a few of them, and a path into the larger manufacturing products later.
 
-Every module in this HUD (NestCalc engine, AutoSize, FLiPIT chrome, HexNest, toolPath, presets) can and should also ship as its own product. Combined HUD is the intro surface, not a lock that modules only exist inside FLiPIT.
+**HUD does not ship alone.** It is chrome for this surface.
+
+Whether NestCalc engine, AutoSize, HexNest, toolPath, or presets can stand as their own viable products is a **Robot look** (Atlas on viability when Owner asks). That look comes **after** this product is introduced and Owner names a FLiPIT channel. Not this pass.
 
 ## Now vs this picture
 
@@ -47,8 +47,7 @@ Not locked to shadcn. If another open-source control does a job shadcn does not,
 - **Presets** — replaces the calculator surface.
 - **toolPath** — only component that pops out on its own without Detach. Window shows the part, not a bbox around it.
 
-HUD is the base. Modes morph in place. **Detach** is one module at a time.
-Each of these also stands alone as a product.
+HUD is the base. Modes morph in place. **Detach** is one module at a time. HUD is not a product SKU.
 
 ## HUD
 
@@ -103,12 +102,14 @@ Lab proof today is two-center inset only (F5). Multi-row shift + unequal X/Y gap
 
 ## Paid (later)
 
-Basic FLiPIT = nest engine + count + this HUD. Paid later: NC import + HexNest. Atlas when Owner asks viability. Not the $5 market block. Standalone module SKUs are a later Atlas ask, not this file.
+Basic FLiPIT = nest engine + count + this HUD. Paid later: NC import + HexNest. Atlas when Owner asks viability. Not the $5 market block. Standalone module SKUs wait until this product is stood up and Owner names a channel.
 
 ## Do not
 
 - Merge #116 as this concept
 - Open a Robot channel from this file
+- Call FLiPIT a "gateway flagship"
+- Ship HUD as its own product
 - Invent Robot seats
 - Invent the other two flagship names in this file
 - Treat the lab F5 fixture as a finished HexNest product
