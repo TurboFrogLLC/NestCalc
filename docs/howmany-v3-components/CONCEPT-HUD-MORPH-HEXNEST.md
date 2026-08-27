@@ -2,25 +2,32 @@
 
 Owner spitball 2026-08-27. Not law. Not a Cut. Draft so Robot can read the picture.
 
-Umbrella name for now: **FLiPIT**. Owner may rename.
+Umbrella name for now: **FLiPIT**. Name not set.
 
 ## Place
 
-FLiPIT is one of **three flagship products** (so far) for wReckless Toddler LLC on the manufacturing / shop-tool side. The other two are not named in this file. Do not title FLiPIT "gateway flagship."
+NestCalc started as a basic calculator. It evolved, before wReckless Robot existed, into a **production R&D sandbox** for a family of shop tools. Treat live V2 that way. It is not leftover junk. It is the live product.
 
-This combined HUD is how a shop meets the tools: occasional use of a few of them, and a path into the larger manufacturing products later.
+**V3 is the current trajectory.** Not a side sketch that loses to V2 by default.
+
+Idea: user necessity. Not one feature-bloated program. A collection of tools that assemble in any combination the operator needs. Used separately or together, many iterations.
+
+The fully assembled product (name not set; FLiPIT for now) is a sandbox for laser / waterjet machines, operators, and programmers.
+
+FLiPIT is one of **three flagship products** (so far) on the manufacturing / shop-tool side. The other two are not named here. Do not title it "gateway flagship."
 
 **HUD does not ship alone.** It is chrome for this surface.
 
-Whether NestCalc engine, AutoSize, HexNest, toolPath, or presets can stand as their own viable products is a **Robot look** (Atlas on viability when Owner asks). That look comes **after** this product is introduced and Owner names a FLiPIT channel. Not this pass.
+Standalone module SKUs are a later Robot look, after this product is introduced and Owner names a channel.
 
 ## Now vs this picture
 
 | Now | This picture |
 | --- | --- |
-| V3 shell chrome: HUD / AutoSize / FLiPIT. No nest engine. No part count. | NestCalc engine back in the shell. Count is visible. |
-| Calculator is a calculator. R14 (#116) holds a five-state chrome machine. | Calculator slot becomes **presets**. #116 stays draft chrome residual. Do not merge it as this concept. |
-| HexNest is lab only. | HexNest is a HUD mode. Equation already ran in SuperBrain lab. |
+| Live V2 has the nest engine and count. Shirt still says HowMany. | Engine stays. V3 is where the family assembles. |
+| V3 shell chrome: HUD / AutoSize / FLiPIT. Engine not joined there yet. | Nest engine + count visible on the V3 host. |
+| Calculator is a calculator. R14 (#116) holds a five-state chrome machine. | Calculator slot becomes **presets**. #116 stays draft chrome residual. |
+| HexNest is lab only. | HexNest is a HUD mode. Lab equation ran in SuperBrain. |
 | toolPath is separate. | toolPath still pops out. Window is the part only. Collapse HUD pulls it back too. |
 
 Current host: `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html` + SPEC.
@@ -41,7 +48,7 @@ Not locked to shadcn. If another open-source control does a job shadcn does not,
 
 ## Modules (one body)
 
-- **NestCalc engine** — how many parts on the sheet. Missing from the shell today.
+- **NestCalc engine** — how many parts on the sheet. Live on V2. Not joined to V3 yet.
 - **FLiPIT + AutoSize** — chrome modes of the same HUD.
 - **HexNest** — hex mode of the same HUD. Rings / disc / washer / round.
 - **Presets** — replaces the calculator surface.
@@ -102,11 +109,13 @@ Lab proof today is two-center inset only (F5). Multi-row shift + unequal X/Y gap
 
 ## Paid (later)
 
-Basic FLiPIT = nest engine + count + this HUD. Paid later: NC import + HexNest. Atlas when Owner asks viability. Not the $5 market block. Standalone module SKUs wait until this product is stood up and Owner names a channel.
+Basic assembled set = nest engine + count + this HUD. Paid later: NC import + HexNest. Atlas when Owner asks viability. Not the $5 market block. Standalone module SKUs wait until this product is stood up and Owner names a channel.
 
 ## Do not
 
 - Merge #116 as this concept
+- Treat V2 as junk because Robot formed later
+- Treat V3 as optional because V2 is live
 - Open a Robot channel from this file
 - Call FLiPIT a "gateway flagship"
 - Ship HUD as its own product
