@@ -11,7 +11,7 @@ Umbrella name for now: **FLiPIT**. Owner may rename.
 | V3 shell chrome: HUD / AutoSize / FLiPIT. No nest engine. No part count. | NestCalc engine back in the shell. Count is visible. |
 | Calculator is a calculator. R14 (#116) holds a five-state chrome machine. | Calculator slot becomes **presets**. #116 stays draft chrome residual. Do not merge it as this concept. |
 | HexNest is lab only. | HexNest is a HUD mode. Equation already ran in SuperBrain lab. |
-| toolPath is separate. | toolPath still pops out. Only separate chrome. Collapse HUD pulls it back too. |
+| toolPath is separate. | toolPath still pops out. Window is the part only. Collapse HUD pulls it back too. |
 
 Current host: `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html` + SPEC.
 R14 hold: NestCalc draft [PR #116](https://github.com/TurboFrogLLC/NestCalc/pull/116).
@@ -35,7 +35,7 @@ Not locked to shadcn. If another open-source control does a job shadcn does not,
 - **FLiPIT + AutoSize** — chrome modes of the same HUD.
 - **HexNest** — hex mode of the same HUD. Rings / disc / washer / round.
 - **Presets** — replaces the calculator surface.
-- **toolPath** — only component that pops out on its own without Detach. Still FLiPIT-family. Show the part profile inside the bounding box.
+- **toolPath** — only component that pops out on its own without Detach. Window shows the part, not a bbox around it.
 
 HUD is the base. Modes morph in place. **Detach** is one module at a time.
 
@@ -53,6 +53,16 @@ and back. Same body. Smooth slide like today.
 
 **Collapse:** HUD collapse reassembles everything that is open, including detached modules and toolPath if it is out. One fold back into the HUD.
 
+## Laser bed (blank)
+
+The dotted bounding box lives on the **blank on the laser bed**, not in the toolPath window.
+
+- Each nest cell keeps that dotted bbox.
+- When a toolpath / NC exists, **inject** that profile into the cell so the user sees the real part shape inside the box.
+- Bbox stays. Future builds may do more. Toggle later if Owner wants hide-box.
+- Basic X/Y part size with no NC / no generated toolpath cannot inject. Need an inject action.
+- Inject control lives in the toolPath module, later also on the HUD, and slides onto the floating ticker with the other quick buttons.
+
 ## Floating blank ticker
 
 The ticker that sits above the blank when you drag it stays. It is **not** inside the HUD container. Buttons float next to it and ease in/out.
@@ -64,12 +74,13 @@ The ticker that sits above the blank when you drag it stays. It is **not** insid
   - rotate blank 90° right (repeat as needed)
   - set gap
   - set margin
+  - inject toolpath (when NC exists; slides over with the rest)
 
 These are the quick path while dragging. HUD remains the full set.
 
 ## HexNest drag
 
-Washer / disc / round. toolPath shows the profile in the bounding box, not an empty box.
+Washer / disc / round. On the bed: dotted bbox still shown; injected profile when a toolpath exists.
 
 - Part at origin (0,0) is locked.
 - Parts also lock to blank margins. If a row cannot shift sideways and still fit, the dip does not land.
@@ -90,4 +101,5 @@ Basic FLiPIT = nest engine + count + this HUD. Paid later: NC import + HexNest. 
 - Invent Robot seats
 - Treat the lab F5 fixture as a finished HexNest product
 - Treat shadcn as a locked design system
+- Draw the part profile as a bbox inside the toolPath window
 - Implement from this document without a named NestCalc Station
