@@ -17,6 +17,18 @@ Current host: `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html` + SPEC.
 R14 hold: NestCalc draft [PR #116](https://github.com/TurboFrogLLC/NestCalc/pull/116).
 Hex lab: SuperBrain `lab/laser-nc-fixtures/round-layout.mjs` inset mode (`p = 2R + g`, second center `p/2`, `p√3/2`). Fixture `F5-round-hex-inset-r10-g2.nc` generated and tested. Lab README: generate + unittest in that pack.
 
+## Feel
+
+Mouse-first. Hover, grab, resize, double-click, floating ticker — all sized and slopped for a pointer. Touch still works. Pointer is the design target.
+
+**Settings menu** — will exist. Placement and contents not pinned. Future.
+
+## Widgets
+
+Start from **shadcn/ui** as owned source, not a locked skin. Copy the parts in. Strip them. Stack them. Make new pieces from those parts.
+
+Not locked to shadcn. If another open-source control does a job shadcn does not, Robot (Frame / Anvil as Apex routes) may propose it for the stack. Owner picks. Not an Owner-override ritual.
+
 ## Modules (one body)
 
 - **NestCalc engine** — how many parts on the sheet. Missing from the shell today.
@@ -40,8 +52,6 @@ and back. Same body. Smooth slide like today.
 **Detach (per module):** the mode you are in has a Detach control. Example: you are in HexNest → Detach takes HexNest out as its own window and the body returns to expanded HUD. Same if you later Detach FLiPIT. Not detach-all. Shop use will tell if that stays enough.
 
 **Collapse:** HUD collapse reassembles everything that is open, including detached modules and toolPath if it is out. One fold back into the HUD.
-
-Base widgets: shadcn. Extra open-source only when shadcn has no part.
 
 ## Floating blank ticker
 
@@ -79,4 +89,5 @@ Basic FLiPIT = nest engine + count + this HUD. Paid later: NC import + HexNest. 
 - Open a Robot channel from this file
 - Invent Robot seats
 - Treat the lab F5 fixture as a finished HexNest product
+- Treat shadcn as a locked design system
 - Implement from this document without a named NestCalc Station
