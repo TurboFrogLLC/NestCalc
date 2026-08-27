@@ -23,9 +23,9 @@ Hex lab: SuperBrain `lab/laser-nc-fixtures/round-layout.mjs` inset mode (`p = 2R
 - **FLiPIT + AutoSize** — chrome modes of the same HUD.
 - **HexNest** — hex mode of the same HUD. Rings / disc / washer / round.
 - **Presets** — replaces the calculator surface.
-- **toolPath** — only component that pops out on its own without explode. Still FLiPIT-family. Show the part profile inside the bounding box.
+- **toolPath** — only component that pops out on its own without Detach. Still FLiPIT-family. Show the part profile inside the bounding box.
 
-HUD is the base. Modes morph in place. Explode is one module at a time.
+HUD is the base. Modes morph in place. **Detach** is one module at a time.
 
 ## HUD
 
@@ -37,9 +37,9 @@ presets → AutoSize → FLiPIT → HexNest
 
 and back. Same body. Smooth slide like today.
 
-**Explode (per module):** the mode you are in has an explode control. Example: you are in HexNest → explode takes HexNest out as its own window and the body returns to expanded HUD. Same if you later explode FLiPIT. Not explode-all. Shop use will tell if that stays enough.
+**Detach (per module):** the mode you are in has a Detach control. Example: you are in HexNest → Detach takes HexNest out as its own window and the body returns to expanded HUD. Same if you later Detach FLiPIT. Not detach-all. Shop use will tell if that stays enough.
 
-**Collapse:** HUD collapse reassembles everything that is open, including exploded modules and toolPath if it is out. One fold back into the HUD.
+**Collapse:** HUD collapse reassembles everything that is open, including detached modules and toolPath if it is out. One fold back into the HUD.
 
 Base widgets: shadcn. Extra open-source only when shadcn has no part.
 
