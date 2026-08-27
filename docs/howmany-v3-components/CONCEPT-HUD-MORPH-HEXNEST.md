@@ -11,7 +11,7 @@ Umbrella name for now: **FLiPIT**. Owner may rename.
 | V3 shell chrome: HUD / AutoSize / FLiPIT. No nest engine. No part count. | NestCalc engine back in the shell. Count is visible. |
 | Calculator is a calculator. R14 (#116) holds a five-state chrome machine. | Calculator slot becomes **presets**. #116 stays draft chrome residual. Do not merge it as this concept. |
 | HexNest is lab only. | HexNest is a HUD mode. Equation already ran in SuperBrain lab. |
-| toolPath is separate. | toolPath still pops out. Only separate chrome. |
+| toolPath is separate. | toolPath still pops out. Only separate chrome. Collapse HUD pulls it back too. |
 
 Current host: `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html` + SPEC.
 R14 hold: NestCalc draft [PR #116](https://github.com/TurboFrogLLC/NestCalc/pull/116).
@@ -23,9 +23,9 @@ Hex lab: SuperBrain `lab/laser-nc-fixtures/round-layout.mjs` inset mode (`p = 2R
 - **FLiPIT + AutoSize** — chrome modes of the same HUD.
 - **HexNest** — hex mode of the same HUD. Rings / disc / washer / round.
 - **Presets** — replaces the calculator surface.
-- **toolPath** — only component that pops out on its own. Still FLiPIT-family. Show the part profile inside the bounding box.
+- **toolPath** — only component that pops out on its own without explode. Still FLiPIT-family. Show the part profile inside the bounding box.
 
-One chrome. HUD is the body. Modes morph in place. Explode is the opt-in split.
+HUD is the base. Modes morph in place. Explode is one module at a time.
 
 ## HUD
 
@@ -37,7 +37,9 @@ presets → AutoSize → FLiPIT → HexNest
 
 and back. Same body. Smooth slide like today.
 
-**Explode:** pick which open modes leave the body. They slide out as separate window components. Reassemble slides them back.
+**Explode (per module):** the mode you are in has an explode control. Example: you are in HexNest → explode takes HexNest out as its own window and the body returns to expanded HUD. Same if you later explode FLiPIT. Not explode-all. Shop use will tell if that stays enough.
+
+**Collapse:** HUD collapse reassembles everything that is open, including exploded modules and toolPath if it is out. One fold back into the HUD.
 
 Base widgets: shadcn. Extra open-source only when shadcn has no part.
 
