@@ -4,6 +4,16 @@ Owner spitball 2026-08-27. Not law. Not a Cut. Draft so Robot can read the pictu
 
 Umbrella name for now: **FLiPIT**. Owner may rename.
 
+## Place
+
+FLiPIT is an **intro** to the product line. Owner 2026-08-27: wReckless Toddler has **three flagship products** (so far). FLiPIT is one. The other two are not named in this file.
+
+Two uses at once:
+- Gateway into the larger flagship products.
+- Simple occasional use of a few tools.
+
+Every module in this HUD (NestCalc engine, AutoSize, FLiPIT chrome, HexNest, toolPath, presets) can and should also ship as its own product. Combined HUD is the intro surface, not a lock that modules only exist inside FLiPIT.
+
 ## Now vs this picture
 
 | Now | This picture |
@@ -38,6 +48,7 @@ Not locked to shadcn. If another open-source control does a job shadcn does not,
 - **toolPath** — only component that pops out on its own without Detach. Window shows the part, not a bbox around it.
 
 HUD is the base. Modes morph in place. **Detach** is one module at a time.
+Each of these also stands alone as a product.
 
 ## HUD
 
@@ -92,13 +103,14 @@ Lab proof today is two-center inset only (F5). Multi-row shift + unequal X/Y gap
 
 ## Paid (later)
 
-Basic FLiPIT = nest engine + count + this HUD. Paid later: NC import + HexNest. Atlas when Owner asks viability. Not the $5 market block.
+Basic FLiPIT = nest engine + count + this HUD. Paid later: NC import + HexNest. Atlas when Owner asks viability. Not the $5 market block. Standalone module SKUs are a later Atlas ask, not this file.
 
 ## Do not
 
 - Merge #116 as this concept
 - Open a Robot channel from this file
 - Invent Robot seats
+- Invent the other two flagship names in this file
 - Treat the lab F5 fixture as a finished HexNest product
 - Treat shadcn as a locked design system
 - Draw the part profile as a bbox inside the toolPath window
