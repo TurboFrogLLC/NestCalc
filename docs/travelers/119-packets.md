@@ -31,3 +31,4 @@ Parked: cut sheet / checklist, settings, blank-rotate with 7, #116, #117, #118 d
 - 2026-08-28 Fit-angle-strip stamp 1a343a7
 - 2026-08-28 Detect-bounds stamp e8059ef
 - 2026-08-28 Owner phone look: NC editor-open FLiPIT overflows. Angle chips clip again. Scale HUD + FLiPIT + editor to 75% of the viewport. Portrait gutters left/right. Landscape gutters top/bottom. Contents scale. Bed stays visible in the leftover 25%.
+- 2026-08-28 Mobile-fit stamp bbde518 · portrait 390 × 844 keeps the open FLiPIT/editor at 292.5px wide (75%) with equal 49px gutters and the scaled HUD stacked below; landscape 844 × 390 keeps the editor at 292.6px tall (75%) with equal 49px gutters and the HUD alongside · all four angle labels remain visible in the earned one-pane editor · origin/feat/v3-c1-count-r1-join advanced to bbde518 before this stamp · Still open / Next: Owner
