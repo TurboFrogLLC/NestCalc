@@ -2165,6 +2165,23 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       background: #ffffff;
       box-sizing: border-box;
     }
+
+    /* Mobile-fit: the open HUD + FLiPIT composition uses a deliberate 75% card box.
+       Portrait keeps left/right bed gutters; landscape reserves top/bottom bed gutters. */
+    @media (max-width: 700px), (max-height: 500px) and (orientation: landscape) {
+      .gcode.is-open,
+      .keypad {
+        transform: scale(var(--mobile-fit-scale, 0.75)) !important;
+        transform-origin: top left !important;
+      }
+    }
+    @media (max-width: 700px) and (orientation: portrait) {
+      .gcode {
+        width: 100vw;
+        min-width: 0;
+        max-width: none;
+      }
+    }
     .toolpath-canvas .part {
       position: absolute;
       left: 18%;
@@ -4439,6 +4456,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   function setExpanded(on) {
     panel.classList.toggle('is-expanded', on);
     if (typeof syncHudFlipitChrome === 'function') syncHudFlipitChrome();
+    if (panel.classList.contains('is-open') && panel.style.display !== 'none' && typeof window.__hostArrange === 'function') {
+      window.__hostArrange('flipit-mode');
+    }
   }
   function collapseGcode() {
     setExpanded(false);
@@ -5110,12 +5130,38 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var flipitOpen = !!(gcode && gcode.classList.contains('is-open') && gcode.style.display !== 'none');
     var tpOpen = !!(tp && !tp.classList.contains('is-hidden'));
     var vw = window.innerWidth;
+    var vh = window.innerHeight;
     var top = TOP_BAND;
+    var isPhone = window.matchMedia('(max-width: 700px), (max-height: 500px) and (orientation: landscape)').matches;
+    var isPortrait = window.matchMedia('(orientation: portrait)').matches;
 
     if (flipitOpen && hud) {
       var gW = gcode.offsetWidth;
       var hW = hud.offsetWidth;
       var tW = tpOpen ? (tp.offsetWidth || 280) : 0;
+      if (isPhone) {
+        var gScale = isPortrait ? 0.75 : Math.min(0.9, (vh * 0.75) / Math.max(gcode.offsetHeight, 1));
+        var hScale = 0.75;
+        gcode.style.setProperty('--mobile-fit-scale', gScale);
+        hud.style.setProperty('--mobile-fit-scale', hScale);
+        if (isPortrait) {
+          var portraitLeft = vw * 0.125;
+          var portraitTop = Math.max(16, vh * 0.04);
+          placeCard(gcode, portraitLeft, portraitTop);
+          placeCard(hud, portraitLeft, portraitTop + (gcode.offsetHeight * gScale) + 16);
+        } else {
+          var landscapeTop = vh * 0.125;
+          placeCard(gcode, Math.max(16, (vw - (gW * gScale)) / 2), landscapeTop);
+          placeCard(hud, 16, landscapeTop);
+        }
+        if (tpOpen) placeCard(tp, TOP_BAND, TOP_BAND);
+        flags.flipit = false;
+        flags.hud = false;
+        if (tpOpen) flags.toolpath = false;
+        return;
+      }
+      gcode.style.removeProperty('--mobile-fit-scale');
+      hud.style.removeProperty('--mobile-fit-scale');
       placeCard(gcode, Math.max(TOP_BAND, (vw - gW) / 2), top);
       placeCard(hud, Math.max(TOP_BAND, vw - hW - TOP_BAND), top);
       if (tpOpen) {
@@ -5136,6 +5182,13 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       placeCard(tp, pos.left, pos.top);
     }
   };
+
+  window.addEventListener('resize', function () {
+    var gcode = document.getElementById('gcode');
+    if (gcode && gcode.classList.contains('is-open') && gcode.style.display !== 'none') {
+      window.__hostArrange('mobile-fit-resize');
+    }
+  });
 })();
 </script>
 </body>
