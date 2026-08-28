@@ -94,19 +94,27 @@ FLiPIT does **not** nest.
 
 You do **not** have to put FLiPIT on the bed to flip a part.
 
-### AUTO-SIZE — comms, not a third nest
+### AUTO-SIZE, Open new, Reset
 
-AUTO-SIZE sits on the ticker expand. No new card. OS file dialog only. Useful by itself: load a program, read part size. The bed is optional.
+Ticker expand has two controls. Always. That is the cohesive bit.
 
-It is not HowMany. It is not `calculateAutoNest`. It does not flip. It moves size.
+1. **Job door** — AUTO-SIZE when no program. Open new file when a program is in.
+2. **Reset** — always there. HowMany-only people can clear the scratch pad without pretending they have a file.
 
-Empty session: click AUTO-SIZE → file dialog → cancel does nothing → pick a file reads bbox. If the bed is up, write HowMany part X/Y and recount. That is hydrate. No second button.
+Reset keeps blank / gap / margin (the rem is still on the table). Clears part size, program, FLiPIT strip, HexNest dip. Count follows. New rem = drag the blank or load a preset. Not a second reset.
 
-File already in session: same ticker slot becomes **Open new file** (different icon). Confirm first: clear this job and open another? Cancel keeps the nest. OK → dialog → replace program and part size. Blank / gap / margin stay.
+**No program + AUTO-SIZE:** file dialog. Cancel = nothing. Pick = hydrate part onto the bed.
 
-Do not morph the AUTO-SIZE slot into FLiPIT. FLiPIT strip earns itself once a program exists. Click-again on AUTO-SIZE is load-another, not flip.
+**No program + Reset:** alert — *Clear the part and recount? Blank stays.* Cancel / Reset.
 
-HowMany with a typed part and HowMany with an NC-sized part are the same calculator. AUTO-SIZE replaces part size. Count changes because the part changed. No shadow typed size.
+**Program in + Open new file:** alert — *A program is loaded.*
+- Cancel — keep this job
+- Reset — drop program + part, blank stays, no dialog
+- Load new — dialog, replace program + part size
+
+**Program in + Reset:** same Reset alert. Do not hide Reset inside Load only.
+
+Do not morph the job door into FLiPIT. FLiPIT strip earns itself once a program exists.
 
 ## Ticker vs HUD vs presets
 
@@ -225,6 +233,7 @@ V2 is live heritage. V3 is the composition host on purpose. Do not clone V2 FLiP
 - Not writing G54/G55/G56 this pass. Show the numbers.
 - Not a snap finer than 0.125.
 - Not dropping the bounding box because a circle is on the cell.
+- Not hiding Reset inside Load so HowMany-only cannot clear.
 
 ## Ask of Robot
 
