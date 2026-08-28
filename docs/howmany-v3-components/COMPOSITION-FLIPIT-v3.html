@@ -94,7 +94,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   body.lb-panning { cursor: grab; }
   body.lb-panning.lb-dragging { cursor: grabbing; }
 
-  /* Blank ticker cluster — pill + disconnected calc, right-pinned together */
+  /* Blank ticker cluster — readout + disconnected calc, right-pinned together */
   .lb-blank-layer {
     position: absolute;
     inset: 0;
@@ -162,8 +162,54 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     pointer-events: auto;
     user-select: none;
     touch-action: none;
+    cursor: pointer;
   }
   .blank-ticker .bt-readout { line-height: 1; letter-spacing: 0.01em; }
+  .blank-ticker[aria-expanded="true"] {
+    border-color: rgba(255, 206, 27, 0.62);
+    background: rgba(48, 42, 64, 0.96);
+  }
+  .ticker-door {
+    position: absolute;
+    top: 37px;
+    right: 0;
+    z-index: 1;
+    display: none;
+    align-items: center;
+    gap: 4px;
+    min-height: 34px;
+    padding: 4px;
+    border: 1.1px solid rgba(255, 255, 255, 0.20);
+    border-radius: 6.6px;
+    background: rgba(26, 20, 40, 0.94);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.20);
+    white-space: nowrap;
+  }
+  .blank-ticker-cluster.is-door-open .ticker-door { display: inline-flex; }
+  .ticker-door-chip {
+    min-height: 25px;
+    margin: 0;
+    padding: 0 8px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 4.8px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    font: 700 10px/1 var(--font);
+    letter-spacing: 0.03em;
+    cursor: pointer;
+  }
+  .ticker-door-chip:hover,
+  .ticker-door-chip:focus-visible { background: rgba(255, 255, 255, 0.18); }
+  .ticker-door-chip.is-reset { color: #FFCE1B; }
+  .ticker-door-program {
+    display: none;
+    align-items: center;
+    gap: 4px;
+    padding-left: 4px;
+    border-left: 1px solid rgba(255, 255, 255, 0.18);
+  }
+  .ticker-door-program.is-loaded { display: inline-flex; }
+  .ticker-door-program .ticker-door-chip { color: #FFCE1B; }
   .blank-ticker-cluster .bt-calc {
     width: 34px; height: 34px; min-width: 34px; min-height: 34px;
     margin: 0; padding: 0;
@@ -2262,11 +2308,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       <button type="button" id="lb-fit" title="Fit"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg></button>
     </div>
 
-    <!-- Blank ticker cluster — pill + disconnected calc, right-pinned -->
+    <!-- Blank ticker cluster — collapsed readout with one earned action strip -->
     <div class="blank-ticker-cluster" id="blank-ticker-cluster">
-      <div class="blank-ticker" id="blank-ticker" aria-label="Blank size">
+      <button type="button" class="blank-ticker" id="blank-ticker" aria-label="Blank size controls" aria-expanded="false" aria-controls="ticker-door">
         <span class="bt-readout" id="bt-readout">12.000 × 8.000</span>
-      </div>
+      </button>
       <button type="button" class="bt-calc" id="bt-calc" title="Calculator" aria-label="Calculator">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <rect width="17.6" height="22" x="3.2" y="1" rx="2"/>
@@ -2276,6 +2322,18 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
           <path d="M12 14h.01"/><path d="M7.2 14h.01"/><path d="M12 18.4h.01"/><path d="M7.2 18.4h.01"/>
         </svg>
       </button>
+      <div class="ticker-door" id="ticker-door" aria-label="Blank controls">
+        <button type="button" class="ticker-door-chip" data-ticker-door-field="part">Part</button>
+        <button type="button" class="ticker-door-chip" data-ticker-door-field="blank">Blank</button>
+        <button type="button" class="ticker-door-chip" data-ticker-door-field="gap">Gap</button>
+        <button type="button" class="ticker-door-chip" data-ticker-door-field="margin">Margin</button>
+        <button type="button" class="ticker-door-chip" id="btn-part-90" title="Part 90°">Part 90°</button>
+        <button type="button" class="ticker-door-chip is-reset" id="btn-ticker-reset" title="Clear">Reset</button>
+        <span class="ticker-door-program" id="ticker-door-program" aria-label="Loaded program controls">
+          <button type="button" class="ticker-door-chip" id="btn-ticker-auto-size">AUTO-SIZE</button>
+          <button type="button" class="ticker-door-chip" id="btn-ticker-flipit"><span class="label-flip">FLiP</span><span class="label-it">IT</span></button>
+        </span>
+      </div>
     </div>
   
     <!-- Numeric HUD (lock: NUMERIC-HUD-v3) -->
@@ -3860,6 +3918,21 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     });
   }
 
+  window.__howManyOpenField = function (key) {
+    if (['part', 'blank', 'gap', 'margin'].indexOf(key) === -1) return false;
+    if (isHudCollapsed()) {
+      clearMotionTimer();
+      state.calc = false;
+      calcToggle.classList.remove('active-calc');
+      calcToggle.setAttribute('aria-pressed', 'false');
+      setCollapsed(false);
+      applyModeVisibility();
+      applyBodyHeight();
+    }
+    openParamPopover(key);
+    return true;
+  };
+
   hud.addEventListener('click', function (e) {
     const tick = e.target.closest && e.target.closest('.param-ticker[data-open]');
     if (!tick || !hud.contains(tick)) return;
@@ -4116,6 +4189,41 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (typeof window.__flipitToggle === 'function') window.__flipitToggle();
   });
 
+  var tickerDoor = document.getElementById('ticker-door');
+  if (tickerDoor) {
+    tickerDoor.addEventListener('click', function (e) {
+      var field = e.target.closest && e.target.closest('[data-ticker-door-field]');
+      if (!field) return;
+      e.preventDefault();
+      e.stopPropagation();
+      if (typeof window.__howManyOpenField === 'function') {
+        window.__howManyOpenField(field.getAttribute('data-ticker-door-field'));
+      }
+    });
+  }
+  var tickerPartRotate = document.getElementById('btn-part-90');
+  if (tickerPartRotate) {
+    tickerPartRotate.addEventListener('click', function () {
+      var next = paramState.part.x;
+      paramState.part.x = paramState.part.y;
+      paramState.part.y = next;
+      writeFieldsFromBag('part');
+      refreshTickers();
+    });
+  }
+  var tickerReset = document.getElementById('btn-ticker-reset');
+  if (tickerReset) {
+    tickerReset.addEventListener('click', function () {
+      ['part-x', 'part-y', 'rem-x', 'rem-y', 'gap-x', 'gap-y', 'm-left', 'm-right', 'm-top', 'm-bottom'].forEach(function (id) {
+        var input = document.getElementById(id);
+        if (input) input.value = '';
+      });
+      if (typeof window.__bedSetNestTiles === 'function') window.__bedSetNestTiles(null, 0, 0);
+      var count = document.getElementById('lb-count');
+      if (count) count.textContent = '0';
+    });
+  }
+
   setCalc(false);
   refreshTickers();
   lockBodyHeight();
@@ -4368,6 +4476,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   function syncSourceChrome() {
     syncDetectArm();
     syncProcessState();
+    if (typeof window.__tickerDoorProgramLoaded === 'function') {
+      window.__tickerDoorProgramLoaded(hasSource());
+    }
   }
 
   function detectPart() {
@@ -4584,6 +4695,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
   function syncProgClear() {
     progField.classList.toggle('has-value', progName.value.length > 0);
+    if (typeof window.__tickerDoorProgramLoaded === 'function') {
+      window.__tickerDoorProgramLoaded(hasSource());
+    }
   }
   progName.addEventListener('input', syncProgClear);
   progName.addEventListener('focus', function () { progField.classList.add('is-focus'); });
@@ -5175,6 +5289,31 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 /* ── Host residual R1–R8 — LaserBed calc chip → HUD + card arrange ── */
 (function () {
   var btCalc = document.getElementById('bt-calc');
+  var blankTicker = document.getElementById('blank-ticker');
+  var blankTickerCluster = document.getElementById('blank-ticker-cluster');
+  var tickerProgram = document.getElementById('ticker-door-program');
+  var tickerAutoSize = document.getElementById('btn-ticker-auto-size');
+  var tickerFlipit = document.getElementById('btn-ticker-flipit');
+  if (blankTicker && blankTickerCluster) {
+    blankTicker.addEventListener('click', function () {
+      var opening = !blankTickerCluster.classList.contains('is-door-open');
+      blankTickerCluster.classList.toggle('is-door-open', opening);
+      blankTicker.setAttribute('aria-expanded', opening ? 'true' : 'false');
+    });
+  }
+  window.__tickerDoorProgramLoaded = function (loaded) {
+    if (tickerProgram) tickerProgram.classList.toggle('is-loaded', !!loaded);
+  };
+  if (tickerAutoSize) {
+    tickerAutoSize.addEventListener('click', function () {
+      if (typeof window.__autoSizeOpen === 'function') window.__autoSizeOpen();
+    });
+  }
+  if (tickerFlipit) {
+    tickerFlipit.addEventListener('click', function () {
+      if (typeof window.__flipitToggle === 'function') window.__flipitToggle();
+    });
+  }
   if (btCalc) {
     btCalc.addEventListener('click', function (e) {
       e.preventDefault();
