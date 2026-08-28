@@ -125,9 +125,15 @@ No `−90` / `+90` text. Icons, boxed like calc.
 | Rail Reset | `eraser` | boxed |
 | Door | `chevron-last` / `chevron-first` | no box |
 
-Canvas undo currently collides with the rotate glyphs. Move undo/redo to `undo-2` / `redo-2` so the open-arrow rotates can live on the ticker. Studio may propose a better pair; do not put square-rotate back unless Owner loves it on the glass.
+### Deliberation — ±90 vs undo/redo (open)
 
-Custom 16px SVG only if a Lucide glyph lies in the hand. Same stroke as Lucide.
+Not solved. Write this down so Robot does not treat the table as closed.
+
+Owner wants icon-only ±90, same tightness as calc. The glyphs that look like rotate are `rotate-ccw` / `rotate-cw`. Those are also the common-standard picture for undo/redo. Moving canvas history to `undo-2` / `redo-2` only fixes the *pair on the same corner of the canvas*. It does not fix the *meaning*. A new operator can still tap ticker rotate and think they undid the last action.
+
+Tried and refused: `rotate-ccw-square` / `rotate-cw-square` (dead square, no feel). Text `−90` / `+90` (not tight).
+
+Still open for Studio: a rotate pair that cannot be read as history, including a custom 16px SVG in Lucide stroke if Lucide has no honest glyph. Do not pretend the swap to `undo-2` closed this.
 
 ---
 
@@ -140,7 +146,7 @@ Need an outline that keeps `#hud` alive as the morphing body and moves field edi
 - Confirm-row vs one-button commit.
 - Margin 2×2 grow-up vs any other four-value pattern.
 - How AUTO-SIZE / FLiPIT earn a chip after load and still open the HUD morph (plan: do not morph the job door into FLiPIT; strip on ticker-expand).
-- Icon pair for ±90 after canvas undo moves to `undo-2` / `redo-2`. Square-rotate is refused.
+- ±90 icon vs undo/redo — deliberation above is open. Square-rotate is refused. `undo-2` swap is not a close.
 - What not to do (text dump, 360 orbit, packed hex, Detach, kill `#hud`, pour NC into the ticker).
 
 Studio on look. Quarry on the session (two doors, one session). Anvil only if a coding brief is useful. Atlas off. Keeper writes a plan board under `status/` only if the picture moves. This PR is not the product.
