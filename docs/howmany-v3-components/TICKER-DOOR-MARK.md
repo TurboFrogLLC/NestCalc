@@ -27,7 +27,7 @@ Engine is in the V3 shell.
 
 We built plan steps 4 and 5 before the ticker door was a door.
 
-## Lock that applies to every idea
+## Lock
 
 **`#hud` does not die. It morphs.** It is no longer the field editor.
 
@@ -38,6 +38,8 @@ What the plan did not spell in one line, and this packet does:
 - Ticker takes the field inputs the HUD form is doing now (blank / part / gap / margin).
 - HUD stays on the glass as the morphing body: presets ↔ FLiPIT / NC ↔ HexNest / job. Calc chip still opens that body.
 - `status/flipit-look-ticker.md` standing line “`#hud` stays, ticker does not replace it” still holds. The withdrawn line was “`#hud` dies.” This packet does not revive that. It only moves **editing** off the HUD form and onto the ticker.
+
+**This door is the sliding ghost rail.** Radial speed dial is parked, not the cut.
 
 Persistent cluster:
 
@@ -51,11 +53,9 @@ Persistent cluster:
 - HEXNES is not a fourth HUD form-row. HexNest chrome waits until this door is right.
 - Text dump on the left of the ticker is the miss.
 
-Two proposals below. Robot looks at both. Owner is leaning A for shop use. B stays in play.
-
 ---
 
-## A — Sliding chip rail (ghost track)
+## The rail (locked)
 
 Closed:
 
@@ -101,11 +101,9 @@ Compose from shadcn `Button size="icon"` + `Collapsible` for open state. Width c
 
 ---
 
-## B — Radial speed dial
+## Parked — radial speed dial
 
-Same persistent cluster. Same HUD-morph / ticker-edits split. Open is a **half-arc of icon ticks** off the ticker, not a 360 clock. Overlay on the bed allowed only while open. Cap four ticks. Icons, not words.
-
-Compose from shadcn `Button size="icon"`. Polar layout is ours. Dice UI Speed Dial / ObsidianUI Circle Menu are references, not dependencies. Magic UI Orbiting Circles is jewelry — do not use it as the door.
+Same persistent cluster. Half-arc of icon ticks off the ticker. Overlay only while open. Cap four. Not this cut. Keep it as a leftover if the rail fails a hand test.
 
 ---
 
@@ -137,20 +135,37 @@ Still open for Studio: a rotate pair that cannot be read as history, including a
 
 ---
 
-## Ask of Robot
+## Ask of Robot — production blueprint
 
-Look at the live shell, the plan, `status/flipit-look-ticker.md`, and this file. Do not cut NestCalc.
+Look at the live shell, the plan, `status/flipit-look-ticker.md`, and this file. Do not cut NestCalc. Do not run Grok Build or Codex. Do not open `channels/flipit`. Do not invent a GOAL or a Station.
 
-Need an outline that keeps `#hud` alive as the morphing body and moves field edit onto the ticker:
-- A vs B (or a tight mix). Push back.
-- Confirm-row vs one-button commit.
-- Margin 2×2 grow-up vs any other four-value pattern.
-- How AUTO-SIZE / FLiPIT earn a chip after load and still open the HUD morph (plan: do not morph the job door into FLiPIT; strip on ticker-expand).
-- ±90 icon vs undo/redo — deliberation above is open. Square-rotate is refused. `undo-2` swap is not a close.
+Output is one blueprint Keeper files under `status/` (sibling, not folded into `status/board.md` unless the product picture moves). Scribe logs the decide.
+
+The blueprint is for later Owner-invoked production (Grok Build / Codex App / Codex CLI). It is not the Cut.
+
+Need:
+- How the locked rail lands on the current V3 host (composition HTML first).
+- Studio look: chip sizes, ghost track, grow-up ticker, confirm row, ±90 vs undo (open).
+- Reed / Anvil coding brief: IDs, motion, no Sheet/Drawer/Sidebar, shadcn compose not a vendor kit.
+- Quarry: one nest session, two doors. Field edit on ticker. HUD morphs.
+- How AUTO-SIZE / FLiPIT earn a chip after load and still open the HUD morph.
 - What not to do (text dump, 360 orbit, packed hex, Detach, kill `#hud`, pour NC into the ticker).
+- Herald-shaped package outline so Owner can hand the blueprint to production later. Herald packages. Owner invokes.
 
-Studio on look. Quarry on the session (two doors, one session). Anvil only if a coding brief is useful. Atlas off. Keeper writes a plan board under `status/` only if the picture moves. This PR is not the product.
+If a seat cannot cover a hole: Apex pulls another seat from BOTS.md. Do not tell Owner no. Push back on the work. Do not refuse the job. (`status/deliberation/2026-08-27-ops-owner-job-not-a-no.md`)
+
+If they need a fact: ask Owner through Apex, or leave a note on NestCalc #120 / a Robot status file. Floor will fetch it.
+
+### Docs they may request (permission first)
+
+Ask Apex → Owner before writing vendor manuals into Robot git. If granted, Herald/Miner drop MD copies under a Robot `status/` or `prompts/` path Keeper names. Do not dump manuals into NestCalc.
+
+- Grok Build: https://docs.x.ai/build/overview · https://x.ai/docs/build/cli/reference · https://github.com/xai-org/grok-build (user-guide)
+- Codex: https://developers.openai.com/codex/prompting · https://developers.openai.com/codex/learn/best-practices · Codex app notes on the same docs set (append `.md` where the site allows)
+- Lucide / shadcn only as finds for this rail, not a new kit.
+
+Studio on look. Quarry on the session. Anvil + Reed on the brief. Gauge stamps the brief. Herald packages. Atlas off. JobShop off. Keeper writes the sibling board. Scribe logs. This PR is not the product.
 
 ## Pause
 
-No more Codex / Grok Build cuts on #119 until Owner names the next Station after the outline.
+No more Codex / Grok Build cuts on #119 until Owner names the next Station after the blueprint.
