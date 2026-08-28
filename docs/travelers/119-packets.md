@@ -19,6 +19,12 @@ Parked: cut sheet / checklist, settings, blank-rotate with 7, #116, #117, #118 d
 
 ## Issued
 
-Prior rows through Shirt-off eaf72d3 remain on this file as last fetched from 283a5e6.
-- 2026-08-28 Shirt-off (Codex App Worker) stamp eaf72d3 · HUD FLiPIT opens a four-angle strip (0°, 90°, −90°, 180°) with no code on stage · choosing an angle earns the single editor pane · Apply writes that pane then invokes the existing manual HowMany join, with no live-while-typing join · AUTO-SIZE remains a native picker path and does not open FLiPIT · origin/feat/v3-c1-count-r1-join was eaf72d3 before this stamp · Still open / Next: Owner
+- 2026-08-28 Start-branch (Owner / host terminal)
+- 2026-08-28 Cut 1 count ID + R1 kill + HowMany join (Grok Build Specialist)
+- 2026-08-28 Count-outside-arc stamp f72a27c
+- 2026-08-28 Preview-public-shell stamp 1d4ecf5
+- 2026-08-28 Phone-count-mark stamp aeac068
+- 2026-08-28 Nest-tiles stamp 524437b
+- 2026-08-28 Auto-size-hydrate stamp 4c9f5b7
+- 2026-08-28 Shirt-off stamp eaf72d3 · four-angle strip, one editor pane, Apply then join, AUTO-SIZE does not open FLiPIT
 - 2026-08-28 Owner phone look: angle chips 0/90/−90/180 truncate on the strip. Fit all four labels inside the FLiPIT card width. Do not change flip math.
