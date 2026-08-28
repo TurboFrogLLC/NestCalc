@@ -28,3 +28,4 @@ Parked: cut sheet / checklist, settings, blank-rotate with 7, #116, #117, #118 d
 - 2026-08-28 Auto-size-hydrate stamp 4c9f5b7
 - 2026-08-28 Shirt-off stamp eaf72d3 · four-angle strip, one editor pane, Apply then join, AUTO-SIZE does not open FLiPIT
 - 2026-08-28 Owner phone look: angle chips 0/90/−90/180 truncate on the strip. Fit all four labels inside the FLiPIT card width. Do not change flip math.
+- 2026-08-28 Fit-angle-strip stamp 1a343a7 · the phone card stays within its viewport and rises above the HUD; its strip uses four equal grid shares minus three gaps, keeping 0°, 90°, −90°, and 180° visible · 390 × 844 browser proof shows all four labels and 90° still earns the one editor pane · origin/feat/v3-c1-count-r1-join was 1a343a7 before this stamp · Still open / Next: Owner
