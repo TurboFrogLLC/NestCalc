@@ -1,5 +1,7 @@
 import type { GCodeUnit } from "../gcodeRotation";
 import { parseNumericInput } from "../numericInput";
+import { clearedInputs } from "../nestcalc";
+import { createHowManyNestSession } from "../nestSession";
 import type { Margins, NestInputs, Unit } from "../types";
 import { convertValue, round3 } from "../units";
 
@@ -32,6 +34,70 @@ const FIELD_BINDINGS: Record<string, ShellFieldBinding> = {
 
 export function fieldBindingForId(id: string): ShellFieldBinding | null {
   return FIELD_BINDINGS[id] ?? null;
+}
+
+export const HOWMANY_COUNT_ID = "lb-count";
+
+export interface HowManyCountDocument {
+  getElementById(id: string): { value?: string; textContent: string | null } | null;
+}
+
+function shellFieldValue(
+  el: { value?: string; textContent?: string | null } | null,
+): string {
+  if (!el) return "";
+  if (typeof el.value === "string") return el.value;
+  return el.textContent ?? "";
+}
+
+export function nestInputsFromShellFields(
+  values: Record<string, string>,
+  fieldUnit: Unit = "in",
+  sessionUnit: Unit = "in",
+): NestInputs {
+  const inputs = clearedInputs(sessionUnit);
+  const margins = { ...inputs.margins };
+
+  for (const [id, binding] of Object.entries(FIELD_BINDINGS)) {
+    const parsed = committedShellNumericValue(values[id] ?? "");
+    const converted =
+      parsed === null ? null : convertValue(parsed, fieldUnit, sessionUnit);
+    if (binding.kind === "input") {
+      inputs[binding.key] = converted;
+    } else {
+      margins[binding.key] = converted;
+    }
+  }
+
+  return { ...inputs, margins };
+}
+
+export function joinHowManyCountFromFields(
+  values: Record<string, string>,
+  fieldUnit: Unit = "in",
+  sessionUnit: Unit = "in",
+): number {
+  const session = createHowManyNestSession(
+    nestInputsFromShellFields(values, fieldUnit, sessionUnit),
+  );
+  return session.result.mode === "manual"
+    ? session.result.manual.totalParts
+    : session.manual.result.totalParts;
+}
+
+export function joinHowManyCount(
+  doc: HowManyCountDocument,
+  fieldUnit: Unit = "in",
+  sessionUnit: Unit = "in",
+): number {
+  const values: Record<string, string> = {};
+  for (const id of Object.keys(FIELD_BINDINGS)) {
+    values[id] = shellFieldValue(doc.getElementById(id));
+  }
+  const totalParts = joinHowManyCountFromFields(values, fieldUnit, sessionUnit);
+  const count = doc.getElementById(HOWMANY_COUNT_ID);
+  if (count) count.textContent = String(totalParts);
+  return totalParts;
 }
 
 export function formatShellNumber(value: number | null): string {

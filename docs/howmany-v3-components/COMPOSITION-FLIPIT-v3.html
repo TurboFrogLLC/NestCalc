@@ -21,7 +21,8 @@ Bridges in this host:
   · R29 LaserBed under .bed-stage (full-viewport primary canvas)
   · R30 HUD position hold (from individual tip — not rewritten here)
   · R1  Boot: HUD open · FLiPIT closed · HUD ↔ FLiPIT chrome
-        HUD AUTO-SIZE + FLiPIT chips · calc-mode keeps chips
+        HowMany #lb-count in the gap by #lb-corner-arc
+        HUD AUTO-SIZE does not open FLiPIT · FLiPIT chips · calc-mode keeps chips
         LaserBed calc chip → HUD calculator · real local file open
         Popover clamp avoids open FLiPIT + active bed blank
   · R2  AUTO-SIZE opens FLiPIT collapsed only · 2nd click detects
@@ -111,6 +112,13 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     stroke-width: 2;
     stroke-linecap: round;
     pointer-events: none;
+  }
+  #lb-count {
+    fill: #1A1428;
+    font-family: var(--font);
+    font-weight: 700;
+    pointer-events: none;
+    user-select: none;
   }
   body.lb-dragging-xy #lb-corner-arc {
     stroke: #16a34a;
@@ -2185,6 +2193,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     <svg class="lb-blank-layer" id="lb-blank-layer" xmlns="http://www.w3.org/2000/svg">
       <g id="lb-blank-cam">
         <path id="lb-corner-arc" d="M 12.58 8 A 0.58 0.58 0 0 1 12 8.58" vector-effect="non-scaling-stroke"/>
+        <text id="lb-count" aria-live="polite" aria-label="HowMany count" text-anchor="middle" dominant-baseline="middle"></text>
         <circle id="lb-hit-corner" cx="12.41" cy="8.41" r="0.5" fill="transparent" style="cursor:nesw-resize; pointer-events:all"/>
         <rect id="lb-hit-right"  x="11.65" y="0"    width="0.7" height="8"  fill="transparent" style="cursor:ew-resize"/>
         <rect id="lb-hit-top"    x="0"     y="7.65" width="12"  height="0.7" fill="transparent" style="cursor:ns-resize"/>
@@ -2251,11 +2260,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
                   </div>
                 </div>
                 <div class="pop-xy">
-                  <div class="pop-half"><span>X</span><input data-part="x" type="text" inputmode="decimal" value="1.250" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+                  <div class="pop-half"><span>X</span><input id="part-x" data-part="x" type="text" inputmode="decimal" value="1.250" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
                   <div class="pop-sep"></div>
                   <button type="button" class="pop-swap press" data-part-swap title="Swap X &amp; Y" aria-label="Swap X and Y"><svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg></button>
                   <div class="pop-sep"></div>
-                  <div class="pop-half"><span>Y</span><input data-part="y" type="text" inputmode="decimal" value="3.375" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+                  <div class="pop-half"><span>Y</span><input id="part-y" data-part="y" type="text" inputmode="decimal" value="3.375" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
                   <div class="pop-sep"></div>
                   <button type="button" class="pop-link" data-part-link title="Link X &amp; Y" aria-pressed="false"><svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>
                 </div>
@@ -2284,11 +2293,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
                 </div>
                 <div class="pop-toast" aria-live="polite"></div>
                 <div class="pop-xy">
-                  <div class="pop-half"><span>X</span><input data-blank="x" type="text" inputmode="decimal" value="12.000" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+                  <div class="pop-half"><span>X</span><input id="rem-x" data-blank="x" type="text" inputmode="decimal" value="12.000" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
                   <div class="pop-sep"></div>
                   <button type="button" class="pop-swap press" data-blank-swap title="Swap X &amp; Y" aria-label="Swap X and Y"><svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg></button>
                   <div class="pop-sep"></div>
-                  <div class="pop-half"><span>Y</span><input data-blank="y" type="text" inputmode="decimal" value="8.000" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+                  <div class="pop-half"><span>Y</span><input id="rem-y" data-blank="y" type="text" inputmode="decimal" value="8.000" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
                   <div class="pop-sep"></div>
                   <button type="button" class="pop-link" data-blank-link title="Link X &amp; Y" aria-pressed="false"><svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>
                 </div>
@@ -2317,9 +2326,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
                 </div>
                 <div class="pop-toast" aria-live="polite"></div>
                 <div class="pop-xy">
-                  <div class="pop-half"><span>X</span><input data-gap="x" type="text" inputmode="decimal" value="0.375" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+                  <div class="pop-half"><span>X</span><input id="gap-x" data-gap="x" type="text" inputmode="decimal" value="0.375" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
                   <div class="pop-sep"></div>
-                  <div class="pop-half"><span>Y</span><input data-gap="y" type="text" inputmode="decimal" value="0.125" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+                  <div class="pop-half"><span>Y</span><input id="gap-y" data-gap="y" type="text" inputmode="decimal" value="0.125" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
                   <div class="pop-sep"></div>
                   <button type="button" class="pop-link active" data-gap-link title="Link X &amp; Y" aria-pressed="true"><svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>
                 </div>
@@ -2348,10 +2357,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
                 </div>
                 <div class="pop-toast" aria-live="polite"></div>
                 <div class="pop-margins">
-                  <label class="pop-m-field"><span>L</span><input data-m="l" type="text" inputmode="decimal" value="0.250" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></label>
-                  <label class="pop-m-field"><span>R</span><input data-m="r" type="text" inputmode="decimal" value="0.250" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></label>
-                  <label class="pop-m-field"><span>B</span><input data-m="b" type="text" inputmode="decimal" value="0.250" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></label>
-                  <label class="pop-m-field"><span>T</span><input data-m="t" type="text" inputmode="decimal" value="0.250" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></label>
+                  <label class="pop-m-field"><span>L</span><input id="m-left" data-m="l" type="text" inputmode="decimal" value="0.250" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></label>
+                  <label class="pop-m-field"><span>R</span><input id="m-right" data-m="r" type="text" inputmode="decimal" value="0.250" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></label>
+                  <label class="pop-m-field"><span>B</span><input id="m-bottom" data-m="b" type="text" inputmode="decimal" value="0.250" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></label>
+                  <label class="pop-m-field"><span>T</span><input id="m-top" data-m="t" type="text" inputmode="decimal" value="0.250" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></label>
                 </div>
               </div>
             </div>
@@ -2387,7 +2396,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
         <div class="hud-footer-sep" aria-hidden="true"></div>
         <div class="hud-controls">
-          <button type="button" class="hud-ctl" id="btn-auto-size" title="Auto-Size part in FLiPIT">AUTO-SIZE</button>
+          <button type="button" class="hud-ctl" id="btn-auto-size" title="AUTO-SIZE">AUTO-SIZE</button>
           <button type="button" class="hud-ctl" id="btn-gcode" title="Open FLiPIT" aria-pressed="false"><span class="label-flip">FLiP</span><span class="label-it">IT</span></button>
         </div>
       </div>
@@ -2628,6 +2637,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   var partEl = document.getElementById('lb-part');
   var partG = document.getElementById('lb-part-g');
   var cornerArc = document.getElementById('lb-corner-arc');
+  var countEl = document.getElementById('lb-count');
   var hitRight = document.getElementById('lb-hit-right');
   var hitTop = document.getElementById('lb-hit-top');
   var hitCorner = document.getElementById('lb-hit-corner');
@@ -2675,8 +2685,16 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var r = 18 / Math.max(s, 0.001);
     var d = 'M ' + (w + r) + ' ' + h + ' A ' + r + ' ' + r + ' 0 0 1 ' + w + ' ' + (h + r);
     if (cornerArc) cornerArc.setAttribute('d', d);
+    var mid = 0.70710678 * r;
+    if (countEl) {
+      var cx = w + mid * 0.72;
+      var cy = h + mid * 0.72;
+      countEl.setAttribute('x', cx);
+      countEl.setAttribute('y', cy);
+      countEl.setAttribute('font-size', 18 / Math.max(s, 0.001));
+      countEl.setAttribute('transform', 'translate(' + cx + ',' + cy + ') scale(1,-1) translate(' + (-cx) + ',' + (-cy) + ')');
+    }
     if (hitCorner) {
-      var mid = 0.70710678 * r;
       hitCorner.setAttribute('cx', w + mid);
       hitCorner.setAttribute('cy', h + mid);
       hitCorner.setAttribute('r', 11 / Math.max(s, 0.001));
@@ -3055,6 +3073,37 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     return '<span class="m-line">' + parts[0] + ' + ' + parts[1] + '</span><span class="m-line">' + parts[2] + ' + ' + parts[3] + '</span>';
   }
 
+  function collectHowManyFields() {
+    var ids = ['part-x','part-y','rem-x','rem-y','gap-x','gap-y','m-left','m-right','m-top','m-bottom'];
+    var fields = {};
+    for (var i = 0; i < ids.length; i++) {
+      var el = document.getElementById(ids[i]);
+      fields[ids[i]] = el && el.value != null ? String(el.value) : '';
+    }
+    return fields;
+  }
+  var howManyJoinTimer = null;
+  function syncHowManyCount() {
+    if (typeof window.__howManyJoinCount === 'function') {
+      window.__howManyJoinCount(document);
+      return;
+    }
+    var fields = collectHowManyFields();
+    var unit = state.units || 'in';
+    if (howManyJoinTimer) clearTimeout(howManyJoinTimer);
+    howManyJoinTimer = setTimeout(function () {
+      fetch('/howmany-shell', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fields: fields, fieldUnit: unit, sessionUnit: unit })
+      }).then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (data) {
+          var el = document.getElementById('lb-count');
+          if (el && data && data.totalParts != null) el.textContent = String(data.totalParts);
+        })
+        .catch(function () {});
+    }, 0);
+  }
   function refreshTickers() {
     const p = paramState.part, b = paramState.blank, g = paramState.gap, m = paramState.margin;
     const tPart = document.querySelector('[data-ticker="part"]');
@@ -3075,6 +3124,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (typeof window.__bedSetPart === 'function') window.__bedSetPart(p.x, p.y);
     if (typeof window.__bedSetNest === 'function') window.__bedSetNest(m);
     remasureHudStage();
+    syncHowManyCount();
   }
   function remasureHudStage() {
     if (state.collapsed || !hudMode || !hudStage || !hudBody) return;
@@ -3830,7 +3880,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   document.getElementById('btn-auto-size').addEventListener('click', function () {
     closeAllParamPopovers();
     if (typeof window.__hudExitCalc === 'function') window.__hudExitCalc();
-    if (typeof window.__flipitAutoSize === 'function') window.__flipitAutoSize();
   });
   document.getElementById('btn-gcode').addEventListener('click', function () {
     closeAllParamPopovers();

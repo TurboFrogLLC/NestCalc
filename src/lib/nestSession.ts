@@ -103,6 +103,23 @@ export function createNestSession(state: NestAppState): NestSession {
   };
 }
 
+const HOWMANY_JOIN_AUTO_NEST_SETTINGS: AutoNestSettings = {
+  globalClampMargin: null,
+  trimEdgePolicy: "open",
+  sharedTrimClearance: null,
+  overrideGlobalMargins: false,
+  marginOverrides: { left: null, right: null, top: null, bottom: null },
+};
+
+export function createHowManyNestSession(inputs: NestInputs): NestSession {
+  return createNestSession({
+    version: 3,
+    mode: "manual",
+    manualInputs: inputs,
+    autoNestSettings: HOWMANY_JOIN_AUTO_NEST_SETTINGS,
+  });
+}
+
 export function updateManualField(
   inputs: NestInputs,
   field: NumericField,
