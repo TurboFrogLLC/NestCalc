@@ -12,14 +12,19 @@ Operator: Grok Build then Codex App
 3. Shirt-off FLiPIT strip + one-pane editor — Fit-angle-strip stamped 1a343a7
 4. Real detect / NC bounds — stamped e8059ef
 4b. Mobile-fit HUD + FLiPIT + NC editor — stamped bbde518
-5. HexNest + drag inset — stamped 67ea22e; Hex-two-row residual open
+5. HexNest + drag inset — stamped 67ea22e / Hex-two-row 51d6bee
 6. Detach
 7. Ticker EXPAND earn-strip + part-rotate on PART SIZE / ticker (wait for this home)
 
-Parked: cut sheet / checklist, settings, blank-rotate with 7, bed-pan lock, one-surface mobile, #116, #117, #118 docs.
+Parked for table 7 / chrome refine:
+- HexNest parts-per-row is user-entered, not a hard two-row hydrate
+- Blank drag must stay in HexNest mode (today it drops back to HowMany)
+- HEXNES chip / HUD door
+- cut sheet / checklist, settings, blank-rotate, bed-pan lock, one-surface mobile
+- #116, #117, #118 docs
 
 ## Issued
 
 - 2026-08-28 HexNest stamped 67ea22e.
-- 2026-08-28 Owner look: cannot drag, too many parts. HexNest drag is two rows only. Origin locked. Row 2 part insets. Row 1 shifts. Count is hex count. Do not pack the full blank. Do not overlay HowMany 14 on a hex bed.
-- 2026-08-28 Hex-two-row stamped 51d6bee after origin advanced: `src/lib/hexNest.ts` limits HexNest to the two draggable rows; focused tests cover the row limit, origin lock, inset, and row-1 shift. The host writes the returned HexNest total to `#lb-count`, hides manual HowMany tiles in HexNest mode, and keeps 24px drag targets.
+- 2026-08-28 Hex-two-row stamped 51d6bee.
+- 2026-08-28 Owner: two-row is the drag surface, not the product cap. User will enter parts per row. Blank drag currently exits HexNest to HowMany. Do not cut those now. They wait on table 7 chrome refine. Next table item is Detach when Owner names it.
