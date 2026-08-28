@@ -14,15 +14,29 @@ No spend. No product-code commit. No Build from this file.
 
 Bar: HowMany is the calculator. FLiPIT flips the part and writes the NC that can run that flip. AUTO-SIZE is the comms that puts part size from a loaded program onto the bed. The bed is the shared canvas. FLiPIT does not nest. NC editor is an earned morph inside FLiPIT, not the name of FLiPIT. A pane earns its spot.
 
-## Picture now (for Robot)
+## Start and finish anywhere
 
-You can start on any door. Nothing is a wizard.
+This is not a wizard. Start and finish on the same door, or start on one door and finish on another.
+
+Every piece works alone and can be isolated.
+
+- HowMany alone: four fields, count, rotate part / blank. No program.
+- AUTO-SIZE alone: load a program, get part size. No calculator required.
+- FLiPIT strip alone: flip + export. No bed required.
+- NC editor alone: one pane, Apply. No nest required.
+- Presets alone: load a rem pack onto the canvas numbers.
+
+When they sit together they share the bed. They do not own each other.
+
+That is the wReckless Toddler manufacturing pattern (same idea as ShopQuote ↔ NanoTate: a print can land in a quote without swallowing either product). Dial the wires later. Do not design this package as one locked pipeline.
+
+## Picture now (for Robot)
 
 - Open the canvas → type blank / part / gap / margin → HowMany count. Stop.
 - Open a named rem pack from the presets popover → same HowMany. Stop.
-- Ticker expand → AUTO-SIZE → file dialog → part size hits the bed → count updates. FLiPIT strip earns. Flip + export. Stop.
+- Ticker expand → AUTO-SIZE → file dialog → part size. Stop, or let HowMany recount if the bed is up.
 - Open FLiPIT with a program and never touch the bed. Flip or open the one-pane editor. Stop.
-- Mix them. HowMany does not require NC. FLiPIT does not require the nest.
+- Mix them.
 
 ## What we keep from the look files
 
@@ -80,11 +94,11 @@ You do **not** have to put FLiPIT on the bed to flip a part.
 
 ### AUTO-SIZE — comms, not a third nest
 
-AUTO-SIZE sits on the ticker expand. No new card. OS file dialog only.
+AUTO-SIZE sits on the ticker expand. No new card. OS file dialog only. Useful by itself: load a program, read part size. The bed is optional.
 
 It is not HowMany. It is not `calculateAutoNest`. It does not flip. It moves size.
 
-Empty session: click AUTO-SIZE → file dialog → cancel does nothing → pick a file reads bbox, writes HowMany part X/Y, bed + count update. That is hydrate. No second button.
+Empty session: click AUTO-SIZE → file dialog → cancel does nothing → pick a file reads bbox. If the bed is up, write HowMany part X/Y and recount. That is hydrate. No second button.
 
 File already in session: same ticker slot becomes **Open new file** (different icon). Confirm first: clear this job and open another? Cancel keeps the nest. OK → dialog → replace program and part size. Blank / gap / margin stay.
 
@@ -110,7 +124,7 @@ If a program is loaded and they type a new part size on ticker or HUD: do not re
 
 If they change the code and Apply, and bbox differs from the bed: ask to update the bed.
 
-## Flow (happy path, not the only path)
+## Flow (one path, not the only path)
 
 1. Bed is the canvas. HowMany with typed or preset blank / part / gap / margin. Count by the arc. Rotate parts, rotate blank, or both. Can stop here.
 2. Ticker expand → AUTO-SIZE. File dialog. Load hydrates part size. HowMany recounts.
@@ -146,6 +160,7 @@ V2 is live heritage. V3 is the composition host on purpose. Do not clone V2 FLiP
 ## What this is not
 
 - Not a design suite. Not LightBurn.
+- Not a locked start-to-finish pipeline.
 - Not “HowMany = tab chrome, FLiPIT = the whole product.”
 - Not “FLiPIT = the NC editor.” Strip is default. Editor is earned. One pane, not Source + Output.
 - Not ticker-swallows-everything.
@@ -164,5 +179,6 @@ Answer *this* file.
 If the look map changes, Robot edits their map.
 Do not treat tab-only HowMany as locked.
 Do not treat FLiPIT as “just NC.”
+Do not treat the package as one required pipeline.
 File `status/flipit-job.md` from the decide log if it is still missing.
 Do not open a channel. Do not invoke Build from this file.
