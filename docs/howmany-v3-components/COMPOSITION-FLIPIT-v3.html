@@ -529,8 +529,13 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }
     #btn-gcode .label-flip { color: #ffffff; text-transform: none; letter-spacing: -0.01em; }
     #btn-gcode .label-it { color: #FFCE1B; text-transform: none; letter-spacing: -0.01em; }
-    #btn-auto-size:hover, #btn-gcode:hover { background: rgba(26, 20, 40, 0.92); }
+    #btn-auto-size:hover, #btn-gcode:hover, #btn-hex-nest:hover { background: rgba(26, 20, 40, 0.92); }
     .hud-ctl:active { transform: scale(0.98); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25); }
+    .hex-nest-entry { display: flex; align-items: center; gap: 5px; min-width: 0; flex: 1.25 1 0; }
+    .hex-nest-entry .hud-ctl { min-width: 0; flex: 1 1 auto; }
+    .hex-nest-entry label { display: inline-flex; align-items: center; gap: 3px; color: var(--ink-60); font-size: 10px; font-weight: 700; }
+    #hex-diameter { width: 42px; height: 28.6px; border: 1.1px solid rgba(255,255,255,0.16); border-radius: var(--chip-r); background: rgba(255,255,255,0.86); color: var(--ink); font: 700 10px var(--font); text-align: center; }
+    #hex-row-offset { display: block; margin-top: 4px; color: var(--ink-60); font-size: 9px; letter-spacing: 0.02em; text-align: center; }
 
     .param-popover {
       display: block;
@@ -2449,8 +2454,13 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         <div class="hud-footer-sep" aria-hidden="true"></div>
         <div class="hud-controls">
           <button type="button" class="hud-ctl" id="btn-auto-size" title="AUTO-SIZE">AUTO-SIZE</button>
+          <div class="hex-nest-entry">
+            <button type="button" class="hud-ctl" id="btn-hex-nest" title="Lay out same-diameter rounds">HexNest</button>
+            <label for="hex-diameter">Ø <input id="hex-diameter" type="text" inputmode="decimal" value="1.250" aria-label="HexNest round diameter" /></label>
+          </div>
           <button type="button" class="hud-ctl" id="btn-gcode" title="Open FLiPIT" aria-pressed="false"><span class="label-flip">FLiP</span><span class="label-it">IT</span></button>
         </div>
+        <span id="hex-row-offset" aria-live="polite">HexNest offset —</span>
       </div>
     </div>
   </div>
@@ -2685,7 +2695,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   var state = {
     blankW: 12, blankH: 8, snap: 0.125, zoom: 1, panX: 0, panY: 0, dragging: null, start: null,
     partW: 1.250, partH: 3.375, partRot: 0,
-    margin: { l: 0.25, r: 0.25, t: 0.25, b: 0.25 }
+    margin: { l: 0.25, r: 0.25, t: 0.25, b: 0.25 },
+    hexLayout: null, hexDiameter: 1.25, hexDrag: null
   };
 
   var svg = document.getElementById('lb-world');
@@ -2778,6 +2789,28 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   function renderNestTiles(originX, originY) {
     if (!nestTiles) return;
     nestTiles.innerHTML = '';
+    if (state.hexLayout && Array.isArray(state.hexLayout.parts)) {
+      state.hexLayout.parts.forEach(function (part) {
+        var group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        group.setAttribute('data-hex-part-id', part.id);
+        group.setAttribute('data-hex-origin', part.isOrigin ? 'true' : 'false');
+        group.setAttribute('style', 'pointer-events:' + (part.isOrigin ? 'none' : 'all') + '; cursor:' + (part.isOrigin ? 'default' : 'grab') + ';');
+        var box = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        box.setAttribute('x', part.x); box.setAttribute('y', part.y);
+        box.setAttribute('width', part.width); box.setAttribute('height', part.height);
+        box.setAttribute('fill', part.isOrigin ? 'rgba(255,206,27,0.18)' : 'rgba(83,139,236,0.10)');
+        box.setAttribute('stroke', part.isOrigin ? '#FFCE1B' : '#538BEC');
+        box.setAttribute('stroke-width', '0.8'); box.setAttribute('stroke-dasharray', '1.5 1.2');
+        box.setAttribute('vector-effect', 'non-scaling-stroke');
+        var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', part.circle.cx); circle.setAttribute('cy', part.circle.cy); circle.setAttribute('r', part.circle.radius);
+        circle.setAttribute('fill', part.isOrigin ? 'rgba(255,206,27,0.30)' : 'rgba(83,139,236,0.22)');
+        circle.setAttribute('stroke', part.isOrigin ? '#B7791F' : '#538BEC');
+        circle.setAttribute('stroke-width', '1.15'); circle.setAttribute('vector-effect', 'non-scaling-stroke');
+        group.appendChild(box); group.appendChild(circle); nestTiles.appendChild(group);
+      });
+      return;
+    }
     var result = state.nestResult;
     if (!result || !result.partsAcross || !result.partsDown || state.partW <= 0 || state.partH <= 0) return;
     var gapX = Number.isFinite(state.nestGapX) ? state.nestGapX : 0;
@@ -2897,6 +2930,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     render();
   };
   window.__bedSetNestTiles = function (result, gapX, gapY) {
+    state.hexLayout = null;
     state.nestResult = result && Number.isFinite(result.partsAcross) && Number.isFinite(result.partsDown)
       ? result : null;
     state.nestGapX = Number.isFinite(gapX) ? gapX : 0;
@@ -2913,6 +2947,36 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     };
     render();
   };
+  function setHexMeta(layout) {
+    var el = document.getElementById('hex-row-offset');
+    if (!el) return;
+    el.textContent = layout
+      ? 'offset X +' + Number(layout.rowOffsetX).toFixed(3) + ' · row Y ' + Number(layout.rowGapY).toFixed(3)
+      : 'HexNest offset —';
+  }
+  window.__bedLoadHexNest = function (diameter) {
+    var fields = typeof window.__howManyFields === 'function' ? window.__howManyFields() : null;
+    if (!fields || !Number.isFinite(diameter) || diameter <= 0) return;
+    state.hexDiameter = diameter;
+    fetch('/howmany-shell', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'hex-nest-layout', fields: fields, diameter: diameter })
+    }).then(function (r) { return r.ok ? r.json() : null; }).then(function (data) {
+      if (!data || !data.hexNest) return;
+      state.hexLayout = data.hexNest; setHexMeta(data.hexNest); render();
+    }).catch(function () {});
+  };
+  function insetHexPart(partId, x, y) {
+    var fields = typeof window.__howManyFields === 'function' ? window.__howManyFields() : null;
+    if (!fields || !partId) return;
+    fetch('/howmany-shell', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'hex-nest-inset', fields: fields, diameter: state.hexDiameter, partId: partId, x: x, y: y })
+    }).then(function (r) { return r.ok ? r.json() : null; }).then(function (data) {
+      if (!data || !data.hexNest) return;
+      state.hexLayout = data.hexNest; setHexMeta(data.hexNest); render();
+    }).catch(function () {});
+  }
   function fitBed() {
     state.zoom = 1;
     var s = fittedScale();
@@ -2925,19 +2989,30 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   function onPointerDown(e) {
     var t = e.target;
     var id = t && t.id;
-    if (t === hitCorner || id === 'lb-hit-corner') { state.dragging = 'xy'; document.body.classList.add('lb-dragging-xy'); }
+    var hexPart = t && t.closest ? t.closest('[data-hex-part-id]') : null;
+    if (hexPart && hexPart.getAttribute('data-hex-origin') !== 'true') {
+      state.dragging = 'hex';
+      state.hexDrag = { id: hexPart.getAttribute('data-hex-part-id'), el: hexPart };
+      document.body.classList.add('lb-dragging');
+    } else if (t === hitCorner || id === 'lb-hit-corner') { state.dragging = 'xy'; document.body.classList.add('lb-dragging-xy'); }
     else if (t === hitRight || id === 'lb-hit-right') { state.dragging = 'x'; document.body.classList.add('lb-dragging-x'); }
     else if (t === hitTop || id === 'lb-hit-top') { state.dragging = 'y'; document.body.classList.add('lb-dragging-y'); }
     else if (e.currentTarget === blankLayer) return;
     else { state.dragging = 'pan'; document.body.classList.add('lb-panning', 'lb-dragging'); }
     state.start = { cx: e.clientX, cy: e.clientY, w: state.blankW, h: state.blankH, panX: state.panX, panY: state.panY };
+    if (state.dragging === 'hex' && state.hexLayout) {
+      var active = state.hexLayout.parts.find(function (part) { return part.id === state.hexDrag.id; });
+      if (active) { state.start.hexX = active.x; state.start.hexY = active.y; }
+    }
     try { e.target.setPointerCapture(e.pointerId); } catch (_) {}
     e.preventDefault();
   }
   function onPointerMove(e) {
     if (!state.dragging || !state.start) return;
     var dx = e.clientX - state.start.cx, dy = e.clientY - state.start.cy, s = pxPerInch();
-    if (state.dragging === 'pan') { state.panX = state.start.panX + dx; state.panY = state.start.panY + dy; }
+    if (state.dragging === 'hex') {
+      if (state.hexDrag && state.hexDrag.el) state.hexDrag.el.setAttribute('transform', 'translate(' + (dx / s) + ',' + (-dy / s) + ')');
+    } else if (state.dragging === 'pan') { state.panX = state.start.panX + dx; state.panY = state.start.panY + dy; }
     else if (state.dragging === 'x') state.blankW = Math.max(state.snap, snap(state.start.w + dx / s));
     else if (state.dragging === 'y') state.blankH = Math.max(state.snap, snap(state.start.h - dy / s));
     else if (state.dragging === 'xy') {
@@ -2946,8 +3021,18 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }
     render();
   }
-  function onPointerUp() {
+  function onPointerUp(e) {
+    if (state.dragging === 'hex' && state.hexDrag && state.start) {
+      var s = pxPerInch();
+      var endX = e && Number.isFinite(e.clientX) ? e.clientX : state.start.cx;
+      var endY = e && Number.isFinite(e.clientY) ? e.clientY : state.start.cy;
+      var targetX = state.start.hexX + (endX - state.start.cx) / s;
+      var targetY = state.start.hexY - (endY - state.start.cy) / s;
+      if (state.hexDrag.el) state.hexDrag.el.removeAttribute('transform');
+      insetHexPart(state.hexDrag.id, targetX, targetY);
+    }
     state.dragging = null; state.start = null;
+    state.hexDrag = null;
     document.body.classList.remove('lb-dragging-x','lb-dragging-y','lb-dragging-xy','lb-panning','lb-dragging');
   }
 
@@ -4006,6 +4091,17 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (typeof window.__hudExitCalc === 'function') window.__hudExitCalc();
     if (typeof window.__autoSizeOpen === 'function') window.__autoSizeOpen();
   });
+  function loadHexNestFromHud() {
+    var input = document.getElementById('hex-diameter');
+    var diameter = input ? Number(input.value) : NaN;
+    if (!Number.isFinite(diameter) || diameter <= 0) return;
+    if (typeof window.__bedLoadHexNest === 'function') window.__bedLoadHexNest(diameter);
+  }
+  document.getElementById('btn-hex-nest').addEventListener('click', function () {
+    closeAllParamPopovers();
+    loadHexNestFromHud();
+  });
+  document.getElementById('hex-diameter').addEventListener('change', loadHexNestFromHud);
   document.getElementById('btn-gcode').addEventListener('click', function () {
     closeAllParamPopovers();
     if (typeof window.__flipitToggle === 'function') window.__flipitToggle();

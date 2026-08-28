@@ -4,6 +4,7 @@ import {
   hydrateHowManyFromGCode,
   joinHowManyNestResultFromFields,
 } from "@/lib/howmany/bridge";
+import { insetHexNestPart, layoutHexNest } from "@/lib/hexNest";
 import type { Unit } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -45,6 +46,10 @@ export async function POST(request: Request) {
     fields?: unknown;
     fieldUnit?: unknown;
     sessionUnit?: unknown;
+    diameter?: unknown;
+    partId?: unknown;
+    x?: unknown;
+    y?: unknown;
   };
   if (!record.fields || typeof record.fields !== "object") {
     return Response.json({ error: "invalid-fields" }, { status: 400 });
@@ -59,6 +64,33 @@ export async function POST(request: Request) {
 
   const fieldUnit = isUnit(record.fieldUnit) ? record.fieldUnit : "in";
   const sessionUnit = isUnit(record.sessionUnit) ? record.sessionUnit : "in";
+  if (record.action === "hex-nest-layout" || record.action === "hex-nest-inset") {
+    const numberField = (key: string) => Number(values[key]);
+    const input = {
+      blank: { width: numberField("rem-x"), height: numberField("rem-y") },
+      margins: {
+        left: numberField("m-left"),
+        right: numberField("m-right"),
+        top: numberField("m-top"),
+        bottom: numberField("m-bottom"),
+      },
+      diameter: Number(record.diameter),
+    };
+    try {
+      const layout =
+        record.action === "hex-nest-inset"
+          ? insetHexNestPart(input, {
+              partId: typeof record.partId === "string" ? record.partId : "",
+              x: Number(record.x),
+              y: Number(record.y),
+            })
+          : layoutHexNest(input);
+      return Response.json({ hexNest: layout });
+    } catch {
+      return Response.json({ error: "invalid-hex-nest" }, { status: 422 });
+    }
+  }
+
   if (record.action === "hydrate" || record.action === "analyze") {
     if (typeof record.source !== "string") {
       return Response.json({ error: "invalid-source" }, { status: 400 });

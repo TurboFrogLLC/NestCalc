@@ -61,6 +61,7 @@ Wordmarks stay as locked: **FLiP** white 700 + **IT** amber 800 · **tool** whit
 | **R11** | Preset everyday load vs explicit edit/write · rails butted to origin, filled full length + far overhang | `[data-pre-edit]` · Confirm/Cancel only in edit · rails from 0,0 |
 | **R12** | Compact single-row HUD height · 4-side frost frame · FlipIt-center / HUD-right glide · token-aware highlight · default part 1.250×3.375 + Flip visual + nest box | remasure `offsetHeight` · 420ms glide · `G`+digits only · `#lb-nest-box` |
 | **R13** | Preset write-mode visible · Confirm stores armed slot only · main OK applies live fields to HUD + bed · single frost rail · XYZR 4dp black · front surface | `commitLiveFields` · `__bedSetBlank` · no lip/double-line · `.tok-axis` |
+| **R14** | Temporary HUD HexNest entry lays out one same-diameter round type on the blank | `#btn-hex-nest` + `#hex-diameter` → `/howmany-shell` `hex-nest-layout` / `hex-nest-inset` → `src/lib/hexNest.ts` |
 
 Hide primitives stay surface-owned (`ALIGNMENT-v3` §4). Host does not invent a shared hide API.
 
@@ -74,6 +75,7 @@ Hide primitives stay surface-owned (`ALIGNMENT-v3` §4). Host does not invent a 
 | HUD **AUTO-SIZE** (`#btn-auto-size`) | Opens the native `.txt` / `.nc` / `.cnc` picker while FLiPIT stays closed. The first loaded NC hydrates manual part bounds, sizes the blank to the part plus current margins, and refreshes the existing HowMany join, count, and tiles. A loaded job asks before replacement. Does not call `openGcode` / `__flipitAutoSize`. In-panel `#btn-detect` still sizes. Footer chips stay mounted in HUD calculator mode. Label stays **AUTO-SIZE**. |
 | HowMany count (`#lb-count`) | Live quantity past `#lb-hit-corner` on the same 45° ray as the corner handle. **24px screen-space count mark**. `pointer-events: none`. `#lb-hit-corner` is unmoved. Written from `calculateNest` via FIELD_BINDINGS → `createNestSession` (manual) → `session.result.manual.totalParts`. `convertValue` runs on this join. Just the number. Not on the parts. Not in the ticker stack. |
 | Nest tiles (`#lb-nest-tiles`) | The same `/howmany-shell` POST response that writes `#lb-count` returns the manual `NestResult`. The blank paints one rect per `partsAcross × partsDown`, at the margin origin with the current part size and X/Y gaps. The host does layout only; it does not inline a second calculator or call AutoNest. |
+| HexNest (`#btn-hex-nest`) | Temporary HUD entry until table 7 morph. `#hex-diameter` is the one round-part input. The engine returns equal-diameter bounding boxes with centered tangent circles in alternating offset rows; the HUD shows the X offset and tighter Y row gap. The `0:0` margin-origin part is gold and locked. Dragging another upper-row circle asks the engine to inset it, then shifts the movable lower-row parts within the blank. No HexNest geometry is calculated in the host document. |
 | FLiPIT Auto-Size (`#btn-detect`) | Existing in-panel detect. After a real NC load or **Apply**, it reads `analyzeGCode` bounds through `/howmany-shell`; the chip displays the analyzed X/Y spans and retains the raw origin bounds in its title. Expand/collapse chrome unchanged. Editing re-arms detect. |
 | FLiPIT close (`#btn-close`) | `closeGcode()` + R11 `lastGcodePos`. |
 | LaserBed calc chip (`#bt-calc`) | HUD collapsed → expand to **param** mode only (do not enter calculator; clear leftover classic-calc `display`). HUD already expanded → toggle calculator. After exit / collapse / expand, `#hud-body` height matches the active mode. Square side = blank ticker height (**34**). HUD header chrome language (radius / border / fill). Icon 22px. 3px gap. Hover **lightens the dark fill only** — icon and chrome stay visible (no transparent wash). |
@@ -135,10 +137,11 @@ Do not require `file://`.
 3. Verify Numeric HUD (16,16) is the only card open. FLiPIT and toolPath are absent.
 4. HUD **FLiPIT** opens FLiPIT expanded. If FlipIt is already open and collapsed, FLiPIT expands it. If expanded, FLiPIT closes it. X closes from any state.
 5. HUD **AUTO-SIZE** does **not** open FLiPIT. `#btn-detect` still sizes. HUD FLiPIT cycle from R3 is unchanged. HowMany `#lb-count` shows the live `calculateNest` total past `#lb-hit-corner` on the 45° ray.
-6. FLiPIT Open picks a real local `.txt` / `.nc` / `.cnc` file and loads Source. No sample program.
-7. HUD tickers open popovers; placement stays outside the HUD and clamps off open FLiPIT and the bed blank. Collapse/expand holds left/top (R30).
-8. FLiPIT waypoints still toggle toolPath (R17 / R27). When toolPath + FlipIt + HUD are all open, they re-pack in a 25px top band (toolPath · FlipIt · HUD) every time that set becomes complete. User drag wins until the next three-open rearrange.
-9. Any residual that changes a **surface** belongs in that surface’s individual package first; then re-assemble.
+6. Enter a positive **Ø** and choose **HexNest**. Same-diameter circles appear in offset rows inside the margin box; each has a bounding box, `0:0` stays locked to the margin, and the HUD prints the X/Y row offsets. Drag an upper circle: it insets and the movable lower row shifts without leaving the blank.
+7. FLiPIT Open picks a real local `.txt` / `.nc` / `.cnc` file and loads Source. No sample program.
+8. HUD tickers open popovers; placement stays outside the HUD and clamps off open FLiPIT and the bed blank. Collapse/expand holds left/top (R30).
+9. FLiPIT waypoints still toggle toolPath (R17 / R27). When toolPath + FlipIt + HUD are all open, they re-pack in a 25px top band (toolPath · FlipIt · HUD) every time that set becomes complete. User drag wins until the next three-open rearrange.
+10. Any residual that changes a **surface** belongs in that surface’s individual package first; then re-assemble.
 
 ---
 
@@ -164,3 +167,4 @@ Do not require `file://`.
 | 2026-08-28 | **C1** residual: `#lb-count` past `#lb-hit-corner` on the same 45° ray. `pointer-events: none`. Handle unmoved. Join unchanged. |
 | 2026-08-28 | **C1** Phone-count-mark: `#lb-count` is a 24px screen-space count mark; placement remains past `#lb-hit-corner`, with pointer events disabled and the HowMany join unchanged. |
 | 2026-08-28 | **C1** Mobile-fit: phone portrait centers the scaled FLiPIT/editor + HUD stack inside a 75% width box; short landscape viewport scales the editor to 75% height with the HUD alongside. Rotation re-applies the fit. One-pane Apply and the four-label angle strip remain intact. |
+| 2026-08-28 | **C1 R14** HexNest: one temporary HUD diameter entry requests engine-owned offset round layout and inset. `0:0` remains locked to the margin; every returned part paints a bounding box plus tangent circle, and an upper drag shifts the movable lower row. |
