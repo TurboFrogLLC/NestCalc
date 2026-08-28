@@ -133,29 +133,43 @@ If they change the code and Apply, and bbox differs from the bed: ask to update 
 3. Program exists → FLiPIT strip. Flip + export. No code on the glass.
 4. Same body → NC editor. One pane. Apply commits. Bbox prompt if needed.
 
-## HexNest chrome — next after count is live
+## HexNest — HowMany for same-size rounds
 
-How-many is the gate. Do not ship HexNest chrome on a bed that cannot count.
+Next chrome after count is live on the bed. One part type at a time. V1 = rounds only (disc / washer / ring). Not a flag on `calculateNest`. F5 stays lab.
 
-HexNest is its own tool. Not a flag on `calculateNest`. F5 stays SuperBrain lab (`lab/laser-nc-fixtures/round-layout.mjs` inset, `F5-round-hex-inset-r10-g2.nc`).
+**Locked interaction**
 
-**Locked for that chrome**
+- First part at blank origin (0,0) is locked to the margin. It does not move.
+- Rows exist. User grabs a part from the next row and slides it toward the row below (mouse first).
+- The two parts on that lower row shift sideways in real time, only as far as the blank bounds allow, to open the inset pocket.
+- Gap does not have to stay equal 0.125 all around. Deeper dip is allowed so more fit when blank height is short. Unequal X / Y is wanted.
+- If the row cannot shift and still fit, the dipped part does not land. No ghost that lies.
+- Arrow keys nudge after the mouse has it. Mouse-first, keys are fine.
+- Count stays by the arc. Recount when the inset lands or fails.
 
-- Same bed canvas. Same count seat by the arc.
-- V1 same-diameter only (rings / disc / washer / round).
-- Inset stagger. Deeper dip moves the next row.
-- Origin part locked. Margin lock. If it cannot shift and fit, the dip does not land.
-- Unequal gap X / Y is allowed.
-- Interior-row rotate (three slabs) is Owner override. Do not clone V2 chrome.
-- Offsets row1→row2 and col1→col2 are visible. That is the shop number.
-- Stands alone and also sits on this canvas.
+**Shop numbers on the glass (this is the first job)**
 
-**Not in that first HexNest chrome**
+Operator will cut row 1 on the machine, pause, reset, shift origin, cut the same row again at the inset.
 
-- Live multi-row drag as the whole #117 kit
-- Inject profile into cells
-- HexNest as a FLiPIT morph or ticker library
-- F5 as product chrome
+Show:
+- offset of the inset part from blank origin X (and Y, negative down from origin on this bed)
+- row1→row2 and col1→col2
+
+They type those into the HMI (G54 / G55 / G56 or whatever that control has). This package shows the numbers. It does not write work-offset codes this pass.
+
+**Pending chrome**
+
+- Adjustable grid snap. Today the mental snap is 0.125. That cannot stay locked.
+- After an inset unit exists (two on the bottom, one dipped), drag the unit bbox like a resize to duplicate that unit at the same inset. If the next copy cannot fit, it does not appear.
+- Select that unit and drag a box to tile it — only after the single-unit dip + duplicate works. Do not invent a third layout system first.
+
+**Parked**
+
+- Multi-part nest NC out with those offsets. Cool. Later. First controller ACS. Do not invent a universal post.
+- Inject profile into hex cells.
+- HexNest inside FLiPIT morph or the ticker library.
+- F5 as product chrome.
+- Full #117 drag kit as a pile.
 
 ## Parked — later, not this pass
 
@@ -193,10 +207,11 @@ V2 is live heritage. V3 is the composition host on purpose. Do not clone V2 FLiP
 - Not HowMany emitting NC. Not FLiPIT doing how-many.
 - Not a second hydrate button. Not live parse while typing.
 - Not AUTO-SIZE morphing into the FLiPIT icon.
-- Not offset / step as HowMany output.
+- Not offset / step as HowMany output. HexNest *does* show inset offsets for the HMI.
 - Not a materials breadcrumb. Not an unlimited preset file cabinet.
 - Not a cut sheet this pass.
 - Not prices in this file.
+- Not writing G54/G55/G56 this pass. Show the numbers.
 
 ## Ask of Robot
 
