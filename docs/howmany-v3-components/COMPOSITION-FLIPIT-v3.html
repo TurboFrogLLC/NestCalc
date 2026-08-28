@@ -3027,7 +3027,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }
   }
   function writeFieldsFromBag(key) {
-    if (key === 'blank') {
+    if (key === 'part') {
+      var px = document.querySelector('[data-part="x"]'), py = document.querySelector('[data-part="y"]');
+      if (px) px.value = fmt3(paramState.part.x); if (py) py.value = fmt3(paramState.part.y);
+      var pl = document.querySelector('[data-part-link]');
+      if (pl) { pl.classList.toggle('active', !!paramState.part.linked); pl.setAttribute('aria-pressed', paramState.part.linked ? 'true' : 'false'); }
+    } else if (key === 'blank') {
       var bx = document.querySelector('[data-blank="x"]'), by = document.querySelector('[data-blank="y"]');
       if (bx) bx.value = fmt3(paramState.blank.x); if (by) by.value = fmt3(paramState.blank.y);
       var bl = document.querySelector('[data-blank-link]');
@@ -3149,11 +3154,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     paramState.blank.x = blankX;
     paramState.blank.y = blankY;
     paramState.blank.linked = blankX === blankY && !!paramState.blank.linked;
-    var fields = { 'part-x': partX, 'part-y': partY, 'rem-x': blankX, 'rem-y': blankY };
-    Object.keys(fields).forEach(function (id) {
-      var field = document.getElementById(id);
-      if (field) field.value = fmt3(fields[id]);
-    });
+    writeFieldsFromBag('part');
+    writeFieldsFromBag('blank');
     var count = document.getElementById('lb-count');
     if (count && data.totalParts != null) count.textContent = String(data.totalParts);
     if (data.nestResult && typeof window.__bedSetNestTiles === 'function') {
