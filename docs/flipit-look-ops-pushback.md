@@ -29,19 +29,26 @@ HowMany and FLiPIT are not two skins of one job.
 
 ### HowMany — the calculator
 
-This is original NestCalc.
+This is original NestCalc. Scratch pad on the bed.
 
-Operator enters:
-- blank size from the shop
-- margin
-- gap
+Operator enters four things:
+- blank size
 - part size (typed, if they are on HowMany alone)
+- gap
+- margin
 
-HowMany does bounding-box math on that rectangle (the part in a bounty box). It answers how many of that boxed part fit on that blank. It reports the simple shop numbers the machine already knows how to use: count, gap, offset / step. It does **not** output NC. Not now.
+HowMany does bounding-box math on that rectangle. It answers **how many** of that boxed part fit on that blank. That is the report: the quantity. It does **not** output NC. It does not report offset or step. Gap and margin are inputs the operator already typed.
 
-An operator who only wants this can stop here. Their laser or waterjet already has a basic array nest in the machine UI. They take the count and the steps and they set that array on the controller. That is enough for a lot of shops.
+On that same surface the operator can:
+- rotate **all parts** 90° and recount (maybe more fit)
+- rotate the **blank / sheet** and leave the part (positioning — operators often rotate the part and never try the sheet)
+- do both (part and sheet), including when other blanks are staged on the bed
 
-**Auto-nest rotate is the same module, an upgrade inside HowMany.** It rotates parts in line in a row to see if more fit. Still bounding-box math. Still no NC. Code: `src/lib/autoNestEngine.ts`. Do not call this AUTO-SIZE.
+An operator who only wants this can stop here. Their laser or waterjet already has a basic array nest in the machine UI. They take the count and set that array on the controller.
+
+**AutoNest is the same module, an upgrade inside HowMany.** Not AUTO-SIZE. Code: `src/lib/autoNestEngine.ts`.
+
+AutoNest can split one blank into two leftover groups and rotate parts in a row to squeeze more. Even if they never trim the sheet, the glass still shows the trim-off so they can see it. The trim-off offset lives here, not on basic HowMany. Still bounding-box math. Still no NC.
 
 Count is first-class on the glass, with HowMany. Outside the blank, between the right corner and the floating arc handle. Just the number. Not on the parts. Not in the ticker stack.
 
@@ -81,7 +88,7 @@ HowMany with a typed part and HowMany with an NC-sized part are the same calcula
 
 Light and tight. Canvas first. A pane earns its spot.
 
-1. Bed blank is the canvas. HowMany runs with typed blank / part / gap / margin. Count sits outside the blank by the arc handle. Can stop here.
+1. Bed blank is the canvas. HowMany runs with typed blank / part / gap / margin. Count sits outside the blank by the arc handle. Rotate parts, rotate blank, or both. Can stop here.
 2. Ticker expand → AUTO-SIZE. File dialog. Load hydrates part size onto the bed. HowMany recounts. No staging card. No extra hydrate.
 3. Program now exists → FLiPIT strip earns itself. Flip + export. No code on the glass.
 4. One more click on that same body → NC editor. One pane. Apply commits. If bbox changed vs the bed part, prompt: update the bed? Yes writes HowMany part size + count. No keeps the nest. Not live-while-typing. Flip buttons do not rehydrate.
@@ -99,7 +106,7 @@ Load known blank / gap / margin (later part). Same body family as FLiPIT is fine
 ## Pointers (do not make Robot hunt)
 
 - HowMany math: `src/lib/nestcalc.ts`, session: `src/lib/nestSession.ts`
-- Auto-nest rotate (HowMany upgrade, not AUTO-SIZE): `src/lib/autoNestEngine.ts` + `src/lib/autoNestEngine.test.ts`
+- AutoNest leftover / trim-off (HowMany upgrade, not AUTO-SIZE): `src/lib/autoNestEngine.ts` + `src/lib/autoNestEngine.test.ts`
 - Flip / rewrite NC: `src/lib/gcodeRotation.ts` + `src/lib/gcodeRotation.test.ts`
 - Presets: `src/lib/presetStore.ts`
 - Units: `src/lib/units.ts`
@@ -121,6 +128,7 @@ V2 is live heritage. V3 is the composition host on purpose. Do not clone V2 FLiP
 - Not FLiPIT doing bounding-box how-many.
 - Not a second hydrate button. Not live parse while typing.
 - Not AUTO-SIZE morphing into the FLiPIT icon.
+- Not offset / step as HowMany output. Quantity is the report. Trim-off offset is AutoNest.
 
 ## Ask of Robot
 
