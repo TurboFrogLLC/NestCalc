@@ -5,6 +5,18 @@ Branch: feat/v3-c1-count-r1-join
 job_id: NGJ-20260828-c1
 Operator: Grok Build then Codex App
 
+## On the table (Owner numbered 2026-08-28)
+
+1. Nest-tiles on the blank — this Station
+2. AUTO-SIZE file-dialog hydrate + reset/new-file alert
+3. Shirt-off FLiPIT strip + one-pane editor
+4. Real detect / NC bounds
+5. HexNest + drag inset
+6. Detach
+7. Ticker EXPAND earn-strip
+
+Parked: cut sheet / checklist, settings, #116, #117, #118 docs.
+
 ## Issued
 
 - 2026-08-28 Start-branch (Owner / host terminal)
@@ -16,3 +28,4 @@ Operator: Grok Build then Codex App
 - 2026-08-28 Preview-public-shell (Grok Build Worker) stamp 1d4ecf5 · `/howmany-shell(.*)` on isPublicRoute · `/` still protect · ClerkProvider untouched · origin/feat/v3-c1-count-r1-join is 1d4ecf5 (was f53d18f) · Still open / Next: Owner
 - 2026-08-28 Owner named Codex App for a phone-loop probe. Bump `#lb-count` so the digit is readable on Safari. Placement and join stay. No tiles. No hydrate.
 - 2026-08-28 Phone-count-mark (Codex App Worker) stamp aeac068 · `#lb-count` raised from 18px to 24px screen-space · placement remains past `#lb-hit-corner` on the 45° ray · pointer-events none · handle and HowMany join unchanged · origin/feat/v3-c1-count-r1-join is aeac068 (was 9e7aac6) · Still open / Next: Owner
+- 2026-08-28 Owner numbered the table. Item 1 Nest-tiles. Codex App. Paint the manual grid from the existing HowMany join. Do not inline nestcalc in HTML.
