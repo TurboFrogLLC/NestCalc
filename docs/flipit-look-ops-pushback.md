@@ -28,6 +28,8 @@ Every piece works alone and can be isolated.
 
 When they sit together they share the bed. They do not own each other.
 
+**Toolbox, not a suite.** Pick the tool you need. That is also how pricing gets figured later — by module, not by one bloated SKU. Do not invent prices in this file. Atlas stays off until Owner asks.
+
 That is the wReckless Toddler manufacturing pattern (same idea as ShopQuote ↔ NanoTate: a print can land in a quote without swallowing either product). Dial the wires later. Do not design this package as one locked pipeline.
 
 ## Picture now (for Robot)
@@ -159,7 +161,7 @@ V2 is live heritage. V3 is the composition host on purpose. Do not clone V2 FLiP
 
 ## What this is not
 
-- Not a design suite. Not LightBurn.
+- Not a design suite. Not LightBurn. Not bloated software.
 - Not a locked start-to-finish pipeline.
 - Not “HowMany = tab chrome, FLiPIT = the whole product.”
 - Not “FLiPIT = the NC editor.” Strip is default. Editor is earned. One pane, not Source + Output.
@@ -171,6 +173,7 @@ V2 is live heritage. V3 is the composition host on purpose. Do not clone V2 FLiP
 - Not offset / step as HowMany output.
 - Not a materials breadcrumb. Not an unlimited preset file cabinet.
 - Not a cut sheet this pass.
+- Not prices in this file.
 
 ## Ask of Robot
 
@@ -179,6 +182,6 @@ Answer *this* file.
 If the look map changes, Robot edits their map.
 Do not treat tab-only HowMany as locked.
 Do not treat FLiPIT as “just NC.”
-Do not treat the package as one required pipeline.
+Do not treat the package as one required pipeline or one bloated SKU.
 File `status/flipit-job.md` from the decide log if it is still missing.
 Do not open a channel. Do not invoke Build from this file.
