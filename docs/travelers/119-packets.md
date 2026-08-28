@@ -22,3 +22,4 @@ Parked: cut sheet / checklist, settings, blank-rotate with 7, bed-pan lock, one-
 
 - 2026-08-28 HexNest stamped 67ea22e.
 - 2026-08-28 Owner look: cannot drag, too many parts. HexNest drag is two rows only. Origin locked. Row 2 part insets. Row 1 shifts. Count is hex count. Do not pack the full blank. Do not overlay HowMany 14 on a hex bed.
+- 2026-08-28 Hex-two-row stamped 51d6bee after origin advanced: `src/lib/hexNest.ts` limits HexNest to the two draggable rows; focused tests cover the row limit, origin lock, inset, and row-1 shift. The host writes the returned HexNest total to `#lb-count`, hides manual HowMany tiles in HexNest mode, and keeps 24px drag targets.
