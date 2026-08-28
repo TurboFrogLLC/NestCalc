@@ -23,13 +23,21 @@ Engine is in the V3 shell.
 - FLiPIT shirt-off + one-pane editor exist as a separate card.
 - Detect uses real `analyzeGCode` bounds.
 - HexNest V1 exists (two-row drag). Packed-sheet and HUD HEXNES chip are wrong.
-- Ticker expand exists (`d994161`) as a text dump: Part / Blank / Gap / Margin / Part 90° / Reset. Clips off the left on phone. HUD still holds AUTO-SIZE / HEXNES / FLiPIT.
+- Ticker expand exists (`d994161`) as a text dump: Part / Blank / Gap / Margin / Part 90° / Reset. Clips off the left on phone. HUD still holds the field form plus AUTO-SIZE / HEXNES / FLiPIT.
 
 We built plan steps 4 and 5 before the ticker door was a door.
 
 ## Lock that applies to every idea
 
-**The HUD inspector goes away.** The ticker *is* the input the HUD is doing now. One nest session. No second form on the left.
+**`#hud` does not die. It morphs.** It is no longer the field editor.
+
+Plan (`status/flipit-v3-plan.md`): ticker is a door (field chip + job door + Reset), not a dump. HUD + ticker are two doors, one session. Presets stay HowMany inspector, not ticker chips. FLiPIT strip lives on ticker-expand. Editor is earned from that door, one pane, not a second HUD row. Dummy Detach stays off. Do not morph the job door into FLiPIT.
+
+What the plan did not spell in one line, and this packet does:
+
+- Ticker takes the field inputs the HUD form is doing now (blank / part / gap / margin).
+- HUD stays on the glass as the morphing body: presets ↔ FLiPIT / NC ↔ HexNest / job. Calc chip still opens that body.
+- `status/flipit-look-ticker.md` standing line “`#hud` stays, ticker does not replace it” still holds. The withdrawn line was “`#hud` dies.” This packet does not revive that. It only moves **editing** off the HUD form and onto the ticker.
 
 Persistent cluster:
 
@@ -39,9 +47,8 @@ Persistent cluster:
 
 - `−90` / `+90` always on. Not on the earned rail.
 - Ticker default is blank size. Double-click edits blank. No Blank chip.
-- Calc chip stays the right end cap.
-- Dummy Detach stays off.
-- HEXNES is not a fourth HUD button. HexNest chrome waits until this door is right.
+- Calc chip opens the morphing HUD body. It is not a second form.
+- HEXNES is not a fourth HUD form-row. HexNest chrome waits until this door is right.
 - Text dump on the left of the ticker is the miss.
 
 Two proposals below. Robot looks at both. Owner is leaning A for shop use. B stays in play.
@@ -82,13 +89,13 @@ States: closed → rail open → field armed → rail open → closed.
 
 ### Ticker grows up
 
-Armed field brings swap + link. The pill grows **up**, not into a mile-wide inline row. That grow-up is the feel we want.
+Armed field brings swap + link. The pill grows **up**, not into a mile-wide inline row.
 
-Margin default is `0.250 all` plus link (one number writes four sides). Unlink → ticker grows up into a 2×2 (T/R/B/L) at the same input size as today’s HUD chips. If they never unlink, they never see the 2×2.
+Margin default is `0.250 all` plus link (one number writes four sides). Unlink → ticker grows up into a 2×2 (T/R/B/L) at the same input size as today’s HUD field chips. If they never unlink, they never see the 2×2.
 
 Gap unlinked is two fields, not four.
 
-AUTO-SIZE / FLiPIT earn a chip on this rail only after a program is loaded. Still between ticker and calc. Cap what fits on a phone.
+AUTO-SIZE / FLiPIT earn a chip on this rail only after a program is loaded. That chip opens the morphing HUD body. It does not pour FLiPIT into the ticker. Cap what fits on a phone.
 
 Compose from shadcn `Button size="icon"` + `Collapsible` for open state. Width clip / slide is ours. Not Sheet. Not Drawer. Not Sidebar.
 
@@ -96,7 +103,7 @@ Compose from shadcn `Button size="icon"` + `Collapsible` for open state. Width c
 
 ## B — Radial speed dial
 
-Same persistent cluster. Open is a **half-arc of icon ticks** off the ticker, not a 360 clock. Overlay on the bed allowed only while open. Cap four ticks. Icons, not words.
+Same persistent cluster. Same HUD-morph / ticker-edits split. Open is a **half-arc of icon ticks** off the ticker, not a 360 clock. Overlay on the bed allowed only while open. Cap four ticks. Icons, not words.
 
 Compose from shadcn `Button size="icon"`. Polar layout is ours. Dice UI Speed Dial / ObsidianUI Circle Menu are references, not dependencies. Magic UI Orbiting Circles is jewelry — do not use it as the door.
 
@@ -104,16 +111,16 @@ Compose from shadcn `Button size="icon"`. Polar layout is ours. Dice UI Speed Di
 
 ## Ask of Robot
 
-Look at the live shell and this file. Do not cut NestCalc.
+Look at the live shell, the plan, `status/flipit-look-ticker.md`, and this file. Do not cut NestCalc.
 
-Need an outline that treats the HUD as gone and the ticker as the inspector:
+Need an outline that keeps `#hud` alive as the morphing body and moves field edit onto the ticker:
 - A vs B (or a tight mix). Push back.
 - Confirm-row vs one-button commit.
 - Margin 2×2 grow-up vs any other four-value pattern.
-- How AUTO-SIZE / FLiPIT earn a chip after load with no HUD row.
-- What not to do (text dump, 360 orbit, packed hex, Detach, keep the HUD form).
+- How AUTO-SIZE / FLiPIT earn a chip after load and still open the HUD morph (plan: do not morph the job door into FLiPIT; strip on ticker-expand).
+- What not to do (text dump, 360 orbit, packed hex, Detach, kill `#hud`, pour NC into the ticker).
 
-Studio on look. Quarry on the session (ticker is the only form). Anvil only if a coding brief is useful. Atlas off. Keeper writes a plan board under `status/` only if the picture moves. This PR is not the product.
+Studio on look. Quarry on the session (two doors, one session). Anvil only if a coding brief is useful. Atlas off. Keeper writes a plan board under `status/` only if the picture moves. This PR is not the product.
 
 ## Pause
 
