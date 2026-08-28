@@ -846,8 +846,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       top: 16px;
       right: 16px;
       left: auto;
-      width: var(--panel-w);
-      min-width: 418px;
+      width: min(var(--panel-w), calc(100vw - 32px));
+      min-width: min(418px, calc(100vw - 32px));
       max-width: 568px;
       display: flex;
       flex-direction: column;
@@ -862,6 +862,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       z-index: 30;
       height: auto;
       touch-action: none;
+    }
+    @media (max-width: 450px) {
+      .gcode { z-index: 83; }
     }
     .gcode::after {
       content: "";
@@ -1224,7 +1227,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       display: inline-flex;
       align-items: center;
       min-height: 28.6px;
-      flex-shrink: 0;
+      flex: 1 1 0;
+      min-width: 0;
     }
     .surface-expanded-chrome {
       display: inline-flex;
@@ -1891,7 +1895,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
     /* Shirt-off: the resting FLiPIT surface is a flip-angle strip. */
     .flip-strip {
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1.1px;
       align-items: stretch;
       width: 100%;
       height: 28.6px;
@@ -1900,7 +1906,13 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       background: var(--white-70);
       overflow: hidden;
     }
-    .flip-strip .rot-chip { flex: 1 1 0; }
+    .flip-strip .rot-chip {
+      min-width: 0;
+      width: 100%;
+      padding: 0 1px;
+      white-space: nowrap;
+    }
+    .flip-strip .rot-sep { display: none; }
     .gcode:not(.is-expanded) .prog-field,
     .gcode:not(.is-expanded) .status-dot,
     .gcode:not(.is-expanded) .part-group { display: none; }
