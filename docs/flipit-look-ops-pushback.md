@@ -45,7 +45,7 @@ That is the wReckless Toddler manufacturing pattern (same idea as ShopQuote ↔ 
 - Shirt-off the charcoal + gold-yellow HowMany *paint*. Frost bed stays. Restyle, not a rename of the calculator.
 - Ticker is a door, not the HUD. `#hud` stays.
 - Dummy Detach off until it is a real one-module pull.
-- ToolPath parked. Do not invent.
+- ToolPath parked as its own card. Do not invent that card. Profile on the **bed cell** is not that card.
 - `#117` leftover parked. F5 stays SuperBrain lab.
 - Steal designer *feel*. Do not buy or import the kit.
 
@@ -147,6 +147,17 @@ Why 0.125: a rem at 12.120 vs 12.250 can be the difference of one more part. Ste
 
 Next chrome after count is live on the bed. One part type at a time. V1 = rounds only (disc / washer / ring). Not a flag on `calculateNest`. F5 stays lab.
 
+**Cell on the bed (V1)**
+
+The nest cell is still a bounding box. Keep the box. Corner margins are unreadable from a circle alone.
+
+HexNest needs an outside diameter.
+
+- Manual: OD field. Draw a circle tangent to the box (no extra pad inside the cell). Box stays drawn around it.
+- Program loaded (HowMany *or* HexNest): put the toolpath / profile inside that same box so the part is visible. No program = no profile. HexNest without a file still has the OD circle.
+
+The ToolPath *card* stays parked. This is the bed cell, not that card.
+
 **Locked interaction (V1)**
 
 - First part at blank origin (0,0) is locked to the margin. It does not move.
@@ -166,7 +177,7 @@ Next chrome after count is live on the bed. One part type at a time. V1 = rounds
 **Parked**
 
 - Multi-part nest NC out with those offsets. Cool. Later. First controller ACS.
-- Inject profile into hex cells.
+- Arbitrary profile inject beyond OD-circle / loaded toolpath.
 - HexNest inside FLiPIT morph or the ticker library.
 - F5 as product chrome.
 - Full #117 drag kit as a pile.
@@ -213,6 +224,7 @@ V2 is live heritage. V3 is the composition host on purpose. Do not clone V2 FLiP
 - Not prices in this file.
 - Not writing G54/G55/G56 this pass. Show the numbers.
 - Not a snap finer than 0.125.
+- Not dropping the bounding box because a circle is on the cell.
 
 ## Ask of Robot
 
