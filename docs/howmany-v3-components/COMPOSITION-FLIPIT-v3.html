@@ -2184,9 +2184,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         <circle cx="0" cy="0" r="0.12" fill="#000000"/>
         <rect id="lb-blank" x="0" y="0" width="12" height="8" fill="#ffffff" fill-opacity="0.80" stroke="#000000" stroke-width="1.25" vector-effect="non-scaling-stroke" clip-path="url(#lb-bed-clip)" style="pointer-events:none"/>
         <rect id="lb-nest-box" x="0.25" y="0.25" width="11.5" height="7.5" fill="none" stroke="#538BEC" stroke-opacity="0.50" stroke-width="1" stroke-dasharray="3 2.4" vector-effect="non-scaling-stroke" clip-path="url(#lb-bed-clip)" style="pointer-events:none"/>
-        <g id="lb-part-g" clip-path="url(#lb-bed-clip)" style="pointer-events:none">
-          <rect id="lb-part" x="0" y="0" width="1.250" height="3.375" fill="rgba(83,139,236,0.22)" stroke="#538BEC" stroke-width="1.15" vector-effect="non-scaling-stroke"/>
-        </g>
+        <g id="lb-nest-tiles" clip-path="url(#lb-bed-clip)" style="pointer-events:none"></g>
         <g id="lb-bed-rulers"></g>
       </g>
     </svg>
@@ -2634,8 +2632,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   var blankCam = document.getElementById('lb-blank-cam');
   var blank = document.getElementById('lb-blank');
   var nestBox = document.getElementById('lb-nest-box');
-  var partEl = document.getElementById('lb-part');
-  var partG = document.getElementById('lb-part-g');
+  var nestTiles = document.getElementById('lb-nest-tiles');
   var cornerArc = document.getElementById('lb-corner-arc');
   var countEl = document.getElementById('lb-count');
   var hitRight = document.getElementById('lb-hit-right');
@@ -2714,11 +2711,28 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       nestBox.setAttribute('width', nw);
       nestBox.setAttribute('height', nh);
     }
-    if (partEl && partG) {
-      partEl.setAttribute('width', state.partW);
-      partEl.setAttribute('height', state.partH);
-      var cx = state.partW / 2, cy = state.partH / 2;
-      partG.setAttribute('transform', 'translate(' + nx + ',' + ny + ') rotate(' + (state.partRot || 0) + ' ' + cx + ' ' + cy + ')');
+    renderNestTiles(nx, ny);
+  }
+  function renderNestTiles(originX, originY) {
+    if (!nestTiles) return;
+    nestTiles.innerHTML = '';
+    var result = state.nestResult;
+    if (!result || !result.partsAcross || !result.partsDown || state.partW <= 0 || state.partH <= 0) return;
+    var gapX = Number.isFinite(state.nestGapX) ? state.nestGapX : 0;
+    var gapY = Number.isFinite(state.nestGapY) ? state.nestGapY : 0;
+    for (var down = 0; down < result.partsDown; down++) {
+      for (var across = 0; across < result.partsAcross; across++) {
+        var tile = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        tile.setAttribute('x', originX + across * (state.partW + gapX));
+        tile.setAttribute('y', originY + down * (state.partH + gapY));
+        tile.setAttribute('width', state.partW);
+        tile.setAttribute('height', state.partH);
+        tile.setAttribute('fill', 'rgba(83,139,236,0.22)');
+        tile.setAttribute('stroke', '#538BEC');
+        tile.setAttribute('stroke-width', '1.15');
+        tile.setAttribute('vector-effect', 'non-scaling-stroke');
+        nestTiles.appendChild(tile);
+      }
     }
   }
   function line(x1, y1, x2, y2, sw, color, opacity) {
@@ -2818,6 +2832,13 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (Number.isFinite(w)) state.partW = w;
     if (Number.isFinite(h)) state.partH = h;
     if (Number.isFinite(rot)) state.partRot = rot;
+    render();
+  };
+  window.__bedSetNestTiles = function (result, gapX, gapY) {
+    state.nestResult = result && Number.isFinite(result.partsAcross) && Number.isFinite(result.partsDown)
+      ? result : null;
+    state.nestGapX = Number.isFinite(gapX) ? gapX : 0;
+    state.nestGapY = Number.isFinite(gapY) ? gapY : 0;
     render();
   };
   window.__bedSetNest = function (m) {
@@ -3087,6 +3108,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     return fields;
   }
   var howManyJoinTimer = null;
+  var howManyJoinRequest = 0;
   function syncHowManyCount() {
     if (typeof window.__howManyJoinCount === 'function') {
       window.__howManyJoinCount(document);
@@ -3096,14 +3118,20 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var unit = state.units || 'in';
     if (howManyJoinTimer) clearTimeout(howManyJoinTimer);
     howManyJoinTimer = setTimeout(function () {
+      var requestId = ++howManyJoinRequest;
+      if (typeof window.__bedSetNestTiles === 'function') window.__bedSetNestTiles(null, 0, 0);
       fetch('/howmany-shell', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ fields: fields, fieldUnit: unit, sessionUnit: unit })
       }).then(function (r) { return r.ok ? r.json() : null; })
         .then(function (data) {
+          if (requestId !== howManyJoinRequest) return;
           var el = document.getElementById('lb-count');
           if (el && data && data.totalParts != null) el.textContent = String(data.totalParts);
+          if (data && data.nestResult && typeof window.__bedSetNestTiles === 'function') {
+            window.__bedSetNestTiles(data.nestResult, Number(fields['gap-x']), Number(fields['gap-y']));
+          }
         })
         .catch(function () {});
     }, 0);

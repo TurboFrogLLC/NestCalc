@@ -2,7 +2,7 @@ import type { GCodeUnit } from "../gcodeRotation";
 import { parseNumericInput } from "../numericInput";
 import { clearedInputs } from "../nestcalc";
 import { createHowManyNestSession } from "../nestSession";
-import type { Margins, NestInputs, Unit } from "../types";
+import type { Margins, NestInputs, NestResult, Unit } from "../types";
 import { convertValue, round3 } from "../units";
 
 type InputKey = keyof Pick<
@@ -77,12 +77,20 @@ export function joinHowManyCountFromFields(
   fieldUnit: Unit = "in",
   sessionUnit: Unit = "in",
 ): number {
+  return joinHowManyNestResultFromFields(values, fieldUnit, sessionUnit).totalParts;
+}
+
+export function joinHowManyNestResultFromFields(
+  values: Record<string, string>,
+  fieldUnit: Unit = "in",
+  sessionUnit: Unit = "in",
+): NestResult {
   const session = createHowManyNestSession(
     nestInputsFromShellFields(values, fieldUnit, sessionUnit),
   );
   return session.result.mode === "manual"
-    ? session.result.manual.totalParts
-    : session.manual.result.totalParts;
+    ? session.result.manual
+    : session.manual.result;
 }
 
 export function joinHowManyCount(

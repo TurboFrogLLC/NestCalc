@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { joinHowManyCountFromFields } from "@/lib/howmany/bridge";
+import { joinHowManyNestResultFromFields } from "@/lib/howmany/bridge";
 import type { Unit } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -52,10 +52,10 @@ export async function POST(request: Request) {
     values[key] = value == null ? "" : String(value);
   }
 
-  const totalParts = joinHowManyCountFromFields(
+  const nestResult = joinHowManyNestResultFromFields(
     values,
     isUnit(record.fieldUnit) ? record.fieldUnit : "in",
     isUnit(record.sessionUnit) ? record.sessionUnit : "in",
   );
-  return Response.json({ totalParts });
+  return Response.json({ totalParts: nestResult.totalParts, nestResult });
 }

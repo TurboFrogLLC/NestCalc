@@ -14,6 +14,7 @@ import {
   insertShellDecimal,
   joinHowManyCount,
   joinHowManyCountFromFields,
+  joinHowManyNestResultFromFields,
   marginsBadgeText,
   nestInputsFromShellFields,
   normalizeShellDialogName,
@@ -196,6 +197,11 @@ describe("HowMany count join", () => {
     expect(totalParts).toBe(6);
     expect(doc.getElementById(HOWMANY_COUNT_ID)?.textContent).toBe("6");
     expect(joinHowManyCountFromFields(nestFixtureFields)).toBe(6);
+    expect(joinHowManyNestResultFromFields(nestFixtureFields)).toMatchObject({
+      partsAcross: 3,
+      partsDown: 2,
+      totalParts: 6,
+    });
   });
 
   it("runs convertValue on the join before createNestSession", () => {
@@ -235,6 +241,8 @@ describe("HowMany count join", () => {
     );
     expect(html).toContain('id="part-x"');
     expect(html).toContain('id="rem-x"');
+    expect(html).toContain('id="lb-nest-tiles"');
+    expect(html).toContain('__bedSetNestTiles');
     expect(autoSizeClick).toBeTruthy();
     expect(autoSizeClick).not.toContain("__flipitAutoSize");
   });

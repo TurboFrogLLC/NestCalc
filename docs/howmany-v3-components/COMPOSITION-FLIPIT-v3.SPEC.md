@@ -59,7 +59,7 @@ Wordmarks stay as locked: **FLiP** white 700 + **IT** amber 800 · **tool** whit
 | **R9** | Remove blank lock · calc = ticker height · glow −60% bed-clipped · top-band equal cards · zoom front · preset chips + toast · two-line margin · frost-blue rails | no `#bt-lock` · `#bt-calc` 34² · bed `clipPath` · `__hostArrange` top 25 · `.lb-chrome` z **80** |
 | **R10** | Calc hover stays visible · glow −50% again · rails past grid + Y outside numbers · preset Confirm/Cancel · 3-card layout re-applies on every complete set | hover fill opaque · glow 0.6px/0.14 · `__hostArrange` forces TP·FlipIt·HUD |
 | **R11** | Preset everyday load vs explicit edit/write · rails butted to origin, filled full length + far overhang | `[data-pre-edit]` · Confirm/Cancel only in edit · rails from 0,0 |
-| **R12** | Compact single-row HUD height · 4-side frost frame · FlipIt-center / HUD-right glide · token-aware highlight · default part 1.250×3.375 + Flip visual + nest box | remasure `offsetHeight` · 420ms glide · `G`+digits only · `#lb-part` / `#lb-nest-box` |
+| **R12** | Compact single-row HUD height · 4-side frost frame · FlipIt-center / HUD-right glide · token-aware highlight · default part 1.250×3.375 + Flip visual + nest box | remasure `offsetHeight` · 420ms glide · `G`+digits only · `#lb-nest-box` |
 | **R13** | Preset write-mode visible · Confirm stores armed slot only · main OK applies live fields to HUD + bed · single frost rail · XYZR 4dp black · front surface | `commitLiveFields` · `__bedSetBlank` · no lip/double-line · `.tok-axis` |
 
 Hide primitives stay surface-owned (`ALIGNMENT-v3` §4). Host does not invent a shared hide API.
@@ -72,6 +72,7 @@ Hide primitives stay surface-owned (`ALIGNMENT-v3` §4). Host does not invent a 
 | HUD **FLiPIT** (`#btn-gcode`) | Closed → open **expanded**. Open + collapsed (e.g. after AUTO-SIZE) → **expand** (do not close). Open + expanded → **close**. X closes from any state. |
 | HUD **AUTO-SIZE** (`#btn-auto-size`) | Does **not** open FLiPIT. Does not call `openGcode` / `__flipitAutoSize`. In-panel `#btn-detect` still sizes. Footer chips stay mounted in HUD calculator mode. Label stays **AUTO-SIZE**. |
 | HowMany count (`#lb-count`) | Live quantity past `#lb-hit-corner` on the same 45° ray as the corner handle. **24px screen-space count mark**. `pointer-events: none`. `#lb-hit-corner` is unmoved. Written from `calculateNest` via FIELD_BINDINGS → `createNestSession` (manual) → `session.result.manual.totalParts`. `convertValue` runs on this join. Just the number. Not on the parts. Not in the ticker stack. |
+| Nest tiles (`#lb-nest-tiles`) | The same `/howmany-shell` POST response that writes `#lb-count` returns the manual `NestResult`. The blank paints one rect per `partsAcross × partsDown`, at the margin origin with the current part size and X/Y gaps. The host does layout only; it does not inline a second calculator or call AutoNest. |
 | FLiPIT Auto-Size (`#btn-detect`) | Existing in-panel detect. Expand/collapse chrome unchanged. Arms after a real file load. |
 | FLiPIT close (`#btn-close`) | `closeGcode()` + R11 `lastGcodePos`. |
 | LaserBed calc chip (`#bt-calc`) | HUD collapsed → expand to **param** mode only (do not enter calculator; clear leftover classic-calc `display`). HUD already expanded → toggle calculator. After exit / collapse / expand, `#hud-body` height matches the active mode. Square side = blank ticker height (**34**). HUD header chrome language (radius / border / fill). Icon 22px. 3px gap. Hover **lightens the dark fill only** — icon and chrome stay visible (no transparent wash). |
@@ -94,7 +95,7 @@ Hide primitives stay surface-owned (`ALIGNMENT-v3` §4). Host does not invent a 
 | Ruler rails | One equal-width frost-blue **rail on all four sides**. No outer lip / no double-line. Ticks/numbers remain only on bottom X and left Y, fully inside the blue. |
 | HUD height | Single-row Margin (`0.250 all`) uses the compact 28.6 ticker. Stage height is remasured from in-flow `offsetHeight` (not popover `scrollHeight`). Opening/closing a popover returns HUD to the current ticker-row height. Two-row margin still grows live. |
 | Source highlight | Token-aware: letter + digits, not in-word matches. `Go to part` / `PAR` stay uncolored. Magenta G + green comments stay the palette bases. X/Y/Z/R letters **and** values render black and format to **4 decimal places** in the highlighted view only. |
-| Bed part | Default **1.250 × 3.375**. `#lb-part` follows HUD part size. Flip IT rotates it on the bed. Dotted `#lb-nest-box` is the margin-inset reference nest. |
+| Bed part | The manual HowMany join paints `#lb-nest-tiles` from the returned `NestResult`, part size, margins, and gaps. Dotted `#lb-nest-box` is the margin-inset reference nest. |
 
 ---
 
