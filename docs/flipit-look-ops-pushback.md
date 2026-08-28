@@ -126,6 +126,16 @@ If a program is loaded and they type a new part size on ticker or HUD: do not re
 
 If they change the code and Apply, and bbox differs from the bed: ask to update the bed.
 
+## Blank snap (canvas settings, not HexNest)
+
+Grid increment for **blank resize** is 0.125. That is the minimum. Do not go finer. Settings menu later can expose it. Not a HexNest problem.
+
+Why 0.125: a rem at 12.120 vs 12.250 can be the difference of one more part. Stepping the blank by 0.125 is how you feel that.
+
+- Drag resize is smooth by default.
+- Hold Shift while dragging the blank = hard snap to 0.125. Deliberate.
+- Click the arc handle, then arrows grow X or Y. Origin stays locked at 0,0.
+
 ## Flow (one path, not the only path)
 
 1. Bed is the canvas. HowMany with typed or preset blank / part / gap / margin. Count by the arc. Rotate parts, rotate blank, or both. Can stop here.
@@ -137,35 +147,25 @@ If they change the code and Apply, and bbox differs from the bed: ask to update 
 
 Next chrome after count is live on the bed. One part type at a time. V1 = rounds only (disc / washer / ring). Not a flag on `calculateNest`. F5 stays lab.
 
-**Locked interaction**
+**Locked interaction (V1)**
 
 - First part at blank origin (0,0) is locked to the margin. It does not move.
 - Rows exist. User grabs a part from the next row and slides it toward the row below (mouse first).
 - The two parts on that lower row shift sideways in real time, only as far as the blank bounds allow, to open the inset pocket.
-- Gap does not have to stay equal 0.125 all around. Deeper dip is allowed so more fit when blank height is short. Unequal X / Y is wanted.
+- Inset depth is not required to stay equal 0.125 all around. Deeper dip is allowed so more fit when blank height is short. Unequal X / Y is wanted.
 - If the row cannot shift and still fit, the dipped part does not land. No ghost that lies.
-- Arrow keys nudge after the mouse has it. Mouse-first, keys are fine.
+- Arrow keys nudge the dipped part after the mouse has it. Mouse-first, keys are fine.
 - Count stays by the arc. Recount when the inset lands or fails.
+- Glass shows inset offset from origin (X, and Y down-negative) plus row1→row2 and col1→col2. Operator types those on the HMI. No G54 writer this pass.
 
-**Shop numbers on the glass (this is the first job)**
+**Pending**
 
-Operator will cut row 1 on the machine, pause, reset, shift origin, cut the same row again at the inset.
-
-Show:
-- offset of the inset part from blank origin X (and Y, negative down from origin on this bed)
-- row1→row2 and col1→col2
-
-They type those into the HMI (G54 / G55 / G56 or whatever that control has). This package shows the numbers. It does not write work-offset codes this pass.
-
-**Pending chrome**
-
-- Adjustable grid snap. Today the mental snap is 0.125. That cannot stay locked.
 - After an inset unit exists (two on the bottom, one dipped), drag the unit bbox like a resize to duplicate that unit at the same inset. If the next copy cannot fit, it does not appear.
-- Select that unit and drag a box to tile it — only after the single-unit dip + duplicate works. Do not invent a third layout system first.
+- Select that unit and drag a box to tile it — only after the single-unit dip + duplicate works.
 
 **Parked**
 
-- Multi-part nest NC out with those offsets. Cool. Later. First controller ACS. Do not invent a universal post.
+- Multi-part nest NC out with those offsets. Cool. Later. First controller ACS.
 - Inject profile into hex cells.
 - HexNest inside FLiPIT morph or the ticker library.
 - F5 as product chrome.
@@ -212,6 +212,7 @@ V2 is live heritage. V3 is the composition host on purpose. Do not clone V2 FLiP
 - Not a cut sheet this pass.
 - Not prices in this file.
 - Not writing G54/G55/G56 this pass. Show the numbers.
+- Not a snap finer than 0.125.
 
 ## Ask of Robot
 
