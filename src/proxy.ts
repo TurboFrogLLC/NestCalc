@@ -1,7 +1,11 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-const isPublicRoute = createRouteMatcher(["/sign-in(.*)", "/~offline"]);
+const isPublicRoute = createRouteMatcher([
+  "/sign-in(.*)",
+  "/~offline",
+  "/howmany-shell(.*)",
+]);
 
 export default clerkMiddleware(
   async (auth, request) => {

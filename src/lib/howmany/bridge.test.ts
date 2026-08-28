@@ -1,4 +1,8 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { calculateNest } from "../nestcalc";
+import { convertValue } from "../units";
 import {
   committedShellNumericValue,
   derivePresetCarousel,
@@ -6,13 +10,45 @@ import {
   fieldBindingForId,
   formatShellNumber,
   generationIsFresh,
+  hydrateHowManyFromGCode,
+  HOWMANY_COUNT_ID,
   insertShellDecimal,
+  joinHowManyCount,
+  joinHowManyCountFromFields,
+  joinHowManyNestResultFromFields,
   marginsBadgeText,
+  nestInputsFromShellFields,
   normalizeShellDialogName,
   quickValueDraft,
   sanitizeShellNumericDraft,
   shouldPreserveNumericDraft,
 } from "./bridge";
+
+const nestFixtureFields = {
+  "part-x": "10",
+  "part-y": "5",
+  "rem-x": "45",
+  "rem-y": "22",
+  "gap-x": "1",
+  "gap-y": "0.5",
+  "m-left": "1",
+  "m-right": "2",
+  "m-top": "3",
+  "m-bottom": "4",
+};
+
+function shellDocument(fields: Record<string, string>) {
+  const nodes = new Map<string, { id: string; value?: string; textContent: string }>();
+  nodes.set(HOWMANY_COUNT_ID, { id: HOWMANY_COUNT_ID, textContent: "" });
+  for (const [id, value] of Object.entries(fields)) {
+    nodes.set(id, { id, value, textContent: value });
+  }
+  return {
+    getElementById(id: string) {
+      return nodes.get(id) ?? null;
+    },
+  };
+}
 
 describe("HowMany shell bridge helpers", () => {
   it("maps canonical shell fields to the existing session model", () => {
@@ -135,5 +171,100 @@ describe("HowMany shell bridge helpers", () => {
     expect(
       marginsBadgeText({ left: 0.125, right: null, bottom: 2, top: 0 }),
     ).toBe("L0.125 R— B2 T0");
+  });
+});
+
+describe("HowMany count join", () => {
+  it("writes calculateNest totalParts onto #lb-count through the session join", () => {
+    const expected = calculateNest({
+      partWidth: 10,
+      partHeight: 5,
+      remnantWidth: 45,
+      remnantHeight: 22,
+      margins: { left: 1, right: 2, top: 3, bottom: 4 },
+      gapX: 1,
+      gapY: 0.5,
+      partLinked: false,
+      gapLinked: false,
+      moveMarginsWithRotation: false,
+      unit: "in",
+    });
+    const doc = shellDocument(nestFixtureFields);
+
+    const totalParts = joinHowManyCount(doc);
+
+    expect(HOWMANY_COUNT_ID).toBe("lb-count");
+    expect(totalParts).toBe(expected.totalParts);
+    expect(totalParts).toBe(6);
+    expect(doc.getElementById(HOWMANY_COUNT_ID)?.textContent).toBe("6");
+    expect(joinHowManyCountFromFields(nestFixtureFields)).toBe(6);
+    expect(joinHowManyNestResultFromFields(nestFixtureFields)).toMatchObject({
+      partsAcross: 3,
+      partsDown: 2,
+      totalParts: 6,
+    });
+  });
+
+  it("runs convertValue on the join before createNestSession", () => {
+    const mmFields = Object.fromEntries(
+      Object.entries(nestFixtureFields).map(([id, value]) => [
+        id,
+        String(convertValue(Number(value), "in", "mm")),
+      ]),
+    );
+    const inputs = nestInputsFromShellFields(mmFields, "mm", "in");
+
+    expect(inputs.partWidth).toBe(10);
+    expect(inputs.remnantWidth).toBe(45);
+    expect(inputs.gapY).toBe(0.5);
+    expect(inputs.margins.top).toBe(3);
+    expect(joinHowManyCountFromFields(mmFields, "mm", "in")).toBe(6);
+  });
+
+  it("hydrates the manual join from NC bounds without AutoNest", () => {
+    const hydration = hydrateHowManyFromGCode(
+      "G20\nG0 X0 Y0\nG1 X2 Y1",
+      nestFixtureFields,
+    );
+
+    expect(hydration).toMatchObject({
+      ok: true,
+      bounds: { minX: 0, minY: 0, maxX: 2, maxY: 1 },
+      unit: "in",
+      partSize: { width: 2, height: 1 },
+      blankSize: { width: 5, height: 8 },
+      nestResult: { partsAcross: 1, partsDown: 1, totalParts: 1 },
+    });
+  });
+
+  it("keeps the V3 host count slot by the arc and kills AUTO-SIZE → FLiPIT", () => {
+    const html = readFileSync(
+      path.join(
+        process.cwd(),
+        "docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html",
+      ),
+      "utf8",
+    );
+    const autoSizeClick = html.match(
+      /getElementById\('btn-auto-size'\)\.addEventListener\('click', function \(\) \{[\s\S]*?\}\);/,
+    )?.[0];
+
+    expect(html).toContain('id="lb-count"');
+    expect(html.indexOf('id="lb-count"')).toBeGreaterThan(
+      html.indexOf('id="lb-corner-arc"'),
+    );
+    expect(html.indexOf('id="lb-count"')).toBeLessThan(
+      html.indexOf('id="lb-hit-corner"'),
+    );
+    expect(html).toContain('id="part-x"');
+    expect(html).toContain('id="rem-x"');
+    expect(html).toContain('id="lb-nest-tiles"');
+    expect(html).toContain('__bedSetNestTiles');
+    expect(html).toContain('__howManyHydrateFromNC');
+    expect(html).toContain("action: 'analyze'");
+    expect(html).not.toContain('setBounds(82.398, 92.396)');
+    expect(autoSizeClick).toBeTruthy();
+    expect(autoSizeClick).not.toContain("__flipitAutoSize");
+    expect(autoSizeClick).toContain("__autoSizeOpen");
   });
 });

@@ -1,6 +1,17 @@
-import type { GCodeUnit } from "../gcodeRotation";
+import {
+  analyzeGCode,
+  partSizeFromBounds,
+  type Bounds,
+  type GCodeDiagnostic,
+  type GCodeUnit,
+} from "../gcodeRotation";
 import { parseNumericInput } from "../numericInput";
-import type { Margins, NestInputs, Unit } from "../types";
+import { clearedInputs } from "../nestcalc";
+import {
+  applyPartSizeToNestSession,
+  createHowManyNestSession,
+} from "../nestSession";
+import type { Margins, NestInputs, NestResult, Unit } from "../types";
 import { convertValue, round3 } from "../units";
 
 type InputKey = keyof Pick<
@@ -32,6 +43,167 @@ const FIELD_BINDINGS: Record<string, ShellFieldBinding> = {
 
 export function fieldBindingForId(id: string): ShellFieldBinding | null {
   return FIELD_BINDINGS[id] ?? null;
+}
+
+export const HOWMANY_COUNT_ID = "lb-count";
+
+export interface HowManyCountDocument {
+  getElementById(id: string): { value?: string; textContent: string | null } | null;
+}
+
+function shellFieldValue(
+  el: { value?: string; textContent?: string | null } | null,
+): string {
+  if (!el) return "";
+  if (typeof el.value === "string") return el.value;
+  return el.textContent ?? "";
+}
+
+export function nestInputsFromShellFields(
+  values: Record<string, string>,
+  fieldUnit: Unit = "in",
+  sessionUnit: Unit = "in",
+): NestInputs {
+  const inputs = clearedInputs(sessionUnit);
+  const margins = { ...inputs.margins };
+
+  for (const [id, binding] of Object.entries(FIELD_BINDINGS)) {
+    const parsed = committedShellNumericValue(values[id] ?? "");
+    const converted =
+      parsed === null ? null : convertValue(parsed, fieldUnit, sessionUnit);
+    if (binding.kind === "input") {
+      inputs[binding.key] = converted;
+    } else {
+      margins[binding.key] = converted;
+    }
+  }
+
+  return { ...inputs, margins };
+}
+
+export function joinHowManyCountFromFields(
+  values: Record<string, string>,
+  fieldUnit: Unit = "in",
+  sessionUnit: Unit = "in",
+): number {
+  return joinHowManyNestResultFromFields(values, fieldUnit, sessionUnit).totalParts;
+}
+
+export function joinHowManyNestResultFromFields(
+  values: Record<string, string>,
+  fieldUnit: Unit = "in",
+  sessionUnit: Unit = "in",
+): NestResult {
+  const session = createHowManyNestSession(
+    nestInputsFromShellFields(values, fieldUnit, sessionUnit),
+  );
+  return session.result.mode === "manual"
+    ? session.result.manual
+    : session.manual.result;
+}
+
+export type HowManyGCodeHydration =
+  | {
+      ok: true;
+      bounds: Bounds;
+      unit: GCodeUnit;
+      partSize: PartSize;
+      blankSize: PartSize;
+      nestResult: NestResult;
+    }
+  | { ok: false; diagnostics: GCodeDiagnostic[] };
+
+/**
+ * Hydrates the manual HowMany join from NC bounds without entering AutoNest.
+ * The temporary session is unit-aligned through the existing session helper;
+ * the returned values stay in the shell's current display unit.
+ */
+export function hydrateHowManyFromGCode(
+  source: string,
+  values: Record<string, string>,
+  fieldUnit: Unit = "in",
+  sessionUnit: Unit = "in",
+): HowManyGCodeHydration {
+  const analysis = analyzeGCode(source);
+  if (!analysis.ok) return analysis;
+
+  const sourcePartSize = partSizeFromBounds(analysis.bounds);
+  if (!sourcePartSize) {
+    return {
+      ok: false,
+      diagnostics: [{ line: 1, reason: "Program bounds do not define a part size." }],
+    };
+  }
+
+  const declaredUnit = analysis.unit === "unknown" ? sessionUnit : analysis.unit;
+  const session = createHowManyNestSession(
+    nestInputsFromShellFields(values, fieldUnit, sessionUnit),
+  );
+  const hydratedState = applyPartSizeToNestSession(
+    session.state,
+    sourcePartSize,
+    declaredUnit,
+  );
+  const hydratedPartSize = {
+    width: convertValue(
+      hydratedState.manualInputs.partWidth ?? 0,
+      hydratedState.manualInputs.unit,
+      fieldUnit,
+    ),
+    height: convertValue(
+      hydratedState.manualInputs.partHeight ?? 0,
+      hydratedState.manualInputs.unit,
+      fieldUnit,
+    ),
+  };
+  const hydratedValues = {
+    ...values,
+    "part-x": formatShellNumber(hydratedPartSize.width),
+    "part-y": formatShellNumber(hydratedPartSize.height),
+  };
+  const hydratedInputs = nestInputsFromShellFields(
+    hydratedValues,
+    fieldUnit,
+    sessionUnit,
+  );
+  const margin = hydratedInputs.margins;
+  const blankSize = {
+    width: hydratedPartSize.width + (margin.left ?? 0) + (margin.right ?? 0),
+    height: hydratedPartSize.height + (margin.top ?? 0) + (margin.bottom ?? 0),
+  };
+  const valuesWithBlank = {
+    ...hydratedValues,
+    "rem-x": formatShellNumber(blankSize.width),
+    "rem-y": formatShellNumber(blankSize.height),
+  };
+
+  return {
+    ok: true,
+    bounds: analysis.bounds,
+    unit: analysis.unit,
+    partSize: hydratedPartSize,
+    blankSize,
+    nestResult: joinHowManyNestResultFromFields(
+      valuesWithBlank,
+      fieldUnit,
+      sessionUnit,
+    ),
+  };
+}
+
+export function joinHowManyCount(
+  doc: HowManyCountDocument,
+  fieldUnit: Unit = "in",
+  sessionUnit: Unit = "in",
+): number {
+  const values: Record<string, string> = {};
+  for (const id of Object.keys(FIELD_BINDINGS)) {
+    values[id] = shellFieldValue(doc.getElementById(id));
+  }
+  const totalParts = joinHowManyCountFromFields(values, fieldUnit, sessionUnit);
+  const count = doc.getElementById(HOWMANY_COUNT_ID);
+  if (count) count.textContent = String(totalParts);
+  return totalParts;
 }
 
 export function formatShellNumber(value: number | null): string {
