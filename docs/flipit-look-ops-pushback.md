@@ -133,15 +133,37 @@ If they change the code and Apply, and bbox differs from the bed: ask to update 
 3. Program exists → FLiPIT strip. Flip + export. No code on the glass.
 4. Same body → NC editor. One pane. Apply commits. Bbox prompt if needed.
 
-## Parked — later modules, not this pass
+## HexNest chrome — next after count is live
 
-**Cut sheet.** Real shop pain: checklist of tonight’s jobs next to the ACS HMI. One live row, check it, load next, bed updates. Separate module. Do not build it on this look pass. Do not merge with presets (presets = rem recipes; cut list = jobs). When it earns a pane: program name, part size after that row is picked, blank if typed, check. No material tree. No pre-parse of fifteen files.
+How-many is the gate. Do not ship HexNest chrome on a bed that cannot count.
 
-**Save nest / part file.** Reload a nest you already made, not only a single flipped part. Not this pass.
+HexNest is its own tool. Not a flag on `calculateNest`. F5 stays SuperBrain lab (`lab/laser-nc-fixtures/round-layout.mjs` inset, `F5-round-hex-inset-r10-g2.nc`).
 
-**HexNest.** Inset stagger. V1 same-diameter. How-many is the gate. Interior-row rotate (three slabs) is Owner override. Not a flag on `calculateNest`. F5 stays SuperBrain lab.
+**Locked for that chrome**
 
-**Bed → FLiPIT NC.** Nest picture back into the program. Hard. First controller **ACS**. Do not invent a universal post. Nest *sequence* into NC is later still, not promised.
+- Same bed canvas. Same count seat by the arc.
+- V1 same-diameter only (rings / disc / washer / round).
+- Inset stagger. Deeper dip moves the next row.
+- Origin part locked. Margin lock. If it cannot shift and fit, the dip does not land.
+- Unequal gap X / Y is allowed.
+- Interior-row rotate (three slabs) is Owner override. Do not clone V2 chrome.
+- Offsets row1→row2 and col1→col2 are visible. That is the shop number.
+- Stands alone and also sits on this canvas.
+
+**Not in that first HexNest chrome**
+
+- Live multi-row drag as the whole #117 kit
+- Inject profile into cells
+- HexNest as a FLiPIT morph or ticker library
+- F5 as product chrome
+
+## Parked — later, not this pass
+
+**Cut sheet.** Checklist of tonight’s jobs next to the ACS HMI. Separate module. Do not merge with presets.
+
+**Save nest / part file.** Reload a nest you already made. Not this pass.
+
+**Bed → FLiPIT NC.** First controller **ACS**. Do not invent a universal post.
 
 **ToolPath card.** In the family. Park. Do not invent.
 
@@ -153,6 +175,7 @@ If they change the code and Apply, and bbox differs from the bed: ask to update 
 - Presets: `src/lib/presetStore.ts`
 - Units: `src/lib/units.ts`
 - V3 shell (chrome only): `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`
+- Hex lab: SuperBrain `lab/laser-nc-fixtures/`
 - Concept spitball (parked kit): NestCalc PR #117
 - Leftover five-state chrome: NestCalc PR #116
 - This split: NestCalc PR #118
