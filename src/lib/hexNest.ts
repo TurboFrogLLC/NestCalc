@@ -83,8 +83,10 @@ function movePart(part: HexNestPart, x: number, y: number): HexNestPart {
 }
 
 /**
- * Packs one round part type into alternating tangent rows. Coordinates describe
- * each part's bounding box, so the circle remains tangent to all four box sides.
+ * Lays out one round part type in two alternating tangent rows. Coordinates
+ * describe each part's bounding box, so the circle remains tangent to all four
+ * box sides. This is deliberately a draggable two-row preview, not a full-blank
+ * packing operation.
  */
 export function layoutHexNest(input: HexNestInput): HexNestLayout {
   const { blank, margins, diameter } = input;
@@ -107,7 +109,11 @@ export function layoutHexNest(input: HexNestInput): HexNestLayout {
   const rowGapY = (Math.sqrt(3) / 2) * diameter;
   const parts: HexNestPart[] = [];
 
-  for (let row = 0, y = bounds.y; y + diameter <= bounds.y + bounds.height + EPSILON; row += 1, y += rowGapY) {
+  for (
+    let row = 0, y = bounds.y;
+    row < 2 && y + diameter <= bounds.y + bounds.height + EPSILON;
+    row += 1, y += rowGapY
+  ) {
     const offset = row % 2 === 0 ? 0 : rowOffsetX;
     for (let column = 0, x = bounds.x + offset; x + diameter <= bounds.x + bounds.width + EPSILON; column += 1, x += diameter) {
       parts.push(makePart(row, column, x, y, diameter));

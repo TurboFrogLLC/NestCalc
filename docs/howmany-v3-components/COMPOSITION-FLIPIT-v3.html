@@ -2783,6 +2783,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       nestBox.setAttribute('y', ny);
       nestBox.setAttribute('width', nw);
       nestBox.setAttribute('height', nh);
+      nestBox.style.display = state.hexLayout ? 'none' : '';
     }
     renderNestTiles(nx, ny);
   }
@@ -2802,12 +2803,16 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         box.setAttribute('stroke', part.isOrigin ? '#FFCE1B' : '#538BEC');
         box.setAttribute('stroke-width', '0.8'); box.setAttribute('stroke-dasharray', '1.5 1.2');
         box.setAttribute('vector-effect', 'non-scaling-stroke');
+        var hit = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        hit.setAttribute('cx', part.circle.cx); hit.setAttribute('cy', part.circle.cy);
+        hit.setAttribute('r', Math.max(part.circle.radius, 24 / Math.max(pxPerInch(), 0.001)));
+        hit.setAttribute('fill', 'transparent');
         var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         circle.setAttribute('cx', part.circle.cx); circle.setAttribute('cy', part.circle.cy); circle.setAttribute('r', part.circle.radius);
         circle.setAttribute('fill', part.isOrigin ? 'rgba(255,206,27,0.30)' : 'rgba(83,139,236,0.22)');
         circle.setAttribute('stroke', part.isOrigin ? '#B7791F' : '#538BEC');
         circle.setAttribute('stroke-width', '1.15'); circle.setAttribute('vector-effect', 'non-scaling-stroke');
-        group.appendChild(box); group.appendChild(circle); nestTiles.appendChild(group);
+        group.appendChild(box); group.appendChild(hit); group.appendChild(circle); nestTiles.appendChild(group);
       });
       return;
     }
@@ -2954,6 +2959,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       ? 'offset X +' + Number(layout.rowOffsetX).toFixed(3) + ' · row Y ' + Number(layout.rowGapY).toFixed(3)
       : 'HexNest offset —';
   }
+  function setHexCount(layout) {
+    if (countEl) countEl.textContent = layout && Array.isArray(layout.parts) ? String(layout.parts.length) : '';
+  }
   window.__bedLoadHexNest = function (diameter) {
     var fields = typeof window.__howManyFields === 'function' ? window.__howManyFields() : null;
     if (!fields || !Number.isFinite(diameter) || diameter <= 0) return;
@@ -2963,7 +2971,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       body: JSON.stringify({ action: 'hex-nest-layout', fields: fields, diameter: diameter })
     }).then(function (r) { return r.ok ? r.json() : null; }).then(function (data) {
       if (!data || !data.hexNest) return;
-      state.hexLayout = data.hexNest; setHexMeta(data.hexNest); render();
+      state.nestResult = null;
+      state.hexLayout = data.hexNest; setHexMeta(data.hexNest); setHexCount(data.hexNest); render();
     }).catch(function () {});
   };
   function insetHexPart(partId, x, y) {
@@ -2974,7 +2983,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       body: JSON.stringify({ action: 'hex-nest-inset', fields: fields, diameter: state.hexDiameter, partId: partId, x: x, y: y })
     }).then(function (r) { return r.ok ? r.json() : null; }).then(function (data) {
       if (!data || !data.hexNest) return;
-      state.hexLayout = data.hexNest; setHexMeta(data.hexNest); render();
+      state.hexLayout = data.hexNest; setHexMeta(data.hexNest); setHexCount(data.hexNest); render();
     }).catch(function () {});
   }
   function fitBed() {

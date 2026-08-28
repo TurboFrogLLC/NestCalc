@@ -8,7 +8,7 @@ const input = {
 };
 
 describe("HexNest", () => {
-  it("lays out same-diameter rounds in offset tangent rows from the margin origin", () => {
+  it("lays out only two same-diameter offset rows from the margin origin", () => {
     const layout = layoutHexNest(input);
     const origin = layout.parts.find((part) => part.isOrigin);
     const upper = layout.parts.find((part) => part.row === 1 && part.column === 0);
@@ -18,11 +18,13 @@ describe("HexNest", () => {
     expect(upper).toMatchObject({ x: 0.75, y: 0.25 + Math.sqrt(3) / 2 });
     expect(layout.rowOffsetX).toBe(0.5);
     expect(layout.rowGapY).toBeCloseTo(Math.sqrt(3) / 2);
+    expect(layout.parts).toHaveLength(10);
+    expect(new Set(layout.parts.map((part) => part.row))).toEqual(new Set([0, 1]));
     expect(layout.parts.every((part) => part.x >= layout.bounds.x && part.y >= layout.bounds.y)).toBe(true);
     expect(layout.parts.every((part) => part.x + part.width <= layout.bounds.x + layout.bounds.width)).toBe(true);
   });
 
-  it("keeps the origin locked while an upper drag insets and shifts the lower row", () => {
+  it("keeps the row-1 origin locked while a row-2 drag insets and shifts row 1", () => {
     const before = layoutHexNest(input);
     const upper = before.parts.find((part) => part.row === 1 && part.column === 1);
     const lower = before.parts.find((part) => part.id === "0:1");
