@@ -15,3 +15,4 @@ Parked: Dummy Detach, ToolPath, F5, G54, cut sheet, rem-pack, three-slab, bed-pa
 ## Issued
 
 - 2026-08-28 Owner: pick up robot plan at the ticker door. Field chip + job door + Reset. AUTO-SIZE / FLiPIT strip on expand once a program exists. Part-rotate on that door. Editor stays earned one-pane. Dummy Detach off.
+- 2026-08-28 Codex App: Seq 14 Ticker-expand-door stamped after origin advanced to layout SHA `d994161` (`feat: add ticker expand door`).
