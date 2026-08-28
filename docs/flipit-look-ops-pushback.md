@@ -1,6 +1,6 @@
 # FLiPIT look — Owner / Ops pushback
 
-updated: 2026-08-27 PT
+updated: 2026-08-28 PT
 land: moved from TurboFrogLLC/wReckless-Robot draft PR #26.
 kind: wReckless Ops + Owner report. Sibling. Do not restamp Robot look files.
 Robot still owns those files. This file is our pushback so they can answer without us editing their map.
@@ -13,6 +13,14 @@ Do not fold into Robot `status/board.md`.
 No spend. No product-code commit. No Build from this file.
 
 Bar: HowMany is the calculator. FLiPIT flips the part and writes the NC that can run that flip. AUTO-SIZE is the comms that puts part size from a loaded program onto the bed. The bed is the shared canvas. FLiPIT does not nest. NC editor is an earned morph inside FLiPIT, not the name of FLiPIT. A pane earns its spot.
+
+## Owner lock — strip seat (2026-08-28)
+
+Earned FLiPIT strip lives on **ticker-expand**. One strip. Not a HowMany second row. Not a second FLiPIT pane.
+
+Ticker-expand already has job door + Reset. When a program exists, the strip earns its seat on that same expand. Flip + export. No code on the glass. Editor is a later morph of that same body.
+
+Close the open on Robot `status/flipit-v3-plan.md`.
 
 ## Start and finish anywhere
 
@@ -37,7 +45,8 @@ That is the wReckless Toddler manufacturing pattern (same idea as ShopQuote ↔ 
 - Open the canvas → type blank / part / gap / margin → HowMany count. Stop.
 - Open a named rem pack from the presets popover → same HowMany. Stop.
 - Ticker expand → AUTO-SIZE → file dialog → part size. Stop, or let HowMany recount if the bed is up.
-- Open FLiPIT with a program and never touch the bed. Flip or open the one-pane editor. Stop.
+- Program exists → same ticker-expand earns the FLiPIT strip. Flip or open the one-pane editor. Stop.
+- Open FLiPIT with a program and never touch the bed. Still allowed. Same one strip, not a second strip.
 - Mix them.
 
 ## What we keep from the look files
@@ -114,7 +123,7 @@ Reset keeps blank / gap / margin (the rem is still on the table). Clears part si
 
 **Program in + Reset:** same Reset alert. Do not hide Reset inside Load only.
 
-Do not morph the job door into FLiPIT. FLiPIT strip earns itself once a program exists.
+Do not morph the job door into FLiPIT. FLiPIT strip earns itself on ticker-expand once a program exists. One strip.
 
 ## Ticker vs HUD vs presets
 
@@ -148,7 +157,7 @@ Why 0.125: a rem at 12.120 vs 12.250 can be the difference of one more part. Ste
 
 1. Bed is the canvas. HowMany with typed or preset blank / part / gap / margin. Count by the arc. Rotate parts, rotate blank, or both. Can stop here.
 2. Ticker expand → AUTO-SIZE. File dialog. Load hydrates part size. HowMany recounts.
-3. Program exists → FLiPIT strip. Flip + export. No code on the glass.
+3. Program exists → same ticker-expand earns the FLiPIT strip. Flip + export. No code on the glass. One strip.
 4. Same body → NC editor. One pane. Apply commits. Bbox prompt if needed.
 
 ## HexNest — HowMany for same-size rounds
@@ -222,6 +231,7 @@ V2 is live heritage. V3 is the composition host on purpose. Do not clone V2 FLiP
 - Not “HowMany = tab chrome, FLiPIT = the whole product.”
 - Not “FLiPIT = the NC editor.” Strip is default. Editor is earned. One pane, not Source + Output.
 - Not ticker-swallows-everything.
+- Not a HowMany second row for the strip.
 - Not leftover `#116` five-state. Not `#117` kit this pass.
 - Not HowMany emitting NC. Not FLiPIT doing how-many.
 - Not a second hydrate button. Not live parse while typing.
@@ -239,6 +249,7 @@ V2 is live heritage. V3 is the composition host on purpose. Do not clone V2 FLiP
 
 Leave the look files as Robot wrote them.
 Answer *this* file.
+Owner lock: earned strip on ticker-expand. One strip. Close that open on `status/flipit-v3-plan.md`.
 If the look map changes, Robot edits their map.
 Do not treat tab-only HowMany as locked.
 Do not treat FLiPIT as “just NC.”
