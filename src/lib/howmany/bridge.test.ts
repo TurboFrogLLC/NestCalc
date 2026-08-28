@@ -10,6 +10,7 @@ import {
   fieldBindingForId,
   formatShellNumber,
   generationIsFresh,
+  hydrateHowManyFromGCode,
   HOWMANY_COUNT_ID,
   insertShellDecimal,
   joinHowManyCount,
@@ -220,6 +221,20 @@ describe("HowMany count join", () => {
     expect(joinHowManyCountFromFields(mmFields, "mm", "in")).toBe(6);
   });
 
+  it("hydrates the manual join from NC bounds without AutoNest", () => {
+    const hydration = hydrateHowManyFromGCode(
+      "G20\nG0 X0 Y0\nG1 X2 Y1",
+      nestFixtureFields,
+    );
+
+    expect(hydration).toMatchObject({
+      ok: true,
+      partSize: { width: 2, height: 1 },
+      blankSize: { width: 5, height: 8 },
+      nestResult: { partsAcross: 1, partsDown: 1, totalParts: 1 },
+    });
+  });
+
   it("keeps the V3 host count slot by the arc and kills AUTO-SIZE → FLiPIT", () => {
     const html = readFileSync(
       path.join(
@@ -243,7 +258,9 @@ describe("HowMany count join", () => {
     expect(html).toContain('id="rem-x"');
     expect(html).toContain('id="lb-nest-tiles"');
     expect(html).toContain('__bedSetNestTiles');
+    expect(html).toContain('__howManyHydrateFromNC');
     expect(autoSizeClick).toBeTruthy();
     expect(autoSizeClick).not.toContain("__flipitAutoSize");
+    expect(autoSizeClick).toContain("__autoSizeOpen");
   });
 });

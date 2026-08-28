@@ -1,6 +1,9 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { joinHowManyNestResultFromFields } from "@/lib/howmany/bridge";
+import {
+  hydrateHowManyFromGCode,
+  joinHowManyNestResultFromFields,
+} from "@/lib/howmany/bridge";
 import type { Unit } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -37,6 +40,8 @@ export async function POST(request: Request) {
   }
 
   const record = body as {
+    action?: unknown;
+    source?: unknown;
     fields?: unknown;
     fieldUnit?: unknown;
     sessionUnit?: unknown;
@@ -52,10 +57,38 @@ export async function POST(request: Request) {
     values[key] = value == null ? "" : String(value);
   }
 
+  const fieldUnit = isUnit(record.fieldUnit) ? record.fieldUnit : "in";
+  const sessionUnit = isUnit(record.sessionUnit) ? record.sessionUnit : "in";
+  if (record.action === "hydrate") {
+    if (typeof record.source !== "string") {
+      return Response.json({ error: "invalid-source" }, { status: 400 });
+    }
+
+    const hydration = hydrateHowManyFromGCode(
+      record.source,
+      values,
+      fieldUnit,
+      sessionUnit,
+    );
+    if (!hydration.ok) {
+      return Response.json(
+        { error: "invalid-gcode", diagnostics: hydration.diagnostics },
+        { status: 422 },
+      );
+    }
+
+    return Response.json({
+      totalParts: hydration.nestResult.totalParts,
+      nestResult: hydration.nestResult,
+      partSize: hydration.partSize,
+      blankSize: hydration.blankSize,
+    });
+  }
+
   const nestResult = joinHowManyNestResultFromFields(
     values,
-    isUnit(record.fieldUnit) ? record.fieldUnit : "in",
-    isUnit(record.sessionUnit) ? record.sessionUnit : "in",
+    fieldUnit,
+    sessionUnit,
   );
   return Response.json({ totalParts: nestResult.totalParts, nestResult });
 }

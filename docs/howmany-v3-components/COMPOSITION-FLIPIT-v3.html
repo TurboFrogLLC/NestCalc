@@ -3107,6 +3107,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }
     return fields;
   }
+  window.__howManyFields = collectHowManyFields;
+  window.__howManyFieldUnit = function () { return state.units || 'in'; };
   var howManyJoinTimer = null;
   var howManyJoinRequest = 0;
   function syncHowManyCount() {
@@ -3136,6 +3138,32 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         .catch(function () {});
     }, 0);
   }
+  window.__howManyHydrateFromNC = function (data) {
+    if (!data || !data.partSize || !data.blankSize) return false;
+    var partX = Number(data.partSize.width), partY = Number(data.partSize.height);
+    var blankX = Number(data.blankSize.width), blankY = Number(data.blankSize.height);
+    if (![partX, partY, blankX, blankY].every(Number.isFinite)) return false;
+    paramState.part.x = partX;
+    paramState.part.y = partY;
+    paramState.part.linked = partX === partY && !!paramState.part.linked;
+    paramState.blank.x = blankX;
+    paramState.blank.y = blankY;
+    paramState.blank.linked = blankX === blankY && !!paramState.blank.linked;
+    var fields = { 'part-x': partX, 'part-y': partY, 'rem-x': blankX, 'rem-y': blankY };
+    Object.keys(fields).forEach(function (id) {
+      var field = document.getElementById(id);
+      if (field) field.value = fmt3(fields[id]);
+    });
+    var count = document.getElementById('lb-count');
+    if (count && data.totalParts != null) count.textContent = String(data.totalParts);
+    if (data.nestResult && typeof window.__bedSetNestTiles === 'function') {
+      var gapX = Number((document.getElementById('gap-x') || {}).value);
+      var gapY = Number((document.getElementById('gap-y') || {}).value);
+      window.__bedSetNestTiles(data.nestResult, gapX, gapY);
+    }
+    refreshTickers();
+    return true;
+  };
   function refreshTickers() {
     const p = paramState.part, b = paramState.blank, g = paramState.gap, m = paramState.margin;
     const tPart = document.querySelector('[data-ticker="part"]');
@@ -3912,6 +3940,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   document.getElementById('btn-auto-size').addEventListener('click', function () {
     closeAllParamPopovers();
     if (typeof window.__hudExitCalc === 'function') window.__hudExitCalc();
+    if (typeof window.__autoSizeOpen === 'function') window.__autoSizeOpen();
   });
   document.getElementById('btn-gcode').addEventListener('click', function () {
     closeAllParamPopovers();
@@ -4213,11 +4242,52 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     reader.onerror = function () { showToast('Could not read file'); };
     reader.readAsText(file);
   }
+  function hydrateAutoSizeFile(file) {
+    if (!file) return;
+    if (!acceptLocalFile(file)) {
+      showToast('Use a .txt, .nc, or .cnc file');
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function () {
+      var sourceText = String(reader.result || '');
+      loadSourceText(sourceText, programStem(file.name));
+      fetch('/howmany-shell', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'hydrate', source: sourceText,
+          fields: typeof window.__howManyFields === 'function' ? window.__howManyFields() : {},
+          fieldUnit: typeof window.__howManyFieldUnit === 'function' ? window.__howManyFieldUnit() : 'in',
+          sessionUnit: typeof window.__howManyFieldUnit === 'function' ? window.__howManyFieldUnit() : 'in'
+        })
+      }).then(function (response) { return response.ok ? response.json() : null; })
+        .then(function (data) {
+          if (!data || typeof window.__howManyHydrateFromNC !== 'function' || !window.__howManyHydrateFromNC(data)) {
+            showToast('Could not size NC');
+            return;
+          }
+          setBounds(Number(data.partSize.width), Number(data.partSize.height));
+          sizedClean = true;
+          syncDetectArm();
+          showToast('NC loaded — blank sized');
+        })
+        .catch(function () { showToast('Could not size NC'); });
+    };
+    reader.onerror = function () { showToast('Could not read file'); };
+    reader.readAsText(file);
+  }
   var fileInput = document.getElementById('flipit-file-input');
+  var autoSizePickerRequested = false;
   if (fileInput) {
     fileInput.addEventListener('change', function () {
       var file = fileInput.files && fileInput.files[0];
-      handleLocalFile(file);
+      if (autoSizePickerRequested) {
+        autoSizePickerRequested = false;
+        hydrateAutoSizeFile(file);
+      } else {
+        handleLocalFile(file);
+      }
       fileInput.value = '';
     });
   }
@@ -4226,6 +4296,14 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     fileInput.value = '';
     fileInput.click();
   }
+  window.__autoSizeOpen = function () {
+    if (!fileInput) return false;
+    if (hasSource() && !window.confirm('Replace the loaded NC job with a new file?')) return false;
+    autoSizePickerRequested = true;
+    fileInput.value = '';
+    fileInput.click();
+    return false;
+  };
 
   function setStatus(state) {
     statusDot.setAttribute('data-state', state);
