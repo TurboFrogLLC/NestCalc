@@ -12,7 +12,7 @@ Not a Robot channel. Do not open `channels/flipit` on Robot.
 Do not fold into Robot `status/board.md`.
 No spend. No product-code commit. No Build from this file.
 
-Bar: HowMany is the calculator. FLiPIT flips the part and writes the NC that can run that flip. AUTO-SIZE is the comms that puts FLiPIT part size onto the bed. The bed is the shared canvas. FLiPIT does not nest.
+Bar: HowMany is the calculator. FLiPIT flips the part and writes the NC that can run that flip. AUTO-SIZE is the comms that puts part size from a loaded program onto the bed. The bed is the shared canvas. FLiPIT does not nest. NC editor is an earned morph inside FLiPIT, not the name of FLiPIT.
 
 ## What we keep from the look files
 
@@ -41,51 +41,52 @@ HowMany does bounding-box math on that rectangle (the part in a bounty box). It 
 
 An operator who only wants this can stop here. Their laser or waterjet already has a basic array nest in the machine UI. They take the count and the steps and they set that array on the controller. That is enough for a lot of shops.
 
-**Auto-nest rotate is the same module, an upgrade inside HowMany.** It rotates parts in line in a row to see if more fit. Still bounding-box math. Still no NC.
+**Auto-nest rotate is the same module, an upgrade inside HowMany.** It rotates parts in line in a row to see if more fit. Still bounding-box math. Still no NC. Code: `src/lib/autoNestEngine.ts`. Do not call this AUTO-SIZE.
 
 Count is first-class on the glass, with HowMany. Outside the blank, between the right corner and the floating arc handle. Just the number. Not on the parts. Not in the ticker stack.
 
 Tab title may still say HowMany. That does not exile the calculator from the glass. “HowMany lives in the tab only” is the line we are pushing back.
 
-### FLiPIT — flip the part, write the NC that runs that flip
+### FLiPIT — flip strip, then earned editor
 
 Primary job is **not** “be an NC editor.”
 
-Primary job: rotate / flip the part **and generate the NC** so the machine can run the program with the part flipped. The controller has to see that rotation in the code or the part does not come off the machine flipped.
+Primary job: rotate / flip the part **and generate the NC** so the machine can run the program with the part flipped. The controller has to see that rotation in the code or the part does not come off the machine flipped. Code: `src/lib/gcodeRotation.ts`.
 
-Manual NC edit is available inside FLiPIT if the user wants it. That is a part of the module, not the name of the module.
+**Strip (default).** Flip buttons only (90 / −90 / 180 / whatever the host already has). Code is in the session. Operator does not see it. Export writes the program that runs that flip.
+
+**Editor (earned morph, same body).** One pane. Not Source + Output. Edit, Apply. Flip still works here because flip has to rewrite the program. Do not make the operator click a second angle button at 0° just to commit.
 
 FLiPIT does **not** nest. No how-many. No array. No bounding-box pack.
 
 You do **not** have to put FLiPIT on the bed to flip a part. Flip can run in FLiPIT alone, then the user takes the NC (save, paste, send) if they can and want to.
 
-Not every user will save a file and put it back in the machine. Not every user will cut-paste from the FLiPIT editor. Some people only want the calculator. FLiPIT is the added module for people who want the part to go onto the machine from this package. Call that a later paid lane if we productize it. It does not replace HowMany.
+Not every user will save a file and put it back in the machine. Some people only want the calculator. FLiPIT is the added module for people who want the part to go onto the machine from this package. It does not replace HowMany.
 
 ### AUTO-SIZE — comms, not a third nest
 
-AUTO-SIZE sits with FLiPIT.
+AUTO-SIZE sits on the ticker expand. No new card. OS file dialog only.
 
-It is the comms door between FLiPIT and the bed. Do not brand it “hydrator.”
+It is not HowMany. It is not `calculateAutoNest`. It does not flip. It moves size.
 
-What it does: take the part size from the FLiPIT NC panel and put that size onto the bed blank. Now the blank has a real part size without the operator typing HowMany part fields by hand.
+Empty session: click AUTO-SIZE → file dialog → cancel does nothing → pick a file reads bbox, writes HowMany part X/Y, bed + count update. That is hydrate. No second button.
 
-HowMany manual entry still works. If someone never opens FLiPIT, they type blank / part / gap / margin themselves. AUTO-SIZE is how FLiPIT part size becomes the bed part size.
+File already in session: same ticker slot becomes **Open new file** (different icon). Confirm first: clear this job and open another? Cancel keeps the nest. OK → dialog → replace program and part size. Blank / gap / margin stay.
 
-AUTO-SIZE is not HowMany. It is not `calculateAutoNest`. It does not flip. It moves size.
+Do not morph the AUTO-SIZE slot into FLiPIT. FLiPIT strip earns itself once a program exists. Click-again on AUTO-SIZE is load-another, not flip.
 
-## The bed is the shared canvas
+HowMany with a typed part and HowMany with an NC-sized part are the same calculator. AUTO-SIZE replaces part size. Count changes because the part changed. No shadow typed size.
 
-The mouse, the blank, the living drag — that canvas is what the package uses. HowMany draws the boxed parts and the count there. When we *do* bring FLiPIT onto the bed, the flipped part (or the NC that represents it) lands on that same blank so HowMany can nest **that** part. FLiPIT still did not nest. HowMany did.
+## Flow
 
-Flow we want:
+Light and tight. Canvas first. A pane earns its spot.
 
-1. FLiPIT flips and writes NC. Can stop here.
-2. AUTO-SIZE puts FLiPIT part size onto the bed blank.
-3. HowMany nests that boxed part on the blank (count + steps). Still no NC from HowMany.
-4. Later: send the nest picture back into FLiPIT’s NC editor so FLiPIT can write a program that includes what is on the blank.
-5. Later still, maybe: FLiPIT writes a nest *sequence* into the NC. That is harder. Not promised. We will see.
-
-Reverse (bed → FLiPIT) is the hard direction. Controllers differ. First controller is **ACS** — what Owner runs. Owner will feed real ACS programs. Other controls wait. Do not invent a universal post.
+1. Bed blank is the canvas. HowMany runs with typed blank / part / gap / margin. Count sits outside the blank by the arc handle. Can stop here.
+2. Ticker expand → AUTO-SIZE. File dialog. Load hydrates part size onto the bed. HowMany recounts. No staging card. No extra hydrate.
+3. Program now exists → FLiPIT strip earns itself. Flip + export. No code on the glass.
+4. One more click on that same body → NC editor. One pane. Apply commits. If bbox changed vs the bed part, prompt: update the bed? Yes writes HowMany part size + count. No keeps the nest. Not live-while-typing. Flip buttons do not rehydrate.
+5. Later: bed → FLiPIT NC (nest picture back into the program). Hard. First controller **ACS**. Do not invent a universal post.
+6. Later still, maybe: FLiPIT writes a nest sequence into the NC. Not promised.
 
 ## HexNest (later, not this look pass)
 
@@ -93,17 +94,33 @@ Inset stagger. V1 same-diameter. How-many is the gate. Interior-row rotate (thre
 
 ## Presets
 
-Load known blank / gap / margin (later part). Same body family as FLiPIT is fine. Keep the name until a better one earns it. Not a 10-key. Not ticker chips.
+Load known blank / gap / margin (later part). Same body family as FLiPIT is fine. Keep the name until a better one earns it. Not a 10-key. Not ticker chips. Store: `src/lib/presetStore.ts`.
+
+## Pointers (do not make Robot hunt)
+
+- HowMany math: `src/lib/nestcalc.ts`, session: `src/lib/nestSession.ts`
+- Auto-nest rotate (HowMany upgrade, not AUTO-SIZE): `src/lib/autoNestEngine.ts` + `src/lib/autoNestEngine.test.ts`
+- Flip / rewrite NC: `src/lib/gcodeRotation.ts` + `src/lib/gcodeRotation.test.ts`
+- Presets: `src/lib/presetStore.ts`
+- Units: `src/lib/units.ts`
+- V3 shell (chrome only): `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`
+- Concept spitball (parked kit): NestCalc PR #117
+- Leftover five-state chrome: NestCalc PR #116
+- This split: NestCalc PR #118
+
+V2 is live heritage. V3 is the composition host on purpose. Do not clone V2 FLiPIT chrome onto V3. Do not score the V3 host as a failed product because the engine is not in it yet.
 
 ## What this is not
 
 - Not a design suite. Not LightBurn.
 - Not “HowMany = tab chrome, FLiPIT = the whole product.”
-- Not “FLiPIT = the NC editor, flip is a side button.” Flip + generated NC is the job. Editor is the extra.
+- Not “FLiPIT = the NC editor, flip is a side button.” Strip is default. Editor is earned. One pane, not Source + Output.
 - Not ticker-swallows-everything (already withdrawn).
 - Not leftover `#116` five-state. Not `#117` kit this pass.
 - Not HowMany emitting NC.
 - Not FLiPIT doing bounding-box how-many.
+- Not a second hydrate button. Not live parse while typing.
+- Not AUTO-SIZE morphing into the FLiPIT icon.
 
 ## Ask of Robot
 
@@ -112,4 +129,5 @@ Answer *this* file.
 If the look map changes, Robot edits their map.
 Do not treat tab-only HowMany as locked.
 Do not treat FLiPIT as “just NC.”
+File `status/flipit-job.md` from the decide log if it is still missing. This PR is the product pointer; that file is their board sibling.
 Do not open a channel. Do not invoke Build from this file.
