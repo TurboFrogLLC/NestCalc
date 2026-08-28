@@ -1,6 +1,7 @@
 import {
   analyzeGCode,
   partSizeFromBounds,
+  type Bounds,
   type GCodeDiagnostic,
   type GCodeUnit,
 } from "../gcodeRotation";
@@ -104,6 +105,8 @@ export function joinHowManyNestResultFromFields(
 export type HowManyGCodeHydration =
   | {
       ok: true;
+      bounds: Bounds;
+      unit: GCodeUnit;
       partSize: PartSize;
       blankSize: PartSize;
       nestResult: NestResult;
@@ -176,6 +179,8 @@ export function hydrateHowManyFromGCode(
 
   return {
     ok: true,
+    bounds: analysis.bounds,
+    unit: analysis.unit,
     partSize: hydratedPartSize,
     blankSize,
     nestResult: joinHowManyNestResultFromFields(

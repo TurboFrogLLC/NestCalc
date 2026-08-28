@@ -229,6 +229,8 @@ describe("HowMany count join", () => {
 
     expect(hydration).toMatchObject({
       ok: true,
+      bounds: { minX: 0, minY: 0, maxX: 2, maxY: 1 },
+      unit: "in",
       partSize: { width: 2, height: 1 },
       blankSize: { width: 5, height: 8 },
       nestResult: { partsAcross: 1, partsDown: 1, totalParts: 1 },
@@ -259,6 +261,8 @@ describe("HowMany count join", () => {
     expect(html).toContain('id="lb-nest-tiles"');
     expect(html).toContain('__bedSetNestTiles');
     expect(html).toContain('__howManyHydrateFromNC');
+    expect(html).toContain("action: 'analyze'");
+    expect(html).not.toContain('setBounds(82.398, 92.396)');
     expect(autoSizeClick).toBeTruthy();
     expect(autoSizeClick).not.toContain("__flipitAutoSize");
     expect(autoSizeClick).toContain("__autoSizeOpen");

@@ -59,7 +59,7 @@ export async function POST(request: Request) {
 
   const fieldUnit = isUnit(record.fieldUnit) ? record.fieldUnit : "in";
   const sessionUnit = isUnit(record.sessionUnit) ? record.sessionUnit : "in";
-  if (record.action === "hydrate") {
+  if (record.action === "hydrate" || record.action === "analyze") {
     if (typeof record.source !== "string") {
       return Response.json({ error: "invalid-source" }, { status: 400 });
     }
@@ -77,9 +77,19 @@ export async function POST(request: Request) {
       );
     }
 
+    if (record.action === "analyze") {
+      return Response.json({
+        bounds: hydration.bounds,
+        unit: hydration.unit,
+        partSize: hydration.partSize,
+      });
+    }
+
     return Response.json({
       totalParts: hydration.nestResult.totalParts,
       nestResult: hydration.nestResult,
+      bounds: hydration.bounds,
+      unit: hydration.unit,
       partSize: hydration.partSize,
       blankSize: hydration.blankSize,
     });

@@ -4044,6 +4044,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   var outSnapshot = '';
   var processDone = false;
   var sizedClean = false;
+  var detecting = false;
   var toastTimer = null;
   var lastGcodePos = null; /* R11 position memory */
 
@@ -4212,6 +4213,13 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
 
   function syncDetectArm() {
+    if (detecting) {
+      btnDetect.disabled = true;
+      btnDetect.classList.remove('is-armed');
+      btnDetect.title = 'Reading NC bounds';
+      syncPartGroup();
+      return;
+    }
     if (!hasSource()) {
       btnDetect.disabled = true;
       btnDetect.classList.remove('is-armed');
@@ -4241,11 +4249,40 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
 
   function detectPart() {
-    if (!hasSource()) return false;
-    setBounds(82.398, 92.396);
-    sizedClean = true;
+    if (!hasSource() || detecting) return Promise.resolve(false);
+    detecting = true;
     syncDetectArm();
-    return true;
+    return fetch('/howmany-shell', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'analyze', source: source.value,
+        fields: typeof window.__howManyFields === 'function' ? window.__howManyFields() : {},
+        fieldUnit: typeof window.__howManyFieldUnit === 'function' ? window.__howManyFieldUnit() : 'in',
+        sessionUnit: typeof window.__howManyFieldUnit === 'function' ? window.__howManyFieldUnit() : 'in'
+      })
+    }).then(function (response) {
+      return response.json().then(function (data) {
+        return { ok: response.ok, data: data };
+      });
+    }).then(function (result) {
+      var data = result.data;
+      if (!result.ok || !data || !data.bounds || !data.partSize ||
+        !Number.isFinite(Number(data.partSize.width)) ||
+        !Number.isFinite(Number(data.partSize.height))) {
+        showToast('Could not read NC bounds');
+        return false;
+      }
+      setBounds(Number(data.partSize.width), Number(data.partSize.height), data.bounds, data.unit);
+      sizedClean = true;
+      return true;
+    }).catch(function () {
+      showToast('Could not read NC bounds');
+      return false;
+    }).finally(function () {
+      detecting = false;
+      syncDetectArm();
+    });
   }
 
   function loadSourceText(text, name) {
@@ -4284,7 +4321,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var reader = new FileReader();
     reader.onload = function () {
       loadSourceText(String(reader.result || ''), programStem(file.name));
-      showToast('Program loaded — Auto-Size ready');
+      detectPart().then(function (detected) {
+        if (detected) showToast('Program loaded — bounds read');
+        else showToast('Program loaded — detect ready');
+      });
     };
     reader.onerror = function () { showToast('Could not read file'); };
     reader.readAsText(file);
@@ -4314,7 +4354,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
             showToast('Could not size NC');
             return;
           }
-          setBounds(Number(data.partSize.width), Number(data.partSize.height));
+          setBounds(Number(data.partSize.width), Number(data.partSize.height), data.bounds, data.unit);
           sizedClean = true;
           syncDetectArm();
           showToast('NC loaded — blank sized');
@@ -4363,11 +4403,18 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     statusDot.title = titles[state] || '';
     statusDot.setAttribute('aria-label', titles[state] || 'Status');
   }
-  function setBounds(x, y) {
-    bounds = { x: x, y: y };
+  function setBounds(x, y, sourceBounds, sourceUnit) {
+    bounds = { x: x, y: y, source: sourceBounds || null, unit: sourceUnit || 'unknown' };
     posted = false;
     partReadout.textContent = x.toFixed(3) + ' × ' + y.toFixed(3);
     partReadout.classList.remove('is-empty');
+    if (sourceBounds) {
+      partTicker.title = 'NC bounds: X ' + sourceBounds.minX + ' to ' + sourceBounds.maxX +
+        ' · Y ' + sourceBounds.minY + ' to ' + sourceBounds.maxY +
+        (sourceUnit && sourceUnit !== 'unknown' ? ' ' + sourceUnit : '');
+    } else {
+      partTicker.title = 'Part size';
+    }
     partTicker.classList.remove('is-stale');
     btnPost.disabled = false;
     setStatus('ready');
@@ -4380,6 +4427,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     sizedClean = false;
     partReadout.textContent = '—';
     partReadout.classList.add('is-empty');
+    partTicker.title = 'Part size';
     partTicker.classList.remove('is-stale');
     btnPost.disabled = true;
     setStatus('none');
@@ -4772,7 +4820,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     syncOutputTab();
   }
 
-  stageAction.addEventListener('click', function () {
+  stageAction.addEventListener('click', async function () {
     if (srcEdit || outEdit) return;
     var state = stageAction.getAttribute('data-state');
     if (state === 'start') {
@@ -4788,7 +4836,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }
     if (state === 'process') {
       if (!hasSource()) return;
-      detectPart();
+      if (!(await detectPart())) return;
       var header = '; ' + (progName.value.trim() || 'untitled') +
         ' · rotation ' + rot + '° · ' + unit + '\n';
       if (rot !== 0) header += '; (demo) rotation transform applied\n';
@@ -4822,8 +4870,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   });
 
   btnDetect.addEventListener('click', function () {
-    if (detectPart()) showToast('Part sized');
-    syncDetectArm();
+    detectPart().then(function (detected) {
+      if (detected) showToast('Part sized');
+    });
   });
 
   btnPost.addEventListener('click', function () {
