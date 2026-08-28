@@ -1,8 +1,8 @@
 # FLiPIT look — Owner / Ops pushback
 
 updated: 2026-08-27 PT
-land: moved from TurboFrogLLC/wReckless-Robot draft PR #26. Same text. This repo has no `status/` board; file lives at `docs/flipit-look-ops-pushback.md`.
-kind: wReckless Ops + Owner report. Sibling. Do not restamp Robot `status/flipit-look.md`, `status/flipit-look-review.md`, `status/flipit-look-glass.md`, or `status/flipit-look-ticker.md`.
+land: moved from TurboFrogLLC/wReckless-Robot draft PR #26.
+kind: wReckless Ops + Owner report. Sibling. Do not restamp Robot look files.
 Robot still owns those files. This file is our pushback so they can answer without us editing their map.
 floor: NestCalc SuperGrok
 lock: Owner
@@ -12,7 +12,17 @@ Not a Robot channel. Do not open `channels/flipit` on Robot.
 Do not fold into Robot `status/board.md`.
 No spend. No product-code commit. No Build from this file.
 
-Bar: HowMany is the calculator. FLiPIT flips the part and writes the NC that can run that flip. AUTO-SIZE is the comms that puts part size from a loaded program onto the bed. The bed is the shared canvas. FLiPIT does not nest. NC editor is an earned morph inside FLiPIT, not the name of FLiPIT.
+Bar: HowMany is the calculator. FLiPIT flips the part and writes the NC that can run that flip. AUTO-SIZE is the comms that puts part size from a loaded program onto the bed. The bed is the shared canvas. FLiPIT does not nest. NC editor is an earned morph inside FLiPIT, not the name of FLiPIT. A pane earns its spot.
+
+## Picture now (for Robot)
+
+You can start on any door. Nothing is a wizard.
+
+- Open the canvas → type blank / part / gap / margin → HowMany count. Stop.
+- Open a named rem pack from the presets popover → same HowMany. Stop.
+- Ticker expand → AUTO-SIZE → file dialog → part size hits the bed → count updates. FLiPIT strip earns. Flip + export. Stop.
+- Open FLiPIT with a program and never touch the bed. Flip or open the one-pane editor. Stop.
+- Mix them. HowMany does not require NC. FLiPIT does not require the nest.
 
 ## What we keep from the look files
 
@@ -58,17 +68,15 @@ Tab title may still say HowMany. That does not exile the calculator from the gla
 
 Primary job is **not** “be an NC editor.”
 
-Primary job: rotate / flip the part **and generate the NC** so the machine can run the program with the part flipped. The controller has to see that rotation in the code or the part does not come off the machine flipped. Code: `src/lib/gcodeRotation.ts`.
+Primary job: rotate / flip the part **and generate the NC** so the machine can run the program with the part flipped. Code: `src/lib/gcodeRotation.ts`.
 
-**Strip (default).** Flip buttons only (90 / −90 / 180 / whatever the host already has). Code is in the session. Operator does not see it. Export writes the program that runs that flip.
+**Strip (default).** Flip buttons only. Code is in the session. Operator does not see it. Export writes the program that runs that flip.
 
 **Editor (earned morph, same body).** One pane. Not Source + Output. Edit, Apply. Flip still works here because flip has to rewrite the program. Do not make the operator click a second angle button at 0° just to commit.
 
-FLiPIT does **not** nest. No how-many. No array. No bounding-box pack.
+FLiPIT does **not** nest.
 
-You do **not** have to put FLiPIT on the bed to flip a part. Flip can run in FLiPIT alone, then the user takes the NC (save, paste, send) if they can and want to.
-
-Not every user will save a file and put it back in the machine. Some people only want the calculator. FLiPIT is the added module for people who want the part to go onto the machine from this package. It does not replace HowMany.
+You do **not** have to put FLiPIT on the bed to flip a part.
 
 ### AUTO-SIZE — comms, not a third nest
 
@@ -84,24 +92,42 @@ Do not morph the AUTO-SIZE slot into FLiPIT. FLiPIT strip earns itself once a pr
 
 HowMany with a typed part and HowMany with an NC-sized part are the same calculator. AUTO-SIZE replaces part size. Count changes because the part changed. No shadow typed size.
 
-## Flow
+## Ticker vs HUD vs presets
 
-Light and tight. Canvas first. A pane earns its spot.
+Ticker is a handle on the blank. Expand a field (gap, margin, blank, part). The strip becomes that field. Same type / swap / link as the HUD, but it stays a thin chip. Double-click blank X or Y to type that side; that is when swap/link show. Do not call this hydrate.
 
-1. Bed blank is the canvas. HowMany runs with typed blank / part / gap / margin. Count sits outside the blank by the arc handle. Rotate parts, rotate blank, or both. Can stop here.
-2. Ticker expand → AUTO-SIZE. File dialog. Load hydrates part size onto the bed. HowMany recounts. No staging card. No extra hydrate.
-3. Program now exists → FLiPIT strip earns itself. Flip + export. No code on the glass.
-4. One more click on that same body → NC editor. One pane. Apply commits. If bbox changed vs the bed part, prompt: update the bed? Yes writes HowMany part size + count. No keeps the nest. Not live-while-typing. Flip buttons do not rehydrate.
-5. Later: bed → FLiPIT NC (nest picture back into the program). Hard. First controller **ACS**. Do not invent a universal post.
-6. Later still, maybe: FLiPIT writes a nest sequence into the NC. Not promised.
+HUD is the other door to the same four numbers when you are not dragging. Same session. Two doors, not two stores.
 
-## HexNest (later, not this look pass)
+**Presets** are HowMany canvas gear. Earned at boot. Not a FLiPIT morph. Not the ticker library.
 
-Inset stagger. V1 same-diameter. How-many is the gate. Interior-row rotate (three slabs) is Owner override for that later module. Not a flag on `calculateNest`. F5 stays lab.
+- Library = popover on the HowMany inspector. Named packs + field recipes.
+- Cap: **7** named packs. Not a materials tree. Not a breadcrumb. Name carries the material (`125 SS rem`).
+- Pack = blank + gap + margin. Part size stays out.
+- Offload = export / import the list as one text/JSON file. Not one file per preset in the picker.
+- Store: `src/lib/presetStore.ts`. Frontend only this pass.
 
-## Presets
+If a program is loaded and they type a new part size on ticker or HUD: do not rewrite the NC. Alert: part no longer matches the program. Nest uses the typed box. Export still uses the program until they Apply in the editor.
 
-Load known blank / gap / margin (later part). Same body family as FLiPIT is fine. Keep the name until a better one earns it. Not a 10-key. Not ticker chips. Store: `src/lib/presetStore.ts`.
+If they change the code and Apply, and bbox differs from the bed: ask to update the bed.
+
+## Flow (happy path, not the only path)
+
+1. Bed is the canvas. HowMany with typed or preset blank / part / gap / margin. Count by the arc. Rotate parts, rotate blank, or both. Can stop here.
+2. Ticker expand → AUTO-SIZE. File dialog. Load hydrates part size. HowMany recounts.
+3. Program exists → FLiPIT strip. Flip + export. No code on the glass.
+4. Same body → NC editor. One pane. Apply commits. Bbox prompt if needed.
+
+## Parked — later modules, not this pass
+
+**Cut sheet.** Real shop pain: checklist of tonight’s jobs next to the ACS HMI. One live row, check it, load next, bed updates. Separate module. Do not build it on this look pass. Do not merge with presets (presets = rem recipes; cut list = jobs). When it earns a pane: program name, part size after that row is picked, blank if typed, check. No material tree. No pre-parse of fifteen files.
+
+**Save nest / part file.** Reload a nest you already made, not only a single flipped part. Not this pass.
+
+**HexNest.** Inset stagger. V1 same-diameter. How-many is the gate. Interior-row rotate (three slabs) is Owner override. Not a flag on `calculateNest`. F5 stays SuperBrain lab.
+
+**Bed → FLiPIT NC.** Nest picture back into the program. Hard. First controller **ACS**. Do not invent a universal post. Nest *sequence* into NC is later still, not promised.
+
+**ToolPath card.** In the family. Park. Do not invent.
 
 ## Pointers (do not make Robot hunt)
 
@@ -121,14 +147,15 @@ V2 is live heritage. V3 is the composition host on purpose. Do not clone V2 FLiP
 
 - Not a design suite. Not LightBurn.
 - Not “HowMany = tab chrome, FLiPIT = the whole product.”
-- Not “FLiPIT = the NC editor, flip is a side button.” Strip is default. Editor is earned. One pane, not Source + Output.
-- Not ticker-swallows-everything (already withdrawn).
+- Not “FLiPIT = the NC editor.” Strip is default. Editor is earned. One pane, not Source + Output.
+- Not ticker-swallows-everything.
 - Not leftover `#116` five-state. Not `#117` kit this pass.
-- Not HowMany emitting NC.
-- Not FLiPIT doing bounding-box how-many.
+- Not HowMany emitting NC. Not FLiPIT doing how-many.
 - Not a second hydrate button. Not live parse while typing.
 - Not AUTO-SIZE morphing into the FLiPIT icon.
-- Not offset / step as HowMany output. Quantity is the report. Trim-off offset is AutoNest.
+- Not offset / step as HowMany output.
+- Not a materials breadcrumb. Not an unlimited preset file cabinet.
+- Not a cut sheet this pass.
 
 ## Ask of Robot
 
@@ -137,5 +164,5 @@ Answer *this* file.
 If the look map changes, Robot edits their map.
 Do not treat tab-only HowMany as locked.
 Do not treat FLiPIT as “just NC.”
-File `status/flipit-job.md` from the decide log if it is still missing. This PR is the product pointer; that file is their board sibling.
+File `status/flipit-job.md` from the decide log if it is still missing.
 Do not open a channel. Do not invoke Build from this file.
