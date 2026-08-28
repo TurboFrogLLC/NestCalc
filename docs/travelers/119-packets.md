@@ -12,14 +12,13 @@ Operator: Grok Build then Codex App
 3. Shirt-off FLiPIT strip + one-pane editor — Fit-angle-strip stamped 1a343a7
 4. Real detect / NC bounds — stamped e8059ef
 4b. Mobile-fit HUD + FLiPIT + NC editor — stamped bbde518
-5. HexNest + drag inset — this Station
+5. HexNest + drag inset — stamped 67ea22e; Hex-two-row residual open
 6. Detach
 7. Ticker EXPAND earn-strip + part-rotate on PART SIZE / ticker (wait for this home)
 
-Parked: cut sheet / checklist, settings, blank-rotate with 7, bed-pan lock, one-surface mobile (bed first, HUD on calculator, HUD morphs to FLiPIT), #116, #117, #118 docs.
+Parked: cut sheet / checklist, settings, blank-rotate with 7, bed-pan lock, one-surface mobile, #116, #117, #118 docs.
 
 ## Issued
 
-- 2026-08-28 Start-branch through Mobile-fit stamp bbde518 as previously logged.
-- 2026-08-28 Owner: mobile-fit good enough. Park bed-pan lock and one-surface mobile. Table 5 HexNest now. Same-diameter rounds. Origin part locked to margin. Offset row. Drag inset shifts the lower row. Diameter field. Bounding box stays. Circles tangent. Temporary HUD HexNest entry until table 7 morph.
-- 2026-08-28 HexNest stamped `67ea22e` after origin advanced: `src/lib/hexNest.ts` owns offset-round layout and inset; focused engine tests cover tangent boxes/circles, origin lock, lower-row shift, and blank bounds. The temporary HUD entry calls `/howmany-shell` for layout/inset and reports X/Y offsets. `npm run test`, `npm run lint`, `npm run build`, and governance checks passed; browser interaction verified the entry and inset request.
+- 2026-08-28 HexNest stamped 67ea22e.
+- 2026-08-28 Owner look: cannot drag, too many parts. HexNest drag is two rows only. Origin locked. Row 2 part insets. Row 1 shifts. Count is hex count. Do not pack the full blank. Do not overlay HowMany 14 on a hex bed.
