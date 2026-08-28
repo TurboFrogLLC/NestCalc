@@ -7,7 +7,8 @@ Product is FLiPIT. This file is evidence for a Robot look. Floor stays the NestC
 ## Pointers
 
 - Live preview: https://nest-calc-git-feat-v3-c1-count-r1-join-wreckless-toddler.vercel.app/howmany-shell
-- Engine insert job: NestCalc #119 (`feat/v3-c1-count-r1-join`)
+- Local: `http://localhost:3000/howmany-shell` on `feat/v3-c1-count-r1-join`
+- Engine insert job: NestCalc #119
 - Robot plan: https://github.com/TurboFrogLLC/wReckless-Robot/blob/main/status/flipit-v3-plan.md
 - Look files: `status/flipit-look.md`, `status/flipit-look-glass.md`, `status/flipit-look-ticker.md`
 - Host: `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`
@@ -26,52 +27,93 @@ Engine is in the V3 shell.
 
 We built plan steps 4 and 5 before the ticker door was a door.
 
-## The mark
+## Lock that applies to every idea
 
-Ticker is the door. Name of the chrome: **radial speed dial** (not pie slices, not a persistent halo, not a left text rail).
+**The HUD inspector goes away.** The ticker *is* the input the HUD is doing now. One nest session. No second form on the left.
 
-Collapsed: blank readout only (`12.000 × 8.000`). Calc chip stays on the right.
+Persistent cluster:
 
-Open: a **half-arc of icon ticks** fans off the ticker. Overlay on the bed is allowed because the ring is not persistent. Close on outside tap, readout tap, or finished edit. No parked halo.
+```
+[−90] [+90] [ ticker ] [calc]
+```
 
-Ticks earn a place. Hard cap four.
-- Field edit → that field tick
-- Part 90° / Reset as ticks when needed
-- Program loaded → AUTO-SIZE and FLiPIT ticks on this ring, not also on the HUD
+- `−90` / `+90` always on. Not on the earned rail.
+- Ticker default is blank size. Double-click edits blank. No Blank chip.
+- Calc chip stays the right end cap.
+- Dummy Detach stays off.
+- HEXNES is not a fourth HUD button. HexNest chrome waits until this door is right.
+- Text dump on the left of the ticker is the miss.
 
-Icons, not words. Hits as large as the calc chip. Mouse first.
+Two proposals below. Robot looks at both. Owner is leaning A for shop use. B stays in play.
 
-HUD stays the inspector for the same session. Not a second job row.
-HEXNES is not a fourth HUD button. HexNest chrome refine waits until this door is right.
-Dummy Detach stays off.
+---
 
-Left-slide text dump is the miss. Full 360 clock face is jewelry. Do not use it.
+## A — Sliding chip rail (ghost track)
 
-## Build language (when we cut)
+Closed:
 
-Compose from shadcn, do not vendor a kit.
+```
+[−90] [+90] [ 12.000 × 8.000 ] [›] [calc]
+```
 
-- `Button` `size="icon"` for ticks
-- `Popover` on a field tick for the number edit (same edit as HUD fields)
-- Open state on the ticker itself
-- Polar layout is ours: rotate(θ) translate(r) rotate(-θ)
+Open:
 
-References only (not dependencies): Dice UI Speed Dial, ObsidianUI Circle Menu. Official shadcn has no radial menu. Magic UI Orbiting Circles is decorative — do not use it as the door.
+```
+[−90] [+90] [ 12.000 × 8.000 ] [Part] [Gap] [Margin] [Reset] [calc]
+```
 
-V3 host is still composition HTML. Same contract in CSS until the React tree owns the ticker.
+Door tick: Lucide `chevron-last` opens, `chevron-first` closes. Icon only. No box.
+
+Ghost rail lives in the gap between ticker and calc. Calc rides right as it opens. Track has no fill and no border. Chips float. Overlay on the blank is allowed because the rail is not persistent.
+
+Rail chips: Part, Gap, Margin, Reset. Not Blank. Not Part 90°.
+
+### Field armed — confirm row (earned)
+
+Tap Margin. Other chips leave. Confirm row earns the slot:
+
+```
+[−90] [+90] [ ticker: margin ] [✓] [X] [calc]
+```
+
+Check commits and returns Part / Gap / Margin / Reset. X cancels and returns the same. Do not use a trash icon (that reads as Reset). Do not make Margin itself the OK. Do not blur. Selected field can stay visible so you know what you are saving.
+
+States: closed → rail open → field armed → rail open → closed.
+
+### Ticker grows up
+
+Armed field brings swap + link. The pill grows **up**, not into a mile-wide inline row. That grow-up is the feel we want.
+
+Margin default is `0.250 all` plus link (one number writes four sides). Unlink → ticker grows up into a 2×2 (T/R/B/L) at the same input size as today’s HUD chips. If they never unlink, they never see the 2×2.
+
+Gap unlinked is two fields, not four.
+
+AUTO-SIZE / FLiPIT earn a chip on this rail only after a program is loaded. Still between ticker and calc. Cap what fits on a phone.
+
+Compose from shadcn `Button size="icon"` + `Collapsible` for open state. Width clip / slide is ours. Not Sheet. Not Drawer. Not Sidebar.
+
+---
+
+## B — Radial speed dial
+
+Same persistent cluster. Open is a **half-arc of icon ticks** off the ticker, not a 360 clock. Overlay on the bed allowed only while open. Cap four ticks. Icons, not words.
+
+Compose from shadcn `Button size="icon"`. Polar layout is ours. Dice UI Speed Dial / ObsidianUI Circle Menu are references, not dependencies. Magic UI Orbiting Circles is jewelry — do not use it as the door.
+
+---
 
 ## Ask of Robot
 
-Look at the live shell and this mark. Do not cut NestCalc.
+Look at the live shell and this file. Do not cut NestCalc.
 
-Need an outline to hit the radial speed dial:
-- Half-arc geometry vs the calc chip, count, and arc handle
-- Which ticks earn a slot and in what order
-- How a loaded program adds AUTO-SIZE / FLiPIT without a HUD second row
-- Motion (short fan, close, no overlay dim)
-- What not to do (text dump, 360 orbit, packed hex, Detach, Magic UI jewelry orbit)
+Need an outline that treats the HUD as gone and the ticker as the inspector:
+- A vs B (or a tight mix). Push back.
+- Confirm-row vs one-button commit.
+- Margin 2×2 grow-up vs any other four-value pattern.
+- How AUTO-SIZE / FLiPIT earn a chip after load with no HUD row.
+- What not to do (text dump, 360 orbit, packed hex, Detach, keep the HUD form).
 
-Studio on look. Quarry on the session (one nest session, two doors). Anvil only if a coding brief is useful. Atlas off. Keeper writes a plan board under `status/` only if the picture moves. This PR is not the product.
+Studio on look. Quarry on the session (ticker is the only form). Anvil only if a coding brief is useful. Atlas off. Keeper writes a plan board under `status/` only if the picture moves. This PR is not the product.
 
 ## Pause
 
