@@ -1889,6 +1889,31 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       align-self: stretch;
     }
 
+    /* Shirt-off: the resting FLiPIT surface is a flip-angle strip. */
+    .flip-strip {
+      display: flex;
+      align-items: stretch;
+      width: 100%;
+      height: 28.6px;
+      border: 1.1px solid rgba(26, 20, 40, 0.22);
+      border-radius: var(--chip-r);
+      background: var(--white-70);
+      overflow: hidden;
+    }
+    .flip-strip .rot-chip { flex: 1 1 0; }
+    .gcode:not(.is-expanded) .prog-field,
+    .gcode:not(.is-expanded) .status-dot,
+    .gcode:not(.is-expanded) .part-group { display: none; }
+    .gcode:not(.is-expanded) .surface-row { padding: 8.8px 11px; }
+    .gcode:not(.is-expanded) .surface-spacer { display: none; }
+    .gcode:not(.is-expanded) .surface-expanded-chrome,
+    .gcode:not(.is-expanded) .gcode-body { display: none; }
+    .gcode.is-expanded #io-tabs,
+    .gcode.is-expanded #panel-output { display: none !important; }
+    .gcode.is-expanded #panel-source { display: flex !important; }
+    .gcode.is-expanded .action-main { grid-template-columns: 1fr 85.8px; }
+    .gcode.is-expanded .action-main .rot-row { display: none; }
+
     .btn-collapse {
       width: 28.6px;
       height: 28.6px;
@@ -2402,7 +2427,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   </div>
     <!-- FLiPIT (lock: FLIPIT-v3) -->
 <input type="file" id="flipit-file-input" accept=".txt,.nc,.cnc,text/plain" hidden />
-<aside class="gcode is-expanded" id="gcode" style="--panel-w: 418px; display: none;" aria-hidden="true">
+<aside class="gcode" id="gcode" style="--panel-w: 418px; display: none;" aria-hidden="true">
     <div class="gcode-toast" id="gcode-toast" role="status" aria-live="polite"></div>
     <div class="gcode-resize gcode-resize-e" data-dir="e" aria-hidden="true"></div>
     <div class="gcode-resize gcode-resize-s" data-dir="s" aria-hidden="true"></div>
@@ -2441,7 +2466,15 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     <div class="surface-row" id="surface-row">
       <div class="surface-editing-banner" aria-live="polite">EDITING</div>
       <div class="surface-lead">
-      <button type="button" class="btn-gc0de" id="btn-expand" title="Expand G-code" aria-label="Expand G-code" aria-expanded="true">GC0DE</button>
+      <div class="flip-strip" role="group" aria-label="Flip angle">
+        <button type="button" class="rot-chip is-on" data-rot="0">0°</button>
+        <span class="rot-sep" aria-hidden="true"></span>
+        <button type="button" class="rot-chip" data-rot="90">90°</button>
+        <span class="rot-sep" aria-hidden="true"></span>
+        <button type="button" class="rot-chip" data-rot="-90">−90°</button>
+        <span class="rot-sep" aria-hidden="true"></span>
+        <button type="button" class="rot-chip" data-rot="180">180°</button>
+      </div>
       <div class="surface-expanded-chrome">
       <button type="button" class="btn-surface-chevron" id="btn-surface-chevron" title="Collapse G-code" aria-label="Collapse G-code">
         <svg width="14.3" height="14.3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.66" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
@@ -2502,12 +2535,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
           </div>
           <div class="code-shell is-hl" id="source-shell">
             <pre class="code-hl" id="source-hl" aria-hidden="true"></pre>
-            <textarea class="code-area" id="source" spellcheck="false" placeholder="Paste G-code here"></textarea>
+            <textarea class="code-area" id="source" spellcheck="false" placeholder="Edit G-code here"></textarea>
             <div class="edit-actions">
-              <button type="button" class="btn-accept" id="btn-accept-src" title="Accept source edits (does not process)" aria-label="Accept source edits">
+              <button type="button" class="btn-accept" id="btn-accept-src" title="Apply editor edits" aria-label="Apply editor edits">
                 <svg width="15.4" height="15.4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg>
               </button>
-              <button type="button" class="btn-cancel" id="btn-cancel-src" title="Cancel — discard edits" aria-label="Cancel edits">
+              <button type="button" class="btn-cancel" id="btn-cancel-src" title="Discard editor edits" aria-label="Discard editor edits">
                 <svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
               </button>
             </div>
@@ -2552,7 +2585,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
         <div class="action-row">
           <div class="action-main">
-            <button type="button" class="stage-action" id="stage-action" data-state="idle" disabled title="Flip Source to Output">FLIP IT</button>
+            <button type="button" class="stage-action" id="stage-action" data-state="idle" disabled title="Apply editor changes">APPLY</button>
             <div class="rot-row" role="group" aria-label="Rotation">
               <button type="button" class="rot-chip is-on" data-rot="0">0°</button>
               <div class="rot-sep" aria-hidden="true"></div>
@@ -4136,8 +4169,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (processDone && hasOutput()) {
       stageAction.disabled = false;
       stageAction.setAttribute('data-state', 'start');
-      stageAction.textContent = 'START OVER';
-      stageAction.title = 'Clear Output and start over';
+      stageAction.textContent = 'APPLY';
+      stageAction.title = 'Apply editor changes';
       stageStatus.disabled = true;
       stageStatus.setAttribute('data-state', 'done');
       stageStatus.textContent = 'DONE';
@@ -4147,8 +4180,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (on) {
       stageAction.disabled = false;
       stageAction.setAttribute('data-state', 'process');
-      stageAction.textContent = 'FLIP IT';
-      stageAction.title = 'Flip Source to Output';
+      stageAction.textContent = 'APPLY';
+      stageAction.title = 'Apply editor changes';
       stageStatus.disabled = true;
       stageStatus.setAttribute('data-state', 'ready');
       stageStatus.textContent = 'READY';
@@ -4158,8 +4191,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     processDone = false;
     stageAction.disabled = true;
     stageAction.setAttribute('data-state', 'idle');
-    stageAction.textContent = 'FLIP IT';
-    stageAction.title = 'Flip Source to Output';
+    stageAction.textContent = 'APPLY';
+    stageAction.title = 'Apply editor changes';
     stageStatus.disabled = true;
     stageStatus.setAttribute('data-state', 'idle');
     stageStatus.textContent = 'NOT READY';
@@ -4345,8 +4378,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   var btnSurfaceChevron = document.getElementById('btn-surface-chevron');
   function setExpanded(on) {
     panel.classList.toggle('is-expanded', on);
-    btnExpand.setAttribute('aria-expanded', on ? 'true' : 'false');
-    btnExpand.title = on ? 'G-code expanded' : 'Expand G-code';
     if (typeof syncHudFlipitChrome === 'function') syncHudFlipitChrome();
   }
   function collapseGcode() {
@@ -4357,7 +4388,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       setOutEdit(false);
     }
   }
-  btnExpand.addEventListener('click', function () {
+  if (btnExpand) btnExpand.addEventListener('click', function () {
     if (panel.classList.contains('is-expanded')) return;
     setExpanded(true);
   });
@@ -4494,8 +4525,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     syncHudFlipitChrome();
   }
   function toggleGcode() {
-    if (!isGcodeOpen()) openGcode(true);
-    else if (!isGcodeExpanded()) openGcode(true);
+    if (!isGcodeOpen()) openGcode(false);
+    else if (!isGcodeExpanded()) closeGcode();
     else closeGcode();
   }
   document.getElementById('btn-close').addEventListener('click', closeGcode);
@@ -4576,7 +4607,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       if (processDone) {
         processDone = false;
         syncProcessState();
-        showToast('Source changed — flip again');
+        showToast('Editor changed — apply again');
+      }
+      if (isGcodeOpen() && !isGcodeExpanded()) {
+        setExpanded(true);
+        enterSrcEdit();
       }
     });
   });
@@ -4650,7 +4685,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     renderSourceHl();
     if (processDone) {
       processDone = false;
-      showToast('Source changed — flip again');
+        showToast('Editor changed — apply again');
     }
     if (sizedClean || bounds) {
       sizedClean = false;
@@ -4751,8 +4786,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       processDone = true;
       syncProcessState();
       setOutEdit(false);
-      setTab('output');
-      showToast('Output ready');
+      histSrc.push(output.value);
+      renderSourceHl();
+      setTab('source');
+      if (typeof window.__howManyJoinCount === 'function') window.__howManyJoinCount(document);
+      showToast('Applied — HowMany joined');
       flashGreenRing();
       if (typeof window.__bedSetPart === 'function') window.__bedSetPart(undefined, undefined, rot);
     }
