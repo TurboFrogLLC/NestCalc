@@ -22,3 +22,4 @@ Parked: cut sheet / checklist, settings, blank-rotate with 7, bed-pan lock, one-
 
 - 2026-08-28 Start-branch through Mobile-fit stamp bbde518 as previously logged.
 - 2026-08-28 Owner: mobile-fit good enough. Park bed-pan lock and one-surface mobile. Table 5 HexNest now. Same-diameter rounds. Origin part locked to margin. Offset row. Drag inset shifts the lower row. Diameter field. Bounding box stays. Circles tangent. Temporary HUD HexNest entry until table 7 morph.
+- 2026-08-28 HexNest stamped `67ea22e` after origin advanced: `src/lib/hexNest.ts` owns offset-round layout and inset; focused engine tests cover tangent boxes/circles, origin lock, lower-row shift, and blank bounds. The temporary HUD entry calls `/howmany-shell` for layout/inset and reports X/Y offsets. `npm run test`, `npm run lint`, `npm run build`, and governance checks passed; browser interaction verified the entry and inset request.
