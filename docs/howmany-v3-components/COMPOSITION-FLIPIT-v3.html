@@ -21,7 +21,7 @@ Bridges in this host:
   · R29 LaserBed under .bed-stage (full-viewport primary canvas)
   · R30 HUD position hold (from individual tip — not rewritten here)
   · R1  Boot: HUD open · FLiPIT closed · HUD ↔ FLiPIT chrome
-        HowMany #lb-count in the gap by #lb-corner-arc
+        HowMany #lb-count past #lb-hit-corner on the 45° ray
         HUD AUTO-SIZE does not open FLiPIT · FLiPIT chips · calc-mode keeps chips
         LaserBed calc chip → HUD calculator · real local file open
         Popover clamp avoids open FLiPIT + active bed blank
@@ -2193,7 +2193,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     <svg class="lb-blank-layer" id="lb-blank-layer" xmlns="http://www.w3.org/2000/svg">
       <g id="lb-blank-cam">
         <path id="lb-corner-arc" d="M 12.58 8 A 0.58 0.58 0 0 1 12 8.58" vector-effect="non-scaling-stroke"/>
-        <text id="lb-count" aria-live="polite" aria-label="HowMany count" text-anchor="middle" dominant-baseline="middle"></text>
+        <text id="lb-count" aria-live="polite" aria-label="HowMany count" text-anchor="middle" dominant-baseline="middle" pointer-events="none"></text>
         <circle id="lb-hit-corner" cx="12.41" cy="8.41" r="0.5" fill="transparent" style="cursor:nesw-resize; pointer-events:all"/>
         <rect id="lb-hit-right"  x="11.65" y="0"    width="0.7" height="8"  fill="transparent" style="cursor:ew-resize"/>
         <rect id="lb-hit-top"    x="0"     y="7.65" width="12"  height="0.7" fill="transparent" style="cursor:ns-resize"/>
@@ -2687,11 +2687,15 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (cornerArc) cornerArc.setAttribute('d', d);
     var mid = 0.70710678 * r;
     if (countEl) {
-      var cx = w + mid * 0.72;
-      var cy = h + mid * 0.72;
+      var fontWorld = 18 / Math.max(s, 0.001);
+      var hitR = 11 / Math.max(s, 0.001);
+      var along = mid + 0.70710678 * (hitR + fontWorld * 0.72);
+      var cx = w + along;
+      var cy = h + along;
       countEl.setAttribute('x', cx);
       countEl.setAttribute('y', cy);
-      countEl.setAttribute('font-size', 18 / Math.max(s, 0.001));
+      countEl.setAttribute('font-size', fontWorld);
+      countEl.setAttribute('pointer-events', 'none');
       countEl.setAttribute('transform', 'translate(' + cx + ',' + cy + ') scale(1,-1) translate(' + (-cx) + ',' + (-cy) + ')');
     }
     if (hitCorner) {

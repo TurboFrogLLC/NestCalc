@@ -24,7 +24,7 @@ Prior composition/lock archives (`COMPOSITION-HUD-DECODER-v3.*`, `DE-CODER-v3-LO
 | Blank body | `#lb-blank` (in `#lb-camera`) | host — sits on the bed, behind cards | **0** |
 | LaserBed chrome (zoom) | `.lb-chrome` | host front surface with ticker + HUD | **82** |
 | Blank hits + arc overlay | `#lb-blank-layer` | grab targets only | **10** |
-| HowMany count | `#lb-count` (in `#lb-blank-layer`, gap by `#lb-corner-arc`) | host — live `calculateNest` total | **10** |
+| HowMany count | `#lb-count` (in `#lb-blank-layer`, past `#lb-hit-corner` on the 45° ray) | host — live `calculateNest` total | **10** |
 | toolPath | `#backplot.toolpath` | `TOOLPATH-v3.SPEC.md` · tip `2e9e2ace` | 20 |
 | FLiPIT | `#gcode` · class `.gcode` | `FLIPIT-v3.SPEC.md` · tip `37d628e9` | 30 |
 | FLiPIT toast | `#gcode-toast` | host override of standalone 40 | **35** |
@@ -71,7 +71,7 @@ Hide primitives stay surface-owned (`ALIGNMENT-v3` §4). Host does not invent a 
 | Load | Numeric HUD open at (25,25). FLiPIT closed (`display: none`, no `is-open`). toolPath hidden (R27). |
 | HUD **FLiPIT** (`#btn-gcode`) | Closed → open **expanded**. Open + collapsed (e.g. after AUTO-SIZE) → **expand** (do not close). Open + expanded → **close**. X closes from any state. |
 | HUD **AUTO-SIZE** (`#btn-auto-size`) | Does **not** open FLiPIT. Does not call `openGcode` / `__flipitAutoSize`. In-panel `#btn-detect` still sizes. Footer chips stay mounted in HUD calculator mode. Label stays **AUTO-SIZE**. |
-| HowMany count (`#lb-count`) | Live quantity in the gap between the blank corner and `#lb-corner-arc`. Written from `calculateNest` via FIELD_BINDINGS → `createNestSession` (manual) → `session.result.manual.totalParts`. `convertValue` runs on this join. Just the number. Not on the parts. Not in the ticker stack. |
+| HowMany count (`#lb-count`) | Live quantity past `#lb-hit-corner` on the same 45° ray as the corner handle. `pointer-events: none`. `#lb-hit-corner` is unmoved. Written from `calculateNest` via FIELD_BINDINGS → `createNestSession` (manual) → `session.result.manual.totalParts`. `convertValue` runs on this join. Just the number. Not on the parts. Not in the ticker stack. |
 | FLiPIT Auto-Size (`#btn-detect`) | Existing in-panel detect. Expand/collapse chrome unchanged. Arms after a real file load. |
 | FLiPIT close (`#btn-close`) | `closeGcode()` + R11 `lastGcodePos`. |
 | LaserBed calc chip (`#bt-calc`) | HUD collapsed → expand to **param** mode only (do not enter calculator; clear leftover classic-calc `display`). HUD already expanded → toggle calculator. After exit / collapse / expand, `#hud-body` height matches the active mode. Square side = blank ticker height (**34**). HUD header chrome language (radius / border / fill). Icon 22px. 3px gap. Hover **lightens the dark fill only** — icon and chrome stay visible (no transparent wash). |
@@ -132,7 +132,7 @@ Do not require `file://`.
 2. Verify LaserBed fills the viewport (BL origin, 48×48 fit, blank 12×8, right-pin ticker, Fit does not reset blank).
 3. Verify Numeric HUD (16,16) is the only card open. FLiPIT and toolPath are absent.
 4. HUD **FLiPIT** opens FLiPIT expanded. If FlipIt is already open and collapsed, FLiPIT expands it. If expanded, FLiPIT closes it. X closes from any state.
-5. HUD **AUTO-SIZE** does **not** open FLiPIT. `#btn-detect` still sizes. HUD FLiPIT cycle from R3 is unchanged. HowMany `#lb-count` shows the live `calculateNest` total by `#lb-corner-arc`.
+5. HUD **AUTO-SIZE** does **not** open FLiPIT. `#btn-detect` still sizes. HUD FLiPIT cycle from R3 is unchanged. HowMany `#lb-count` shows the live `calculateNest` total past `#lb-hit-corner` on the 45° ray.
 6. FLiPIT Open picks a real local `.txt` / `.nc` / `.cnc` file and loads Source. No sample program.
 7. HUD tickers open popovers; placement stays outside the HUD and clamps off open FLiPIT and the bed blank. Collapse/expand holds left/top (R30).
 8. FLiPIT waypoints still toggle toolPath (R17 / R27). When toolPath + FlipIt + HUD are all open, they re-pack in a 25px top band (toolPath · FlipIt · HUD) every time that set becomes complete. User drag wins until the next three-open rearrange.
@@ -159,3 +159,4 @@ Do not require `file://`.
 | 2026-08-17 | **R12** `NC-FLIPIT-20260817-R12`. Compact HUD height after popover close. Four-side frost frame; numbers inside the blue. FlipIt centers and HUD rights with a 420ms glide. Token-aware G-code highlight. Default part 1.250×3.375, Flip visual rotate, dotted nest box. |
 | 2026-08-17 | **R13** `NC-FLIPIT-20260817-R13`. Blank/Gap/Margin: Edit is a visible write mode; Confirm stores the armed slot from live fields; Cancel exits without writing; main OK applies live values to HUD + bed and never writes a preset (Blank 12×12 no longer reverts). Enter settles a numeric field without closing the popover. Single equal-width frost-blue rail (no outer lip). Highlighted X/Y/Z/R are black at 4 decimal places. Ticker + calc, HUD, and zoom share the front surface; `#bt-calc` hover stays visible. |
 | 2026-08-28 | **C1** HowMany `#lb-count` in the gap by `#lb-corner-arc`. R1 kill: `#btn-auto-size` does not open FLiPIT. Join: FIELD_BINDINGS → `createNestSession` → `calculateNest` → `convertValue`. |
+| 2026-08-28 | **C1** residual: `#lb-count` past `#lb-hit-corner` on the same 45° ray. `pointer-events: none`. Handle unmoved. Join unchanged. |
