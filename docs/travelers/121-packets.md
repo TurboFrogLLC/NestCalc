@@ -18,4 +18,8 @@ Owner lock. Closed stays travel. Open is edit only: [±90] tuck under ticker, ca
 
 ## 2026-08-29 Plant 1b Tuck-under
 
-Operator Grok Build. origin SHA d310638. Closed [−90][+90][ticker][›][calc]. Open [ticker][›][part][gap][margin][eraser]. ±90 tuck under ticker and lose hit. Calc leaves. Chevron boxed on ticker right, thicker stroke. Four icon chips. No Blank chip. Rail chips do not open HUD. Ticker click does not open rail. Double-click ticker edits blank. Motion 350ms ease-out; rail clips out of ticker back. Open pack translates left of #lb-hit-corner / #lb-count. Idle cluster one step darker than the grid; no yellow on idle ticker. No Reset helper. No React port. Next: Plant 2 Session.
+Operator Grok Build. origin SHA d310638. Closed [−90][+90][ticker][›][calc]. Open [ticker][›][part][gap][margin][eraser]. ±90 tuck under ticker and lose hit. Calc leaves. Chevron boxed on ticker right, thicker stroke. Four icon chips. No Blank chip. Rail chips do not open HUD. Ticker click does not open rail. Double-click ticker edits blank. Motion 350ms ease-out; rail clips out of ticker back. Open pack translates left of #lb-hit-corner / #lb-count. Idle cluster one step darker than the grid; no yellow on idle ticker. No Reset helper. No React port.
+
+## 2026-08-29 Plant 1c Glyphs opened
+
+Owner override. Lucide from NestCalc #120 TICKER-DOOR-MARK.md Icons table: Part rectangle-vertical, Gap between-horizontal-end, Margin align-start-vertical, Reset eraser, Door chevron-last / chevron-first. Outline chips, no gray fill. Kill ticker dblclick → __howManyOpenField. Next: Plant 1c Glyphs.
