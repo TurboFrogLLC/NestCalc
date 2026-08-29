@@ -17,14 +17,21 @@ Law for this job: [status/flipit-ticker-door.md](https://github.com/TurboFrogLLC
 
 1. Start-branch — this child branch off 119 tip.
 2. Plant 1 Look — persistent cluster + ghost rail + dead chips. Dump stays.
-3. Plant 2 Session — confirm row + grow-up writes + `resetManualKeepRemnant`. Then tear dump.
-4. Plant 3 Earned chip — one slot Auto-Size empty / FLiPIT loaded.
-5. Send for review → Wait → Inspection → Merge into 119 → Close.
+3. Plant 1b Tuck-under — closed is travel, open is edit. ±90 tuck under ticker. Calc leaves. Chevron parked. Icon rail. Handle keep-out.
+4. Plant 2 Session — confirm row + grow-up writes + `resetManualKeepRemnant`. Then tear dump.
+5. Plant 3 Earned chip — one slot Auto-Size empty / FLiPIT loaded.
+6. Send for review → Wait → Inspection → Merge into 119 → Close.
 
 ## Plant 1 proof
 
-Closed: `[-−90][+−90][ticker][›][calc]`
+Closed: `[−90][+90][ticker][›][calc]`
 Open rail does not clip ±90 or calc. History icons off the cluster (`corner-up-left` / `corner-up-right`). Dump still works underneath.
+
+## Plant 1b proof
+
+Closed stays travel: `[−90][+90][ticker][›][calc]`.
+Open is edit only: `[ticker][›][part][gap][margin][eraser]`.
+±90 slide under the ticker and lose hit. Calc leaves. Chevron stays glued to the ticker right edge (boxed hit, thicker stroke). Rail is four icon chips. No Blank chip. Rail chips do not open the HUD field card. Ticker click does not open the rail. Double-click ticker edits blank. Motion ~300–400ms ease-out; rail clips out of the ticker back. Open pack must not cover `#lb-hit-corner` or `#lb-count`; translate the pack left if it would. `#lb-count` stays. Idle cluster paint one step darker than the grid; no yellow on idle ticker.
 
 ## Plant 2 proof
 
