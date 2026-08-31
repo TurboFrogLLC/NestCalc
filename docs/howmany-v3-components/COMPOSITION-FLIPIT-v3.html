@@ -534,7 +534,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       transition: height var(--motion-mode) var(--ease);
     }
     #hud-mode,
-    .classic-calc {
+    .classic-calc,
+    .preset-door {
       display: flex;
       flex-direction: column;
       box-sizing: border-box;
@@ -550,6 +551,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     #hud-mode { gap: 4.4px; opacity: 1; pointer-events: auto; }
     .keypad.calc-mode #hud-mode { opacity: 0; pointer-events: none; }
     .keypad.calc-mode .classic-calc { opacity: 1; pointer-events: auto; }
+    .keypad.preset-door #hud-mode,
+    .keypad.preset-door .classic-calc { opacity: 0; pointer-events: none; }
+    .keypad.preset-door .preset-door { opacity: 1; pointer-events: auto; }
     /* Calculator path: footer chips stay available while params hide */
 
     .param-rows { display: flex; flex-direction: column; gap: 8.8px; margin-top: 0; }
@@ -663,27 +667,21 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       opacity: 1; transform: translateX(0); pointer-events: auto;
       transition: opacity var(--motion-popover) var(--ease-decelerate), transform var(--motion-popover) var(--ease-decelerate);
     }
-    .keypad.is-preset-morph .param-row.is-morph-target {
-      flex-wrap: wrap;
-    }
-    .keypad.is-preset-morph .param-row.is-morph-target .param-popover {
-      position: static;
-      opacity: 1;
-      transform: none;
-      pointer-events: auto;
-      width: auto;
-      max-width: 100%;
-      box-shadow: none;
-      margin-top: 8px;
-      flex: 1 1 100%;
-    }
-    .keypad.is-preset-morph .param-row.is-morph-target .pop-xy,
-    .keypad.is-preset-morph .param-row.is-morph-target .pop-margins,
-    .keypad.is-preset-morph .param-row.is-morph-target .pop-title,
-    .keypad.is-preset-morph .param-row.is-morph-target .pop-actions {
-      display: none;
-    }
-    .keypad.is-preset-morph .param-row.is-morph-target .pop-pre-confirm { display: flex; }
+    .preset-door { gap: 10px; color: var(--ink); }
+    .preset-door-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .preset-door-title { margin: 0; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+    .preset-door-close { width: 28px; height: 28px; border: 0; border-radius: 8px; background: rgba(26,20,40,.10); color: var(--ink); cursor: pointer; }
+    .preset-grid { display: grid; gap: 6px; }
+    .preset-line { display: grid; grid-template-columns: 52px repeat(6, minmax(28px, 1fr)); gap: 4px; align-items: center; }
+    .preset-line-label { font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+    .preset-slot, .preset-add, .preset-send { height: 28px; border: 1.1px solid rgba(26,20,40,.20); border-radius: 8px; background: rgba(255,255,255,.76); color: var(--ink); font: 700 10px var(--font); cursor: pointer; }
+    .preset-slot.is-filled { background: rgba(83,139,236,.20); }
+    .preset-slot.is-lit { outline: 2px solid #FFCE1B; outline-offset: 1px; }
+    .preset-panel-editor { display: flex; align-items: center; gap: 5px; padding-top: 3px; }
+    .preset-panel-editor label { display: flex; align-items: center; gap: 3px; font-size: 10px; font-weight: 700; }
+    .preset-panel-editor input { width: 44px; height: 28px; box-sizing: border-box; border: 1.1px solid rgba(26,20,40,.22); border-radius: 8px; background: rgba(255,255,255,.88); color: var(--ink); font: 700 10px var(--font-mono); text-align: center; }
+    .preset-panel-editor.is-margin { flex-wrap: wrap; }
+    .preset-send { margin-left: auto; min-width: 92px; background: rgba(26,20,40,.82); color: #FFCE1B; }
     .param-popover .pop-head {
       display: flex; align-items: center; justify-content: space-between;
       gap: 6.6px; margin-bottom: 8.8px;
@@ -2607,6 +2605,16 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
         </div>
 
+        <div class="preset-door" id="preset-door" aria-label="Bed presets" aria-hidden="true">
+          <div class="preset-door-head"><p class="preset-door-title">Bed Presets</p><button type="button" class="preset-door-close" id="preset-door-close" aria-label="Close presets">×</button></div>
+          <div class="preset-grid" id="preset-grid">
+            <div class="preset-line" data-preset-row="blank"><span class="preset-line-label">Blank</span><button type="button" class="preset-slot" data-preset-slot="1">1</button><button type="button" class="preset-slot" data-preset-slot="2">2</button><button type="button" class="preset-slot" data-preset-slot="3">3</button><button type="button" class="preset-slot" data-preset-slot="4">4</button><button type="button" class="preset-slot" data-preset-slot="5">5</button><button type="button" class="preset-add" data-preset-add>+</button></div>
+            <div class="preset-line" data-preset-row="gap"><span class="preset-line-label">Gap</span><button type="button" class="preset-slot" data-preset-slot="1">1</button><button type="button" class="preset-slot" data-preset-slot="2">2</button><button type="button" class="preset-slot" data-preset-slot="3">3</button><button type="button" class="preset-slot" data-preset-slot="4">4</button><button type="button" class="preset-slot" data-preset-slot="5">5</button><button type="button" class="preset-add" data-preset-add>+</button></div>
+            <div class="preset-line" data-preset-row="margin"><span class="preset-line-label">Margin</span><button type="button" class="preset-slot" data-preset-slot="1">1</button><button type="button" class="preset-slot" data-preset-slot="2">2</button><button type="button" class="preset-slot" data-preset-slot="3">3</button><button type="button" class="preset-slot" data-preset-slot="4">4</button><button type="button" class="preset-slot" data-preset-slot="5">5</button><button type="button" class="preset-add" data-preset-add>+</button></div>
+          </div>
+          <div class="preset-panel-editor" id="preset-panel-editor"></div>
+        </div>
+
         <div class="classic-calc" id="classic-calc">
           <div class="classic-lcd" id="classic-lcd" aria-label="Calculator display">0</div>
           <div class="classic-grid">
@@ -3321,9 +3329,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   const PRESET_KEYS = ['blank', 'gap', 'margin'];
   const PRESET_STORE = 'howmany.flipit.v3.presets';
   var presetState = {
-    blank: { A: null, B: null },
-    gap: { A: null, B: null },
-    margin: { A: null, B: null },
+    blank: { 1: null, 2: null, 3: null, 4: null, 5: null },
+    gap: { 1: null, 2: null, 3: null, 4: null, 5: null },
+    margin: { 1: null, 2: null, 3: null, 4: null, 5: null },
     armed: { blank: null, gap: null, margin: null },
     editing: { blank: false, gap: false, margin: false }
   };
@@ -3337,7 +3345,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       var data = JSON.parse(raw);
       PRESET_KEYS.forEach(function (key) {
         if (!data[key]) return;
-        ['A', 'B'].forEach(function (slot) {
+        ['1', '2', '3', '4', '5'].forEach(function (slot) {
           if (data[key][slot]) presetState[key][slot] = data[key][slot];
         });
       });
@@ -3347,7 +3355,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     try {
       var out = {};
       PRESET_KEYS.forEach(function (key) {
-        out[key] = { A: presetState[key].A, B: presetState[key].B };
+        out[key] = { 1: presetState[key][1], 2: presetState[key][2], 3: presetState[key][3], 4: presetState[key][4], 5: presetState[key][5] };
       });
       localStorage.setItem(PRESET_STORE, JSON.stringify(out));
     } catch (_) {}
@@ -3671,6 +3679,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
   function setCalc(on) {
     clearMotionTimer();
+    if (on && hud.classList.contains('preset-door')) closePresetDoor();
     state.calc = on;
     calcToggle.classList.toggle('active-calc', on);
     calcToggle.setAttribute('aria-pressed', on ? 'true' : 'false');
@@ -4336,6 +4345,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       applyBodyHeight();
       return;
     }
+    if (!tickerEdit.key) { openPresetDoor('blank'); return; }
     setCalc(!state.calc);
   };
 
@@ -4455,39 +4465,106 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     refreshTickers();
     exitTickerEdit();
   }
-  window.__hudPresetMorph = function (key) {
-    if (PRESET_KEYS.indexOf(key) === -1) return false;
-    if (state.calc) {
-      if (typeof window.__hudExitCalc === 'function') window.__hudExitCalc();
-      else setCalc(false);
-    }
-    closeAllParamPopovers();
-    clearMotionTimer();
-    if (isHudCollapsed()) setCollapsed(false);
-    applyModeVisibility();
-    applyBodyHeight();
-    hud.classList.add('is-preset-morph');
-    paramState.open = key;
-    document.querySelectorAll('.param-row').forEach(function (row) {
-      var on = row.getAttribute('data-param') === key;
-      row.classList.toggle('is-morph-target', on);
-      if (on) {
-        var pop = row.querySelector('.param-popover');
-        if (pop) {
-          pop.style.left = '';
-          pop.style.top = '';
-          pop.style.right = '';
-          pop.style.bottom = '';
-          pop.style.position = '';
-        }
+  var presetDoor = document.getElementById('preset-door');
+  var presetGrid = document.getElementById('preset-grid');
+  var presetEditor = document.getElementById('preset-panel-editor');
+  var presetPanel = { key: 'blank', slot: '1', draft: null };
+  function firstPresetSlot(key) {
+    for (var i = 1; i <= 5; i++) if (!presetState[key][i]) return String(i);
+    return '5';
+  }
+  function paintPresetDoor() {
+    if (!presetGrid) return;
+    presetGrid.querySelectorAll('[data-preset-row]').forEach(function (row) {
+      var key = row.getAttribute('data-preset-row');
+      row.querySelectorAll('[data-preset-slot]').forEach(function (btn) {
+        var slot = btn.getAttribute('data-preset-slot');
+        btn.classList.toggle('is-filled', !!presetState[key][slot]);
+        btn.classList.toggle('is-lit', key === presetPanel.key && slot === presetPanel.slot);
+      });
+    });
+  }
+  function savePanelSlot() {
+    if (!presetPanel.key || !presetPanel.slot || !presetPanel.draft) return;
+    presetState[presetPanel.key][presetPanel.slot] = clonePreset(presetPanel.draft);
+    persistPresets();
+    paintPresetDoor();
+  }
+  function renderPresetEditor() {
+    if (!presetEditor || !presetPanel.draft) return;
+    var d = presetPanel.draft, isMargin = presetPanel.key === 'margin';
+    presetEditor.classList.toggle('is-margin', isMargin);
+    var fields = isMargin
+      ? [['L','l'], ['R','r'], ['B','b'], ['T','t']]
+      : [['X','x'], ['Y','y']];
+    presetEditor.innerHTML = fields.map(function (field) {
+      return '<label>' + field[0] + '<input type="text" inputmode="decimal" data-preset-input="' + field[1] + '" value="' + fmt3(d[field[1]]) + '"></label>';
+    }).join('') + '<button type="button" class="preset-send" id="preset-send-to-bed">Send to bed</button>';
+    presetEditor.querySelectorAll('[data-preset-input]').forEach(function (input) {
+      input.addEventListener('input', function () {
+        var n = parseFloat(input.value);
+        if (!Number.isFinite(n)) return;
+        presetPanel.draft[input.getAttribute('data-preset-input')] = normalizeEditNumber(n);
+        savePanelSlot();
+      });
+      input.addEventListener('focus', function () { input.select(); });
+    });
+    var send = document.getElementById('preset-send-to-bed');
+    if (send) send.addEventListener('click', function () {
+      savePanelSlot();
+      if (applyPresetSlot(presetPanel.key, presetPanel.slot)) {
+        closePresetDoor();
       }
     });
-    presetState.editing[key] = true;
-    presetState.armed[key] = null;
-    paintPresetButtons(key);
-    remasureHudStage();
+  }
+  function selectPresetSlot(key, slot, seed) {
+    if (PRESET_KEYS.indexOf(key) === -1) return;
+    presetPanel.key = key;
+    presetPanel.slot = String(slot || firstPresetSlot(key));
+    presetPanel.draft = clonePreset(seed || presetState[key][presetPanel.slot] || takeSnapshot(key));
+    paintPresetDoor();
+    renderPresetEditor();
+  }
+  function sizePresetDoor() {
+    if (!presetDoor || !hudStage) return;
+    var oldPos = presetDoor.style.position, oldOpacity = presetDoor.style.opacity;
+    presetDoor.style.position = 'static'; presetDoor.style.opacity = '1';
+    var h = presetDoor.offsetHeight;
+    presetDoor.style.position = oldPos; presetDoor.style.opacity = oldOpacity;
+    hudStage.style.height = h ? h + 'px' : '';
+  }
+  function openPresetDoor(key, seed) {
+    if (PRESET_KEYS.indexOf(key) === -1) return false;
+    closeAllParamPopovers();
+    clearMotionTimer(); state.calc = false;
+    calcToggle.classList.remove('active-calc'); calcToggle.setAttribute('aria-pressed', 'false');
+    if (isHudCollapsed()) setCollapsed(false);
+    hud.classList.add('preset-door');
+    if (presetDoor) presetDoor.setAttribute('aria-hidden', 'false');
+    var targetSlot = presetPanel.key === key && presetPanel.slot ? presetPanel.slot : firstPresetSlot(key);
+    selectPresetSlot(key, targetSlot, seed);
+    applyModeVisibility();
+    requestAnimationFrame(sizePresetDoor);
     return true;
-  };
+  }
+  function closePresetDoor() {
+    hud.classList.remove('preset-door');
+    if (presetDoor) presetDoor.setAttribute('aria-hidden', 'true');
+    presetPanel.draft = null;
+    remasureHudStage();
+    applyModeVisibility();
+    applyBodyHeight();
+  }
+  window.__hudPresetMorph = openPresetDoor;
+  if (presetGrid) presetGrid.addEventListener('click', function (e) {
+    var row = e.target.closest('[data-preset-row]'); if (!row) return;
+    var key = row.getAttribute('data-preset-row');
+    var slot = e.target.closest('[data-preset-slot]');
+    if (slot) { selectPresetSlot(key, slot.getAttribute('data-preset-slot')); return; }
+    if (e.target.closest('[data-preset-add]')) selectPresetSlot(key, firstPresetSlot(key));
+  });
+  var presetDoorClose = document.getElementById('preset-door-close');
+  if (presetDoorClose) presetDoorClose.addEventListener('click', closePresetDoor);
   if (tickerPicker) {
     tickerPicker.addEventListener('click', function (e) {
       var chip = e.target.closest && e.target.closest('[data-ticker-door-chip]');
@@ -4566,7 +4643,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     editSend.addEventListener('click', function (e) {
       e.preventDefault();
       e.stopPropagation();
-      if (typeof window.__hudPresetMorph === 'function') window.__hudPresetMorph(tickerEdit.key);
+      if (typeof window.__hudPresetMorph === 'function') window.__hudPresetMorph(tickerEdit.key, tickerEdit.draft);
     });
   }
   var editOk = document.getElementById('bt-edit-ok');
