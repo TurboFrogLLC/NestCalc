@@ -95,6 +95,7 @@ Subject is the **blank**, not the laser bed.
 - Zoom out may show the whole bed. Wheel zoom is leftover, not this job.
 - Blank resize does **not** re-fit the camera live.
 - Bed is static. Drags do not walk it off the viewport.
+- Viewport resize / phone rotate **does** re-run blank-fit. Same Fit path. Not live-resize on drag.
 - Bed heading / origin plaque stay Out.
 
 ## Cut C — Preset door (pinned)
@@ -137,6 +138,7 @@ Opening calc or Presets clamps `#hud` into the visible webview.
 Phone: HUD sits above the ticker. Not leftover `25,25`.
 Do not apply the 75% FLiPIT scale to the HUD unless FLiPIT is open.
 Do not hide `#hud`. Bed lock and blank-fit stay.
+Collapse then expand with Bed Presets open must keep the preset face height. Re-run `sizePresetDoor` or close the face on collapse.
 
 ## Cycle
 
@@ -148,5 +150,5 @@ No vercel --prod from this branch.
 
 React port. HexNest chrome. One-surface mobile. Cut sheet. Merge to `main`.
 Pretty preset chrome. Material breadcrumb. Named slots.
-Bed heading / origin plaque. Wheel zoom. Live-resize camera.
+Bed heading / origin plaque. Wheel zoom. Live-resize camera on blank drag.
 Kill the HUD shell.
