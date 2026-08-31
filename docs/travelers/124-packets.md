@@ -397,3 +397,17 @@ Seq 20 stamped.
 Still open: Inspection E.
 Next: Inspection E.
 ```
+
+### Seq 21 — Inspection E (Dirty)
+
+**Operator return**
+
+```text
+job_id: NGJ-20260831-ticker-picker-words
+Inspection evidence after the Cut E request: the post-request short-read found no Owner note, SuperGrok note, Codex review conclusion, OM SIGNAL, or +1. The only post-request comment is @codex review at issuecomment-5482049273; no Cut E review has been submitted.
+Inspection E: Dirty — no Cut E review conclusion is available for clearance.
+Escalated in Worker Mode. No corrective action was invented; no merge, ready mark, packslip, main change, or production deployment was made.
+Seq 21 stamped against the inspection-read SHA 2d79bbf.
+Still open: Inspection E (escalated).
+Next: Owner direction or a posted Cut E review conclusion, then Inspection E again.
+```
