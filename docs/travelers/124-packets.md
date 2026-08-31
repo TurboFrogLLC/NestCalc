@@ -228,7 +228,7 @@ Next: Send C.
 ```text
 job_id: NGJ-20260831-ticker-picker-words
 Posted @codex review on PR #124: https://github.com/TurboFrogLLC/NestCalc/pull/124#issuecomment-5481137641
-PR remains draft. No HTML host edit was made during Send C.
+No PR readiness state was changed. No HTML host edit was made during Send C.
 Seq 11 stamped.
 Still open: Wait C.
 Next: Wait C.
