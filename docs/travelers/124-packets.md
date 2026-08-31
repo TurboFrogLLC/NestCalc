@@ -176,3 +176,15 @@ Seq 8 stamped.
 Still open: Inspection B.
 Next: Inspection B after a posted Cut B review conclusion or Owner direction.
 ```
+
+### Seq 9 — Inspection B (Dirty)
+
+**Operator return**
+
+```text
+job_id: NGJ-20260831-ticker-picker-words
+Inspection evidence after Cut B: the short-read found no Owner note, SuperGrok note, or Codex review conclusion for the Cut B request. The only concluded Codex review is the earlier COMMENTED Cut A review on 5c9da83; the Cut B review is still running.
+Inspection B: Dirty — no Cut B review conclusion is available for clearance.
+Escalated in Worker Mode. No corrective action was invented; Cut C was not started; no merge, ready mark, packslip, or main change was made.
+Seq 9 stamped against the review-wait SHA 5b0954a.
+```
