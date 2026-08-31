@@ -309,3 +309,17 @@ Seq 15 stamped.
 Still open: Wait D.
 Next: Wait D.
 ```
+
+### Seq 16 — Wait D
+
+**Operator return**
+
+```text
+job_id: NGJ-20260831-ticker-picker-words
+gh authenticated as TurboFrogLLC.
+Short-read PR #124 after the Cut D request: the request is present at issuecomment-5481561062 and has an eyes reaction. Codex Review Summary is Running for commit 62b108f; reviews list contains only the earlier COMMENTED Cut A, Cut B, and Cut C conclusions. There is no Cut D conclusion, OM SIGNAL, or +1.
+Wait fact: no-review-yet (review running). No poll loop started.
+Seq 16 stamped.
+Still open: Inspection D.
+Next: Inspection D.
+```
