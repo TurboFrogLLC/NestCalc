@@ -52,7 +52,8 @@ Bridges in this host:
   · R13 Preset write-mode + OK applies live fields to HUD/bed
         Single frost-blue bed rail · XYZR 4dp black · front surface
   · Two-box ticker: travel + picker, 8px air, chevron last, travel vs edit
-        Look-fit: hits/inputs 28 · pad 3/8 · radius 10 · outer 36.2 · icons 18/16
+        Cut A: hits/inputs 28 · pad 6/8 · item gap 2 · radius 8 · outer 42.2
+        Picker words only · travel and picker right edges flush · travel icon 18
         Send/square-arrow-out-up-right → #hud preset morph · not WRITE popover
 
 Not wired: sandbox isolator · child-spec · Post → HUD/bed hydrate.
@@ -161,22 +162,22 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   .bt-picker {
     display: inline-flex;
     align-items: center;
-    gap: 3px;
-    padding: 3px 8px;
+    gap: 2px;
+    padding: 6px 8px;
     box-sizing: border-box;
     border: 1.1px solid rgba(26, 20, 40, 0.22);
-    border-radius: 10px;
+    border-radius: 8px;
     background: #E8E8E8;
     color: #1A1428;
     pointer-events: auto;
     flex-shrink: 0;
-    height: 36.2px;
-    min-height: 36.2px;
+    height: 42.2px;
+    min-height: 42.2px;
   }
   .bt-travel {
     display: inline-flex;
     align-items: center;
-    gap: 3px;
+    gap: 2px;
     height: 28px;
     flex-shrink: 0;
   }
@@ -185,7 +186,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     width: 28px; height: 28px; min-width: 28px; min-height: 28px;
     margin: 0; padding: 0;
     border: 0;
-    border-radius: 10px;
+    border-radius: 8px;
     background: transparent;
     color: #1A1428;
     display: inline-flex; align-items: center; justify-content: center;
@@ -205,7 +206,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     padding: 0 8px;
     box-sizing: border-box;
     border: 0;
-    border-radius: 10px;
+    border-radius: 8px;
     background: transparent;
     color: #1A1428;
     font-family: var(--font-mono);
@@ -229,11 +230,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     height: 28px; min-height: 28px;
     margin: 0; padding: 0 8px;
     border: 0;
-    border-radius: 10px;
+    border-radius: 8px;
     background: transparent;
     color: #1A1428;
     display: inline-flex; align-items: center; justify-content: center;
-    gap: 3px;
+    gap: 2px;
     cursor: pointer;
     box-sizing: border-box;
     line-height: 1;
@@ -242,7 +243,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     font-weight: 650;
     white-space: nowrap;
   }
-  .ticker-door-chip svg { display: block; width: 16px; height: 16px; pointer-events: none; flex-shrink: 0; }
   .ticker-door-chip:hover,
   .ticker-door-chip:focus-visible { background: rgba(26, 20, 40, 0.08); }
   .ticker-door-chip.is-lit { background: rgba(26, 20, 40, 0.14); }
@@ -253,7 +253,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   .bt-edit {
     display: none;
     align-items: center;
-    gap: 3px;
+    gap: 2px;
     height: 28px;
     pointer-events: auto;
   }
@@ -261,13 +261,13 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   .bt-edit-fields {
     display: none;
     align-items: center;
-    gap: 3px;
+    gap: 2px;
   }
   .bt-edit-fields.is-on { display: inline-flex; }
   .bt-axis {
     display: inline-flex;
     align-items: center;
-    gap: 3px;
+    gap: 2px;
     height: 28px;
   }
   .bt-axis > span {
@@ -285,7 +285,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     margin: 0;
     padding: 0 4px;
     border: 0;
-    border-radius: 10px;
+    border-radius: 8px;
     background: #ffffff;
     color: #1A1428;
     font-family: var(--font-mono);
@@ -369,6 +369,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       overflow: visible;
       touch-action: none;
     }
+    .keypad.hud-viewport-clamped { z-index: 83; }
     .keypad::after {
       content: "";
       position: absolute;
@@ -534,7 +535,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       transition: height var(--motion-mode) var(--ease);
     }
     #hud-mode,
-    .classic-calc {
+    .classic-calc,
+    .preset-door {
       display: flex;
       flex-direction: column;
       box-sizing: border-box;
@@ -550,6 +552,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     #hud-mode { gap: 4.4px; opacity: 1; pointer-events: auto; }
     .keypad.calc-mode #hud-mode { opacity: 0; pointer-events: none; }
     .keypad.calc-mode .classic-calc { opacity: 1; pointer-events: auto; }
+    .keypad.preset-door #hud-mode,
+    .keypad.preset-door .classic-calc { opacity: 0; pointer-events: none; }
+    .keypad.preset-door .preset-door { opacity: 1; pointer-events: auto; }
     /* Calculator path: footer chips stay available while params hide */
 
     .param-rows { display: flex; flex-direction: column; gap: 8.8px; margin-top: 0; }
@@ -663,27 +668,22 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       opacity: 1; transform: translateX(0); pointer-events: auto;
       transition: opacity var(--motion-popover) var(--ease-decelerate), transform var(--motion-popover) var(--ease-decelerate);
     }
-    .keypad.is-preset-morph .param-row.is-morph-target {
-      flex-wrap: wrap;
-    }
-    .keypad.is-preset-morph .param-row.is-morph-target .param-popover {
-      position: static;
-      opacity: 1;
-      transform: none;
-      pointer-events: auto;
-      width: auto;
-      max-width: 100%;
-      box-shadow: none;
-      margin-top: 8px;
-      flex: 1 1 100%;
-    }
-    .keypad.is-preset-morph .param-row.is-morph-target .pop-xy,
-    .keypad.is-preset-morph .param-row.is-morph-target .pop-margins,
-    .keypad.is-preset-morph .param-row.is-morph-target .pop-title,
-    .keypad.is-preset-morph .param-row.is-morph-target .pop-actions {
-      display: none;
-    }
-    .keypad.is-preset-morph .param-row.is-morph-target .pop-pre-confirm { display: flex; }
+    .preset-door { gap: 10px; color: var(--ink); }
+    .preset-door-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .preset-door-title { margin: 0; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+    .preset-door-close { width: 28px; height: 28px; border: 0; border-radius: 8px; background: rgba(26,20,40,.10); color: var(--ink); cursor: pointer; }
+    .preset-grid { display: grid; gap: 6px; }
+    .preset-line { display: grid; grid-template-columns: 52px repeat(6, minmax(28px, 1fr)); gap: 4px; align-items: center; }
+    .preset-line-label { font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+    .preset-slot, .preset-add, .preset-send { height: 28px; border: 1.1px solid rgba(26,20,40,.20); border-radius: 8px; background: rgba(255,255,255,.76); color: var(--ink); font: 700 10px var(--font); cursor: pointer; }
+    .preset-slot.is-filled { background: rgba(83,139,236,.20); }
+    .preset-slot.is-lit { outline: 2px solid #FFCE1B; outline-offset: 1px; }
+    .preset-panel-editor { display: flex; align-items: center; gap: 5px; padding-top: 3px; }
+    .preset-panel-editor label { display: flex; align-items: center; gap: 3px; font-size: 10px; font-weight: 700; }
+    .preset-panel-editor input { width: 44px; height: 28px; box-sizing: border-box; border: 1.1px solid rgba(26,20,40,.22); border-radius: 8px; background: rgba(255,255,255,.88); color: var(--ink); font: 700 10px var(--font-mono); text-align: center; }
+    .preset-panel-editor input[aria-invalid="true"], .bt-edit input[aria-invalid="true"] { border-color: #C4293A; box-shadow: 0 0 0 1px rgba(196,41,58,.22); }
+    .preset-panel-editor.is-margin { flex-wrap: wrap; }
+    .preset-send { margin-left: auto; min-width: 92px; background: rgba(26,20,40,.82); color: #FFCE1B; }
     .param-popover .pop-head {
       display: flex; align-items: center; justify-content: space-between;
       gap: 6.6px; margin-bottom: 8.8px;
@@ -2297,11 +2297,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       box-sizing: border-box;
     }
 
-    /* Mobile-fit: the open HUD + FLiPIT composition uses a deliberate 75% card box.
-       Portrait keeps left/right bed gutters; landscape reserves top/bottom bed gutters. */
+    /* Mobile-fit is the open HUD + FLiPIT composition only. */
     @media (max-width: 700px), (max-height: 500px) and (orientation: landscape) {
       .gcode.is-open,
-      .keypad {
+      .keypad.hud-mobile-fit {
         transform: scale(var(--mobile-fit-scale, 0.75)) !important;
         transform-origin: top left !important;
       }
@@ -2396,7 +2395,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       </button>
     </div>
 
-    <!-- Two-box ticker — look-fit 28 / 36.2 · picker icon+word · Send → #hud presets -->
+    <!-- Two-box ticker — Cut A: 28 hit / 42.2 outer · picker words · Send → #hud presets -->
     <div class="blank-ticker-cluster" id="blank-ticker-cluster">
       <div class="bt-travel-box" id="bt-travel-box">
         <div class="bt-travel" id="bt-travel">
@@ -2453,22 +2452,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         </div>
       </div>
       <div class="bt-picker" id="bt-picker" aria-label="Field picker">
-        <button type="button" class="ticker-door-chip" data-ticker-door-chip="part" title="Part" aria-label="Part">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
-          <span>Part</span>
-        </button>
-        <button type="button" class="ticker-door-chip" data-ticker-door-chip="gap" title="Gap" aria-label="Gap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="13" height="7" x="8" y="3" rx="1"/><path d="m2 9 3 3-3 3"/><rect width="13" height="7" x="8" y="14" rx="1"/></svg>
-          <span>Gap</span>
-        </button>
-        <button type="button" class="ticker-door-chip" data-ticker-door-chip="margin" title="Margin" aria-label="Margin">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="9" height="6" x="6" y="14" rx="2"/><rect width="16" height="6" x="6" y="4" rx="2"/><path d="M2 2v20"/></svg>
-          <span>Margin</span>
-        </button>
-        <button type="button" class="ticker-door-chip" data-ticker-door-chip="eraser" title="Reset" aria-label="Reset">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>
-          <span>Reset</span>
-        </button>
+        <button type="button" class="ticker-door-chip" data-ticker-door-chip="part" title="Part" aria-label="Part">Part</button>
+        <button type="button" class="ticker-door-chip" data-ticker-door-chip="gap" title="Gap" aria-label="Gap">Gap</button>
+        <button type="button" class="ticker-door-chip" data-ticker-door-chip="margin" title="Margin" aria-label="Margin">Margin</button>
+        <button type="button" class="ticker-door-chip" data-ticker-door-chip="eraser" title="Reset" aria-label="Reset">Reset</button>
       </div>
     </div>
   
@@ -2528,21 +2515,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
               <div class="param-popover" data-pop="blank">
                 <div class="pop-head">
                   <div class="pop-title">Blank size</div>
-                  <div class="pop-presets" data-presets="blank">
-                    <button type="button" class="pop-pre" data-pre="A" aria-pressed="false" title="Preset A">A</button>
-                    <button type="button" class="pop-pre" data-pre="B" aria-pressed="false" title="Preset B">B</button>
-                  </div>
                   <div class="pop-actions">
-                    <button type="button" class="pop-edit" data-pre-edit title="Edit presets" aria-label="Edit presets" aria-pressed="false"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button>
                     <button type="button" class="pop-save" data-pop-save title="Save" aria-label="Save changes"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg></button>
                     <button type="button" class="pop-close" data-pop-close title="Close" aria-label="Close"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
                   </div>
                 </div>
-                <div class="pop-pre-confirm">
-                  <button type="button" class="pop-pre-ok" data-pre-ok>Confirm</button>
-                  <button type="button" class="pop-pre-cancel" data-pre-cancel>Cancel</button>
-                </div>
-                <div class="pop-toast" aria-live="polite"></div>
                 <div class="pop-xy">
                   <div class="pop-half"><span>X</span><input id="rem-x" data-blank="x" type="text" inputmode="decimal" value="12.000" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
                   <div class="pop-sep"></div>
@@ -2561,21 +2538,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
               <div class="param-popover" data-pop="gap">
                 <div class="pop-head">
                   <div class="pop-title">Gap</div>
-                  <div class="pop-presets" data-presets="gap">
-                    <button type="button" class="pop-pre" data-pre="A" aria-pressed="false" title="Preset A">A</button>
-                    <button type="button" class="pop-pre" data-pre="B" aria-pressed="false" title="Preset B">B</button>
-                  </div>
                   <div class="pop-actions">
-                    <button type="button" class="pop-edit" data-pre-edit title="Edit presets" aria-label="Edit presets" aria-pressed="false"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button>
                     <button type="button" class="pop-save" data-pop-save title="Save" aria-label="Save changes"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg></button>
                     <button type="button" class="pop-close" data-pop-close title="Close" aria-label="Close"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
                   </div>
                 </div>
-                <div class="pop-pre-confirm">
-                  <button type="button" class="pop-pre-ok" data-pre-ok>Confirm</button>
-                  <button type="button" class="pop-pre-cancel" data-pre-cancel>Cancel</button>
-                </div>
-                <div class="pop-toast" aria-live="polite"></div>
                 <div class="pop-xy">
                   <div class="pop-half"><span>X</span><input id="gap-x" data-gap="x" type="text" inputmode="decimal" value="0.375" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
                   <div class="pop-sep"></div>
@@ -2592,21 +2559,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
               <div class="param-popover" data-pop="margin">
                 <div class="pop-head">
                   <div class="pop-title">Margin</div>
-                  <div class="pop-presets" data-presets="margin">
-                    <button type="button" class="pop-pre" data-pre="A" aria-pressed="false" title="Preset A">A</button>
-                    <button type="button" class="pop-pre" data-pre="B" aria-pressed="false" title="Preset B">B</button>
-                  </div>
                   <div class="pop-actions">
-                    <button type="button" class="pop-edit" data-pre-edit title="Edit presets" aria-label="Edit presets" aria-pressed="false"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button>
                     <button type="button" class="pop-save" data-pop-save title="Save" aria-label="Save changes"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg></button>
                     <button type="button" class="pop-close" data-pop-close title="Close" aria-label="Close"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
                   </div>
                 </div>
-                <div class="pop-pre-confirm">
-                  <button type="button" class="pop-pre-ok" data-pre-ok>Confirm</button>
-                  <button type="button" class="pop-pre-cancel" data-pre-cancel>Cancel</button>
-                </div>
-                <div class="pop-toast" aria-live="polite"></div>
                 <div class="pop-margins">
                   <label class="pop-m-field"><span>L</span><input id="m-left" data-m="l" type="text" inputmode="decimal" value="0.250" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></label>
                   <label class="pop-m-field"><span>R</span><input id="m-right" data-m="r" type="text" inputmode="decimal" value="0.250" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></label>
@@ -2617,6 +2574,16 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
             </div>
           </div>
 
+        </div>
+
+        <div class="preset-door" id="preset-door" aria-label="Bed presets" aria-hidden="true">
+          <div class="preset-door-head"><p class="preset-door-title">Bed Presets</p><button type="button" class="preset-door-close" id="preset-door-close" aria-label="Close presets">×</button></div>
+          <div class="preset-grid" id="preset-grid">
+            <div class="preset-line" data-preset-row="blank"><span class="preset-line-label">Blank</span><button type="button" class="preset-slot" data-preset-slot="1">1</button><button type="button" class="preset-slot" data-preset-slot="2">2</button><button type="button" class="preset-slot" data-preset-slot="3">3</button><button type="button" class="preset-slot" data-preset-slot="4">4</button><button type="button" class="preset-slot" data-preset-slot="5">5</button><button type="button" class="preset-add" data-preset-add>+</button></div>
+            <div class="preset-line" data-preset-row="gap"><span class="preset-line-label">Gap</span><button type="button" class="preset-slot" data-preset-slot="1">1</button><button type="button" class="preset-slot" data-preset-slot="2">2</button><button type="button" class="preset-slot" data-preset-slot="3">3</button><button type="button" class="preset-slot" data-preset-slot="4">4</button><button type="button" class="preset-slot" data-preset-slot="5">5</button><button type="button" class="preset-add" data-preset-add>+</button></div>
+            <div class="preset-line" data-preset-row="margin"><span class="preset-line-label">Margin</span><button type="button" class="preset-slot" data-preset-slot="1">1</button><button type="button" class="preset-slot" data-preset-slot="2">2</button><button type="button" class="preset-slot" data-preset-slot="3">3</button><button type="button" class="preset-slot" data-preset-slot="4">4</button><button type="button" class="preset-slot" data-preset-slot="5">5</button><button type="button" class="preset-add" data-preset-add>+</button></div>
+          </div>
+          <div class="preset-panel-editor" id="preset-panel-editor"></div>
         </div>
 
         <div class="classic-calc" id="classic-calc">
@@ -2887,7 +2854,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 (function () {
   var BED = 48;
   var state = {
-    blankW: 12, blankH: 8, snap: 0.125, zoom: 1, panX: 0, panY: 0, dragging: null, start: null,
+    blankW: 12, blankH: 8, snap: 0.125, zoom: 1, baseScale: 1, panX: 0, panY: 0, dragging: null, start: null,
     partW: 1.250, partH: 3.375, partRot: 0,
     margin: { l: 0.25, r: 0.25, t: 0.25, b: 0.25 },
     hexLayout: null, hexDiameter: 1.25, hexDrag: null
@@ -2912,19 +2879,22 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   var btReadout = document.getElementById('bt-readout');
   if (!svg || !camera || !blank) return;
 
-  var PAD = 48;
+  var BLANK_FIT_AIR = 2;
   var MIN_LABEL_PX = 36;
-  var TICKER_H = 36.2;
+  var TICKER_H = 42.2;
   var GAP_TOP = 10;   /* px above blank top */
   var GAP_RIGHT = 20; /* px inset from blank right edge */
 
   function snap(v) { var s = state.snap; return Math.round(v / s) * s; }
-  function fittedScale() {
+  function blankFittedScale() {
     var W = svg.clientWidth || window.innerWidth;
     var H = svg.clientHeight || window.innerHeight;
-    return Math.min(Math.max(80, W - PAD * 2) / BED, Math.max(80, H - PAD * 2) / BED);
+    return Math.min(
+      Math.max(80, W) / (state.blankW + BLANK_FIT_AIR * 2),
+      Math.max(80, H) / (state.blankH + BLANK_FIT_AIR * 2)
+    );
   }
-  function pxPerInch() { return fittedScale() * state.zoom; }
+  function pxPerInch() { return state.baseScale * state.zoom; }
   function labelStep() {
     var s = pxPerInch(), candidates = [12, 6, 3, 1];
     for (var i = candidates.length - 1; i >= 0; i--) if (candidates[i] * s >= MIN_LABEL_PX) return candidates[i];
@@ -3219,11 +3189,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
   function fitBed() {
     state.zoom = 1;
-    var s = fittedScale();
+    var s = state.baseScale = blankFittedScale();
     var W = svg.clientWidth || window.innerWidth;
     var H = svg.clientHeight || window.innerHeight;
-    state.panX = (W - BED * s) / 2;
-    state.panY = (H + BED * s) / 2;
+    state.panX = (W - state.blankW * s) / 2;
+    state.panY = (H + state.blankH * s) / 2;
   }
 
   function onPointerDown(e) {
@@ -3237,8 +3207,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     } else if (t === hitCorner || id === 'lb-hit-corner') { state.dragging = 'xy'; document.body.classList.add('lb-dragging-xy'); }
     else if (t === hitRight || id === 'lb-hit-right') { state.dragging = 'x'; document.body.classList.add('lb-dragging-x'); }
     else if (t === hitTop || id === 'lb-hit-top') { state.dragging = 'y'; document.body.classList.add('lb-dragging-y'); }
-    else if (e.currentTarget === blankLayer) return;
-    else { state.dragging = 'pan'; document.body.classList.add('lb-panning', 'lb-dragging'); }
+    else if (e.currentTarget === svg) { state.dragging = 'pan'; document.body.classList.add('lb-panning', 'lb-dragging'); }
+    else return;
     state.start = { cx: e.clientX, cy: e.clientY, w: state.blankW, h: state.blankH, panX: state.panX, panY: state.panY };
     if (state.dragging === 'hex' && state.hexLayout) {
       var active = state.hexLayout.parts.find(function (part) { return part.id === state.hexDrag.id; });
@@ -3252,8 +3222,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var dx = e.clientX - state.start.cx, dy = e.clientY - state.start.cy, s = pxPerInch();
     if (state.dragging === 'hex') {
       if (state.hexDrag && state.hexDrag.el) state.hexDrag.el.setAttribute('transform', 'translate(' + (dx / s) + ',' + (-dy / s) + ')');
-    } else if (state.dragging === 'pan') { state.panX = state.start.panX + dx; state.panY = state.start.panY + dy; }
-    else if (state.dragging === 'x') state.blankW = Math.max(state.snap, snap(state.start.w + dx / s));
+    } else if (state.dragging === 'pan') {
+      state.panX = state.start.panX + dx;
+      state.panY = state.start.panY + dy;
+    } else if (state.dragging === 'x') state.blankW = Math.max(state.snap, snap(state.start.w + dx / s));
     else if (state.dragging === 'y') state.blankH = Math.max(state.snap, snap(state.start.h - dy / s));
     else if (state.dragging === 'xy') {
       state.blankW = Math.max(state.snap, snap(state.start.w + dx / s));
@@ -3285,7 +3257,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     e.preventDefault();
     var factor = e.deltaY < 0 ? 1.1 : 1 / 1.1;
     var newZoom = Math.min(12, Math.max(0.35, state.zoom * factor));
-    var s0 = pxPerInch(), s1 = fittedScale() * newZoom;
+    var s0 = pxPerInch(), s1 = state.baseScale * newZoom;
     var wx = (e.clientX - state.panX) / s0, wy = (state.panY - e.clientY) / s0;
     state.zoom = newZoom;
     state.panX = e.clientX - wx * s1;
@@ -3296,6 +3268,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   document.getElementById('lb-zoom-in').onclick = function () { state.zoom = Math.min(12, state.zoom * 1.25); render(); };
   document.getElementById('lb-zoom-out').onclick = function () { state.zoom = Math.max(0.35, state.zoom / 1.25); render(); };
   document.getElementById('lb-fit').onclick = function () { fitBed(); render(); };
+  /* A viewport change is a deliberate Fit, unlike a blank drag which preserves the camera. */
   window.addEventListener('resize', function () { fitBed(); render(); });
 
   fitBed(); render();
@@ -3332,11 +3305,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   const PRESET_KEYS = ['blank', 'gap', 'margin'];
   const PRESET_STORE = 'howmany.flipit.v3.presets';
   var presetState = {
-    blank: { A: null, B: null },
-    gap: { A: null, B: null },
-    margin: { A: null, B: null },
-    armed: { blank: null, gap: null, margin: null },
-    editing: { blank: false, gap: false, margin: false }
+    blank: { 1: null, 2: null, 3: null, 4: null, 5: null },
+    gap: { 1: null, 2: null, 3: null, 4: null, 5: null },
+    margin: { 1: null, 2: null, 3: null, 4: null, 5: null }
   };
   function clonePreset(v) {
     return v ? JSON.parse(JSON.stringify(v)) : null;
@@ -3348,7 +3319,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       var data = JSON.parse(raw);
       PRESET_KEYS.forEach(function (key) {
         if (!data[key]) return;
-        ['A', 'B'].forEach(function (slot) {
+        ['1', '2', '3', '4', '5'].forEach(function (slot) {
           if (data[key][slot]) presetState[key][slot] = data[key][slot];
         });
       });
@@ -3358,35 +3329,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     try {
       var out = {};
       PRESET_KEYS.forEach(function (key) {
-        out[key] = { A: presetState[key].A, B: presetState[key].B };
+        out[key] = { 1: presetState[key][1], 2: presetState[key][2], 3: presetState[key][3], 4: presetState[key][4], 5: presetState[key][5] };
       });
       localStorage.setItem(PRESET_STORE, JSON.stringify(out));
     } catch (_) {}
-  }
-  function paintPresetButtons(key) {
-    var wrap = document.querySelector('.pop-presets[data-presets="' + key + '"]');
-    if (!wrap) return;
-    wrap.querySelectorAll('.pop-pre').forEach(function (btn) {
-      var slot = btn.getAttribute('data-pre');
-      var filled = !!(presetState[key] && presetState[key][slot]);
-      var armed = presetState.armed[key] === slot;
-      btn.classList.toggle('is-filled', filled);
-      btn.classList.toggle('is-armed', armed);
-      btn.setAttribute('aria-pressed', armed ? 'true' : 'false');
-    });
-    var pop = document.querySelector('.param-popover[data-pop="' + key + '"]');
-    if (pop) {
-      var editing = !!presetState.editing[key];
-      pop.classList.toggle('is-editing', editing);
-      pop.classList.toggle('is-arming', editing && !!presetState.armed[key]);
-      var editBtn = pop.querySelector('[data-pre-edit]');
-      if (editBtn) {
-        editBtn.classList.toggle('is-on', editing);
-        editBtn.setAttribute('aria-pressed', editing ? 'true' : 'false');
-      }
-      var okBtn = pop.querySelector('[data-pre-ok]');
-      if (okBtn) okBtn.disabled = !(editing && !!presetState.armed[key]);
-    }
   }
   function parseLiveNumber(el) {
     if (!el) return null;
@@ -3451,36 +3397,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     writeFieldsFromBag(key);
     return true;
   }
-  function saveArmedPreset(key) {
-    var slot = presetState.armed[key];
-    if (!slot || PRESET_KEYS.indexOf(key) === -1) return false;
-    var bag = takeSnapshot(key);
-    if (tickerEdit && tickerEdit.draft && tickerEdit.key === key) {
-      var d = tickerEdit.draft;
-      bag = key === 'margin'
-        ? { l: d.l, r: d.r, t: d.t, b: d.b }
-        : { x: d.x, y: d.y, linked: !!d.linked };
-    }
-    presetState[key][slot] = clonePreset(bag);
-    persistPresets();
-    presetState.armed[key] = null;
-    presetState.editing[key] = false;
-    paintPresetButtons(key);
-    return true;
-  }
-  function showPresetToast(pop) {
-    if (!pop) return;
-    var el = pop.querySelector('.pop-toast');
-    if (!el) return;
-    el.textContent = 'Preset saved';
-    el.classList.remove('is-on');
-    void el.offsetWidth;
-    el.classList.add('is-on');
-    clearTimeout(el._toastTimer);
-    el._toastTimer = setTimeout(function () { el.classList.remove('is-on'); }, 1400);
-  }
   loadPresets();
-  PRESET_KEYS.forEach(paintPresetButtons);
 
   function fmt3(n) { return (Number.isFinite(n) ? n : 0).toFixed(3); }
 
@@ -3616,9 +3533,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
   function applyModeVisibility() {
     /* Class-only: never toggle display. Stacked opacity handles the swap. */
-    const showCalc = !!(state.calc && !isHudCollapsed());
+    const showPreset = hud.classList.contains('preset-door');
+    const showCalc = !!(state.calc && !isHudCollapsed() && !showPreset);
     hud.classList.toggle('calc-mode', showCalc);
-    if (hudMode) hudMode.setAttribute('aria-hidden', showCalc ? 'true' : 'false');
+    if (hudMode) hudMode.setAttribute('aria-hidden', (showCalc || showPreset) ? 'true' : 'false');
     if (classicEl) classicEl.setAttribute('aria-hidden', showCalc ? 'false' : 'true');
   }
 
@@ -3678,10 +3596,14 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     } else {
       applyModeVisibility();
     }
+    if (!on && hud.classList.contains('preset-door')) {
+      requestAnimationFrame(sizePresetDoor);
+    }
   }
 
   function setCalc(on) {
     clearMotionTimer();
+    if (on && hud.classList.contains('preset-door')) closePresetDoor();
     state.calc = on;
     calcToggle.classList.toggle('active-calc', on);
     calcToggle.setAttribute('aria-pressed', on ? 'true' : 'false');
@@ -3689,6 +3611,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (on) closeAllParamPopovers();
     applyModeVisibility();
     applyBodyHeight();
+    if (on) requestAnimationFrame(function () {
+      if (typeof window.__hudClampVisible === 'function') window.__hudClampVisible('calc');
+    });
   }
 
   btnChevron.addEventListener('click', function () {
@@ -3900,52 +3825,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       }
       return;
     }
-    const preOk = e.target.closest('[data-pre-ok]');
-    if (preOk) {
-      e.preventDefault(); e.stopPropagation();
-      var okKey = paramState.open;
-      var morphDraft = hud.classList.contains('is-preset-morph') && tickerEdit && tickerEdit.draft && tickerEdit.key === okKey;
-      if (okKey && !morphDraft) commitLiveFields(okKey);
-      if (okKey && saveArmedPreset(okKey)) {
-        showPresetToast(preOk.closest('.param-popover'));
-      }
-      return;
-    }
-    const preCancel = e.target.closest('[data-pre-cancel]');
-    if (preCancel) {
-      e.preventDefault(); e.stopPropagation();
-      var cancelKey = paramState.open;
-      if (cancelKey && PRESET_KEYS.indexOf(cancelKey) !== -1) {
-        presetState.armed[cancelKey] = null;
-        presetState.editing[cancelKey] = false;
-        paintPresetButtons(cancelKey);
-      }
-      return;
-    }
-    const editBtn = e.target.closest('[data-pre-edit]');
-    if (editBtn) {
-      e.preventDefault(); e.stopPropagation();
-      var editKey = paramState.open;
-      if (!editKey || PRESET_KEYS.indexOf(editKey) === -1) return;
-      presetState.editing[editKey] = !presetState.editing[editKey];
-      if (!presetState.editing[editKey]) presetState.armed[editKey] = null;
-      paintPresetButtons(editKey);
-      return;
-    }
-    const preBtn = e.target.closest('.pop-pre');
-    if (preBtn) {
-      e.preventDefault(); e.stopPropagation();
-      const wrap = preBtn.closest('.pop-presets');
-      const key = wrap && wrap.getAttribute('data-presets');
-      const slot = preBtn.getAttribute('data-pre');
-      if (!key || !slot || PRESET_KEYS.indexOf(key) === -1) return;
-      if (presetState.editing[key]) {
-        presetState.armed[key] = presetState.armed[key] === slot ? null : slot;
-        paintPresetButtons(key);
-        return;
-      }
-      if (presetState[key][slot]) applyPresetSlot(key, slot);
-    }
   });
 
   function positionOutsideHUD() {
@@ -4088,11 +3967,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     const row = document.querySelector('.param-row[data-param="' + key + '"]');
     if (!row) return;
     row.classList.add('is-open');
-    if (PRESET_KEYS.indexOf(key) !== -1) {
-      presetState.armed[key] = null;
-      presetState.editing[key] = false;
-      paintPresetButtons(key);
-    }
     updateSaveDirty();
     requestAnimationFrame(function () {
       positionOutsideHUD(); positionOutsideHUD();
@@ -4345,8 +4219,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       setCollapsed(false);
       applyModeVisibility();
       applyBodyHeight();
+      requestAnimationFrame(function () {
+        if (typeof window.__hudClampVisible === 'function') window.__hudClampVisible('calc');
+      });
       return;
     }
+    if (!tickerEdit.key) { openPresetDoor('blank'); return; }
     setCalc(!state.calc);
   };
 
@@ -4466,39 +4344,123 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     refreshTickers();
     exitTickerEdit();
   }
-  window.__hudPresetMorph = function (key) {
-    if (PRESET_KEYS.indexOf(key) === -1) return false;
-    if (state.calc) {
-      if (typeof window.__hudExitCalc === 'function') window.__hudExitCalc();
-      else setCalc(false);
-    }
-    closeAllParamPopovers();
-    clearMotionTimer();
-    if (isHudCollapsed()) setCollapsed(false);
-    applyModeVisibility();
-    applyBodyHeight();
-    hud.classList.add('is-preset-morph');
-    paramState.open = key;
-    document.querySelectorAll('.param-row').forEach(function (row) {
-      var on = row.getAttribute('data-param') === key;
-      row.classList.toggle('is-morph-target', on);
-      if (on) {
-        var pop = row.querySelector('.param-popover');
-        if (pop) {
-          pop.style.left = '';
-          pop.style.top = '';
-          pop.style.right = '';
-          pop.style.bottom = '';
-          pop.style.position = '';
-        }
+  var presetDoor = document.getElementById('preset-door');
+  var presetGrid = document.getElementById('preset-grid');
+  var presetEditor = document.getElementById('preset-panel-editor');
+  var presetPanel = {
+    key: 'blank', slot: '1', draft: null,
+    litThisVisit: { blank: null, gap: null, margin: null }
+  };
+  function firstPresetSlot(key) {
+    for (var i = 1; i <= 5; i++) if (!presetState[key][i]) return String(i);
+    return '5';
+  }
+  function paintPresetDoor() {
+    if (!presetGrid) return;
+    presetGrid.querySelectorAll('[data-preset-row]').forEach(function (row) {
+      var key = row.getAttribute('data-preset-row');
+      row.querySelectorAll('[data-preset-slot]').forEach(function (btn) {
+        var slot = btn.getAttribute('data-preset-slot');
+        btn.classList.toggle('is-filled', !!presetState[key][slot]);
+        btn.classList.toggle('is-lit', key === presetPanel.key && slot === presetPanel.slot);
+      });
+    });
+  }
+  function savePanelSlot() {
+    if (!presetPanel.key || !presetPanel.slot || !presetPanel.draft) return;
+    presetState[presetPanel.key][presetPanel.slot] = clonePreset(presetPanel.draft);
+    persistPresets();
+    paintPresetDoor();
+  }
+  function renderPresetEditor() {
+    if (!presetEditor || !presetPanel.draft) return;
+    var d = presetPanel.draft, isMargin = presetPanel.key === 'margin';
+    presetEditor.classList.toggle('is-margin', isMargin);
+    var fields = isMargin
+      ? [['L','l'], ['R','r'], ['B','b'], ['T','t']]
+      : [['X','x'], ['Y','y']];
+    presetEditor.innerHTML = fields.map(function (field) {
+      return '<label>' + field[0] + '<input type="text" inputmode="decimal" data-preset-input="' + field[1] + '" value="' + fmt3(d[field[1]]) + '"></label>';
+    }).join('') + '<button type="button" class="preset-send" id="preset-send-to-bed">Send to bed</button>';
+    presetEditor.querySelectorAll('[data-preset-input]').forEach(function (input) {
+      input.addEventListener('input', function () {
+        sanitizeNumericLive(input);
+        input.removeAttribute('aria-invalid');
+        var n = parseFloat(input.value);
+        if (!Number.isFinite(n)) return;
+        presetPanel.draft[input.getAttribute('data-preset-input')] = normalizeEditNumber(n);
+        savePanelSlot();
+      });
+      input.addEventListener('focus', function () { input.select(); });
+    });
+    var send = document.getElementById('preset-send-to-bed');
+    if (send) send.addEventListener('click', function () {
+      if (rejectClearedTickerFields(presetEditor)) return;
+      savePanelSlot();
+      if (applyPresetSlot(presetPanel.key, presetPanel.slot)) {
+        if (tickerEdit.key === presetPanel.key) exitTickerEdit();
+        closePresetDoor();
       }
     });
-    presetState.editing[key] = true;
-    presetState.armed[key] = null;
-    paintPresetButtons(key);
-    remasureHudStage();
+  }
+  function selectPresetSlot(key, slot, seed, isExplicitlyLit) {
+    if (PRESET_KEYS.indexOf(key) === -1) return;
+    presetPanel.key = key;
+    presetPanel.slot = String(slot || firstPresetSlot(key));
+    presetPanel.draft = clonePreset(seed || presetState[key][presetPanel.slot] || takeSnapshot(key));
+    if (isExplicitlyLit) presetPanel.litThisVisit[key] = presetPanel.slot;
+    paintPresetDoor();
+    renderPresetEditor();
+    requestAnimationFrame(sizePresetDoor);
+  }
+  function sizePresetDoor() {
+    if (!presetDoor || !hudStage) return;
+    var oldPos = presetDoor.style.position, oldOpacity = presetDoor.style.opacity;
+    presetDoor.style.position = 'static'; presetDoor.style.opacity = '1';
+    var h = presetDoor.offsetHeight;
+    presetDoor.style.position = oldPos; presetDoor.style.opacity = oldOpacity;
+    hudStage.style.height = h ? h + 'px' : '';
+  }
+  function openPresetDoor(key, seed) {
+    if (PRESET_KEYS.indexOf(key) === -1) return false;
+    closeAllParamPopovers();
+    clearMotionTimer(); state.calc = false;
+    calcToggle.classList.remove('active-calc'); calcToggle.setAttribute('aria-pressed', 'false');
+    if (isHudCollapsed()) setCollapsed(false);
+    hud.classList.add('preset-door');
+    if (presetDoor) presetDoor.setAttribute('aria-hidden', 'false');
+    var hasBedSeed = !!seed;
+    var targetSlot = hasBedSeed
+      ? (presetPanel.litThisVisit[key] || firstPresetSlot(key))
+      : (presetPanel.key === key && presetPanel.slot ? presetPanel.slot : firstPresetSlot(key));
+    selectPresetSlot(key, targetSlot, seed);
+    if (hasBedSeed) savePanelSlot();
+    applyModeVisibility();
+    requestAnimationFrame(function () {
+      sizePresetDoor();
+      if (typeof window.__hudClampVisible === 'function') window.__hudClampVisible('presets');
+    });
     return true;
-  };
+  }
+  function closePresetDoor() {
+    hud.classList.remove('preset-door');
+    if (presetDoor) presetDoor.setAttribute('aria-hidden', 'true');
+    presetPanel.draft = null;
+    presetPanel.litThisVisit = { blank: null, gap: null, margin: null };
+    remasureHudStage();
+    applyModeVisibility();
+    applyBodyHeight();
+  }
+  window.__hudPresetMorph = openPresetDoor;
+  if (presetGrid) presetGrid.addEventListener('click', function (e) {
+    var row = e.target.closest('[data-preset-row]'); if (!row) return;
+    var key = row.getAttribute('data-preset-row');
+    var slot = e.target.closest('[data-preset-slot]');
+    if (slot) { selectPresetSlot(key, slot.getAttribute('data-preset-slot'), null, true); return; }
+    if (e.target.closest('[data-preset-add]')) selectPresetSlot(key, firstPresetSlot(key), null, true);
+  });
+  var presetDoorClose = document.getElementById('preset-door-close');
+  if (presetDoorClose) presetDoorClose.addEventListener('click', closePresetDoor);
   if (tickerPicker) {
     tickerPicker.addEventListener('click', function (e) {
       var chip = e.target.closest && e.target.closest('[data-ticker-door-chip]');
@@ -4523,11 +4485,30 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var n = parseFloat(String(el.value || '').trim());
     return Number.isFinite(n) ? n : null;
   }
+  function rejectClearedTickerFields(scope) {
+    if (!scope) return false;
+    var firstInvalid = null;
+    scope.querySelectorAll('input').forEach(function (input) {
+      var raw = String(input.value || '').trim();
+      var invalid = raw === '' || raw === '.';
+      if (invalid) {
+        input.setAttribute('aria-invalid', 'true');
+        if (!firstInvalid) firstInvalid = input;
+      } else {
+        input.removeAttribute('aria-invalid');
+      }
+    });
+    if (!firstInvalid) return false;
+    firstInvalid.focus();
+    return true;
+  }
   ['bt-edit-x', 'bt-edit-y'].forEach(function (id) {
     var el = document.getElementById(id);
     if (!el) return;
     el.addEventListener('input', function () {
       if (!tickerEdit.draft || tickerEdit.key === 'margin') return;
+      sanitizeNumericLive(el);
+      el.removeAttribute('aria-invalid');
       var axis = el.getAttribute('data-bt-xy');
       var n = parseEditNumber(el);
       if (n == null) return;
@@ -4543,6 +4524,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   document.querySelectorAll('[data-bt-m]').forEach(function (el) {
     el.addEventListener('input', function () {
       if (!tickerEdit.draft || tickerEdit.key !== 'margin') return;
+      sanitizeNumericLive(el);
+      el.removeAttribute('aria-invalid');
       var k = el.getAttribute('data-bt-m');
       var n = parseEditNumber(el);
       if (n == null || !k) return;
@@ -4577,7 +4560,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     editSend.addEventListener('click', function (e) {
       e.preventDefault();
       e.stopPropagation();
-      if (typeof window.__hudPresetMorph === 'function') window.__hudPresetMorph(tickerEdit.key);
+      var activeFields = document.querySelector('.bt-edit-fields.is-on');
+      if (rejectClearedTickerFields(activeFields)) return;
+      if (typeof window.__hudPresetMorph === 'function') window.__hudPresetMorph(tickerEdit.key, tickerEdit.draft);
     });
   }
   var editOk = document.getElementById('bt-edit-ok');
@@ -5204,6 +5189,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     panel.classList.remove('is-open');
     panel.setAttribute('aria-hidden', 'true');
     panel.style.display = 'none';
+    var hud = document.getElementById('hud');
+    if (hud) {
+      hud.classList.remove('hud-mobile-fit');
+      hud.style.removeProperty('--mobile-fit-scale');
+      if (typeof window.__hudClampVisible === 'function') window.__hudClampVisible('flipit-close');
+    }
     setExpanded(false);
     syncHudFlipitChrome();
   }
@@ -5733,6 +5724,38 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     clearTimeout(el._glideTimer);
     el._glideTimer = setTimeout(function () { el.classList.remove('is-gliding'); }, 460);
   }
+  function isPhoneViewport() {
+    return window.matchMedia('(max-width: 700px), (max-height: 500px) and (orientation: landscape)').matches;
+  }
+  window.__hudClampVisible = function (reason) {
+    var hud = document.getElementById('hud');
+    var gcode = document.getElementById('gcode');
+    if (!hud) return;
+    var flipitOpen = !!(gcode && gcode.classList.contains('is-open') && gcode.style.display !== 'none');
+    if (flipitOpen && typeof window.__hostArrange === 'function') {
+      window.__hostArrange(reason || 'hud-open');
+      return;
+    }
+    hud.classList.remove('hud-mobile-fit');
+    hud.style.removeProperty('--mobile-fit-scale');
+    hud.classList.add('hud-viewport-clamped');
+    var edge = 16, vw = window.innerWidth, vh = window.innerHeight;
+    var r = hud.getBoundingClientRect();
+    var width = hud.offsetWidth, height = hud.offsetHeight;
+    var minLeft = width <= vw - edge * 2 ? edge : 0;
+    var minTop = height <= vh - edge * 2 ? edge : 0;
+    var left = Math.max(minLeft, Math.min(Math.max(minLeft, vw - width - minLeft), r.left));
+    var top = Math.max(minTop, Math.min(Math.max(minTop, vh - height - minTop), r.top));
+    if (isPhoneViewport()) {
+      var ticker = document.getElementById('blank-ticker-cluster');
+      if (ticker) {
+        var tickerRect = ticker.getBoundingClientRect();
+        var aboveTicker = tickerRect.top - height - 12;
+        top = Math.max(minTop, Math.min(Math.max(minTop, vh - height - minTop), aboveTicker));
+      }
+    }
+    placeCard(hud, left, top);
+  };
   var TOP_BAND = 25;
   function findOpenSpace(el, avoids) {
     var w = el.offsetWidth || 280;
@@ -5769,7 +5792,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var vw = window.innerWidth;
     var vh = window.innerHeight;
     var top = TOP_BAND;
-    var isPhone = window.matchMedia('(max-width: 700px), (max-height: 500px) and (orientation: landscape)').matches;
+    var isPhone = isPhoneViewport();
     var isPortrait = window.matchMedia('(orientation: portrait)').matches;
 
     if (flipitOpen && hud) {
@@ -5780,6 +5803,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         var gScale = isPortrait ? 0.75 : Math.min(0.9, (vh * 0.75) / Math.max(gcode.offsetHeight, 1));
         var hScale = 0.75;
         gcode.style.setProperty('--mobile-fit-scale', gScale);
+        hud.classList.remove('hud-viewport-clamped');
+        hud.classList.add('hud-mobile-fit');
         hud.style.setProperty('--mobile-fit-scale', hScale);
         if (isPortrait) {
           var portraitLeft = vw * 0.125;
@@ -5797,6 +5822,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         if (tpOpen) flags.toolpath = false;
         return;
       }
+      hud.classList.remove('hud-mobile-fit');
       gcode.style.removeProperty('--mobile-fit-scale');
       hud.style.removeProperty('--mobile-fit-scale');
       placeCard(gcode, Math.max(TOP_BAND, (vw - gW) / 2), top);
@@ -5820,12 +5846,19 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }
   };
 
-  window.addEventListener('resize', function () {
+  function rearrangeHostOnViewportChange() {
     var gcode = document.getElementById('gcode');
     if (gcode && gcode.classList.contains('is-open') && gcode.style.display !== 'none') {
       window.__hostArrange('mobile-fit-resize');
+      return;
     }
-  });
+    var hud = document.getElementById('hud');
+    if (hud && (hud.classList.contains('calc-mode') || hud.classList.contains('preset-door')) && typeof window.__hudClampVisible === 'function') {
+      window.__hudClampVisible('viewport-resize');
+    }
+  }
+  window.addEventListener('resize', rearrangeHostOnViewportChange);
+  window.addEventListener('orientationchange', rearrangeHostOnViewportChange);
 })();
 </script>
 </body>
