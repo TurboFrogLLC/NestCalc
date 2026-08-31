@@ -1,6 +1,6 @@
 # Ticker two-box job
 
-Child of `feat/v3-ticker-door` (#121). Two-box landed via #122 at `fd63714`. Look-fit is #123.
+Child of `feat/v3-ticker-door` (#121). Two-box #122. Look-fit #123. Picker-words #124.
 Not `main`.
 Product is FLiPIT. Host stays `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`.
 
@@ -21,22 +21,23 @@ Travel (picker open) — bar slides up by picker height + 8px air. Blank does no
 ```
 [ −90 ][ +90 ]  26.500 × 18.000  [calc] [▴]
 
-[ box Part ][ start Gap ][ align Margin ][ eraser Reset ]
+                    [ Part ][ Gap ][ Margin ][ Reset ]
 ```
+
+Picker right edge = travel right edge. Words only. No Lucide on picker chips.
 
 Edit — ±90 and calc leave. Whole travel box is the field. Lit picker chip is the label. Axis letters on the bar. No field word.
 
 OK (`check`) commits. Cancel (`x`) drops draft. Send (`square-arrow-out-up-right`) opens `#hud` calculator preset surface for Blank, Gap, Margin only. Not `.param-popover` WRITE. Reset on picker.
 Ticker `dblclick` does not open HUD. No `__howManyOpenField` from ticker or picker.
+Send does not write `paramState`. Draft stays until OK or preset confirm.
 
-## Lucide (#123)
+## Lucide
+
+Picker chips: words only. No icon.
 
 | Control | Lucide |
 | --- | --- |
-| Part | `box` + word Part |
-| Gap | `between-horizontal-start` + word Gap |
-| Margin | `align-start-vertical` + word Margin |
-| Reset | `eraser` + word Reset |
 | Door | `chevron-down` / `chevron-up` |
 | −90 / +90 | `rotate-ccw` / `rotate-cw` |
 | Swap | `arrow-left-right` |
@@ -46,45 +47,35 @@ Ticker `dblclick` does not open HUD. No `__howManyOpenField` from ticker or pick
 | Cancel | `x` |
 | History | `corner-up-left` / `corner-up-right` |
 
-Picker chips: icon left, word right.
-
-## Tokens as-built (#122)
-
-`.bt-edit input` height **28px**. `.bt-hit` was 34px inside 3px pad + 1.1px border → ~42px outer. That is the fat hit.
-
-HUD `--chip-h` 28.6 and popover XY 30.8 stay HUD. Do not mix.
-
-## Look-fit lock (#123)
+## Tokens as-built (#123)
 
 ```
 input height     = 28
 button / hit     = 28 × 28
-travel icon      = 18 (unchanged)
-picker icon      = 16 (unchanged)
-pad T/B          = 3
+travel icon      = 18
 pad L/R          = 8
-radius           = 10
 border           = 1.1
-item gap         = 3
-outer box height = 28 + 3 + 3 + 1.1 + 1.1 = 36.2
 air between boxes = 8
 ```
 
-Icons centered in the 28 hit. No extra inner pad.
-Picker chips 28 tall, same pad and radius.
-Axis letters: Part/Gap X Y. Margin L R B T (match HUD field order).
-Focus select-all on edit inputs, same as HUD popover.
+## Picker-words lock (#124)
 
-Link first paint: if X ≠ Y, link off. `paramState.gap` boots linked true at 0.375 × 0.125 — that lie does not copy into the edit bar.
+```
+pad T/B          = 6
+item gap         = 2
+hit / input radius = 8
+outer box radius   = 10
+outer box height = 28 + 6 + 6 + 1.1 + 1.1 = 42.2
+picker chips     = words only
+picker align     = right edges flush with travel
+```
 
-Send morphs `#hud` calculator preset surface. Exit calc first if calc is on. Do not open floating WRITE card.
-
-Anchor-right under the mouse is a try. Keep-out still wins if count/handle overlap.
+Axis letters, select-all, gap-link first paint, Send isolation stay as #123.
 
 ## Cycle
 
 Lite: Cut → Send for review → Wait → Inspection → Merge into #121 branch → Close.
-Wait polls this draft PR for `@codex review` conclusion or `OM SIGNAL` / `+1`.
+Wait: `OM SIGNAL` / `+1` / `@codex review` conclusion.
 
 ## Out
 
