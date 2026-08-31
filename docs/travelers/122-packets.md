@@ -27,3 +27,36 @@ Codex review conclusion on #122: COMMENTED, commit 66c222b. Summary completed 20
 Dirty: Codex COMMENTED with 3 P1 + 1 P2. Owner notes: merge to #121 not main. SuperGrok notes: none. Opened CA on this traveler.
 CA: morph after popover; exit calc; drop TWO-BOX traveler pair; normalize drafts. b24f0e5. Threads resolved.
 Inspection again: clean. Merge.
+
+## 2026-08-31 Merge
+
+#122 MERGED into feat/v3-ticker-door at fd637147ddab045fa6ef59316e989cb063496854. Not main. Feature branch retained.
+
+## 2026-08-31 Close
+
+```text
+Repo: NestCalc
+Owner: wReckless
+PR: 122
+Branch: feat/v3-ticker-two-box
+Head: fd637147ddab045fa6ef59316e989cb063496854
+job_id: NGJ-20260830-ticker-two-box
+flow_id: —
+goal_sha256: —
+Trace: docs/howmany-v3-components/TICKER-TWO-BOX-JOB.md
+Cycle: Lite
+Date: 2026-08-31
+
+Seq  Label              Operator     Stamp                 Still open
+1    Start-branch       Owner        —                     Cut
+2    Cut                Grok Build   2026-08-31T05:26:12Z  Send for review
+3    Send for review    Grok Build   2026-08-31T05:27:37Z  Wait
+4    Wait               Grok Build   2026-08-31T05:32:20Z  Inspection
+5    Inspection         Grok Build   2026-08-31T05:35:01Z  Merge
+6    Merge              Grok Build   2026-08-31T05:36:33Z  Close
+7    Close              Grok Build   2026-08-31T05:37:07Z  —
+
+Closed Corrective Action: Codex P1/P2 on #122 (b24f0e5)
+Still open: none
+Next: none
+```
