@@ -76,3 +76,30 @@ Seq 2 stamped against the origin host SHA.
 Still open: Send A.
 Next: Send A.
 ```
+
+### Seq 3 — Send A
+
+**Operator return**
+
+```text
+job_id: NGJ-20260831-ticker-picker-words
+Posted @codex review on PR #124: https://github.com/TurboFrogLLC/NestCalc/pull/124#issuecomment-5480171380
+PR remains draft. No HTML host edit was made during Send A.
+Seq 3 stamped.
+Still open: Wait A.
+Next: Wait A.
+```
+
+### Seq 4 — Wait A
+
+**Operator return**
+
+```text
+job_id: NGJ-20260831-ticker-picker-words
+gh authenticated as TurboFrogLLC.
+Short-read PR #124 at 2026-08-31T14:58Z: Codex Review Summary is Running for commit 5c9da83; GitHub reviews list is empty and there is no conclusion, OM SIGNAL, or +1.
+Wait fact: no-review-yet (review running). No poll loop started.
+Seq 4 stamped.
+Still open: Inspection A.
+Next: Inspection A after a posted review conclusion or Owner direction.
+```
