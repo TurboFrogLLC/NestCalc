@@ -60,3 +60,7 @@ Owner-deferred review: no PR comment and no `@codex review` were posted. Draft s
 ## Seq 12 — Wait C — 2026-08-31
 
 **owner-deferred-review.** No PR short-read was performed and no review wait was started, per the Owner's Send C instruction.
+
+## Seq 13 — Inspection C — 2026-08-31
+
+**Clean.** Cut C lock verified in the host and SPEC: no visible picker join line; cluster hover/focus fills are removed; only linked X/Y may show `is-on`; ticker hits and picker words use transparent tap highlight and blur after click. No #124 HUD residual work, merge, or PR comment.
