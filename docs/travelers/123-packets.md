@@ -36,3 +36,36 @@ Operator: Grok Build. CA landed. P1/P2 threads addressed. Seq 5 stamped `ee372be
 ## 2026-08-31 Merge
 
 Operator: Grok Build. #123 merged into `feat/v3-ticker-door` at `7e4b822` (fast-forward, left draft until merged). Not `main`. `feat/v3-ticker-look-fit` kept. Seq 6 stamped `7e4b822`. Head `7e4b822`. Still open / Next Close. Seq 1 unstamped. Not ready for main.
+
+## 2026-08-31 Close
+
+Operator: Grok Build. Seq 7 stamped `f377d33`. Still open none. Next none. `feat/v3-ticker-look-fit` kept. Not pruned. Not `main`. Packslip:
+
+```text
+Repo: NestCalc
+Owner: wReckless
+PR: 123
+Branch: feat/v3-ticker-look-fit
+Head: 7e4b822
+job_id: NGJ-20260831-ticker-look-fit
+flow_id: —
+goal_sha256: —
+Trace: docs/howmany-v3-components/TICKER-TWO-BOX-JOB.md
+Cycle: Lite
+Date: 2026-08-31
+
+Seq  Label              Operator     Stamp                 Still open
+1    Start-branch       Owner        —                     Cut
+2    Cut                Grok Build   ac9c527               Send for review
+3    Send for review    Grok Build   9a0be7c               Wait
+4    Wait               Grok Build   1dce3b3               Inspection
+5    Inspection         Grok Build   ee372be               Merge
+6    Merge              Grok Build   7e4b822               Close
+7    Close              Grok Build   f377d33               —
+
+Closed Corrective Action: CA-1 ee372be isolate ticker draft until OK or preset confirm. CA-2 Head set; Still open / Next left Start-branch until Merge/Close.
+Still open: none
+Next: none
+
+Merge: 7e4b822 into feat/v3-ticker-door (#121). Not main.
+```
