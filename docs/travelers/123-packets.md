@@ -19,3 +19,16 @@ Operator: Grok Build. Named review requested on #123: https://github.com/TurboFr
 ## 2026-08-31 Wait
 
 Operator: Grok Build. Codex COMMENTED on `9a0be7c`. Review https://github.com/TurboFrogLLC/NestCalc/pull/123#pullrequestreview-5065800331. P1 Send commits draft. P2 traveler footer still Start-branch. Seq 4 stamped `1dce3b3`. Next: Inspection. Not merge. Not ready. Not main.
+
+## 2026-08-31 Inspection Dirty
+
+Operator: Grok Build. Dirty on Codex COMMENTED. P1 Send-before-OK commit. P2 traveler footer. CA on this traveler. Not merge. Not ready. Not main.
+
+## 2026-08-31 CA
+
+CA-1 `ee372be` (`fix: isolate ticker draft until OK or preset confirm`). Send does not write `paramState`. Draft stays isolated until ticker OK or preset confirm. Cancel after Send drops the draft.
+CA-2 Head set to `ee372be`. Still open / Next leave Start-branch. Stamp completed rows only (Seq 1 unstamped).
+
+## 2026-08-31 Inspection clean
+
+Operator: Grok Build. CA landed. P1/P2 threads addressed. Seq 5 stamped `ee372be`. Seq 5 still-open Merge. Footer Next left Start-branch per CA-2. Not merge. Not ready. Not main.
