@@ -174,7 +174,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     min-height: 42.2px;
   }
   .bt-travel-box { border-radius: 8px; }
-  .blank-ticker-cluster.is-door-open .bt-travel-box { border-radius: 8px 0 8px 8px; }
+  .blank-ticker-cluster.is-door-open .bt-travel-box { border-radius: 8px 6px 8px 8px; }
   .bt-travel {
     display: inline-flex;
     align-items: center;
@@ -182,6 +182,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     height: 28px;
     flex-shrink: 0;
   }
+  #bt-rot-ccw + #bt-rot-cw { margin-left: -2px; }
   .blank-ticker-cluster.is-editing .bt-travel { display: none; }
   .bt-hit {
     width: 28px; height: 28px; min-width: 28px; min-height: 28px;
@@ -238,6 +239,16 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     opacity: 0;
     pointer-events: none;
     transition: clip-path 240ms ease, transform 240ms ease, opacity 160ms ease;
+  }
+  .bt-picker::after {
+    content: "";
+    position: absolute;
+    right: 8px;
+    bottom: 0;
+    left: 8px;
+    height: 1.1px;
+    background: rgba(26, 20, 40, 0.22);
+    pointer-events: none;
   }
   .blank-ticker-cluster.is-door-open .bt-picker {
     clip-path: inset(0 0 0 0);
