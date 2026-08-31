@@ -2875,7 +2875,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 (function () {
   var BED = 48;
   var state = {
-    blankW: 12, blankH: 8, snap: 0.125, zoom: 1, panX: 0, panY: 0, dragging: null, start: null,
+    blankW: 12, blankH: 8, snap: 0.125, zoom: 1, baseScale: 1, panX: 0, panY: 0, dragging: null, start: null,
     partW: 1.250, partH: 3.375, partRot: 0,
     margin: { l: 0.25, r: 0.25, t: 0.25, b: 0.25 },
     hexLayout: null, hexDiameter: 1.25, hexDrag: null
@@ -2900,19 +2900,22 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   var btReadout = document.getElementById('bt-readout');
   if (!svg || !camera || !blank) return;
 
-  var PAD = 48;
+  var BLANK_FIT_AIR = 2;
   var MIN_LABEL_PX = 36;
   var TICKER_H = 42.2;
   var GAP_TOP = 10;   /* px above blank top */
   var GAP_RIGHT = 20; /* px inset from blank right edge */
 
   function snap(v) { var s = state.snap; return Math.round(v / s) * s; }
-  function fittedScale() {
+  function blankFittedScale() {
     var W = svg.clientWidth || window.innerWidth;
     var H = svg.clientHeight || window.innerHeight;
-    return Math.min(Math.max(80, W - PAD * 2) / BED, Math.max(80, H - PAD * 2) / BED);
+    return Math.min(
+      Math.max(80, W) / (state.blankW + BLANK_FIT_AIR * 2),
+      Math.max(80, H) / (state.blankH + BLANK_FIT_AIR * 2)
+    );
   }
-  function pxPerInch() { return fittedScale() * state.zoom; }
+  function pxPerInch() { return state.baseScale * state.zoom; }
   function labelStep() {
     var s = pxPerInch(), candidates = [12, 6, 3, 1];
     for (var i = candidates.length - 1; i >= 0; i--) if (candidates[i] * s >= MIN_LABEL_PX) return candidates[i];
@@ -3207,11 +3210,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
   function fitBed() {
     state.zoom = 1;
-    var s = fittedScale();
+    var s = state.baseScale = blankFittedScale();
     var W = svg.clientWidth || window.innerWidth;
     var H = svg.clientHeight || window.innerHeight;
-    state.panX = (W - BED * s) / 2;
-    state.panY = (H + BED * s) / 2;
+    state.panX = (W - state.blankW * s) / 2;
+    state.panY = (H + state.blankH * s) / 2;
   }
 
   function onPointerDown(e) {
@@ -3225,8 +3228,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     } else if (t === hitCorner || id === 'lb-hit-corner') { state.dragging = 'xy'; document.body.classList.add('lb-dragging-xy'); }
     else if (t === hitRight || id === 'lb-hit-right') { state.dragging = 'x'; document.body.classList.add('lb-dragging-x'); }
     else if (t === hitTop || id === 'lb-hit-top') { state.dragging = 'y'; document.body.classList.add('lb-dragging-y'); }
-    else if (e.currentTarget === blankLayer) return;
-    else { state.dragging = 'pan'; document.body.classList.add('lb-panning', 'lb-dragging'); }
+    else return;
     state.start = { cx: e.clientX, cy: e.clientY, w: state.blankW, h: state.blankH, panX: state.panX, panY: state.panY };
     if (state.dragging === 'hex' && state.hexLayout) {
       var active = state.hexLayout.parts.find(function (part) { return part.id === state.hexDrag.id; });
@@ -3240,8 +3242,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var dx = e.clientX - state.start.cx, dy = e.clientY - state.start.cy, s = pxPerInch();
     if (state.dragging === 'hex') {
       if (state.hexDrag && state.hexDrag.el) state.hexDrag.el.setAttribute('transform', 'translate(' + (dx / s) + ',' + (-dy / s) + ')');
-    } else if (state.dragging === 'pan') { state.panX = state.start.panX + dx; state.panY = state.start.panY + dy; }
-    else if (state.dragging === 'x') state.blankW = Math.max(state.snap, snap(state.start.w + dx / s));
+    } else if (state.dragging === 'x') state.blankW = Math.max(state.snap, snap(state.start.w + dx / s));
     else if (state.dragging === 'y') state.blankH = Math.max(state.snap, snap(state.start.h - dy / s));
     else if (state.dragging === 'xy') {
       state.blankW = Math.max(state.snap, snap(state.start.w + dx / s));
@@ -3273,7 +3274,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     e.preventDefault();
     var factor = e.deltaY < 0 ? 1.1 : 1 / 1.1;
     var newZoom = Math.min(12, Math.max(0.35, state.zoom * factor));
-    var s0 = pxPerInch(), s1 = fittedScale() * newZoom;
+    var s0 = pxPerInch(), s1 = state.baseScale * newZoom;
     var wx = (e.clientX - state.panX) / s0, wy = (state.panY - e.clientY) / s0;
     state.zoom = newZoom;
     state.panX = e.clientX - wx * s1;
@@ -3284,7 +3285,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   document.getElementById('lb-zoom-in').onclick = function () { state.zoom = Math.min(12, state.zoom * 1.25); render(); };
   document.getElementById('lb-zoom-out').onclick = function () { state.zoom = Math.max(0.35, state.zoom / 1.25); render(); };
   document.getElementById('lb-fit').onclick = function () { fitBed(); render(); };
-  window.addEventListener('resize', function () { fitBed(); render(); });
+  window.addEventListener('resize', function () { render(); });
 
   fitBed(); render();
 })();

@@ -1,6 +1,6 @@
 # FlipIt — Composition host — Living SPEC
 
-**Status:** Living (two-box ticker — Cut A: 28 hit / 42.2 outer, word-only picker)
+**Status:** Living (two-box ticker — Cut B: blank-fit camera, static bed)
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
@@ -46,7 +46,7 @@ Wordmarks stay as locked: **FLiP** white 700 + **IT** amber 800 · **tool** whit
 |----|----------|-----------|
 | **R17** | FLiPIT Source + Output waypoints (`#btn-toolpath-src` · `#btn-toolpath-out`) toggle toolPath | class `is-hidden` on `#backplot` · `aria-pressed` sync · `__setToolpathOpen` |
 | **R27** | toolPath boots hidden | HTML `is-hidden` + `setToolpathOpen(false)` |
-| **R29** | Full-viewport primary canvas = LaserBed | authority `LASER-BED-v3.html` under `.bed-stage` · origin BL · Fit = zoom/center only (blank size unchanged) |
+| **R29** | Full-viewport primary canvas = LaserBed | authority `LASER-BED-v3.html` under `.bed-stage` · origin BL · default and Fit = blank-fit with 2in air; blank size unchanged |
 | **R30** | HUD position hold | from Numeric HUD tip (collapse/expand never writes left/top) · never set `display` on `#hud-body` |
 | **R1** | Boot HUD open / FLiPIT closed · HUD ↔ FLiPIT chrome · HowMany `#lb-count` · AUTO-SIZE does **not** open FLiPIT · real local file open · popover clamp | hide primitive `display:none` + `is-open` on `#gcode` · `#btn-gcode` toggles · `#btn-auto-size` does not open FLiPIT · `#btn-detect` still sizes · `#bt-calc` toggles HUD calculator · `#flipit-file-input` accepts `.txt` / `.nc` / `.cnc` / `text/plain` · `#lb-count` from `calculateNest` |
 | **R2** | AUTO-SIZE opens FLiPIT **collapsed only** · 2nd click detects · `#bt-calc` expand-to-params when HUD collapsed · HUD body height matches active mode · tighter popover inset | `openGcode(false)` from `#btn-auto-size` · detect only when already open+collapsed · `__hudFromBedCalc` · `applyBodyHeight()` · popover edge **16px** / FlipIt avoid **12px** |
@@ -93,7 +93,7 @@ Hide primitives stay surface-owned (`ALIGNMENT-v3` §4). Host does not invent a 
 | Blank z-order | `#lb-blank` lives in the world (behind cards). Ticker cluster **82** shares the front surface with zoom **82** and HUD **80**. Overlay `#lb-blank-layer` **10** is arc + hits only. |
 | Free-corner grab | Outside quarter-arc (~18px, 2px stroke). `#lb-hit-corner` is a circle on the arc midpoint (XY resize). Green stroke on arc while `lb-dragging-xy`. Blank outline glow is **−50% of R9** (0.6px / 0.14) and clipped to the bed (`#lb-bed-clip`) so rulers stay unlit. |
 | Card layout | FlipIt **always glides to viewport center** when opened through FLiPIT. HUD **always glides to the right slot** on that rearrange, even if toolPath is closed. All three: TP left · FlipIt center · HUD right, 25px top band. Travel is a 420ms ease glide (not a teleport). User drag still wins until the next open/rearrange. |
-| Zoom chrome | `#lb-zoom-in` / `#lb-zoom-out` / `#lb-fit` z **82** — shares the front surface with blank ticker + calc and Numeric HUD. |
+| Zoom chrome | `#lb-zoom-in` / `#lb-zoom-out` / `#lb-fit` z **82** — shares the front surface with blank ticker + calc and Numeric HUD. Default and Fit center the blank with 2in air on every side. Wheel zoom remains available. The bed is static: canvas drags do not pan it, and resizing the blank does not live re-fit the camera. |
 | FlipIt unit switch | IN/MM labels flex-centered to the track background. |
 | HUD presets | Blank, Gap, Margin only (not Part). Everyday filled-chip click **loads only** (no arm, no save prompt). Pencil **Edit** enters a visible write mode (confirm bar + chip ring; not a dead lit pencil). Only then can a slot be armed; Confirm stores the armed slot from **live fields**, toasts `Preset saved`, and exits edit; Cancel exits without writing. Main Save/OK **always** commits current live field values to the HUD ticker **and** the bed blank via `__bedSetBlank` and never writes a preset. Enter in a numeric field settles/formats that field and does not close the popover. `localStorage` key `howmany.flipit.v3.presets`. |
 | Margin ticker | Two-line summary grows the ticker (`:has(.m-line)` min-height 40px) and remasures `#hud-stage` so the row is not clipped. Collapse timing unchanged. |
