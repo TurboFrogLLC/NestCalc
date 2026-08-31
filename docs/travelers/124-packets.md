@@ -486,3 +486,20 @@ Seq 25 stamped against the inspection-read SHA 6cb0dc9.
 Still open: Inspection F (escalated).
 Next: Owner direction or a posted Cut F review conclusion, then Inspection F again.
 ```
+
+### CA F — HUD clamp and preset accessibility
+
+**Operator return**
+
+```text
+job_id: NGJ-20260831-ticker-picker-words
+Corrective-action commit: a46c2e3d1edc1b80c13eee20272524a730b44336 (merged with the Owner-pinned CA F job update and pushed as eeb217e19c3c34393f565099bc5cb694b3f77b4f to origin/feat/v3-ticker-picker-words).
+CA-1: closing FLiPIT now removes the 75% mobile scale before rerunning the existing visible-webview HUD clamp, so the full-size HUD does not remain at the scaled slot.
+CA-2: viewport resize and orientation change now re-run that clamp whenever calculator or Bed Presets is active and FLiPIT is closed.
+CA-3: Bed Presets now marks the inactive parameter HUD mode aria-hidden; calculator visibility remains mutually exclusive.
+Validation: git diff --check passed; npm run test:unit passed (118 tests). At 390×844 browser proof, closing FLiPIT produced an unscaled, visible HUD at 49,327–370,605. With Bed Presets open and forced off-screen, a 390×700 resize re-clamped it to 0,16–390,338; #hud-mode was aria-hidden=true and #preset-door aria-hidden=false.
+Resolved review threads: PRRT_kwDOTJAVIM6d1VnW, PRRT_kwDOTJAVIM6d1Vnb, PRRT_kwDOTJAVIM6d1Vng.
+Seq 25 re-stamped Clean against eeb217e.
+Still open: Merge.
+Next: Merge.
+```
