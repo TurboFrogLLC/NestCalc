@@ -1,14 +1,14 @@
 # Ticker two-box job
 
-Child of `feat/v3-ticker-door` (#121). Landed via #122 at `fd63714`. Not `main`.
+Child of `feat/v3-ticker-door` (#121). Two-box landed via #122 at `fd63714`. Look-fit is #123.
+Not `main`.
 Product is FLiPIT. Host stays `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`.
 
-Kills Plant 1b side rail and Plant 1c glyph-fix on that rail.
-HTML host this job. React/shadcn port leftover, not this traveler.
+HTML host this job. React/shadcn port leftover.
 
-## Lock
+## Lock — two-box (landed)
 
-Two containers. Air between them. Calc lives in the travel box.
+Two containers. 8px air. Calc lives in the travel box.
 
 Travel (picker shut):
 
@@ -16,75 +16,75 @@ Travel (picker shut):
 [ −90 ][ +90 ]  26.500 × 18.000  [calc] [▾]
 ```
 
-Travel (picker open) — bar slides up by picker height + 8px air. Blank does not move. Bed stays live.
+Travel (picker open) — bar slides up by picker height + 8px air. Blank does not move.
 
 ```
 [ −90 ][ +90 ]  26.500 × 18.000  [calc] [▴]
 
-[ Part ][ Gap ][ Margin ][ Reset ]
+[ box Part ][ start Gap ][ align Margin ][ eraser Reset ]
 ```
 
-Edit — ±90 and calc leave. Whole travel box is the field. Picker may stay. Lit picker chip is the label. No field *word* on the edit bar. Axis letters stay (X/Y or T/R/B/L).
+Edit — ±90 and calc leave. Whole travel box is the field. Lit picker chip is the label. Axis letters on the bar. No field word.
 
-OK (`check`) commits and returns travel. Cancel (`x`) drops the draft. Send earns `#hud` **calculator** preset surface, not the floating BLANK SIZE popover. Reset runs on the picker, not an edit field.
+OK (`check`) commits. Cancel (`x`) drops draft. Send (`square-arrow-out-up-right`) opens `#hud` calculator preset surface for Blank, Gap, Margin only. Not `.param-popover` WRITE. Reset on picker.
 Ticker `dblclick` does not open HUD. No `__howManyOpenField` from ticker or picker.
 
-## Lucide (Owner pass 2026-08-30)
+## Lucide (#123)
 
-From NestCalc #120 `TICKER-DOOR-MARK.md` plus this pass.
-
-| Control | Lucide | Box |
-| --- | --- | --- |
-| Part | `box` | picker |
-| Gap | `between-horizontal-end` | picker |
-| Margin | `align-start-vertical` | picker |
-| Reset | `eraser` | picker |
-| Door | `chevron-down` / `chevron-up` | last on travel bar |
-| −90 / +90 | `rotate-ccw` / `rotate-cw` | travel |
-| Swap | `arrow-left-right` | edit bar |
-| Link | `link` | edit bar |
-| Send | `save` | edit bar on Blank, Gap, Margin only — not Part |
-| OK | `check` | edit bar |
-| Cancel | `x` | edit bar |
-| History | `corner-up-left` / `corner-up-right` | canvas corner |
-
-Not `bookmark`. Not `arrow-up-down` for swap. Not `rectangle-vertical` for Part (Owner: `box`).
-
-## Tokens as built (#122 host `fd9bb3b` + CA `b24f0e5`)
-
-| Token | Value |
+| Control | Lucide |
 | --- | --- |
-| Travel bar height | 34px |
-| Hit square | 34px |
-| Picker height | 28.6px |
-| Item gap | 3px |
-| Inner pad | 3px |
-| Air between boxes | 8px (margin between elements, not inner pad) |
-| Corner | 6.6px |
-| Stroke | 1.1px rgba(26,20,40,0.22) |
-| Fill | #E8E8E8 |
-| Type | #1A1428 |
-| Ticker type | 12.1px mono 650 |
-| Motion | 240ms ease |
-| Cluster z | 82 |
-| Pin | 20px in from blank right, 10px above blank top |
-| Keep-out | #lb-hit-corner + #lb-count |
+| Part | `box` + word Part |
+| Gap | `between-horizontal-start` + word Gap |
+| Margin | `align-start-vertical` + word Margin |
+| Reset | `eraser` + word Reset |
+| Door | `chevron-down` / `chevron-up` |
+| −90 / +90 | `rotate-ccw` / `rotate-cw` |
+| Swap | `arrow-left-right` |
+| Link | `link` |
+| Send | `square-arrow-out-up-right` |
+| OK | `check` |
+| Cancel | `x` |
+| History | `corner-up-left` / `corner-up-right` |
 
-Pin from the travel box outer rect only.
+Picker chips: icon left, word right.
 
-## Owner look residual (not cut yet)
+## Tokens as-built (#122)
 
-Seen 2026-08-30 on `/howmany-shell` after #122 merge. Two-box sentence is right. Side rail is gone. Do not ship another cut until these are named.
+`.bt-edit input` height **28px**. `.bt-hit` was 34px inside 3px pad + 1.1px border → ~42px outer. That is the fat hit.
 
-1. Picker glyphs: Part `box`, Gap `between-horizontal-end`, Margin `align-start-vertical`, Reset `eraser` (eraser already hits).
-2. Edit inputs: focus selects all, same as HUD popover fields.
-3. Swap is left-right (`arrow-left-right`), not up-down.
-4. Axis letters on the edit bar: Part and Gap show X / Y. Margin shows T / R / B / L (or L / R / T / B matching HUD order). No “Gap” word.
-5. Send (`save`) only on Blank, Gap, Margin. Opens `#hud` calculator on the **preset** surface. Does not open `.param-popover` BLANK SIZE WRITE.
-6. Check and X stay.
-7. Anchor: prefer the travel/edit box to keep its right edge under the mouse when entering edit. If that fights keep-out, leave the current left-shift and note it.
+HUD `--chip-h` 28.6 and popover XY 30.8 stay HUD. Do not mix.
 
-No host edit in this note.
+## Look-fit lock (#123)
+
+```
+input height     = 28
+button / hit     = 28 × 28
+travel icon      = 18 (unchanged)
+picker icon      = 16 (unchanged)
+pad T/B          = 3
+pad L/R          = 8
+radius           = 10
+border           = 1.1
+item gap         = 3
+outer box height = 28 + 3 + 3 + 1.1 + 1.1 = 36.2
+air between boxes = 8
+```
+
+Icons centered in the 28 hit. No extra inner pad.
+Picker chips 28 tall, same pad and radius.
+Axis letters: Part/Gap X Y. Margin L R B T (match HUD field order).
+Focus select-all on edit inputs, same as HUD popover.
+
+Link first paint: if X ≠ Y, link off. `paramState.gap` boots linked true at 0.375 × 0.125 — that lie does not copy into the edit bar.
+
+Send morphs `#hud` calculator preset surface. Exit calc first if calc is on. Do not open floating WRITE card.
+
+Anchor-right under the mouse is a try. Keep-out still wins if count/handle overlap.
+
+## Cycle
+
+Lite: Cut → Send for review → Wait → Inspection → Merge into #121 branch → Close.
+Wait polls this draft PR for `@codex review` conclusion or `OM SIGNAL` / `+1`.
 
 ## Out
 
