@@ -428,3 +428,20 @@ Seq 21 re-stamped Clean against CA E.
 Still open: Merge.
 Next: Merge.
 ```
+
+### Seq 22 — Cut F Unlock bed
+
+**Operator return**
+
+```text
+job_id: NGJ-20260831-ticker-picker-words
+Branch: feat/v3-ticker-picker-words
+Host commit: 30d82669a7fd91e1a8649bfaac0756017308fcb3
+Origin host SHA: 30d82669a7fd91e1a8649bfaac0756017308fcb3
+Cut F complete: canvas drags pan the LaserBed camera again. The blank-handle paths retain precedence and resize only.
+Validation: git diff --check passed; npm run test:unit passed (118 tests). Browser proof: a canvas drag moved the blank screen rectangle +80px X / +30px Y; a right-handle drag then preserved position and changed width 720px → 780px; a 390×844 viewport resize re-ran blank-fit, placing the resized blank at 46,330 with 298×184 size. Blank drag did not invoke live-fit. HUD clamp was unchanged. Local static-server /howmany-shell and favicon console misses were expected and unrelated.
+Pushed: origin/feat/v3-ticker-picker-words at 30d8266.
+Seq 22 stamped against the origin host SHA.
+Still open: Send F.
+Next: Send F.
+```
