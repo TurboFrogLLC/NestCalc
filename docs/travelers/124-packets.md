@@ -188,3 +188,17 @@ Inspection B: Dirty — no Cut B review conclusion is available for clearance.
 Escalated in Worker Mode. No corrective action was invented; Cut C was not started; no merge, ready mark, packslip, or main change was made.
 Seq 9 stamped against the review-wait SHA 5b0954a.
 ```
+
+### CA B — P3 SPEC verify step 2
+
+**Operator return**
+
+```text
+job_id: NGJ-20260831-ticker-picker-words
+Corrective-action commit: d80c1de7131beb50724d35b78abd8837a648b6cb (pushed to origin/feat/v3-ticker-picker-words).
+Updated SPEC verification step 2 to require the centered 12×8 blank with 2in air, not the stale 48×48 bed-fit. The host runtime was read back first and already implements that contract, so no camera runtime change was made.
+Resolved P3 review thread PRRT_kwDOTJAVIM6dyRnd.
+Seq 9 re-stamped Clean against CA B.
+Still open: Cut C.
+Next: Cut C in a fresh session; not started here.
+```
