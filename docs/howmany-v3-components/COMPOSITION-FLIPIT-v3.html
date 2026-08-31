@@ -4384,15 +4384,19 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     paintTickerEdit();
     pinTickerSoon();
   }
+  function normalizeEditNumber(n) {
+    if (!Number.isFinite(n)) return 0;
+    return Math.min(99.999, Math.max(0, n));
+  }
   function commitTickerDraft() {
     var key = tickerEdit.key;
     var d = tickerEdit.draft;
     if (!key || !d) return;
     if (key === 'margin') {
-      paramState.margin.l = d.l; paramState.margin.r = d.r;
-      paramState.margin.t = d.t; paramState.margin.b = d.b;
+      paramState.margin.l = normalizeEditNumber(d.l); paramState.margin.r = normalizeEditNumber(d.r);
+      paramState.margin.t = normalizeEditNumber(d.t); paramState.margin.b = normalizeEditNumber(d.b);
     } else {
-      paramState[key].x = d.x; paramState[key].y = d.y;
+      paramState[key].x = normalizeEditNumber(d.x); paramState[key].y = normalizeEditNumber(d.y);
       paramState[key].linked = !!d.linked;
     }
     writeFieldsFromBag(key);
@@ -4410,30 +4414,28 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   window.__hudPresetMorph = function (key) {
     if (PRESET_KEYS.indexOf(key) === -1) return false;
     hud.classList.add('is-preset-morph');
-    if (isHudCollapsed()) {
-      clearMotionTimer();
-      state.calc = false;
-      calcToggle.classList.remove('active-calc');
-      calcToggle.setAttribute('aria-pressed', 'false');
-      setCollapsed(false);
-      applyModeVisibility();
-      applyBodyHeight();
-    }
+    clearMotionTimer();
+    state.calc = false;
+    calcToggle.classList.remove('active-calc');
+    calcToggle.setAttribute('aria-pressed', 'false');
+    if (isHudCollapsed()) setCollapsed(false);
+    applyModeVisibility();
+    applyBodyHeight();
+    openParamPopover(key);
     presetState.editing[key] = true;
     presetState.armed[key] = null;
-    openParamPopover(key);
     var d = tickerEdit.draft;
     if (d && tickerEdit.key === key) {
       if (key === 'margin') {
         ['l', 'r', 't', 'b'].forEach(function (k) {
           var el = document.querySelector('[data-m="' + k + '"]');
-          if (el) el.value = fmt3(d[k]);
+          if (el) el.value = fmt3(normalizeEditNumber(d[k]));
         });
       } else {
         var ix = document.querySelector('[data-' + key + '="x"]');
         var iy = document.querySelector('[data-' + key + '="y"]');
-        if (ix) ix.value = fmt3(d.x);
-        if (iy) iy.value = fmt3(d.y);
+        if (ix) ix.value = fmt3(normalizeEditNumber(d.x));
+        if (iy) iy.value = fmt3(normalizeEditNumber(d.y));
       }
     }
     paintPresetButtons(key);
