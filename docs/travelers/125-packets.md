@@ -44,3 +44,7 @@ Owner-deferred review: no PR comment and no `@codex review` were posted. Draft s
 ## Seq 9 — Inspection B — 2026-08-31
 
 **Clean.** Cut B lock verified in the host and SPEC: picker 22px with 0 T/B · 8 L/R padding and radius 6; ticker remains static with top-left radius 8 and only top-right squared when open; picker clips/slides independently; no ticker hit, picker word, calc, chevron, or rotate press scale remains. No #124 HUD residual work, merge, or PR comment.
+
+## 2026-08-31 Cut C look opened
+
+Owner look: picker still shows a bottom join line. Calc still shows a filled idle box after tap. No `@codex review` on Send C.

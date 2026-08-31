@@ -5,7 +5,7 @@ Not `main`.
 Product is FLiPIT. Host stays `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`.
 
 Owner locked. Desktop chrome. Phone is the remote look surface only.
-Lite Cut landed. Look refinements below are still this traveler.
+Lite Cuts A and B landed. Cut C look is still this traveler.
 
 ## Picture
 
@@ -20,13 +20,14 @@ Shut:
 ```
 
 Open — picker slides up. Ticker does not move. Right-flush. Shorter than the ticker.
+No line under the picker.
 
 ```
                          Part   Gap   Margin   Reset
 [−90][+90]  12.000 × 8.000  [calc] [▾]
 ```
 
-## Cut lock (landed)
+## Cut lock (landed A + B)
 
 ```
 picker height    = 22
@@ -48,15 +49,21 @@ picker pad T/B   = 0
 - ±90 and calc stay on the ticker row.
 - Ticker tokens from #124 stay: outer 42.2, hits/inputs 28, pad 6/8.
 
-## Look refinements (Owner 2026-08-31)
+## Look refinements
 
-- Picker pad L/R = 8. Words were flush to the ends.
-- Picker outer radius = 6. Ticker outer radius stays 8.
-- Open join: ticker top-left stays 8. Ticker top-right goes to 0 under the picker. Do not zero both top corners.
-- No press imprint. Kill `:active { transform: scale(...) }` and leftover pushed fill on ticker hits, picker words, and calc/chevron/rotate. Hover may tint. After pointer up, chrome looks idle except the lit word.
-- Ticker is static. Picker slides up on open and down on close. Do not animate cluster `top` by picker height.
-- Host bug: `positionBlankTicker` uses `lift = open ? pickerH : 0` then `top = screenTop - GAP_TOP - travelH - lift`. That walks the ticker. Drop `lift` from `top`. Animate picker height / clip only.
-- Also drop cluster `transition: top` for the door. Left may still pin.
+### Cut B (landed)
+
+- Picker pad L/R = 8. Picker outer radius = 6. Ticker outer radius stays 8.
+- Open join: ticker top-left stays 8. Ticker top-right goes to 0 under the picker.
+- Ticker is static. Picker slides up / down. Do not animate cluster `top` by picker height.
+
+### Cut C (open)
+
+- No line under the picker. Kill picker `border-bottom` and the travel-box top border under the picker overlap. The join is one shell.
+- Idle hits stay idle. No filled box on calc, rotate, chevron, readout, or picker words after tap.
+- Kill cluster `.bt-hit:hover`, `.bt-hit:focus-visible`, `.blank-ticker:hover`, `.blank-ticker:focus-visible` fills.
+- Kill `.bt-hit.is-on` fill on calc / rotate / chevron / door. Link `is-on` only while X/Y are linked.
+- `-webkit-tap-highlight-color: transparent` on ticker hits and picker words. Blur the hit after click so Safari does not keep `:focus-visible`.
 
 ## Out
 
