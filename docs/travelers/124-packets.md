@@ -233,3 +233,17 @@ Seq 11 stamped.
 Still open: Wait C.
 Next: Wait C.
 ```
+
+### Seq 12 — Wait C
+
+**Operator return**
+
+```text
+job_id: NGJ-20260831-ticker-picker-words
+gh authenticated as TurboFrogLLC.
+Short-read PR #124 after the Cut C request: the request is present at issuecomment-5481137641 and has an eyes reaction. Codex Review Summary is Running for commit 5e2d76a; reviews list contains only the earlier COMMENTED Cut A and Cut B conclusions. There is no Cut C conclusion, OM SIGNAL, or +1.
+Wait fact: no-review-yet (review running). No poll loop started.
+Seq 12 stamped.
+Still open: Inspection C.
+Next: Inspection C after a posted Cut C review conclusion or Owner direction.
+```
