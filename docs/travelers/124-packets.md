@@ -411,3 +411,20 @@ Seq 21 stamped against the inspection-read SHA 2d79bbf.
 Still open: Inspection E (escalated).
 Next: Owner direction or a posted Cut E review conclusion, then Inspection E again.
 ```
+
+### CA E — camera resize, preset height, and traveler footer
+
+**Operator return**
+
+```text
+job_id: NGJ-20260831-ticker-picker-words
+Corrective-action commit: d9b6ff9973e373872beff4fb152c781072e3d485 (pushed to origin/feat/v3-ticker-picker-words).
+CA-1: viewport resize and phone rotation now call the existing `fitBed()` blank-fit path before rendering. Blank drags still only render and do not re-fit; bed panning and wheel zoom were not changed.
+CA-2: expanding the HUD while Bed Presets remains open schedules `sizePresetDoor()`, preserving the active preset-face height.
+CA-3: Seq 21 is re-stamped Clean and the traveler footer now reads Still open / Next: Merge.
+Validation: `git diff --check` passed; all 5 inline scripts compiled with Node; browser proof confirmed the expanded preset door and HUD stage both measure 175px (unclipped), and a 844×390 resize calculated blank-fit scale 32.5, exactly matching the fit formula. The physical phone-layout collapse control remains behind the established higher-z zoom chrome, so the handler was invoked directly for this remeasure proof; that z-order was not changed.
+Resolved review threads: PRRT_kwDOTJAVIM6dzd_V, PRRT_kwDOTJAVIM6d0Pcm, PRRT_kwDOTJAVIM6d0Pcc.
+Seq 21 re-stamped Clean against CA E.
+Still open: Merge.
+Next: Merge.
+```
