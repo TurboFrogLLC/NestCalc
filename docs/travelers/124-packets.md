@@ -132,3 +132,20 @@ Seq 5 re-stamped Clean against CA A.
 Still open: Cut B.
 Next: Cut B in a fresh session; not started here.
 ```
+
+### Seq 6 — Cut B Camera
+
+**Operator return**
+
+```text
+job_id: NGJ-20260831-ticker-picker-words
+Branch: feat/v3-ticker-picker-words
+Host commit: 376161fee67ea3350eb0688660399ce7b4b8a7f4
+Origin host SHA: 376161fee67ea3350eb0688660399ce7b4b8a7f4
+Cut B complete: default view and Fit now center the blank with 2in air on every side. Canvas drags no longer pan the bed; blank resize preserves the current camera; wheel zoom remains available.
+Updated the HTML host and living SPEC only. The picker, HUD, and preset door were not changed.
+Validation: git diff --check passed before commit. Pushed: origin/feat/v3-ticker-picker-words at 376161f.
+Seq 6 stamped against the origin host SHA.
+Still open: Send B.
+Next: Send B.
+```
