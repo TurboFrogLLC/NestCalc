@@ -5,7 +5,7 @@ Not `main`.
 Product is FLiPIT. Host stays `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`.
 
 HTML host this job. React/shadcn port leftover.
-One traveler. Five grouped Cuts. No Merge until Inspection E is clean. Packslip is Close.
+One traveler. Six grouped Cuts. No Merge until Inspection F is clean. Packslip is Close.
 
 ## Why Cuts
 
@@ -16,9 +16,10 @@ One traveler. Five grouped Cuts. No Merge until Inspection E is clean. Packslip 
 | C | Preset door | HUD face swap + two-way slots. |
 | D | Decimals | Ticker inputs 3-decimal cap. Copy HUD popover. |
 | E | HUD clamp | Phone: keep #hud on-screen when calc / Presets open. |
+| F | Unlock bed | Canvas drag pans the bed/camera again. |
 
 Each Cut: Cut → Send → Wait → Inspection. Dirty → Escalate. Owner names CA.
-Merge after Inspection E is clean. Not after A/B/C/D.
+Merge after Inspection F is clean. Not after A–E.
 
 ## Lock — two-box (landed)
 
@@ -94,8 +95,8 @@ Subject is the **blank**, not the laser bed.
 - Fit-to-screen = blank-fit, with air around the blank so it can grow a couple inches.
 - Zoom out may show the whole bed. Wheel zoom is leftover, not this job.
 - Blank resize does **not** re-fit the camera live.
-- Bed is static. Drags do not walk it off the viewport.
 - Viewport resize / phone rotate **does** re-run blank-fit. Same Fit path. Not live-resize on drag.
+- Cut F unlocks canvas pan. Cut B static-bed lock is superseded by Cut F.
 - Bed heading / origin plaque stay Out.
 
 ## Cut C — Preset door (pinned)
@@ -137,12 +138,20 @@ Applies to the bed ticker and the preset-face ticker.
 Opening calc or Presets clamps `#hud` into the visible webview.
 Phone: HUD sits above the ticker. Not leftover `25,25`.
 Do not apply the 75% FLiPIT scale to the HUD unless FLiPIT is open.
-Do not hide `#hud`. Bed lock and blank-fit stay.
+Do not hide `#hud`. Bed lock and blank-fit stay until Cut F.
 Collapse then expand with Bed Presets open must keep the preset face height. Re-run `sizePresetDoor` or close the face on collapse.
+
+## Cut F — Unlock bed (pinned)
+
+Canvas drag pans the bed/camera again.
+Blank-handle drag still resizes the blank only and does not pan.
+Viewport resize / phone rotate still re-runs blank-fit.
+Blank drag still does not live-refit.
+HUD clamp stays.
 
 ## Cycle
 
-Lite, five Cuts on this traveler. Merge into #121 after Cut E. Not `main`.
+Lite, six Cuts on this traveler. Merge into #121 after Cut F. Not `main`.
 Wait: `OM SIGNAL` / `+1` / `@codex review` conclusion.
 No vercel --prod from this branch.
 
