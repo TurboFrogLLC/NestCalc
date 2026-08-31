@@ -516,3 +516,16 @@ Seq 26 stamped against the merge SHA.
 Still open: Close.
 Next: Close.
 ```
+
+### Seq 27 — Close
+
+**Operator return**
+
+```text
+job_id: NGJ-20260831-ticker-picker-words
+Seq 27 stamped. Packslip posted on PR #124: https://github.com/TurboFrogLLC/NestCalc/pull/124#issuecomment-5483349842
+HUD leftover: HUD / calc can still leave the phone webview. Not fixed on this traveler.
+Feature branch feat/v3-ticker-picker-words is retained. No main change or production deployment was made.
+Still open: none.
+Next: none.
+```
