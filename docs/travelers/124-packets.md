@@ -458,3 +458,17 @@ Seq 23 stamped.
 Still open: Wait F.
 Next: Wait F.
 ```
+
+### Seq 24 — Wait F
+
+**Operator return**
+
+```text
+job_id: NGJ-20260831-ticker-picker-words
+gh authenticated as TurboFrogLLC.
+Short-read PR #124 after the Cut F request: issuecomment-5482727895 is present. Codex Review Summary is Running for commit 87f2268; submitted reviews remain the earlier COMMENTED Cut A, Cut B, Cut C, Cut D, and Cut E conclusions. There is no Cut F conclusion, OM SIGNAL, or +1.
+Wait fact: no-review-yet (review running). No poll loop started.
+Seq 24 stamped.
+Still open: Inspection F.
+Next: Inspection F.
+```
