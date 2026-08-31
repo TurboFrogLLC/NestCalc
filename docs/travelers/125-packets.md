@@ -52,3 +52,7 @@ Owner look: picker still shows a bottom join line. Calc still shows a filled idl
 ## Seq 10 — Cut C look — 2026-08-31
 
 Cut C host at `38176f45b105f4e7f67333eeb7f39d42cbe32b8d`, confirmed as the origin branch SHA. The picker masks the travel top border underneath it so the open pair reads as one shell. Cluster hover/focus fills are gone; only linked X/Y keeps `is-on`; ticker hits and picker words use transparent tap highlight and blur after click. No #124 HUD residual work.
+
+## Seq 11 — Send C — 2026-08-31
+
+Owner-deferred review: no PR comment and no `@codex review` were posted. Draft state unchanged.
