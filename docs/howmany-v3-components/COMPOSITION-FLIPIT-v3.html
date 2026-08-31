@@ -369,6 +369,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       overflow: visible;
       touch-action: none;
     }
+    .keypad.hud-viewport-clamped { z-index: 83; }
     .keypad::after {
       content: "";
       position: absolute;
@@ -2296,11 +2297,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       box-sizing: border-box;
     }
 
-    /* Mobile-fit: the open HUD + FLiPIT composition uses a deliberate 75% card box.
-       Portrait keeps left/right bed gutters; landscape reserves top/bottom bed gutters. */
+    /* Mobile-fit is the open HUD + FLiPIT composition only. */
     @media (max-width: 700px), (max-height: 500px) and (orientation: landscape) {
       .gcode.is-open,
-      .keypad {
+      .keypad.hud-mobile-fit {
         transform: scale(var(--mobile-fit-scale, 0.75)) !important;
         transform-origin: top left !important;
       }
@@ -3602,6 +3602,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (on) closeAllParamPopovers();
     applyModeVisibility();
     applyBodyHeight();
+    if (on) requestAnimationFrame(function () {
+      if (typeof window.__hudClampVisible === 'function') window.__hudClampVisible('calc');
+    });
   }
 
   btnChevron.addEventListener('click', function () {
@@ -4207,6 +4210,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       setCollapsed(false);
       applyModeVisibility();
       applyBodyHeight();
+      requestAnimationFrame(function () {
+        if (typeof window.__hudClampVisible === 'function') window.__hudClampVisible('calc');
+      });
       return;
     }
     if (!tickerEdit.key) { openPresetDoor('blank'); return; }
@@ -4421,7 +4427,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     selectPresetSlot(key, targetSlot, seed);
     if (hasBedSeed) savePanelSlot();
     applyModeVisibility();
-    requestAnimationFrame(sizePresetDoor);
+    requestAnimationFrame(function () {
+      sizePresetDoor();
+      if (typeof window.__hudClampVisible === 'function') window.__hudClampVisible('presets');
+    });
     return true;
   }
   function closePresetDoor() {
@@ -5171,6 +5180,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     panel.classList.remove('is-open');
     panel.setAttribute('aria-hidden', 'true');
     panel.style.display = 'none';
+    var hud = document.getElementById('hud');
+    if (hud) {
+      hud.classList.remove('hud-mobile-fit');
+      hud.style.removeProperty('--mobile-fit-scale');
+    }
     setExpanded(false);
     syncHudFlipitChrome();
   }
@@ -5700,6 +5714,38 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     clearTimeout(el._glideTimer);
     el._glideTimer = setTimeout(function () { el.classList.remove('is-gliding'); }, 460);
   }
+  function isPhoneViewport() {
+    return window.matchMedia('(max-width: 700px), (max-height: 500px) and (orientation: landscape)').matches;
+  }
+  window.__hudClampVisible = function (reason) {
+    var hud = document.getElementById('hud');
+    var gcode = document.getElementById('gcode');
+    if (!hud) return;
+    var flipitOpen = !!(gcode && gcode.classList.contains('is-open') && gcode.style.display !== 'none');
+    if (flipitOpen && typeof window.__hostArrange === 'function') {
+      window.__hostArrange(reason || 'hud-open');
+      return;
+    }
+    hud.classList.remove('hud-mobile-fit');
+    hud.style.removeProperty('--mobile-fit-scale');
+    hud.classList.add('hud-viewport-clamped');
+    var edge = 16, vw = window.innerWidth, vh = window.innerHeight;
+    var r = hud.getBoundingClientRect();
+    var width = hud.offsetWidth, height = hud.offsetHeight;
+    var minLeft = width <= vw - edge * 2 ? edge : 0;
+    var minTop = height <= vh - edge * 2 ? edge : 0;
+    var left = Math.max(minLeft, Math.min(Math.max(minLeft, vw - width - minLeft), r.left));
+    var top = Math.max(minTop, Math.min(Math.max(minTop, vh - height - minTop), r.top));
+    if (isPhoneViewport()) {
+      var ticker = document.getElementById('blank-ticker-cluster');
+      if (ticker) {
+        var tickerRect = ticker.getBoundingClientRect();
+        var aboveTicker = tickerRect.top - height - 12;
+        top = Math.max(minTop, Math.min(Math.max(minTop, vh - height - minTop), aboveTicker));
+      }
+    }
+    placeCard(hud, left, top);
+  };
   var TOP_BAND = 25;
   function findOpenSpace(el, avoids) {
     var w = el.offsetWidth || 280;
@@ -5736,7 +5782,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var vw = window.innerWidth;
     var vh = window.innerHeight;
     var top = TOP_BAND;
-    var isPhone = window.matchMedia('(max-width: 700px), (max-height: 500px) and (orientation: landscape)').matches;
+    var isPhone = isPhoneViewport();
     var isPortrait = window.matchMedia('(orientation: portrait)').matches;
 
     if (flipitOpen && hud) {
@@ -5747,6 +5793,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         var gScale = isPortrait ? 0.75 : Math.min(0.9, (vh * 0.75) / Math.max(gcode.offsetHeight, 1));
         var hScale = 0.75;
         gcode.style.setProperty('--mobile-fit-scale', gScale);
+        hud.classList.remove('hud-viewport-clamped');
+        hud.classList.add('hud-mobile-fit');
         hud.style.setProperty('--mobile-fit-scale', hScale);
         if (isPortrait) {
           var portraitLeft = vw * 0.125;
@@ -5764,6 +5812,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         if (tpOpen) flags.toolpath = false;
         return;
       }
+      hud.classList.remove('hud-mobile-fit');
       gcode.style.removeProperty('--mobile-fit-scale');
       hud.style.removeProperty('--mobile-fit-scale');
       placeCard(gcode, Math.max(TOP_BAND, (vw - gW) / 2), top);
