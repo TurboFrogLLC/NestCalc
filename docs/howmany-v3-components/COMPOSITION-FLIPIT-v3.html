@@ -3454,7 +3454,14 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   function saveArmedPreset(key) {
     var slot = presetState.armed[key];
     if (!slot || PRESET_KEYS.indexOf(key) === -1) return false;
-    presetState[key][slot] = takeSnapshot(key);
+    var bag = takeSnapshot(key);
+    if (tickerEdit && tickerEdit.draft && tickerEdit.key === key) {
+      var d = tickerEdit.draft;
+      bag = key === 'margin'
+        ? { l: d.l, r: d.r, t: d.t, b: d.b }
+        : { x: d.x, y: d.y, linked: !!d.linked };
+    }
+    presetState[key][slot] = clonePreset(bag);
     persistPresets();
     presetState.armed[key] = null;
     presetState.editing[key] = false;
@@ -3897,7 +3904,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (preOk) {
       e.preventDefault(); e.stopPropagation();
       var okKey = paramState.open;
-      if (okKey) commitLiveFields(okKey);
+      var morphDraft = hud.classList.contains('is-preset-morph') && tickerEdit && tickerEdit.draft && tickerEdit.key === okKey;
+      if (okKey && !morphDraft) commitLiveFields(okKey);
       if (okKey && saveArmedPreset(okKey)) {
         showPresetToast(preOk.closest('.param-popover'));
       }
@@ -4485,20 +4493,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         }
       }
     });
-    var d = tickerEdit.draft;
-    if (d && tickerEdit.key === key) {
-      if (key === 'margin') {
-        paramState.margin.l = normalizeEditNumber(d.l);
-        paramState.margin.r = normalizeEditNumber(d.r);
-        paramState.margin.t = normalizeEditNumber(d.t);
-        paramState.margin.b = normalizeEditNumber(d.b);
-      } else if (paramState[key]) {
-        paramState[key].x = normalizeEditNumber(d.x);
-        paramState[key].y = normalizeEditNumber(d.y);
-        paramState[key].linked = !!d.linked;
-      }
-      writeFieldsFromBag(key);
-    }
     presetState.editing[key] = true;
     presetState.armed[key] = null;
     paintPresetButtons(key);
@@ -4598,6 +4592,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   if (editCancel) {
     editCancel.addEventListener('click', function (e) {
       e.preventDefault();
+      closeAllParamPopovers();
       exitTickerEdit();
     });
   }
