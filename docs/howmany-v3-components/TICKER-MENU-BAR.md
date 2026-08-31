@@ -5,7 +5,7 @@ Not `main`.
 Product is FLiPIT. Host stays `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`.
 
 Owner locked. Desktop chrome. Phone is the remote look surface only.
-Lite Cuts A and B landed. Cut C look is still this traveler.
+Cuts A–C landed. Cut D shell is still this traveler.
 
 ## Picture
 
@@ -13,21 +13,20 @@ Picker sits **above** the ticker. Attached. Looks like a menu bar.
 Not a second floating box with 8px air.
 Not dropdown menus. Words only. Click the word.
 
-Shut:
+Shut — one stroke around the ticker:
 
 ```
 [ −90 ][ +90 ]  12.000 × 8.000  [calc] [▴]
 ```
 
-Open — picker slides up. Ticker does not move. Right-flush. Shorter than the ticker.
-No line under the picker.
+Open — inverted-L. Picker is a tab on the right. No line under the picker.
 
 ```
-                         Part   Gap   Margin   Reset
+                         ┌ Part  Gap  Margin  Reset ┐
 [−90][+90]  12.000 × 8.000  [calc] [▾]
 ```
 
-## Cut lock (landed A + B)
+## Cut lock (landed A + B + C)
 
 ```
 picker height    = 22
@@ -39,31 +38,21 @@ picker pad L/R   = 8
 picker pad T/B   = 0
 ```
 
-- Desktop chrome this job.
-- Picker above ticker. Attached. No 8px air.
-- Right edges flush. Picker is not full ticker width.
-- Words only: Part Gap Margin Reset. Gap 8. No boxed buttons.
-- Reset stays a word.
-- Chevron still opens / closes.
-- Edit still happens in the ticker box. Lit word is the label.
-- ±90 and calc stay on the ticker row.
-- Ticker tokens from #124 stay: outer 42.2, hits/inputs 28, pad 6/8.
+Idle hits stay idle. Tap highlight transparent. Click blurs.
 
-## Look refinements
+## Cut D (open)
 
-### Cut B (landed)
+Closed: one bounding stroke around the ticker only.
+Open: that same stroke grows into an inverted-L. It climbs the picker left, across the picker top, down the picker right. There is no horizontal line under the picker.
+Left of the picker the ticker keeps its top stroke and top-left radius 8.
 
-- Picker pad L/R = 8. Picker outer radius = 6. Ticker outer radius stays 8.
-- Open join: ticker top-left stays 8. Ticker top-right goes to 0 under the picker.
-- Ticker is static. Picker slides up / down. Do not animate cluster `top` by picker height.
+Host bug: `.bt-picker` and `.bt-travel-box` each have `border: 1.1px solid rgba(26,20,40,0.22)`. Two boxes = a seam. Cut C mask did not kill it.
 
-### Cut C (open)
-
-- No line under the picker. Kill picker `border-bottom` and the travel-box top border under the picker overlap. The join is one shell.
-- Idle hits stay idle. No filled box on calc, rotate, chevron, readout, or picker words after tap.
-- Kill cluster `.bt-hit:hover`, `.bt-hit:focus-visible`, `.blank-ticker:hover`, `.blank-ticker:focus-visible` fills.
-- Kill `.bt-hit.is-on` fill on calc / rotate / chevron / door. Link `is-on` only while X/Y are linked.
-- `-webkit-tap-highlight-color: transparent` on ticker hits and picker words. Blur the hit after click so Safari does not keep `:focus-visible`.
+Do this:
+- Picker `border-bottom: 0`. Picker keeps L / T / R.
+- Sit the picker on the travel top stroke. Overlap by **1.1px** (`bottom: calc(100% - 1.1px)` or equivalent).
+- Same fill `#E8E8E8` so the travel top stroke disappears only under the picker.
+- Do not draw a full-width rectangle around the empty space left of the picker.
 
 ## Out
 
