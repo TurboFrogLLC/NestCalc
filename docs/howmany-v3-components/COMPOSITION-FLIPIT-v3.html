@@ -51,7 +51,7 @@ Bridges in this host:
         Token-aware NC highlight · default part 1.250×3.375 + Flip visual
   · R13 Preset write-mode + OK applies live fields to HUD/bed
         Single frost-blue bed rail · XYZR 4dp black · front surface
-  · Two-box ticker: travel + picker, 8px air, chevron last, travel vs edit
+  · Menu-bar ticker: picker above + attached, chevron last, travel vs edit
         Cut A: hits/inputs 28 · pad 6/8 · item gap 2 · radius 8 · outer 42.2
         Picker words only · travel and picker right edges flush · travel icon 18
         Send/square-arrow-out-up-right → #hud preset morph · not WRITE popover
@@ -156,7 +156,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     max-width: calc(100vw - 24px);
   }
   .blank-ticker-cluster.is-on { display: inline-flex; }
-  .blank-ticker-cluster.is-door-open { gap: 8px; }
+  .blank-ticker-cluster.is-door-open { gap: 0; }
   .blank-ticker-cluster.is-door-motion { transition: top 240ms ease, left 240ms ease, gap 240ms ease; }
   .bt-travel-box,
   .bt-picker {
@@ -166,7 +166,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     padding: 6px 8px;
     box-sizing: border-box;
     border: 1.1px solid rgba(26, 20, 40, 0.22);
-    border-radius: 8px;
     background: #E8E8E8;
     color: #1A1428;
     pointer-events: auto;
@@ -174,6 +173,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     height: 42.2px;
     min-height: 42.2px;
   }
+  .bt-travel-box { border-radius: 8px; }
+  .blank-ticker-cluster.is-door-open .bt-travel-box { border-radius: 0 0 8px 8px; }
   .bt-travel {
     display: inline-flex;
     align-items: center;
@@ -224,13 +225,21 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   .blank-ticker:hover,
   .blank-ticker:focus-visible { background: rgba(26, 20, 40, 0.08); }
   .blank-ticker .bt-readout { line-height: 1; letter-spacing: 0.01em; }
-  .bt-picker { display: none; }
+  .bt-picker {
+    display: none;
+    height: 22px;
+    min-height: 22px;
+    gap: 8px;
+    padding: 0;
+    border-radius: 8px 8px 0 0;
+    border-bottom: 0;
+  }
   .blank-ticker-cluster.is-door-open .bt-picker { display: inline-flex; }
   .ticker-door-chip {
-    height: 28px; min-height: 28px;
-    margin: 0; padding: 0 8px;
+    height: 22px; min-height: 22px;
+    margin: 0; padding: 0;
     border: 0;
-    border-radius: 8px;
+    border-radius: 0;
     background: transparent;
     color: #1A1428;
     display: inline-flex; align-items: center; justify-content: center;
@@ -244,8 +253,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     white-space: nowrap;
   }
   .ticker-door-chip:hover,
-  .ticker-door-chip:focus-visible { background: rgba(26, 20, 40, 0.08); }
-  .ticker-door-chip.is-lit { background: rgba(26, 20, 40, 0.14); }
+  .ticker-door-chip:focus-visible { text-decoration: underline; }
+  .ticker-door-chip.is-lit { text-decoration: underline; }
   .bt-door .bt-door-up { display: none; }
   .blank-ticker-cluster.is-door-open .bt-door .bt-door-down { display: none; }
   .blank-ticker-cluster.is-door-open .bt-door .bt-door-up { display: block; }
@@ -2395,8 +2404,14 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       </button>
     </div>
 
-    <!-- Two-box ticker — Cut A: 28 hit / 42.2 outer · picker words · Send → #hud presets -->
+    <!-- Menu-bar ticker — locked: picker above, attached, words only · Send → #hud presets -->
     <div class="blank-ticker-cluster" id="blank-ticker-cluster">
+      <div class="bt-picker" id="bt-picker" aria-label="Field picker">
+        <button type="button" class="ticker-door-chip" data-ticker-door-chip="part" title="Part" aria-label="Part">Part</button>
+        <button type="button" class="ticker-door-chip" data-ticker-door-chip="gap" title="Gap" aria-label="Gap">Gap</button>
+        <button type="button" class="ticker-door-chip" data-ticker-door-chip="margin" title="Margin" aria-label="Margin">Margin</button>
+        <button type="button" class="ticker-door-chip" data-ticker-door-chip="eraser" title="Reset" aria-label="Reset">Reset</button>
+      </div>
       <div class="bt-travel-box" id="bt-travel-box">
         <div class="bt-travel" id="bt-travel">
           <button type="button" class="bt-hit bt-rot" id="bt-rot-ccw" title="−90" aria-label="−90">
@@ -2450,12 +2465,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
           </button>
         </div>
-      </div>
-      <div class="bt-picker" id="bt-picker" aria-label="Field picker">
-        <button type="button" class="ticker-door-chip" data-ticker-door-chip="part" title="Part" aria-label="Part">Part</button>
-        <button type="button" class="ticker-door-chip" data-ticker-door-chip="gap" title="Gap" aria-label="Gap">Gap</button>
-        <button type="button" class="ticker-door-chip" data-ticker-door-chip="margin" title="Margin" aria-label="Margin">Margin</button>
-        <button type="button" class="ticker-door-chip" data-ticker-door-chip="eraser" title="Reset" aria-label="Reset">Reset</button>
       </div>
     </div>
   
@@ -3061,8 +3070,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     bedRulers.appendChild(label(-numOff * 0.72, -numOff * 0.72, '0', fontWorld, 'middle', 'middle'));
   }
 
-  /* Right-pin residual: travel-box outer rect · picker open lifts by picker + 8px air · pair walks left of keep-out */
-  var BOX_AIR = 8;
+  /* Right-pin residual: travel-box outer rect · picker opens above, attached · pair walks left of keep-out */
   function aabbOverlap(a, b, pad) {
     pad = pad || 0;
     return !(a.right + pad <= b.left || a.left - pad >= b.right || a.bottom + pad <= b.top || a.top - pad >= b.bottom);
@@ -3099,7 +3107,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var travelW = travel.offsetWidth || 1;
     var travelH = travel.offsetHeight || TICKER_H;
     var pickerH = (open && picker) ? picker.offsetHeight : 0;
-    var lift = open ? (pickerH + BOX_AIR) : 0;
+    var lift = open ? pickerH : 0;
     var pad = 12;
     var top = Math.round(screenTop - GAP_TOP - travelH - lift);
     var left = Math.round(screenRight - travelW - GAP_RIGHT);
