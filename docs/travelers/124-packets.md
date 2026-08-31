@@ -247,3 +247,17 @@ Seq 12 stamped.
 Still open: Inspection C.
 Next: Inspection C after a posted Cut C review conclusion or Owner direction.
 ```
+
+### Seq 13 — Inspection C (Dirty)
+
+**Operator return**
+
+```text
+job_id: NGJ-20260831-ticker-picker-words
+Inspection evidence after Cut C: the post-request short-read found no Owner note, SuperGrok note, Codex review conclusion, OM SIGNAL, or +1 for Cut C. The only concluded Codex reviews remain the earlier COMMENTED Cut A and Cut B reviews; the Cut C request is still running.
+Inspection C: Dirty — no Cut C review conclusion is available for clearance.
+Escalated in Worker Mode. No corrective action was invented; no merge, ready mark, packslip, main change, or production deployment was made.
+Seq 13 stamped against the review-wait SHA 08479c7.
+Still open: Inspection C (escalated).
+Next: Owner direction or a posted Cut C review conclusion, then Inspection C again.
+```
