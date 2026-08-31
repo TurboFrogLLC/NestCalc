@@ -98,6 +98,17 @@ Tap slot 5 → that row lights, ticker shows slot 5, then Send-to-bed.
 Travel `[calc]` opens this face on Blank if no field is in edit.
 Presets on the edit bar does not open the HUD inspector and does not open WRITE.
 
+## Camera (#124 draft)
+
+Subject is the **blank**, not the laser bed.
+
+- Default view is blank-fit. Enough air around the blank to drag it bigger.
+- Fit-to-screen = blank-fit. Same target as zoom-in. Not bed-fit.
+- Zoom out may show the whole bed. That is opt-in.
+- Blank resize (handle, ticker, or Send-to-bed) re-fits the camera so the blank stays on screen. Grow → zoom out a step. Shrink → zoom in a step. No jump-cut.
+- Bed is static. Dragging a part, a row, or the blank handle does not pan the bed off the viewport.
+- Bed chrome, heading, and origin plaque stay Out. Static lock is this job.
+
 ## Cycle
 
 Lite: Cut → Send for review → Wait → Inspection → Merge into #121 branch → Close.
@@ -106,5 +117,6 @@ Drafting. No Cut until Owner says drop.
 
 ## Out
 
-React port. HexNest chrome. Bed lock. One-surface mobile. Cut sheet. Merge to `main`.
+React port. HexNest chrome. One-surface mobile. Cut sheet. Merge to `main`.
 Pretty preset chrome. Material breadcrumb. Named slots.
+Bed heading / origin plaque. Manual pan of the locked bed.

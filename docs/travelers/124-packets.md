@@ -17,4 +17,8 @@ One edit-bar icon opens the calculator face, not HUD inspector, not WRITE. Pad g
 
 In: type-in-panel, or bed Presets saves current draft into a slot and opens the face.
 Out: Send-to-bed hydrates the lit slot onto the laser ticker with picker shut or open.
-Five slots per Blank / Gap / Margin. No Cut.
+Five slots per Blank / Gap / Margin.
+
+## 2026-08-31 blank-fit camera
+
+Default and Fit-to-screen target the blank, not the bed. Zoom-out may show the bed. Blank resize re-fits with air to grow. Bed is static; drags do not walk it off screen. Bed heading stays Out. No Cut.
