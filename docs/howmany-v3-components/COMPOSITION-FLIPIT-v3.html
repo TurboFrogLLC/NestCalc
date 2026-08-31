@@ -680,6 +680,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     .preset-panel-editor { display: flex; align-items: center; gap: 5px; padding-top: 3px; }
     .preset-panel-editor label { display: flex; align-items: center; gap: 3px; font-size: 10px; font-weight: 700; }
     .preset-panel-editor input { width: 44px; height: 28px; box-sizing: border-box; border: 1.1px solid rgba(26,20,40,.22); border-radius: 8px; background: rgba(255,255,255,.88); color: var(--ink); font: 700 10px var(--font-mono); text-align: center; }
+    .preset-panel-editor input[aria-invalid="true"], .bt-edit input[aria-invalid="true"] { border-color: #C4293A; box-shadow: 0 0 0 1px rgba(196,41,58,.22); }
     .preset-panel-editor.is-margin { flex-wrap: wrap; }
     .preset-send { margin-left: auto; min-width: 92px; background: rgba(26,20,40,.82); color: #FFCE1B; }
     .param-popover .pop-head {
@@ -4369,6 +4370,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     presetEditor.querySelectorAll('[data-preset-input]').forEach(function (input) {
       input.addEventListener('input', function () {
         sanitizeNumericLive(input);
+        input.removeAttribute('aria-invalid');
         var n = parseFloat(input.value);
         if (!Number.isFinite(n)) return;
         presetPanel.draft[input.getAttribute('data-preset-input')] = normalizeEditNumber(n);
@@ -4378,6 +4380,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     });
     var send = document.getElementById('preset-send-to-bed');
     if (send) send.addEventListener('click', function () {
+      if (rejectClearedTickerFields(presetEditor)) return;
       savePanelSlot();
       if (applyPresetSlot(presetPanel.key, presetPanel.slot)) {
         if (tickerEdit.key === presetPanel.key) exitTickerEdit();
@@ -4393,6 +4396,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (isExplicitlyLit) presetPanel.litThisVisit[key] = presetPanel.slot;
     paintPresetDoor();
     renderPresetEditor();
+    requestAnimationFrame(sizePresetDoor);
   }
   function sizePresetDoor() {
     if (!presetDoor || !hudStage) return;
@@ -4463,12 +4467,30 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var n = parseFloat(String(el.value || '').trim());
     return Number.isFinite(n) ? n : null;
   }
+  function rejectClearedTickerFields(scope) {
+    if (!scope) return false;
+    var firstInvalid = null;
+    scope.querySelectorAll('input').forEach(function (input) {
+      var raw = String(input.value || '').trim();
+      var invalid = raw === '' || raw === '.';
+      if (invalid) {
+        input.setAttribute('aria-invalid', 'true');
+        if (!firstInvalid) firstInvalid = input;
+      } else {
+        input.removeAttribute('aria-invalid');
+      }
+    });
+    if (!firstInvalid) return false;
+    firstInvalid.focus();
+    return true;
+  }
   ['bt-edit-x', 'bt-edit-y'].forEach(function (id) {
     var el = document.getElementById(id);
     if (!el) return;
     el.addEventListener('input', function () {
       if (!tickerEdit.draft || tickerEdit.key === 'margin') return;
       sanitizeNumericLive(el);
+      el.removeAttribute('aria-invalid');
       var axis = el.getAttribute('data-bt-xy');
       var n = parseEditNumber(el);
       if (n == null) return;
@@ -4485,6 +4507,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     el.addEventListener('input', function () {
       if (!tickerEdit.draft || tickerEdit.key !== 'margin') return;
       sanitizeNumericLive(el);
+      el.removeAttribute('aria-invalid');
       var k = el.getAttribute('data-bt-m');
       var n = parseEditNumber(el);
       if (n == null || !k) return;
@@ -4519,6 +4542,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     editSend.addEventListener('click', function (e) {
       e.preventDefault();
       e.stopPropagation();
+      var activeFields = document.querySelector('.bt-edit-fields.is-on');
+      if (rejectClearedTickerFields(activeFields)) return;
       if (typeof window.__hudPresetMorph === 'function') window.__hudPresetMorph(tickerEdit.key, tickerEdit.draft);
     });
   }
