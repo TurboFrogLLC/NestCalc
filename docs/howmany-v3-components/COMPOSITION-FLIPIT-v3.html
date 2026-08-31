@@ -161,22 +161,22 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   .bt-picker {
     display: inline-flex;
     align-items: center;
-    gap: 3px;
-    padding: 3px 8px;
+    gap: 2px;
+    padding: 6px 8px;
     box-sizing: border-box;
     border: 1.1px solid rgba(26, 20, 40, 0.22);
-    border-radius: 10px;
+    border-radius: 8px;
     background: #E8E8E8;
     color: #1A1428;
     pointer-events: auto;
     flex-shrink: 0;
-    height: 36.2px;
-    min-height: 36.2px;
+    height: 42.2px;
+    min-height: 42.2px;
   }
   .bt-travel {
     display: inline-flex;
     align-items: center;
-    gap: 3px;
+    gap: 2px;
     height: 28px;
     flex-shrink: 0;
   }
@@ -185,7 +185,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     width: 28px; height: 28px; min-width: 28px; min-height: 28px;
     margin: 0; padding: 0;
     border: 0;
-    border-radius: 10px;
+    border-radius: 8px;
     background: transparent;
     color: #1A1428;
     display: inline-flex; align-items: center; justify-content: center;
@@ -205,7 +205,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     padding: 0 8px;
     box-sizing: border-box;
     border: 0;
-    border-radius: 10px;
+    border-radius: 8px;
     background: transparent;
     color: #1A1428;
     font-family: var(--font-mono);
@@ -229,11 +229,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     height: 28px; min-height: 28px;
     margin: 0; padding: 0 8px;
     border: 0;
-    border-radius: 10px;
+    border-radius: 8px;
     background: transparent;
     color: #1A1428;
     display: inline-flex; align-items: center; justify-content: center;
-    gap: 3px;
+    gap: 2px;
     cursor: pointer;
     box-sizing: border-box;
     line-height: 1;
@@ -242,7 +242,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     font-weight: 650;
     white-space: nowrap;
   }
-  .ticker-door-chip svg { display: block; width: 16px; height: 16px; pointer-events: none; flex-shrink: 0; }
   .ticker-door-chip:hover,
   .ticker-door-chip:focus-visible { background: rgba(26, 20, 40, 0.08); }
   .ticker-door-chip.is-lit { background: rgba(26, 20, 40, 0.14); }
@@ -253,7 +252,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   .bt-edit {
     display: none;
     align-items: center;
-    gap: 3px;
+    gap: 2px;
     height: 28px;
     pointer-events: auto;
   }
@@ -261,13 +260,13 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   .bt-edit-fields {
     display: none;
     align-items: center;
-    gap: 3px;
+    gap: 2px;
   }
   .bt-edit-fields.is-on { display: inline-flex; }
   .bt-axis {
     display: inline-flex;
     align-items: center;
-    gap: 3px;
+    gap: 2px;
     height: 28px;
   }
   .bt-axis > span {
@@ -285,7 +284,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     margin: 0;
     padding: 0 4px;
     border: 0;
-    border-radius: 10px;
+    border-radius: 8px;
     background: #ffffff;
     color: #1A1428;
     font-family: var(--font-mono);
@@ -2396,7 +2395,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       </button>
     </div>
 
-    <!-- Two-box ticker — look-fit 28 / 36.2 · picker icon+word · Send → #hud presets -->
+    <!-- Two-box ticker — Cut A: 28 hit / 42.2 outer · picker words · Send → #hud presets -->
     <div class="blank-ticker-cluster" id="blank-ticker-cluster">
       <div class="bt-travel-box" id="bt-travel-box">
         <div class="bt-travel" id="bt-travel">
@@ -2453,22 +2452,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         </div>
       </div>
       <div class="bt-picker" id="bt-picker" aria-label="Field picker">
-        <button type="button" class="ticker-door-chip" data-ticker-door-chip="part" title="Part" aria-label="Part">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
-          <span>Part</span>
-        </button>
-        <button type="button" class="ticker-door-chip" data-ticker-door-chip="gap" title="Gap" aria-label="Gap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="13" height="7" x="8" y="3" rx="1"/><path d="m2 9 3 3-3 3"/><rect width="13" height="7" x="8" y="14" rx="1"/></svg>
-          <span>Gap</span>
-        </button>
-        <button type="button" class="ticker-door-chip" data-ticker-door-chip="margin" title="Margin" aria-label="Margin">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="9" height="6" x="6" y="14" rx="2"/><rect width="16" height="6" x="6" y="4" rx="2"/><path d="M2 2v20"/></svg>
-          <span>Margin</span>
-        </button>
-        <button type="button" class="ticker-door-chip" data-ticker-door-chip="eraser" title="Reset" aria-label="Reset">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>
-          <span>Reset</span>
-        </button>
+        <button type="button" class="ticker-door-chip" data-ticker-door-chip="part" title="Part" aria-label="Part">Part</button>
+        <button type="button" class="ticker-door-chip" data-ticker-door-chip="gap" title="Gap" aria-label="Gap">Gap</button>
+        <button type="button" class="ticker-door-chip" data-ticker-door-chip="margin" title="Margin" aria-label="Margin">Margin</button>
+        <button type="button" class="ticker-door-chip" data-ticker-door-chip="eraser" title="Reset" aria-label="Reset">Reset</button>
       </div>
     </div>
   
@@ -2914,7 +2901,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
   var PAD = 48;
   var MIN_LABEL_PX = 36;
-  var TICKER_H = 36.2;
+  var TICKER_H = 42.2;
   var GAP_TOP = 10;   /* px above blank top */
   var GAP_RIGHT = 20; /* px inset from blank right edge */
 
