@@ -21,3 +21,9 @@ Draft remains draft. Not ready. Not merged.
 ## 2026-08-31 Wait
 
 Codex review conclusion on #122: COMMENTED, commit 66c222b. Summary completed 2026-08-31T05:31:54Z. No OM SIGNAL. No +1. Continue Inspection.
+
+## 2026-08-31 Inspection
+
+Dirty: Codex COMMENTED with 3 P1 + 1 P2. Owner notes: merge to #121 not main. SuperGrok notes: none. Opened CA on this traveler.
+CA: morph after popover; exit calc; drop TWO-BOX traveler pair; normalize drafts. b24f0e5. Threads resolved.
+Inspection again: clean. Merge.
