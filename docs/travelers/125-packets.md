@@ -24,3 +24,7 @@ Short-read completed with authenticated `gh`: no completed Codex review, OM SIGN
 ## Seq 5 — Inspection — 2026-08-31
 
 **Clean.** Read PR #125 owner comments, SuperGrok notes, and Codex review threads: no Owner or SuperGrok note beyond the review request, no review threads, and no submitted reviews or findings. Codex review remains running; this is recorded as residual review state, not a corrective-action finding. Draft state unchanged; no merge.
+
+## 2026-08-31 Cut B look opened
+
+Owner added look refinements on the same traveler. No `@codex review` on Send B. Review is batched later.
