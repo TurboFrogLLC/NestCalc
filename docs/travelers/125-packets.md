@@ -48,3 +48,7 @@ Owner-deferred review: no PR comment and no `@codex review` were posted. Draft s
 ## 2026-08-31 Cut C look opened
 
 Owner look: picker still shows a bottom join line. Calc still shows a filled idle box after tap. No `@codex review` on Send C.
+
+## Seq 10 — Cut C look — 2026-08-31
+
+Cut C host at `38176f45b105f4e7f67333eeb7f39d42cbe32b8d`, confirmed as the origin branch SHA. The picker masks the travel top border underneath it so the open pair reads as one shell. Cluster hover/focus fills are gone; only linked X/Y keeps `is-on`; ticker hits and picker words use transparent tap highlight and blur after click. No #124 HUD residual work.
