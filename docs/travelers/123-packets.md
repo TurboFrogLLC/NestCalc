@@ -11,3 +11,7 @@ Draft PR #123. Look-fit on two-box host. Lite cycle. Wait polls @codex review. H
 ## 2026-08-30 Cut
 
 Operator: Grok Build. Host look-fit on origin `ac9c527` (`host: two-box ticker look-fit`). Hits/inputs 28, pad 3 T/B 8 L/R, radius 10, outer 36.2, icons 18/16. Picker icon-left + word. Send `square-arrow-out-up-right` morphs `#hud` presets, not WRITE. Gap X ≠ Y paints link off. Seq 2 stamped against that origin SHA. Next: Send for review. Not merge. Not ready. Not main.
+
+## 2026-08-31 Send for review
+
+Operator: Grok Build. Named review requested on #123: https://github.com/TurboFrogLLC/NestCalc/pull/123#issuecomment-5477435762 (`@codex review`). Seq 3 stamped `9a0be7c`. Next: Wait. Not merge. Not ready. Not main.
