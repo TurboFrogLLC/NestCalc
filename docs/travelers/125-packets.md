@@ -80,3 +80,7 @@ Owner-deferred review: no PR comment and no `@codex review` were posted. Draft s
 ## Seq 17 — Inspection D — 2026-08-31
 
 **Clean.** Cut D lock verified in the host and SPEC: closed ticker retains its only bounding stroke; open picker overlaps the travel top by 1.1px with left/top/right borders and no bottom border, producing the required inverted-L without an empty full-width shell. No #124 HUD residual work, merge, or PR comment.
+
+## Seq 18 — Cut E look — 2026-08-31
+
+Cut E host at `06fd98ec911f879a1f30e0007995184117c695d7`, confirmed as the origin branch SHA. The picker keeps its overlapping L/T/R shell and gains only an inset 1.1px join rule with 8px side clearance. The travel’s inside top-right is radius 6; −90/+90 are flush while the remaining travel gaps stay 2px. No #124 HUD residual work.
