@@ -3533,9 +3533,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
   function applyModeVisibility() {
     /* Class-only: never toggle display. Stacked opacity handles the swap. */
-    const showCalc = !!(state.calc && !isHudCollapsed());
+    const showPreset = hud.classList.contains('preset-door');
+    const showCalc = !!(state.calc && !isHudCollapsed() && !showPreset);
     hud.classList.toggle('calc-mode', showCalc);
-    if (hudMode) hudMode.setAttribute('aria-hidden', showCalc ? 'true' : 'false');
+    if (hudMode) hudMode.setAttribute('aria-hidden', (showCalc || showPreset) ? 'true' : 'false');
     if (classicEl) classicEl.setAttribute('aria-hidden', showCalc ? 'false' : 'true');
   }
 
@@ -5192,6 +5193,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (hud) {
       hud.classList.remove('hud-mobile-fit');
       hud.style.removeProperty('--mobile-fit-scale');
+      if (typeof window.__hudClampVisible === 'function') window.__hudClampVisible('flipit-close');
     }
     setExpanded(false);
     syncHudFlipitChrome();
@@ -5844,12 +5846,19 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }
   };
 
-  window.addEventListener('resize', function () {
+  function rearrangeHostOnViewportChange() {
     var gcode = document.getElementById('gcode');
     if (gcode && gcode.classList.contains('is-open') && gcode.style.display !== 'none') {
       window.__hostArrange('mobile-fit-resize');
+      return;
     }
-  });
+    var hud = document.getElementById('hud');
+    if (hud && (hud.classList.contains('calc-mode') || hud.classList.contains('preset-door')) && typeof window.__hudClampVisible === 'function') {
+      window.__hudClampVisible('viewport-resize');
+    }
+  }
+  window.addEventListener('resize', rearrangeHostOnViewportChange);
+  window.addEventListener('orientationchange', rearrangeHostOnViewportChange);
 })();
 </script>
 </body>
