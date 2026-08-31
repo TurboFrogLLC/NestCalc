@@ -21,4 +21,4 @@ Five slots per Blank / Gap / Margin.
 
 ## 2026-08-31 blank-fit camera
 
-Default and Fit-to-screen target the blank, not the bed. Zoom-out may show the bed. Blank resize re-fits with air to grow. Bed is static; drags do not walk it off screen. Bed heading stays Out. No Cut.
+Default and Fit-to-screen target the blank. Air to grow a couple inches. No live-resize re-fit. Bed static. Wheel zoom leftover.

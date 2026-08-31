@@ -102,12 +102,12 @@ Presets on the edit bar does not open the HUD inspector and does not open WRITE.
 
 Subject is the **blank**, not the laser bed.
 
-- Default view is blank-fit. Enough air around the blank to drag it bigger.
-- Fit-to-screen = blank-fit. Same target as zoom-in. Not bed-fit.
-- Zoom out may show the whole bed. That is opt-in.
-- Blank resize (handle, ticker, or Send-to-bed) re-fits the camera so the blank stays on screen. Grow → zoom out a step. Shrink → zoom in a step. No jump-cut.
-- Bed is static. Dragging a part, a row, or the blank handle does not pan the bed off the viewport.
-- Bed chrome, heading, and origin plaque stay Out. Static lock is this job.
+- Default view is blank-fit.
+- Fit-to-screen = blank-fit, with air around the blank so it can grow a couple inches.
+- Zoom out may show the whole bed. Wheel zoom is leftover, not this job.
+- Blank resize does **not** re-fit the camera live.
+- Bed is static. Drags do not walk it off the viewport.
+- Bed heading / origin plaque stay Out.
 
 ## Cycle
 
@@ -119,4 +119,4 @@ Drafting. No Cut until Owner says drop.
 
 React port. HexNest chrome. One-surface mobile. Cut sheet. Merge to `main`.
 Pretty preset chrome. Material breadcrumb. Named slots.
-Bed heading / origin plaque. Manual pan of the locked bed.
+Bed heading / origin plaque. Wheel zoom. Live-resize camera.
