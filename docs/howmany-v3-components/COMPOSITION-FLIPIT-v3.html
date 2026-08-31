@@ -4368,6 +4368,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }).join('') + '<button type="button" class="preset-send" id="preset-send-to-bed">Send to bed</button>';
     presetEditor.querySelectorAll('[data-preset-input]').forEach(function (input) {
       input.addEventListener('input', function () {
+        sanitizeNumericLive(input);
         var n = parseFloat(input.value);
         if (!Number.isFinite(n)) return;
         presetPanel.draft[input.getAttribute('data-preset-input')] = normalizeEditNumber(n);
@@ -4467,6 +4468,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (!el) return;
     el.addEventListener('input', function () {
       if (!tickerEdit.draft || tickerEdit.key === 'margin') return;
+      sanitizeNumericLive(el);
       var axis = el.getAttribute('data-bt-xy');
       var n = parseEditNumber(el);
       if (n == null) return;
@@ -4482,6 +4484,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   document.querySelectorAll('[data-bt-m]').forEach(function (el) {
     el.addEventListener('input', function () {
       if (!tickerEdit.draft || tickerEdit.key !== 'margin') return;
+      sanitizeNumericLive(el);
       var k = el.getAttribute('data-bt-m');
       var n = parseEditNumber(el);
       if (n == null || !k) return;
