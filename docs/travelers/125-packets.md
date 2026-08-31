@@ -40,3 +40,7 @@ Owner-deferred review: no PR comment and no `@codex review` were posted. Draft s
 ## Seq 8 — Wait B — 2026-08-31
 
 **owner-deferred-review.** No PR short-read was performed and no review wait was started, per the Owner's Send B instruction.
+
+## Seq 9 — Inspection B — 2026-08-31
+
+**Clean.** Cut B lock verified in the host and SPEC: picker 22px with 0 T/B · 8 L/R padding and radius 6; ticker remains static with top-left radius 8 and only top-right squared when open; picker clips/slides independently; no ticker hit, picker word, calc, chevron, or rotate press scale remains. No #124 HUD residual work, merge, or PR comment.
