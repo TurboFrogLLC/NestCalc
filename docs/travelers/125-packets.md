@@ -68,3 +68,7 @@ Owner-deferred review: no PR comment and no `@codex review` were posted. Draft s
 ## Seq 14 — Cut D shell — 2026-08-31
 
 Cut D host at `fba529836fb0c54ab22f1b85a84f312920ab92ff`, confirmed as the origin branch SHA. Closed ticker retains its only bounding stroke. Open picker overlaps the travel top by 1.1px with the same `#E8E8E8` fill, keeps left/top/right borders, and has no bottom border, leaving an inverted-L with no empty full-width shell or picker seam. No #124 HUD residual work.
+
+## Seq 15 — Send D — 2026-08-31
+
+Owner-deferred review: no PR comment and no `@codex review` were posted. Draft state unchanged.
