@@ -503,3 +503,16 @@ Seq 25 re-stamped Clean against eeb217e.
 Still open: Merge.
 Next: Merge.
 ```
+
+### Seq 26 — Merge
+
+**Operator return**
+
+```text
+job_id: NGJ-20260831-ticker-picker-words
+PR #124 merged into feat/v3-ticker-door at merge SHA ab20832f088b31de546f26e5a083dc2a0cd732b4.
+No merge to main, PR readiness change, production deployment, or feature-branch prune was made.
+Seq 26 stamped against the merge SHA.
+Still open: Close.
+Next: Close.
+```
