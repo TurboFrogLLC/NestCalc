@@ -353,3 +353,20 @@ Seq 17 re-stamped Clean against CA D.
 Still open: Merge.
 Next: Merge (Owner-named after look).
 ```
+
+### Seq 18 — Cut E HUD clamp
+
+**Operator return**
+
+```text
+job_id: NGJ-20260831-ticker-picker-words
+Branch: feat/v3-ticker-picker-words
+Host commit: 5a2fa2ce801f968cd6b21f8c9915f45cd8755285
+Origin host SHA: 5a2fa2ce801f968cd6b21f8c9915f45cd8755285
+Cut E complete: opening calculator or Bed Presets now clamps #hud into the visible webview. On phone with FLiPIT closed, HUD remains unscaled, moves away from the leftover 25,25 placement, and layers above the ticker. The 75% HUD scale applies only while FLiPIT is open.
+Validation: git diff --check passed; all 5 inline scripts compiled with Node; 390 × 844 browser proof opened Bed Presets and measured HUD left 0, top 16, right 390, bottom 337.484, visible true, unscaled true, and aboveTickerLayer true. Existing local /howmany-shell console miss remained unrelated.
+Pushed: origin/feat/v3-ticker-picker-words at 5a2fa2c.
+Seq 18 stamped against the origin host SHA.
+Still open: Send E.
+Next: Send E.
+```
