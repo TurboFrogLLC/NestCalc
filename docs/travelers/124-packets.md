@@ -323,3 +323,17 @@ Seq 16 stamped.
 Still open: Inspection D.
 Next: Inspection D.
 ```
+
+### Seq 17 — Inspection D (Dirty)
+
+**Operator return**
+
+```text
+job_id: NGJ-20260831-ticker-picker-words
+Inspection evidence after Cut D: the post-request short-read found no Owner note, SuperGrok note, Codex review conclusion, OM SIGNAL, or +1 for Cut D. The Codex Review Summary remains Running for commit 62b108f; the only submitted Codex reviews and inline threads are from the earlier Cut A, Cut B, and Cut C requests.
+Inspection D: Dirty — no Cut D review conclusion is available for clearance.
+Escalated in Worker Mode. No corrective action was invented; no merge, ready mark, packslip, main change, or production deployment was made.
+Seq 17 stamped against the inspection-read SHA d59faef.
+Still open: Inspection D (escalated).
+Next: Owner direction or a posted Cut D review conclusion, then Inspection D again.
+```
