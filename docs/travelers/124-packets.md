@@ -261,3 +261,21 @@ Seq 13 stamped against the review-wait SHA 08479c7.
 Still open: Inspection C (escalated).
 Next: Owner direction or a posted Cut C review conclusion, then Inspection C again.
 ```
+
+### CA C — P2 preset corrective action
+
+**Operator return**
+
+```text
+job_id: NGJ-20260831-ticker-picker-words
+Corrective-action commit: 5df6bde9656ff41302d24f73034798e4a3bfd3d3 (pushed to origin/feat/v3-ticker-picker-words).
+CA-1: opening Bed Presets from a ticker draft immediately writes the seed to the selected slots 1–5 slot, so Close retains it.
+CA-2: a ticker seed selects the first empty row slot unless the user explicitly lit a slot during that open Bed Presets visit.
+CA-3: Send to bed hydrates the live ticker and exits a matching open ticker draft, preventing stale OK from restoring old values.
+CA-4: removed the visible legacy A/B chips and their separate write state; howmany.flipit.v3.presets now uses only the Blank/Gap/Margin slots 1–5 schema.
+Validation: git diff --check passed; all 5 inline scripts compiled with Node; browser proof seeded Gap X 0.777, then Send to bed hydrated the live ticker to 0.777 × 0.125 and exited ticker edit. Static-server /howmany-shell and favicon console misses were expected and unrelated.
+Resolved P2 review threads: PRRT_kwDOTJAVIM6dy2Nu, PRRT_kwDOTJAVIM6dy2Ny, PRRT_kwDOTJAVIM6dy2N2, PRRT_kwDOTJAVIM6dy2N5.
+Seq 13 re-stamped Clean against CA C.
+Still open: Merge.
+Next: Merge (Owner-named after look).
+```
