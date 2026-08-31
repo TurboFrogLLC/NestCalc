@@ -28,3 +28,7 @@ Short-read completed with authenticated `gh`: no completed Codex review, OM SIGN
 ## 2026-08-31 Cut B look opened
 
 Owner added look refinements on the same traveler. No `@codex review` on Send B. Review is batched later.
+
+## Seq 6 — Cut B look — 2026-08-31
+
+Cut B host at `ef538f0ee1ad72a530547f705e13cdd9095a2532`, confirmed as the origin branch SHA. Picker has 8px horizontal padding and radius 6; ticker stays static with top-left radius 8 and only its top-right squared under the picker. Picker clips/slides independently; ticker hits, picker words, calc, chevron, and rotate have no press imprint. No #124 HUD residual work.
