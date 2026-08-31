@@ -135,7 +135,7 @@ Do not require `file://`.
 ## How to use
 
 1. Open the composition URL above.
-2. Verify LaserBed fills the viewport (BL origin, 48×48 fit, blank 12×8, right-pin ticker, Fit does not reset blank).
+2. Verify LaserBed opens blank-fit: the 12×8 blank is centered with 2in air around it (not a 48×48 bed-fit), the right-pin ticker follows it, and Fit returns to that blank-fit without changing the blank.
 3. Verify Numeric HUD (16,16) is the only card open. FLiPIT and toolPath are absent.
 4. HUD **FLiPIT** opens FLiPIT expanded. If FlipIt is already open and collapsed, FLiPIT expands it. If expanded, FLiPIT closes it. X closes from any state.
 5. Blank ticker is two boxes. Travel holds ±90, readout, calc, chevron-last. Outer 42.2, hits/inputs 28, pad 6/8, item gap 2, and hit/input/shell radius 8. Picker (Part / Gap / Margin / Reset words only) sits 8px under travel with its right edge flush to travel and may stay while editing. Field chips edit in the travel box; they do not pour HUD. Send morphs `#hud` calculator presets, not the WRITE popover. Gap X ≠ Y paints link off. AUTO-SIZE does **not** open FLiPIT. `#btn-detect` still sizes. HUD FLiPIT cycle from R3 is unchanged. HowMany `#lb-count` shows the live `calculateNest` total past `#lb-hit-corner` on the 45° ray.
