@@ -383,3 +383,17 @@ Seq 19 stamped.
 Still open: Wait E.
 Next: Wait E.
 ```
+
+### Seq 20 — Wait E
+
+**Operator return**
+
+```text
+job_id: NGJ-20260831-ticker-picker-words
+gh authenticated as TurboFrogLLC.
+Short-read PR #124 after the Cut E request: issuecomment-5482049273 is present. Codex Review Summary is Running for commit e305447; submitted reviews remain the earlier COMMENTED Cut A, Cut B, Cut C, and Cut D conclusions. There is no Cut E conclusion, OM SIGNAL, or +1.
+Wait fact: no-review-yet (review running). No poll loop started.
+Seq 20 stamped.
+Still open: Inspection E.
+Next: Inspection E.
+```
