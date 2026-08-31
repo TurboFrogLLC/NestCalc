@@ -1,11 +1,11 @@
 # Ticker menu-bar
 
-Child of `feat/v3-ticker-door` (#121). After picker-words #124.
+Child of `feat/v3-ticker-door` (#121). After picker-words #124. PR #125.
 Not `main`.
 Product is FLiPIT. Host stays `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`.
 
-Docs / spitball this job. No host Cut until Owner locks.
-This job is **desktop chrome**. Phone is the remote look surface only. A slick mobile layout is leftover.
+Owner locked. Desktop chrome. Phone is the remote look surface only.
+One Lite Cut. Merge into #121 after Inspection is clean.
 
 ## Picture
 
@@ -26,25 +26,26 @@ Open — bar grows up. Picker is shorter than the ticker and right-flush. Ticker
 [−90][+90]  12.000 × 8.000  [calc] [▾]
 ```
 
-## Pin so far
+## Cut lock
+
+```
+picker height    = 22
+word gap         = 8
+join radius      = 0
+outer radius     = 8
+picker pad       = 0
+```
 
 - Desktop chrome this job.
-- Picker above ticker.
-- Attached. Seamless. No 8px air.
+- Picker above ticker. Attached. No 8px air.
 - Right edges flush. Picker is not full ticker width.
-- Picker shorter than ticker height.
-- Words only. Gap between words. No chip padding. No boxed buttons.
+- Words only: Part Gap Margin Reset. Gap 8. No chip padding. No boxed buttons.
+- Reset stays a word.
 - Still slides. User can leave it open.
 - Chevron still opens / closes.
 - Edit still happens in the ticker box. Lit word is the label.
 - ±90 and calc stay on the ticker row.
-
-## Open
-
-- Exact picker height.
-- Word gap px.
-- Shared wall radius when open (0 on the join, 8 on the outer corners?).
-- Reset stays a word, or becomes the eraser after lock.
+- Ticker tokens from #124 stay: outer 42.2, hits/inputs 28, pad 6/8, radius 8 except the open join.
 
 ## Out
 
