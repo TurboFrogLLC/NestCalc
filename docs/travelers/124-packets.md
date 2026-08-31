@@ -162,3 +162,17 @@ Seq 7 stamped.
 Still open: Wait B.
 Next: Wait B.
 ```
+
+### Seq 8 — Wait B
+
+**Operator return**
+
+```text
+job_id: NGJ-20260831-ticker-picker-words
+gh authenticated as TurboFrogLLC.
+Short-read PR #124: the Cut B @codex review request is present. Codex Review Summary is Running for commit 9199f9f; the reviews list has only the earlier COMMENTED Cut A review on 5c9da83. There is no Cut B conclusion, OM SIGNAL, or +1.
+Wait fact: no-review-yet (review running). No poll loop started.
+Seq 8 stamped.
+Still open: Inspection B.
+Next: Inspection B after a posted Cut B review conclusion or Owner direction.
+```
