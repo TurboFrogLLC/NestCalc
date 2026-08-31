@@ -223,8 +223,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   .bt-picker {
     display: inline-flex;
     position: absolute;
+    z-index: 1;
     right: 0;
-    bottom: 100%;
+    bottom: calc(100% - 1.1px);
     height: 22px;
     min-height: 22px;
     gap: 8px;
@@ -237,17 +238,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     opacity: 0;
     pointer-events: none;
     transition: clip-path 240ms ease, transform 240ms ease, opacity 160ms ease;
-  }
-  .bt-picker::after {
-    content: "";
-    position: absolute;
-    z-index: 1;
-    right: 0;
-    bottom: -1.1px;
-    width: 100%;
-    height: 1.1px;
-    background: #E8E8E8;
-    pointer-events: none;
   }
   .blank-ticker-cluster.is-door-open .bt-picker {
     clip-path: inset(0 0 0 0);
