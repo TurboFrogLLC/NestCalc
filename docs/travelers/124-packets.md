@@ -337,3 +337,19 @@ Seq 17 stamped against the inspection-read SHA d59faef.
 Still open: Inspection D (escalated).
 Next: Owner direction or a posted Cut D review conclusion, then Inspection D again.
 ```
+
+### CA D — P2 ticker / door corrective action
+
+**Operator return**
+
+```text
+job_id: NGJ-20260831-ticker-picker-words
+Corrective-action commit: 0436708f9d96618373c64be956bd15eea8a8ba47 (pushed to origin/feat/v3-ticker-picker-words).
+CA-1: clearing a Bed ticker or Bed Presets face field visibly blocks its Send action, focuses the cleared field, and prevents a hidden prior draft from being applied. The existing HUD sanitizeNumericLive path remains the 3-decimal cap.
+CA-2: selecting a Bed Presets row schedules the existing sizePresetDoor() after render, keeping Margin L/R/B/T and Send to bed accessible.
+Validation: git diff --check passed; all 5 inline scripts compiled with Node; browser proof confirmed each cleared-field Send leaves its field focused and invalid, and switching to Margin shows L/R/B/T plus Send to bed. Static-server /howmany-shell and favicon console misses were expected and unrelated.
+Resolved P2 review threads: PRRT_kwDOTJAVIM6dzd_a, PRRT_kwDOTJAVIM6dzd_f.
+Seq 17 re-stamped Clean against CA D.
+Still open: Merge.
+Next: Merge (Owner-named after look).
+```
