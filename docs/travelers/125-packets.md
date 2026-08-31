@@ -56,3 +56,7 @@ Cut C host at `38176f45b105f4e7f67333eeb7f39d42cbe32b8d`, confirmed as the origi
 ## Seq 11 — Send C — 2026-08-31
 
 Owner-deferred review: no PR comment and no `@codex review` were posted. Draft state unchanged.
+
+## Seq 12 — Wait C — 2026-08-31
+
+**owner-deferred-review.** No PR short-read was performed and no review wait was started, per the Owner's Send C instruction.
