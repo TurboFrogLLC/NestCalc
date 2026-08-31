@@ -5,6 +5,7 @@ Not `main`.
 Product is FLiPIT. Host stays `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`.
 
 Docs / spitball this job. No host Cut until Owner locks.
+This job is **desktop chrome**. Phone is the remote look surface only. A slick mobile layout is leftover.
 
 ## Picture
 
@@ -27,11 +28,12 @@ Open — bar grows up. Picker is shorter than the ticker and right-flush. Ticker
 
 ## Pin so far
 
+- Desktop chrome this job.
 - Picker above ticker.
 - Attached. Seamless. No 8px air.
 - Right edges flush. Picker is not full ticker width.
 - Picker shorter than ticker height.
-- Words only. Gap between words. No chip padding. No boxed buttons unless a hit target fails.
+- Words only. Gap between words. No chip padding. No boxed buttons.
 - Still slides. User can leave it open.
 - Chevron still opens / closes.
 - Edit still happens in the ticker box. Lit word is the label.
@@ -43,8 +45,7 @@ Open — bar grows up. Picker is shorter than the ticker and right-flush. Ticker
 - Word gap px.
 - Shared wall radius when open (0 on the join, 8 on the outer corners?).
 - Reset stays a word, or becomes the eraser after lock.
-- Phone hit size if words have no pad.
 
 ## Out
 
-React port. HUD disappear leftover from #124. Live-resize on blank drag.
+React port. Slick mobile layout. HUD disappear leftover from #124. Live-resize on blank drag.
