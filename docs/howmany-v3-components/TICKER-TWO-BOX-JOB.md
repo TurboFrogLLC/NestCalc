@@ -5,6 +5,20 @@ Not `main`.
 Product is FLiPIT. Host stays `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`.
 
 HTML host this job. React/shadcn port leftover.
+One traveler. Three grouped Cuts. No Merge until the last Inspection is clean. Packslip is Close.
+
+## Why three Cuts
+
+One packet is too much context. Group only where the files fight. Fresh Codex App session per Cut.
+
+| Cut | Name | Why this bundle |
+| --- | --- | --- |
+| A | Chrome | Tokens + picker words + right-align. Layout only. |
+| B | Camera | Blank-fit + static bed. Canvas only. No HUD. |
+| C | Preset door | HUD face swap + two-way slots. Needs A chrome settled. |
+
+Each Cut: Cut → Send for review → Wait → Inspection. Dirty → Escalate. Owner names CA on this traveler. Then the next Cut.
+Merge is after Cut C Inspection is clean. Not after A or B.
 
 ## Lock — two-box (landed)
 
@@ -58,7 +72,7 @@ border           = 1.1
 air between boxes = 8
 ```
 
-## Picker-words lock (#124)
+## Cut A — Chrome (pinned)
 
 ```
 pad T/B          = 6
@@ -72,7 +86,18 @@ picker align     = right edges flush with travel
 
 Axis letters, select-all, gap-link first paint stay as #123.
 
-## Preset door (#124 draft)
+## Cut B — Camera (pinned)
+
+Subject is the **blank**, not the laser bed.
+
+- Default view is blank-fit.
+- Fit-to-screen = blank-fit, with air around the blank so it can grow a couple inches.
+- Zoom out may show the whole bed. Wheel zoom is leftover, not this job.
+- Blank resize does **not** re-fit the camera live.
+- Bed is static. Drags do not walk it off the viewport.
+- Bed heading / origin plaque stay Out.
+
+## Cut C — Preset door (pinned)
 
 HUD stays. Same card, same expand, same size.
 Numeric pad is gone. That face is presets.
@@ -100,20 +125,9 @@ Tap slot 5 → that row lights, ticker shows slot 5, then Send-to-bed.
 Travel `[calc]` opens this HUD face on Blank if no field is in edit.
 Presets on the edit bar opens this same HUD face. Not the inspector field card. Not WRITE.
 
-## Camera (#124 draft)
-
-Subject is the **blank**, not the laser bed.
-
-- Default view is blank-fit.
-- Fit-to-screen = blank-fit, with air around the blank so it can grow a couple inches.
-- Zoom out may show the whole bed. Wheel zoom is leftover, not this job.
-- Blank resize does **not** re-fit the camera live.
-- Bed is static. Drags do not walk it off the viewport.
-- Bed heading / origin plaque stay Out.
-
 ## Cycle
 
-Lite: Cut → Send for review → Wait → Inspection → Merge into #121 branch → Close.
+Lite, three Cuts on this traveler. Merge into #121 after Cut C. Not `main`.
 Wait: `OM SIGNAL` / `+1` / `@codex review` conclusion.
 Drafting. No Cut until Owner says drop.
 
