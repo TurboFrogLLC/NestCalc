@@ -32,3 +32,7 @@ CA-2 Head set to `ee372be`. Still open / Next leave Start-branch. Stamp complete
 ## 2026-08-31 Inspection clean
 
 Operator: Grok Build. CA landed. P1/P2 threads addressed. Seq 5 stamped `ee372be`. Seq 5 still-open Merge. Footer Next left Start-branch per CA-2. Not merge. Not ready. Not main.
+
+## 2026-08-31 Merge
+
+Operator: Grok Build. #123 merged into `feat/v3-ticker-door` at `7e4b822` (fast-forward, left draft until merged). Not `main`. `feat/v3-ticker-look-fit` kept. Seq 6 stamped `7e4b822`. Head `7e4b822`. Still open / Next Close. Seq 1 unstamped. Not ready for main.
