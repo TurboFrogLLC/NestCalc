@@ -157,7 +157,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
   .blank-ticker-cluster.is-on { display: inline-flex; }
   .blank-ticker-cluster.is-door-open { gap: 0; }
-  .blank-ticker-cluster.is-door-motion { transition: top 240ms ease, left 240ms ease, gap 240ms ease; }
+  .blank-ticker-cluster.is-door-motion { transition: left 240ms ease; }
   .bt-travel-box,
   .bt-picker {
     display: inline-flex;
@@ -174,7 +174,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     min-height: 42.2px;
   }
   .bt-travel-box { border-radius: 8px; }
-  .blank-ticker-cluster.is-door-open .bt-travel-box { border-radius: 0 0 8px 8px; }
+  .blank-ticker-cluster.is-door-open .bt-travel-box { border-radius: 8px 0 8px 8px; }
   .bt-travel {
     display: inline-flex;
     align-items: center;
@@ -196,7 +196,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
   .bt-hit:hover,
   .bt-hit:focus-visible { background: rgba(26, 20, 40, 0.08); }
-  .bt-hit:active { transform: scale(0.94); }
   .bt-hit svg { display: block; width: 18px; height: 18px; pointer-events: none; }
   .blank-ticker {
     height: 28px;
@@ -226,15 +225,29 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   .blank-ticker:focus-visible { background: rgba(26, 20, 40, 0.08); }
   .blank-ticker .bt-readout { line-height: 1; letter-spacing: 0.01em; }
   .bt-picker {
-    display: none;
+    display: inline-flex;
+    position: absolute;
+    right: 0;
+    bottom: 100%;
     height: 22px;
     min-height: 22px;
     gap: 8px;
-    padding: 0;
-    border-radius: 8px 8px 0 0;
+    padding: 0 8px;
+    border-radius: 6px 6px 0 0;
     border-bottom: 0;
+    overflow: hidden;
+    clip-path: inset(100% 0 0 0);
+    transform: translateY(22px);
+    opacity: 0;
+    pointer-events: none;
+    transition: clip-path 240ms ease, transform 240ms ease, opacity 160ms ease;
   }
-  .blank-ticker-cluster.is-door-open .bt-picker { display: inline-flex; }
+  .blank-ticker-cluster.is-door-open .bt-picker {
+    clip-path: inset(0 0 0 0);
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
   .ticker-door-chip {
     height: 22px; min-height: 22px;
     margin: 0; padding: 0;
@@ -3106,14 +3119,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var open = pin.classList.contains('is-door-open');
     var travelW = travel.offsetWidth || 1;
     var travelH = travel.offsetHeight || TICKER_H;
-    var pickerH = (open && picker) ? picker.offsetHeight : 0;
-    var lift = open ? pickerH : 0;
     var pad = 12;
-    var top = Math.round(screenTop - GAP_TOP - travelH - lift);
+    var top = Math.round(screenTop - GAP_TOP - travelH);
     var left = Math.round(screenRight - travelW - GAP_RIGHT);
     var pairW = travelW;
     if (open && picker && picker.offsetWidth > pairW) pairW = picker.offsetWidth;
-    var pack = { left: left, top: top, right: left + pairW, bottom: top + travelH + lift };
+    var pack = { left: left, top: top - ((open && picker) ? picker.offsetHeight : 0), right: left + pairW, bottom: top + travelH };
     left -= keepOutDx(pack);
     var maxRight = (svg.clientWidth || window.innerWidth) - pad;
     if (left + pairW > maxRight) left = maxRight - pairW;
