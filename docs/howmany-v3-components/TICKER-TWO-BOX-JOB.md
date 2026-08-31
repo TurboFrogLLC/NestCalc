@@ -138,8 +138,10 @@ Applies to the bed ticker and the preset-face ticker.
 Opening calc or Presets clamps `#hud` into the visible webview.
 Phone: HUD sits above the ticker. Not leftover `25,25`.
 Do not apply the 75% FLiPIT scale to the HUD unless FLiPIT is open.
-Do not hide `#hud`. Bed lock and blank-fit stay until Cut F.
-Collapse then expand with Bed Presets open must keep the preset face height. Re-run `sizePresetDoor` or close the face on collapse.
+Closing FLiPIT re-runs the HUD clamp after the 75% scale comes off.
+Viewport resize / phone rotate re-runs the HUD clamp when calc or Presets is open and FLiPIT is closed.
+Bed Presets open hides the inactive HUD mode from assistive tech.
+Do not hide `#hud`. Collapse then expand with Bed Presets open must keep the preset face height.
 
 ## Cut F — Unlock bed (pinned)
 
