@@ -15,3 +15,7 @@ Operator: Grok Build. Host look-fit on origin `ac9c527` (`host: two-box ticker l
 ## 2026-08-31 Send for review
 
 Operator: Grok Build. Named review requested on #123: https://github.com/TurboFrogLLC/NestCalc/pull/123#issuecomment-5477435762 (`@codex review`). Seq 3 stamped `9a0be7c`. Next: Wait. Not merge. Not ready. Not main.
+
+## 2026-08-31 Wait
+
+Operator: Grok Build. Codex COMMENTED on `9a0be7c`. Review https://github.com/TurboFrogLLC/NestCalc/pull/123#pullrequestreview-5065800331. P1 Send commits draft. P2 traveler footer still Start-branch. Seq 4 stamped `1dce3b3`. Next: Inspection. Not merge. Not ready. Not main.
