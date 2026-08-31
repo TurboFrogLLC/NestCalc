@@ -11,4 +11,10 @@ Draft PR #124. Picker words. Right edge lock. Pad 6 T/B. Item gap 2. Radius 8 on
 
 ## 2026-08-31 draft preset door
 
-One edit-bar icon opens the calculator face, not HUD inspector, not WRITE. Pad gone. Rough Blank / Gap / Margin chips plus a panel ticker. No Cut.
+One edit-bar icon opens the calculator face, not HUD inspector, not WRITE. Pad gone. Rough chips plus a panel ticker.
+
+## 2026-08-31 two-way preset
+
+In: type-in-panel, or bed Presets saves current draft into a slot and opens the face.
+Out: Send-to-bed hydrates the lit slot onto the laser ticker with picker shut or open.
+Five slots per Blank / Gap / Margin. No Cut.

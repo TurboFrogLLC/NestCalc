@@ -30,7 +30,6 @@ Edit — ±90 and calc leave. Whole travel box is the field. Lit picker chip is 
 
 OK (`check`) commits. Cancel (`x`) drops draft. Reset on picker.
 Ticker `dblclick` does not open HUD. No `__howManyOpenField` from ticker or picker.
-Send/load isolation: the presets door does not write `paramState` until a chip is applied or the panel ticker OK commits.
 
 ## Lucide
 
@@ -43,6 +42,7 @@ Picker chips: words only. No icon.
 | Swap | `arrow-left-right` |
 | Link | `link` |
 | Presets | `square-arrow-out-up-right` |
+| Apply to bed | `square-arrow-out-up-right` on the panel (same mark, other direction of the job) |
 | OK | `check` |
 | Cancel | `x` |
 | History | `corner-up-left` / `corner-up-right` |
@@ -74,25 +74,29 @@ Axis letters, select-all, gap-link first paint stay as #123.
 
 ## Preset door (#124 draft)
 
-One icon on the edit bar. Same control for Blank, Gap, and Margin. Opens the **calculator face**, not the HUD inspector and not a WRITE popover.
-
-That face drops the numeric pad. Rough chips only:
+Calculator face is the preset surface. Numeric pad is gone.
+Rows: Blank, Gap, Margin. Five slots per row. No Part row. No material tree.
 
 ```
-Blank   [ 12x8 ] [ 26x18 ] [ + ]
-Gap     [ 0.125 ] [ 0.250 ] [ + ]
-Margin  [ 0.250 ] [ clamp ] [ + ]
+Blank    [1] [2] [3] [4] [5] [+]
+Gap      [1] [2] [3] [4] [5] [+]
+Margin   [1] [2] [3] [4] [5] [+]
 
-[ ticker for the lit row ]
+[ ticker for the lit slot ]  [ send to bed ]
 ```
 
-Chips are placeholders. Cap later. No material tree.
-Lit row matches the field you left: edit Gap → door lands on Gap.
-Panel ticker shows that row so you can edit without going back to the bed ticker.
-Apply a chip = hydrate that field into the draft. OK on the bed ticker still commits.
-`+` is save-current. Not a second door on the bed.
+Two ways in:
 
-Calc travel button still opens this same face. It does not open the old pad.
+1. Make it here. Hit a slot or `+`. Panel ticker pops with that slot. Type the numbers. That writes the slot. Does not touch the laser bed until Send-to-bed.
+2. Save from the bed. Edit Blank / Gap / Margin on the travel ticker. Hit Presets. Face opens on that row. Current draft lands in the first empty slot, or the lit slot if you already picked one. Still a draft on the bed until bed OK.
+
+One way out:
+
+- Send-to-bed on the face hydrates the lit slot onto the laser ticker even if the picker is shut. Blank slot → blank. Gap slot → gap. Margin slot → four sides. Picker does not have to be open.
+
+Tap slot 5 → that row lights, ticker shows slot 5, then Send-to-bed.
+Travel `[calc]` opens this face on Blank if no field is in edit.
+Presets on the edit bar does not open the HUD inspector and does not open WRITE.
 
 ## Cycle
 
@@ -103,4 +107,4 @@ Drafting. No Cut until Owner says drop.
 ## Out
 
 React port. HexNest chrome. Bed lock. One-surface mobile. Cut sheet. Merge to `main`.
-Pretty preset chrome. Material breadcrumb.
+Pretty preset chrome. Material breadcrumb. Named slots.
