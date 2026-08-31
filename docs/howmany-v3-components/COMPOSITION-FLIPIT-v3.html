@@ -52,7 +52,8 @@ Bridges in this host:
   · R13 Preset write-mode + OK applies live fields to HUD/bed
         Single frost-blue bed rail · XYZR 4dp black · front surface
   · Two-box ticker: travel + picker, 8px air, chevron last, travel vs edit
-        Send/bookmark → HUD preset morph only · no ticker/picker HUD pour
+        Look-fit: hits/inputs 28 · pad 3/8 · radius 10 · outer 36.2 · icons 18/16
+        Send/square-arrow-out-up-right → #hud preset morph · not WRITE popover
 
 Not wired: sandbox isolator · child-spec · Post → HUD/bed hydrate.
 Prior composition/lock archives stay on disk.
@@ -161,29 +162,30 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     display: inline-flex;
     align-items: center;
     gap: 3px;
-    padding: 3px;
+    padding: 3px 8px;
     box-sizing: border-box;
     border: 1.1px solid rgba(26, 20, 40, 0.22);
-    border-radius: 6.6px;
+    border-radius: 10px;
     background: #E8E8E8;
     color: #1A1428;
     pointer-events: auto;
     flex-shrink: 0;
+    height: 36.2px;
+    min-height: 36.2px;
   }
-  .bt-travel-box { min-height: 34px; }
   .bt-travel {
     display: inline-flex;
     align-items: center;
     gap: 3px;
-    height: 34px;
+    height: 28px;
     flex-shrink: 0;
   }
   .blank-ticker-cluster.is-editing .bt-travel { display: none; }
   .bt-hit {
-    width: 34px; height: 34px; min-width: 34px; min-height: 34px;
+    width: 28px; height: 28px; min-width: 28px; min-height: 28px;
     margin: 0; padding: 0;
     border: 0;
-    border-radius: 4px;
+    border-radius: 10px;
     background: transparent;
     color: #1A1428;
     display: inline-flex; align-items: center; justify-content: center;
@@ -195,15 +197,15 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   .bt-hit:active { transform: scale(0.94); }
   .bt-hit svg { display: block; width: 18px; height: 18px; pointer-events: none; }
   .blank-ticker {
-    height: 34px;
-    min-height: 34px;
+    height: 28px;
+    min-height: 28px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     padding: 0 8px;
     box-sizing: border-box;
     border: 0;
-    border-radius: 4px;
+    border-radius: 10px;
     background: transparent;
     color: #1A1428;
     font-family: var(--font-mono);
@@ -221,25 +223,26 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   .blank-ticker:hover,
   .blank-ticker:focus-visible { background: rgba(26, 20, 40, 0.08); }
   .blank-ticker .bt-readout { line-height: 1; letter-spacing: 0.01em; }
-  .bt-picker {
-    display: none;
-    height: 34.6px;
-    min-height: 34.6px;
-  }
+  .bt-picker { display: none; }
   .blank-ticker-cluster.is-door-open .bt-picker { display: inline-flex; }
   .ticker-door-chip {
-    width: 28.6px; height: 28.6px; min-width: 28.6px; min-height: 28.6px;
-    margin: 0; padding: 0;
+    height: 28px; min-height: 28px;
+    margin: 0; padding: 0 8px;
     border: 0;
-    border-radius: 4px;
+    border-radius: 10px;
     background: transparent;
     color: #1A1428;
     display: inline-flex; align-items: center; justify-content: center;
+    gap: 3px;
     cursor: pointer;
     box-sizing: border-box;
-    line-height: 0;
+    line-height: 1;
+    font-family: var(--font);
+    font-size: 11px;
+    font-weight: 650;
+    white-space: nowrap;
   }
-  .ticker-door-chip svg { display: block; width: 16px; height: 16px; pointer-events: none; }
+  .ticker-door-chip svg { display: block; width: 16px; height: 16px; pointer-events: none; flex-shrink: 0; }
   .ticker-door-chip:hover,
   .ticker-door-chip:focus-visible { background: rgba(26, 20, 40, 0.08); }
   .ticker-door-chip.is-lit { background: rgba(26, 20, 40, 0.14); }
@@ -247,15 +250,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   .blank-ticker-cluster.is-door-open .bt-door .bt-door-down { display: none; }
   .blank-ticker-cluster.is-door-open .bt-door .bt-door-up { display: block; }
   .blank-ticker-cluster .bt-calc { overflow: hidden; }
-  .blank-ticker-cluster .bt-calc svg {
-    display: block; width: 22px; height: 22px; pointer-events: none;
-    transform: translateY(0.5px);
-  }
   .bt-edit {
     display: none;
     align-items: center;
     gap: 3px;
-    height: 34px;
+    height: 28px;
     pointer-events: auto;
   }
   .blank-ticker-cluster.is-editing .bt-edit { display: inline-flex; }
@@ -265,13 +264,28 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     gap: 3px;
   }
   .bt-edit-fields.is-on { display: inline-flex; }
+  .bt-axis {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    height: 28px;
+  }
+  .bt-axis > span {
+    font-family: var(--font);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: #1A1428;
+    line-height: 1;
+    flex-shrink: 0;
+  }
   .bt-edit input {
     width: 54px;
     height: 28px;
     margin: 0;
     padding: 0 4px;
     border: 0;
-    border-radius: 4px;
+    border-radius: 10px;
     background: #ffffff;
     color: #1A1428;
     font-family: var(--font-mono);
@@ -649,6 +663,27 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       opacity: 1; transform: translateX(0); pointer-events: auto;
       transition: opacity var(--motion-popover) var(--ease-decelerate), transform var(--motion-popover) var(--ease-decelerate);
     }
+    .keypad.is-preset-morph .param-row.is-morph-target {
+      flex-wrap: wrap;
+    }
+    .keypad.is-preset-morph .param-row.is-morph-target .param-popover {
+      position: static;
+      opacity: 1;
+      transform: none;
+      pointer-events: auto;
+      width: auto;
+      max-width: 100%;
+      box-shadow: none;
+      margin-top: 8px;
+      flex: 1 1 100%;
+    }
+    .keypad.is-preset-morph .param-row.is-morph-target .pop-xy,
+    .keypad.is-preset-morph .param-row.is-morph-target .pop-margins,
+    .keypad.is-preset-morph .param-row.is-morph-target .pop-title,
+    .keypad.is-preset-morph .param-row.is-morph-target .pop-actions {
+      display: none;
+    }
+    .keypad.is-preset-morph .param-row.is-morph-target .pop-pre-confirm { display: flex; }
     .param-popover .pop-head {
       display: flex; align-items: center; justify-content: space-between;
       gap: 6.6px; margin-bottom: 8.8px;
@@ -2361,7 +2396,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       </button>
     </div>
 
-    <!-- Two-box ticker — travel [−90][+90][readout][calc][▾] · picker [Part][Gap][Margin][Reset] · 8px air -->
+    <!-- Two-box ticker — look-fit 28 / 36.2 · picker icon+word · Send → #hud presets -->
     <div class="blank-ticker-cluster" id="blank-ticker-cluster">
       <div class="bt-travel-box" id="bt-travel-box">
         <div class="bt-travel" id="bt-travel">
@@ -2390,24 +2425,24 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         </div>
         <div class="bt-edit" id="bt-edit">
           <div class="bt-edit-fields" id="bt-edit-xy">
-            <input id="bt-edit-x" data-bt-xy="x" type="text" inputmode="decimal" aria-label="X" />
+            <label class="bt-axis"><span>X</span><input id="bt-edit-x" data-bt-xy="x" type="text" inputmode="decimal" aria-label="X" /></label>
             <button type="button" class="bt-hit" id="bt-edit-swap" title="Swap X &amp; Y" aria-label="Swap X and Y">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
             </button>
-            <input id="bt-edit-y" data-bt-xy="y" type="text" inputmode="decimal" aria-label="Y" />
+            <label class="bt-axis"><span>Y</span><input id="bt-edit-y" data-bt-xy="y" type="text" inputmode="decimal" aria-label="Y" /></label>
             <button type="button" class="bt-hit" id="bt-edit-link" title="Link X &amp; Y" aria-pressed="false">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
             </button>
           </div>
           <div class="bt-edit-fields" id="bt-edit-margin">
-            <input data-bt-m="l" type="text" inputmode="decimal" aria-label="L" />
-            <input data-bt-m="r" type="text" inputmode="decimal" aria-label="R" />
-            <input data-bt-m="b" type="text" inputmode="decimal" aria-label="B" />
-            <input data-bt-m="t" type="text" inputmode="decimal" aria-label="T" />
+            <label class="bt-axis"><span>L</span><input data-bt-m="l" type="text" inputmode="decimal" aria-label="L" /></label>
+            <label class="bt-axis"><span>R</span><input data-bt-m="r" type="text" inputmode="decimal" aria-label="R" /></label>
+            <label class="bt-axis"><span>B</span><input data-bt-m="b" type="text" inputmode="decimal" aria-label="B" /></label>
+            <label class="bt-axis"><span>T</span><input data-bt-m="t" type="text" inputmode="decimal" aria-label="T" /></label>
           </div>
           <span class="bt-edit-spacer" aria-hidden="true"></span>
           <button type="button" class="bt-hit bt-send" id="bt-edit-send" title="Send preset" aria-label="Send preset">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"/><path d="m21 3-9 9"/><path d="M15 3h6v6"/></svg>
           </button>
           <button type="button" class="bt-hit" id="bt-edit-ok" title="OK" aria-label="OK">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
@@ -2419,16 +2454,20 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       </div>
       <div class="bt-picker" id="bt-picker" aria-label="Field picker">
         <button type="button" class="ticker-door-chip" data-ticker-door-chip="part" title="Part" aria-label="Part">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="12" height="18" x="6" y="3" rx="2"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+          <span>Part</span>
         </button>
         <button type="button" class="ticker-door-chip" data-ticker-door-chip="gap" title="Gap" aria-label="Gap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="13" height="7" x="6" y="14" rx="1"/><rect width="10" height="7" x="9" y="3" rx="1"/><path d="M2 2v20"/><path d="M2 14h12"/><path d="M2 7h15"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="13" height="7" x="8" y="3" rx="1"/><path d="m2 9 3 3-3 3"/><rect width="13" height="7" x="8" y="14" rx="1"/></svg>
+          <span>Gap</span>
         </button>
         <button type="button" class="ticker-door-chip" data-ticker-door-chip="margin" title="Margin" aria-label="Margin">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="9" height="6" x="9" y="13" rx="2"/><rect width="16" height="6" x="6" y="5" rx="2"/><path d="M2 2v20"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="9" height="6" x="6" y="14" rx="2"/><rect width="16" height="6" x="6" y="4" rx="2"/><path d="M2 2v20"/></svg>
+          <span>Margin</span>
         </button>
         <button type="button" class="ticker-door-chip" data-ticker-door-chip="eraser" title="Reset" aria-label="Reset">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>
+          <span>Reset</span>
         </button>
       </div>
     </div>
@@ -2875,7 +2914,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
   var PAD = 48;
   var MIN_LABEL_PX = 36;
-  var TICKER_H = 34;
+  var TICKER_H = 36.2;
   var GAP_TOP = 10;   /* px above blank top */
   var GAP_RIGHT = 20; /* px inset from blank right edge */
 
@@ -3800,8 +3839,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
   function closeAllParamPopovers() {
     paramState.open = null;
+    hud.classList.remove('is-preset-morph');
     document.querySelectorAll('.param-row').forEach(function (row) {
-      row.classList.remove('is-open', 'show-hover');
+      row.classList.remove('is-open', 'show-hover', 'is-morph-target');
     });
     remasureHudStage();
   }
@@ -4228,7 +4268,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     });
   });
 
-  document.querySelectorAll('.param-popover input[type="text"]').forEach(function (inp) {
+  document.querySelectorAll('.param-popover input[type="text"], .bt-edit input').forEach(function (inp) {
     function selectAll() {
       try { inp.select(); var len = (inp.value || '').length; if (len) inp.setSelectionRange(0, len); } catch (_) {}
     }
@@ -4376,6 +4416,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (['part', 'blank', 'gap', 'margin'].indexOf(key) === -1) return;
     tickerEdit.key = key;
     tickerEdit.draft = takeSnapshot(key);
+    if (tickerEdit.draft && tickerEdit.draft.x != null && tickerEdit.draft.y != null && tickerEdit.draft.x !== tickerEdit.draft.y) {
+      tickerEdit.draft.linked = false;
+    }
     if (tickerCluster) {
       tickerCluster.classList.add('is-editing');
       tickerCluster.setAttribute('data-edit-key', key);
@@ -4383,6 +4426,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     litPickerChip(key === 'blank' ? null : key);
     paintTickerEdit();
     pinTickerSoon();
+    requestAnimationFrame(function () {
+      var first = document.querySelector('.bt-edit-fields.is-on input');
+      if (first && typeof first.focus === 'function') first.focus();
+    });
   }
   function normalizeEditNumber(n) {
     if (!Number.isFinite(n)) return 0;
@@ -4413,32 +4460,49 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
   window.__hudPresetMorph = function (key) {
     if (PRESET_KEYS.indexOf(key) === -1) return false;
-    hud.classList.add('is-preset-morph');
+    if (state.calc) {
+      if (typeof window.__hudExitCalc === 'function') window.__hudExitCalc();
+      else setCalc(false);
+    }
+    closeAllParamPopovers();
     clearMotionTimer();
-    state.calc = false;
-    calcToggle.classList.remove('active-calc');
-    calcToggle.setAttribute('aria-pressed', 'false');
     if (isHudCollapsed()) setCollapsed(false);
     applyModeVisibility();
     applyBodyHeight();
-    openParamPopover(key);
-    presetState.editing[key] = true;
-    presetState.armed[key] = null;
+    hud.classList.add('is-preset-morph');
+    paramState.open = key;
+    document.querySelectorAll('.param-row').forEach(function (row) {
+      var on = row.getAttribute('data-param') === key;
+      row.classList.toggle('is-morph-target', on);
+      if (on) {
+        var pop = row.querySelector('.param-popover');
+        if (pop) {
+          pop.style.left = '';
+          pop.style.top = '';
+          pop.style.right = '';
+          pop.style.bottom = '';
+          pop.style.position = '';
+        }
+      }
+    });
     var d = tickerEdit.draft;
     if (d && tickerEdit.key === key) {
       if (key === 'margin') {
-        ['l', 'r', 't', 'b'].forEach(function (k) {
-          var el = document.querySelector('[data-m="' + k + '"]');
-          if (el) el.value = fmt3(normalizeEditNumber(d[k]));
-        });
-      } else {
-        var ix = document.querySelector('[data-' + key + '="x"]');
-        var iy = document.querySelector('[data-' + key + '="y"]');
-        if (ix) ix.value = fmt3(normalizeEditNumber(d.x));
-        if (iy) iy.value = fmt3(normalizeEditNumber(d.y));
+        paramState.margin.l = normalizeEditNumber(d.l);
+        paramState.margin.r = normalizeEditNumber(d.r);
+        paramState.margin.t = normalizeEditNumber(d.t);
+        paramState.margin.b = normalizeEditNumber(d.b);
+      } else if (paramState[key]) {
+        paramState[key].x = normalizeEditNumber(d.x);
+        paramState[key].y = normalizeEditNumber(d.y);
+        paramState[key].linked = !!d.linked;
       }
+      writeFieldsFromBag(key);
     }
+    presetState.editing[key] = true;
+    presetState.armed[key] = null;
     paintPresetButtons(key);
+    remasureHudStage();
     return true;
   };
   if (tickerPicker) {
