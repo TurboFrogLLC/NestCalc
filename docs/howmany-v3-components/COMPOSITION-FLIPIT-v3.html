@@ -3207,6 +3207,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     } else if (t === hitCorner || id === 'lb-hit-corner') { state.dragging = 'xy'; document.body.classList.add('lb-dragging-xy'); }
     else if (t === hitRight || id === 'lb-hit-right') { state.dragging = 'x'; document.body.classList.add('lb-dragging-x'); }
     else if (t === hitTop || id === 'lb-hit-top') { state.dragging = 'y'; document.body.classList.add('lb-dragging-y'); }
+    else if (e.currentTarget === svg) { state.dragging = 'pan'; document.body.classList.add('lb-panning', 'lb-dragging'); }
     else return;
     state.start = { cx: e.clientX, cy: e.clientY, w: state.blankW, h: state.blankH, panX: state.panX, panY: state.panY };
     if (state.dragging === 'hex' && state.hexLayout) {
@@ -3221,6 +3222,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var dx = e.clientX - state.start.cx, dy = e.clientY - state.start.cy, s = pxPerInch();
     if (state.dragging === 'hex') {
       if (state.hexDrag && state.hexDrag.el) state.hexDrag.el.setAttribute('transform', 'translate(' + (dx / s) + ',' + (-dy / s) + ')');
+    } else if (state.dragging === 'pan') {
+      state.panX = state.start.panX + dx;
+      state.panY = state.start.panY + dy;
     } else if (state.dragging === 'x') state.blankW = Math.max(state.snap, snap(state.start.w + dx / s));
     else if (state.dragging === 'y') state.blankH = Math.max(state.snap, snap(state.start.h - dy / s));
     else if (state.dragging === 'xy') {
