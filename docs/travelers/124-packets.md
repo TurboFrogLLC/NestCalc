@@ -279,3 +279,20 @@ Seq 13 re-stamped Clean against CA C.
 Still open: Merge.
 Next: Merge (Owner-named after look).
 ```
+
+### Seq 14 — Cut D Decimals
+
+**Operator return**
+
+```text
+job_id: NGJ-20260831-ticker-picker-words
+Branch: feat/v3-ticker-picker-words
+Host commit: 92a5e9403b266d109cc49fb239145d2564334452
+Origin host SHA: 92a5e9403b266d109cc49fb239145d2564334452
+Cut D complete: bed ticker and Bed Presets face inputs now reuse the existing HUD edit-popover sanitizer, capping typed fractional values at 3 decimal places without a second formatter.
+Validation: git diff --check passed; all 5 inline scripts compiled with Node; browser proof entered 12.34567 in both the bed ticker and Bed Presets face, each rendering 12.345. Local static-server console misses for /howmany-shell and favicon were expected and unrelated.
+Pushed: origin/feat/v3-ticker-picker-words at 92a5e94.
+Seq 14 stamped against the origin host SHA.
+Still open: Send D.
+Next: Send D.
+```
