@@ -472,3 +472,17 @@ Seq 24 stamped.
 Still open: Inspection F.
 Next: Inspection F.
 ```
+
+### Seq 25 — Inspection F (Dirty)
+
+**Operator return**
+
+```text
+job_id: NGJ-20260831-ticker-picker-words
+Inspection evidence after the Cut F request: the post-request short-read found no Owner note, SuperGrok note, Codex review conclusion, OM SIGNAL, +1, or inline review thread. The only post-request comment is @codex review at issuecomment-5482727895; Codex Review Summary remains Running for commit 87f2268.
+Inspection F: Dirty — no Cut F review conclusion is available for clearance.
+Escalated in Worker Mode. No corrective action was invented; no merge, ready mark, packslip, main change, or production deployment was made.
+Seq 25 stamped against the inspection-read SHA 6cb0dc9.
+Still open: Inspection F (escalated).
+Next: Owner direction or a posted Cut F review conclusion, then Inspection F again.
+```
