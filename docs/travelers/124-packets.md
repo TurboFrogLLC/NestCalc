@@ -103,3 +103,17 @@ Seq 4 stamped.
 Still open: Inspection A.
 Next: Inspection A after a posted review conclusion or Owner direction.
 ```
+
+### Seq 5 — Inspection A (Dirty)
+
+**Operator return**
+
+```text
+job_id: NGJ-20260831-ticker-picker-words
+Codex review conclusion: COMMENTED on reviewed commit 5c9da83b20.
+P3 thread PRRT_kwDOTJAVIM6dxMK_ is unresolved: the host header still advertises the obsolete look-fit tokens (pad 3/8, radius 10, outer 36.2, picker icons) despite the Cut A runtime and living SPEC contract.
+Inspection A: Dirty. Seq 5 stamped against the COMMENTED conclusion.
+Owner-named corrective action: CA A, P3 embedded look-fit contract.
+Still open: CA A.
+Next: CA A.
+```
