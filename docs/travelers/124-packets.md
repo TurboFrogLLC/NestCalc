@@ -22,3 +22,57 @@ Every Send comments `@codex review` on #124.
 GitHub review is comment-driven: https://developers.openai.com/codex/integrations/github
 App review pane can read PR comments when `gh` is authenticated: https://developers.openai.com/codex/app/review
 No official App poll-until-review API. Wait short-reads via `gh` when present; otherwise stamp and stop for OM SIGNAL / +1 / posted review.
+
+### Seq 1 — Start-branch
+
+**Ops Packet**
+
+```text
+Repo: NestCalc
+Station: Start-branch
+Mode: Worker
+Operator: Codex App
+Branch: feat/v3-ticker-picker-words
+Head: 67bbd0fbc1787b672253f2ce3d5edd32a9ee92d2
+flow_id: —
+goal_sha256: —
+Trace: docs/howmany-v3-components/TICKER-TWO-BOX-JOB.md
+Model: GPT-5.6 Luna
+Effort: low
+job_id: NGJ-20260831-ticker-picker-words
+
+Instruction: Fetch origin, check out the named feature branch, fast-forward only from origin/feat/v3-ticker-picker-words, confirm the branch is not main, and confirm HEAD equals origin/feat/v3-ticker-picker-words. Do not pull main or reset. Leave AGENTS.md unstaged if dirty. Stamp Seq 1 on docs/travelers/124.md and append this packet. Do not start Cut A.
+
+Reason: Owner is remote. Origin already has the feature.
+```
+
+**Operator return**
+
+```text
+Branch confirmed: feat/v3-ticker-picker-words
+HEAD confirmed: 67bbd0fbc1787b672253f2ce3d5edd32a9ee92d2
+HEAD matches origin/feat/v3-ticker-picker-words.
+Branch is not main.
+Seq 1 Start-branch stamped with 67bbd0f.
+Still open: Cut A.
+Next: Cut A.
+No main pull, reset, or product edits performed. AGENTS.md remains unstaged and dirty as found.
+```
+
+### Seq 2 — Cut A Chrome
+
+**Operator return**
+
+```text
+job_id: NGJ-20260831-ticker-picker-words
+Branch: feat/v3-ticker-picker-words
+Host commit: 69df97e2f9a16283c1beb41c945a3b5534f953d8
+Origin host SHA: 69df97e2f9a16283c1beb41c945a3b5534f953d8
+Cut A complete: picker chips are words only; travel and picker right edges are flush; pad T/B is 6; item gap is 2; hit, input, and shell radius are 8; outer boxes are 42.2.
+Updated host and living spec only. Camera and preset door were not changed.
+Validation: git diff --check passed before commit.
+Pushed: origin/feat/v3-ticker-picker-words at 69df97e.
+Seq 2 stamped against the origin host SHA.
+Still open: Send A.
+Next: Send A.
+```
