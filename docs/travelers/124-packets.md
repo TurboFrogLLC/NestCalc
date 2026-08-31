@@ -117,3 +117,18 @@ Owner-named corrective action: CA A, P3 embedded look-fit contract.
 Still open: CA A.
 Next: CA A.
 ```
+
+### CA A — P3 embedded look-fit contract
+
+**Operator return**
+
+```text
+job_id: NGJ-20260831-ticker-picker-words
+Corrective-action commit: 6ae088983e11e53a87ae5b8f5917716bb10748e0 (pushed to origin/feat/v3-ticker-picker-words).
+Updated the COMPOSITION-FLIPIT-v3.html embedded contract and the living SPEC verification contract to match the Cut A runtime: hits/inputs 28; pad T/B 6 and L/R 8; item gap 2; hit/input/shell radius 8; outer 42.2; picker words only; right edges flush.
+Validation: git diff --check passed before commit; post-push contract readback matched the named tokens.
+Resolved P3 review thread PRRT_kwDOTJAVIM6dxMK_ (review 5067991802).
+Seq 5 re-stamped Clean against CA A.
+Still open: Cut B.
+Next: Cut B in a fresh session; not started here.
+```
