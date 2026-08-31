@@ -194,8 +194,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     cursor: pointer; flex-shrink: 0; line-height: 0;
     box-sizing: border-box;
   }
-  .bt-hit:hover,
-  .bt-hit:focus-visible { background: rgba(26, 20, 40, 0.08); }
   .bt-hit svg { display: block; width: 18px; height: 18px; pointer-events: none; }
   .blank-ticker {
     height: 28px;
@@ -221,8 +219,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     cursor: pointer;
     flex-shrink: 0;
   }
-  .blank-ticker:hover,
-  .blank-ticker:focus-visible { background: rgba(26, 20, 40, 0.08); }
   .blank-ticker .bt-readout { line-height: 1; letter-spacing: 0.01em; }
   .bt-picker {
     display: inline-flex;
@@ -241,6 +237,17 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     opacity: 0;
     pointer-events: none;
     transition: clip-path 240ms ease, transform 240ms ease, opacity 160ms ease;
+  }
+  .bt-picker::after {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    right: 0;
+    bottom: -1.1px;
+    width: 100%;
+    height: 1.1px;
+    background: #E8E8E8;
+    pointer-events: none;
   }
   .blank-ticker-cluster.is-door-open .bt-picker {
     clip-path: inset(0 0 0 0);
@@ -265,8 +272,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     font-weight: 650;
     white-space: nowrap;
   }
-  .ticker-door-chip:hover,
-  .ticker-door-chip:focus-visible { text-decoration: underline; }
   .ticker-door-chip.is-lit { text-decoration: underline; }
   .bt-door .bt-door-up { display: none; }
   .blank-ticker-cluster.is-door-open .bt-door .bt-door-down { display: none; }
@@ -319,7 +324,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
   .bt-edit input[data-bt-m] { width: 44px; }
   .bt-edit-spacer { flex: 1; min-width: 8px; height: 1px; }
-  .bt-hit.is-on { background: rgba(26, 20, 40, 0.14); }
+  #bt-edit-link.is-on { background: rgba(26, 20, 40, 0.14); }
+  #blank-ticker-cluster .bt-hit,
+  #blank-ticker,
+  #blank-ticker-cluster .ticker-door-chip { -webkit-tap-highlight-color: transparent; }
   .bt-send[hidden] { display: none; }
 
 /* ── Numeric HUD (NUMERIC-HUD-v3) ── */
@@ -5716,6 +5724,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       });
     }
   }
+  document.querySelectorAll('#blank-ticker-cluster .bt-hit, #blank-ticker, #blank-ticker-cluster .ticker-door-chip').forEach(function (control) {
+    control.addEventListener('click', function () { control.blur(); });
+  });
   window.__tickerDoorProgramLoaded = function () {};
   if (btCalc) {
     btCalc.addEventListener('click', function (e) {
