@@ -3264,7 +3264,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   document.getElementById('lb-zoom-in').onclick = function () { state.zoom = Math.min(12, state.zoom * 1.25); render(); };
   document.getElementById('lb-zoom-out').onclick = function () { state.zoom = Math.max(0.35, state.zoom / 1.25); render(); };
   document.getElementById('lb-fit').onclick = function () { fitBed(); render(); };
-  window.addEventListener('resize', function () { render(); });
+  /* A viewport change is a deliberate Fit, unlike a blank drag which preserves the camera. */
+  window.addEventListener('resize', function () { fitBed(); render(); });
 
   fitBed(); render();
 })();
@@ -3589,6 +3590,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       }, motionMs());
     } else {
       applyModeVisibility();
+    }
+    if (!on && hud.classList.contains('preset-door')) {
+      requestAnimationFrame(sizePresetDoor);
     }
   }
 
