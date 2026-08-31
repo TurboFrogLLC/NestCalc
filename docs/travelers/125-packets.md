@@ -76,3 +76,7 @@ Owner-deferred review: no PR comment and no `@codex review` were posted. Draft s
 ## Seq 16 — Wait D — 2026-08-31
 
 **owner-deferred-review.** No PR short-read was performed and no review wait was started, per the Owner's Send D instruction.
+
+## Seq 17 — Inspection D — 2026-08-31
+
+**Clean.** Cut D lock verified in the host and SPEC: closed ticker retains its only bounding stroke; open picker overlaps the travel top by 1.1px with left/top/right borders and no bottom border, producing the required inverted-L without an empty full-width shell. No #124 HUD residual work, merge, or PR comment.
