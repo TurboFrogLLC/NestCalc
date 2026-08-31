@@ -92,3 +92,7 @@ Owner-deferred review: no PR comment and no `@codex review` were posted. Draft s
 ## Seq 20 — Wait E — 2026-08-31
 
 **owner-deferred-review.** No PR short-read was performed and no review wait was started, per the Owner's Send E instruction.
+
+## Seq 21 — Inspection E — 2026-08-31
+
+**Clean.** Cut E lock verified in the host and SPEC: the 1.1px `rgba(26, 20, 40, 0.22)` join rule is inset 8px at each picker side without restoring its bottom border; the inside travel corner is radius 6; −90/+90 are flush and all other travel gaps remain 2px. No #124 HUD residual work, merge, or PR comment.
