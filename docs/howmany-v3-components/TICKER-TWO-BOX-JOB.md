@@ -28,9 +28,9 @@ Picker right edge = travel right edge. Words only. No Lucide on picker chips.
 
 Edit — ±90 and calc leave. Whole travel box is the field. Lit picker chip is the label. Axis letters on the bar. No field word.
 
-OK (`check`) commits. Cancel (`x`) drops draft. Send (`square-arrow-out-up-right`) opens `#hud` calculator preset surface for Blank, Gap, Margin only. Not `.param-popover` WRITE. Reset on picker.
+OK (`check`) commits. Cancel (`x`) drops draft. Reset on picker.
 Ticker `dblclick` does not open HUD. No `__howManyOpenField` from ticker or picker.
-Send does not write `paramState`. Draft stays until OK or preset confirm.
+Send/load isolation: the presets door does not write `paramState` until a chip is applied or the panel ticker OK commits.
 
 ## Lucide
 
@@ -42,7 +42,7 @@ Picker chips: words only. No icon.
 | −90 / +90 | `rotate-ccw` / `rotate-cw` |
 | Swap | `arrow-left-right` |
 | Link | `link` |
-| Send | `square-arrow-out-up-right` |
+| Presets | `square-arrow-out-up-right` |
 | OK | `check` |
 | Cancel | `x` |
 | History | `corner-up-left` / `corner-up-right` |
@@ -70,13 +70,37 @@ picker chips     = words only
 picker align     = right edges flush with travel
 ```
 
-Axis letters, select-all, gap-link first paint, Send isolation stay as #123.
+Axis letters, select-all, gap-link first paint stay as #123.
+
+## Preset door (#124 draft)
+
+One icon on the edit bar. Same control for Blank, Gap, and Margin. Opens the **calculator face**, not the HUD inspector and not a WRITE popover.
+
+That face drops the numeric pad. Rough chips only:
+
+```
+Blank   [ 12x8 ] [ 26x18 ] [ + ]
+Gap     [ 0.125 ] [ 0.250 ] [ + ]
+Margin  [ 0.250 ] [ clamp ] [ + ]
+
+[ ticker for the lit row ]
+```
+
+Chips are placeholders. Cap later. No material tree.
+Lit row matches the field you left: edit Gap → door lands on Gap.
+Panel ticker shows that row so you can edit without going back to the bed ticker.
+Apply a chip = hydrate that field into the draft. OK on the bed ticker still commits.
+`+` is save-current. Not a second door on the bed.
+
+Calc travel button still opens this same face. It does not open the old pad.
 
 ## Cycle
 
 Lite: Cut → Send for review → Wait → Inspection → Merge into #121 branch → Close.
 Wait: `OM SIGNAL` / `+1` / `@codex review` conclusion.
+Drafting. No Cut until Owner says drop.
 
 ## Out
 
 React port. HexNest chrome. Bed lock. One-surface mobile. Cut sheet. Merge to `main`.
+Pretty preset chrome. Material breadcrumb.
