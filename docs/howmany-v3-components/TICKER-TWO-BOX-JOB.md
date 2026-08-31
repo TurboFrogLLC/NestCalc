@@ -64,7 +64,7 @@ air between boxes = 8
 pad T/B          = 6
 item gap         = 2
 hit / input radius = 8
-outer box radius   = 10
+outer box radius   = 8
 outer box height = 28 + 6 + 6 + 1.1 + 1.1 = 42.2
 picker chips     = words only
 picker align     = right edges flush with travel
@@ -74,7 +74,9 @@ Axis letters, select-all, gap-link first paint stay as #123.
 
 ## Preset door (#124 draft)
 
-Calculator face is the preset surface. Numeric pad is gone.
+HUD stays. Same card, same expand, same size.
+Numeric pad is gone. That face is presets.
+
 Rows: Blank, Gap, Margin. Five slots per row. No Part row. No material tree.
 
 ```
@@ -95,8 +97,8 @@ One way out:
 - Send-to-bed on the face hydrates the lit slot onto the laser ticker even if the picker is shut. Blank slot → blank. Gap slot → gap. Margin slot → four sides. Picker does not have to be open.
 
 Tap slot 5 → that row lights, ticker shows slot 5, then Send-to-bed.
-Travel `[calc]` opens this face on Blank if no field is in edit.
-Presets on the edit bar does not open the HUD inspector and does not open WRITE.
+Travel `[calc]` opens this HUD face on Blank if no field is in edit.
+Presets on the edit bar opens this same HUD face. Not the inspector field card. Not WRITE.
 
 ## Camera (#124 draft)
 
@@ -120,3 +122,4 @@ Drafting. No Cut until Owner says drop.
 React port. HexNest chrome. One-surface mobile. Cut sheet. Merge to `main`.
 Pretty preset chrome. Material breadcrumb. Named slots.
 Bed heading / origin plaque. Wheel zoom. Live-resize camera.
+Kill the HUD shell.
