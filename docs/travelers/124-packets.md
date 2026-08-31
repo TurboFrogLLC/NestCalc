@@ -202,3 +202,21 @@ Seq 9 re-stamped Clean against CA B.
 Still open: Cut C.
 Next: Cut C in a fresh session; not started here.
 ```
+
+### Seq 10 — Cut C Preset door
+
+**Operator return**
+
+```text
+job_id: NGJ-20260831-ticker-picker-words
+Branch: feat/v3-ticker-picker-words
+Host commit: 31a2baeb4a5596ccbfa68fb34d02387c9e15ecb3
+Origin host SHA: 31a2baeb4a5596ccbfa68fb34d02387c9e15ecb3
+Cut C complete: the existing HUD shell now swaps to a Bed Presets face with Blank, Gap, and Margin rows; each has slots 1–5 and +. The numeric pad is absent on that face; there is no Part row or material tree. Selecting a slot opens its in-panel fields, and typing saves that slot without changing the bed. Send to bed hydrates the lit Blank, Gap, or Margin slot onto the live ticker and bed whether the picker is open or shut. A ticker Presets send saves its draft into the first empty or already lit slot and opens that face; the travel calc opens Blank presets when no field is being edited.
+Updated the HTML host and living SPEC only. Cut A and Cut B were not reopened.
+Validation: git diff --check passed; all 5 inline scripts compiled with Node; browser smoke test passed calculator → Blank presets, Gap slot 1 → type X 0.625 → Send to bed, with the live Gap ticker reading 0.625 × 0.125. Local static-server console misses for /howmany-shell and favicon were expected and unrelated.
+Pushed: origin/feat/v3-ticker-picker-words at 31a2bae.
+Seq 10 stamped against the origin host SHA.
+Still open: Send C.
+Next: Send C.
+```
