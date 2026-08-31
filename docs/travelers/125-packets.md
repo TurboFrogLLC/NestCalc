@@ -64,3 +64,7 @@ Owner-deferred review: no PR comment and no `@codex review` were posted. Draft s
 ## Seq 13 — Inspection C — 2026-08-31
 
 **Clean.** Cut C lock verified in the host and SPEC: no visible picker join line; cluster hover/focus fills are removed; only linked X/Y may show `is-on`; ticker hits and picker words use transparent tap highlight and blur after click. No #124 HUD residual work, merge, or PR comment.
+
+## Seq 14 — Cut D shell — 2026-08-31
+
+Cut D host at `fba529836fb0c54ab22f1b85a84f312920ab92ff`, confirmed as the origin branch SHA. Closed ticker retains its only bounding stroke. Open picker overlaps the travel top by 1.1px with the same `#E8E8E8` fill, keeps left/top/right borders, and has no bottom border, leaving an inverted-L with no empty full-width shell or picker seam. No #124 HUD residual work.
