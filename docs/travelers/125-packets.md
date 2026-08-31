@@ -72,3 +72,7 @@ Cut D host at `fba529836fb0c54ab22f1b85a84f312920ab92ff`, confirmed as the origi
 ## Seq 15 — Send D — 2026-08-31
 
 Owner-deferred review: no PR comment and no `@codex review` were posted. Draft state unchanged.
+
+## Seq 16 — Wait D — 2026-08-31
+
+**owner-deferred-review.** No PR short-read was performed and no review wait was started, per the Owner's Send D instruction.
