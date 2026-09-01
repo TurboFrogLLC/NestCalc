@@ -37,20 +37,20 @@ Host validation: initial browser snapshot showed header + blank ticker/picker wi
 
 | Surface | Selector / id | Authority | z-index |
 |---------|---------------|-----------|--------:|
-| LaserBed world | `.bed-stage` · `#laser-bed-host` | `LASER-BED-v3.SPEC.md` · tip `40224e68` | 0 |
-| Blank body | `#lb-blank` (in `#lb-camera`) | host — sits on the bed, behind cards | **0** |
-| LaserBed chrome (zoom) | `.lb-chrome` | host front surface with ticker + HUD | **82** |
+| Canvas well | `.bed-stage` · `#laser-bed-host` | host — begins below the fixed header | 0 |
+| Blank body | `#lb-blank` (in `#lb-camera`) | host — sole drawn canvas subject | **0** |
+| Header controls (zoom / Fit) | `.app-header` · `.lb-chrome` | host — fixed in the header | **101** |
 | Blank hits + arc overlay | `#lb-blank-layer` | grab targets only | **10** |
 | toolPath | `#backplot.toolpath` | `TOOLPATH-v3.SPEC.md` · tip `2e9e2ace` | 20 |
 | FLiPIT | `#gcode` · class `.gcode` | `FLIPIT-v3.SPEC.md` · tip `37d628e9` | 30 |
 | FLiPIT toast | `#gcode-toast` | host override of standalone 40 | **35** |
-| Numeric HUD | `#hud` | `NUMERIC-HUD-v3.SPEC.md` · tip `bec93ffa` | **80** |
-| Blank ticker cluster | `#blank-ticker-cluster` | host raise; shares front surface with HUD + zoom | **82** |
-| HUD popover | `.param-popover` | same (inside HUD stacking context) | 50 |
+| Calculator surface | `#hud.canvas-calculator` | host — hidden at load; picker toggles it below header | **90** |
+| Blank ticker + picker | `#blank-ticker-cluster` | host — pinned to blank in viewport coordinates | **90** |
+| Calculator preset popover | `.param-popover` | Blank / Gap / Margin controls on calculator surface | 50 |
 
-Z-index scale is from `ALIGNMENT-v3.SPEC.md`. Overlay cards sit **inside** `.bed-stage` so those bands share one stacking context.
+The fixed header occupies its own front band. Fixed overlays convert stage-local canvas coordinates to viewport coordinates before pinning.
 
-R8 z-order: blank **body** is back on the world (behind cards). R13: blank ticker + calc, Numeric HUD, and zoom share the front interactive surface (80/82) ahead of other bed chrome. `#bt-calc` hover keeps icon/chrome (no hover-disappear).
+The blank remains below overlays. The ticker/picker and revealed calculator sit above the canvas; the picker remains available to dismiss the calculator.
 
 Wordmarks stay as locked: **FLiP** white 700 + **IT** amber 800 · **tool** white 700 + **Path** amber 800.
 
@@ -62,13 +62,13 @@ Wordmarks stay as locked: **FLiP** white 700 + **IT** amber 800 · **tool** whit
 |----|----------|-----------|
 | **R17** | FLiPIT Source + Output waypoints (`#btn-toolpath-src` · `#btn-toolpath-out`) toggle toolPath | class `is-hidden` on `#backplot` · `aria-pressed` sync · `__setToolpathOpen` |
 | **R27** | toolPath boots hidden | HTML `is-hidden` + `setToolpathOpen(false)` |
-| **R29** | Full-viewport primary canvas = LaserBed | authority `LASER-BED-v3.html` under `.bed-stage` · origin BL · Fit = zoom/center only (blank size unchanged) |
-| **R30** | HUD position hold | from Numeric HUD tip (collapse/expand never writes left/top) · never set `display` on `#hud-body` |
-| **R1** | Boot HUD open / FLiPIT closed · HUD ↔ FLiPIT chrome · AUTO-SIZE from HUD + calc paths · real local file open · popover clamp | hide primitive `display:none` + `is-open` on `#gcode` · `#btn-gcode` toggles · `#btn-auto-size` + `#btn-detect` run Auto-Size · `#bt-calc` toggles HUD calculator · `#flipit-file-input` accepts `.txt` / `.nc` / `.cnc` / `text/plain` |
-| **R2** | AUTO-SIZE opens FLiPIT **collapsed only** · 2nd click detects · `#bt-calc` expand-to-params when HUD collapsed · HUD body height matches active mode · tighter popover inset | `openGcode(false)` from `#btn-auto-size` · detect only when already open+collapsed · `__hudFromBedCalc` · `applyBodyHeight()` · popover edge **16px** / FlipIt avoid **12px** |
-| **R3** | `#bt-calc` from collapsed expands to **params only** (clear stale calc display) · HUD FLiPIT 3-step cycle · source Clear + name X fully unload | `applyModeVisibility` never leaves classic-calc `display:flex` while collapsed · `toggleGcode` closed→expand / open-collapsed→expand / expanded→close · `unloadProgram()` |
+| **R29** | Blank-in-space primary canvas | canvas well begins below header; no grid, rim, rulers, nest box, or part rendering; BL origin retained; Fit frames blank + gutter only |
+| **R30** | Header-aware overlay placement | calculator and opened cards begin below header; ticker converts stage-local blank coordinates to viewport coordinates |
+| **R1** | Boot blank HUD / FLiPIT closed | ticker + picker visible; calculator, FLiPIT, and toolPath hidden; picker is calculator mount/dismiss control; real local file open remains in FLiPIT |
+| **R2** | Picker reveals calculator surface | `__hudFromBedCalc` toggles `canvas-calculator`; revealed surface contains calculator keys plus Blank / Gap / Margin preset controls |
+| **R3** | Picker dismisses calculator surface | second picker click closes popovers, clears calculator mount, and restores ticker-only HUD; source Clear + name X fully unload |
 | **R4** | AUTO-SIZE 2nd click **closes** collapsed FlipIt · Output tab gated until Flip IT · READY/DONE inset status | `__flipitAutoSize` closes when already open+collapsed (no re-detect) · `#tab-output.is-gated` until `hasOutput()` · stage-status inset + 1.7px glow · READY type `--ink-30` |
-| **R5** | HUD motion matches FlipIt · bed blank → HUD Blank live · `#bt-calc` floats outside ticker | `--motion-collapse/expand/mode` **240ms** + `min-height` eased · `__hudSyncBlank(w,h)` from LaserBed `render()` · `#blank-ticker-cluster` |
+| **R5** | Blank ticker remains live | blank drag updates retained Blank fields; ticker is pinned using the canvas-stage viewport offset and floats beside picker |
 | **R6** | HUD param↔calc stacked opacity crossfade · header radius eases with 0fr · calc→collapse does not flash params | `#hud-stage` height 240ms · no `display` swap · header `border-radius` + `border-bottom-color` 240ms · defer `calc-mode` clear until collapse end |
 | **R7** | Collapsed HUD part ticker fade · FlipIt GC0DE↔tabs fade · square `#bt-calc` · outside-arc corner grab | `.is-settled` + 240ms fade · `.surface-lead` opacity · `#bt-calc` square / 3px gap · `#lb-corner-arc` 2px |
 | **R8** | Bigger arc · fade as collapse ends · toolPath open-space + multi-card arrange · blank body behind cards · resize glow · lock + HUD-sized calc · unit align · Blank/Gap/Margin presets | arc ~18px · ticker fade delay 160ms · `__hostArrange` · `#lb-blank` in world · `#bt-calc` 28.6² · `localStorage` presets |
@@ -84,25 +84,25 @@ Hide primitives stay surface-owned (`ALIGNMENT-v3` §4). Host does not invent a 
 
 | Control | Host behavior |
 |---------|----------------|
-| Load | Numeric HUD open at (25,25). FLiPIT closed (`display: none`, no `is-open`). toolPath hidden (R27). |
+| Load | Header + blank canvas visible. Ticker/picker is the HUD. Calculator, FLiPIT, and toolPath hidden. |
 | HUD **FLiPIT** (`#btn-gcode`) | Closed → open **expanded**. Open + collapsed (e.g. after AUTO-SIZE) → **expand** (do not close). Open + expanded → **close**. X closes from any state. |
 | HUD **AUTO-SIZE** (`#btn-auto-size`) | First click opens FLiPIT **collapsed** (never expanded). No source → toast `LOAD A PROGRAM TO AUTO-SIZE`. If FLiPIT is already open **and** collapsed, a second click **closes** it (does not re-run detect). In-panel `#btn-detect` still sizes. Footer chips stay mounted in HUD calculator mode. Label stays **AUTO-SIZE**. |
 | FLiPIT Auto-Size (`#btn-detect`) | Existing in-panel detect. Expand/collapse chrome unchanged. Arms after a real file load. |
 | FLiPIT close (`#btn-close`) | `closeGcode()` + R11 `lastGcodePos`. |
-| LaserBed calc chip (`#bt-calc`) | HUD collapsed → expand to **param** mode only (do not enter calculator; clear leftover classic-calc `display`). HUD already expanded → toggle calculator. After exit / collapse / expand, `#hud-body` height matches the active mode. Square side = blank ticker height (**34**). HUD header chrome language (radius / border / fill). Icon 22px. 3px gap. Hover **lightens the dark fill only** — icon and chrome stay visible (no transparent wash). |
+| Blank picker (`#bt-calc`) | Opens and dismisses calculator surface. Revealed surface keeps calculator keys and Blank / Gap / Margin fields with presets. Ticker height is **34**; picker remains beside it and never disappears on hover. |
 | FLiPIT Open (`#btn-open`) | Native local file picker. Accept `.txt`, `.nc`, `.cnc`, and `text/plain`. Load into Source. **No sample / BRACKET_PLATE fallback.** |
 | Source **Clear** (`#btn-clear`) and program-name **X** (`#prog-clear`) | Full unload: empty source + output, no bounds, status none, detect unarmed, process idle, program name cleared. Not name-only. |
 | Output tab (`#tab-output`) | Gated (`is-gated`, `aria-disabled`) until Output has content after Flip IT. No hover, click does nothing, lighter gray than Source. Live after process. |
 | Stage status (`#stage-status`) | READY / DONE are inset indicators, not raised buttons. READY lettering `--ink-30`. Glow 1.7px (was 2.2px). Not clickable. FLIP IT / START OVER unchanged. |
 | HUD popovers | Keep ALIGNMENT z 50. Placement/clamp only: prefer right → left → bottom → top, then shift so the popover does not cover an open FLiPIT card or the active `#lb-blank`. Viewport inset **16px** (not flush to the edge). |
 | HUD motion | Collapse uses FlipIt `240ms` `grid-template-rows` 0fr/1fr. Param↔calc: stacked `#hud-stage` height + opacity (no `display` swap). Header radius and bottom-border-color ease with the close. Calc→collapse keeps calc visible until 0fr ends. |
-| Bed blank → HUD | LaserBed drag updates HUD Blank ticker + popover via `__hudSyncBlank` (`fmt3`). Host-only; no product backend. |
+| Blank → calculator | Blank drag updates ticker and revealed calculator Blank fields via `__hudSyncBlank` (`fmt3`). Host-only; no product backend. |
 | Collapsed HUD part ticker | Hidden mid-close. Fade starts as 0fr finishes (`is-settled` immediate + **160ms** delay, then 240ms fade). Instant hide on expand (no mid-open flash). |
 | FlipIt surface lead | GC0DE ↔ chevron+Source/Output opacity fade (`var(--dur)`). R3/R4 open/close contracts unchanged. |
 | Blank z-order | `#lb-blank` lives in the world (behind cards). Ticker cluster **82** shares the front surface with zoom **82** and HUD **80**. Overlay `#lb-blank-layer` **10** is arc + hits only. |
 | Free-corner grab | Outside quarter-arc (~18px, 2px stroke). `#lb-hit-corner` is a circle on the arc midpoint (XY resize). Green stroke on arc while `lb-dragging-xy`. Blank outline glow is **−50% of R9** (0.6px / 0.14) and clipped to the bed (`#lb-bed-clip`) so rulers stay unlit. |
-| Card layout | FlipIt **always glides to viewport center** when opened (FLiPIT or AUTO-SIZE). HUD **always glides to the right slot** on that rearrange, even if toolPath is closed. All three: TP left · FlipIt center · HUD right, 25px top band. Travel is a 420ms ease glide (not a teleport). User drag still wins until the next open/rearrange. |
-| Zoom chrome | `#lb-zoom-in` / `#lb-zoom-out` / `#lb-fit` z **82** — shares the front surface with blank ticker + calc and Numeric HUD. |
+| Card layout | Opened cards start 20px below canvas well viewport top, clearing the fixed header. FlipIt centers; calculator uses right slot; user drag wins until next rearrange. |
+| Header controls | `#lb-zoom-in` / `#lb-zoom-out` / `#lb-fit` live in fixed header above canvas and cards. |
 | FlipIt unit switch | IN/MM labels flex-centered to the track background. |
 | HUD presets | Blank, Gap, Margin only (not Part). Everyday filled-chip click **loads only** (no arm, no save prompt). Pencil **Edit** enters a visible write mode (confirm bar + chip ring; not a dead lit pencil). Only then can a slot be armed; Confirm stores the armed slot from **live fields**, toasts `Preset saved`, and exits edit; Cancel exits without writing. Main Save/OK **always** commits current live field values to the HUD ticker **and** the bed blank via `__bedSetBlank` and never writes a preset. Enter in a numeric field settles/formats that field and does not close the popover. `localStorage` key `howmany.flipit.v3.presets`. |
 | Margin ticker | Two-line summary grows the ticker (`:has(.m-line)` min-height 40px) and remasures `#hud-stage` so the row is not clipped. Collapse timing unchanged. |
@@ -144,13 +144,13 @@ Do not require `file://`.
 ## How to use
 
 1. Open the composition URL above.
-2. Verify LaserBed fills the viewport (BL origin, 48×48 fit, blank 12×8, right-pin ticker, Fit does not reset blank).
-3. Verify Numeric HUD (16,16) is the only card open. FLiPIT and toolPath are absent.
-4. HUD **FLiPIT** opens FLiPIT expanded. If FlipIt is already open and collapsed, FLiPIT expands it. If expanded, FLiPIT closes it. X closes from any state.
-5. HUD **AUTO-SIZE** opens FLiPIT **collapsed** and toasts if no program. A second click while collapsed **closes** FlipIt. `#btn-detect` still sizes. HUD FLiPIT cycle from R3 is unchanged.
-6. FLiPIT Open picks a real local `.txt` / `.nc` / `.cnc` file and loads Source. No sample program.
-7. HUD tickers open popovers; placement stays outside the HUD and clamps off open FLiPIT and the bed blank. Collapse/expand holds left/top (R30).
-8. FLiPIT waypoints still toggle toolPath (R17 / R27). When toolPath + FlipIt + HUD are all open, they re-pack in a 25px top band (toolPath · FlipIt · HUD) every time that set becomes complete. User drag wins until the next three-open rearrange.
+2. Verify header hard-stops blank canvas well; only blank is drawn (no grid, rim, rulers, nest box, or part). Fit frames blank + gutter without changing BL origin or size.
+3. Verify ticker + picker are visible at blank, while calculator, FLiPIT, and toolPath are hidden.
+4. Click picker: calculator keys plus Blank, Gap, and Margin preset controls appear below header. Click again: calculator and popovers dismiss, leaving ticker + picker.
+5. Resize or Fit blank and verify ticker remains 10px above blank in viewport coordinates, below header.
+6. FLiPIT Open still picks real local `.txt` / `.nc` / `.cnc` file and loads Source. No sample program.
+7. Blank, Gap, and Margin tickers on revealed calculator open preset popovers and clamp off open cards and active blank.
+8. FLiPIT waypoints still toggle toolPath (R17 / R27). Opened cards clear fixed header; user drag wins until next rearrange.
 9. Any residual that changes a **surface** belongs in that surface’s individual package first; then re-assemble.
 
 ---

@@ -2172,10 +2172,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     /* The retained Numeric HUD markup becomes calculator-only chrome in this host. */
     #hud { display: none; z-index: 90; }
     #hud.canvas-calculator { display: flex; }
-    #hud.canvas-calculator .keypad-header, #hud.canvas-calculator #hud-mode, #hud.canvas-calculator .hud-footer-sep, #hud.canvas-calculator .hud-controls { display: none !important; }
+    #hud.canvas-calculator .keypad-header, #hud.canvas-calculator .hud-footer-sep, #hud.canvas-calculator .hud-controls { display: none !important; }
     #hud.canvas-calculator #hud-body { display: block; grid-template-rows: 1fr; }
-    #hud.canvas-calculator .hud-stage { height: auto !important; }
-    #hud.canvas-calculator .classic-calc { position: static; opacity: 1; pointer-events: auto; }
+    #hud.canvas-calculator .hud-stage { display: flex; flex-direction: column; gap: 8.8px; height: auto !important; }
+    #hud.canvas-calculator #hud-mode, #hud.canvas-calculator .classic-calc { position: static; display: flex; opacity: 1; pointer-events: auto; }
 </style>
 </head>
 <body>
@@ -2242,7 +2242,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     </div>
   
     <!-- Numeric HUD (lock: NUMERIC-HUD-v3) -->
-<div class="keypad" id="hud" role="dialog" aria-label="Numeric HUD">
+<div class="keypad" id="hud" role="dialog" aria-label="Calculator">
     <div class="keypad-header" id="hud-header" title="Drag HUD">
       <button type="button" class="tool press" id="calc-toggle" title="Calculator mode" aria-label="Calculator mode" aria-pressed="false">
         <svg width="16.5" height="16.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.54" stroke-linecap="round" stroke-linejoin="round">
@@ -2767,7 +2767,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (!pin) return;
     var s = pxPerInch();
     var screenRight = state.panX + state.blankW * s;
-    var screenTop = state.panY - state.blankH * s;
+    var stageTop = svg.getBoundingClientRect().top;
+    var screenTop = stageTop + state.panY - state.blankH * s;
 
     pin.classList.add('is-on');
     var txt = state.blankW.toFixed(3) + ' × ' + state.blankH.toFixed(3);
@@ -3122,7 +3123,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     hud.style.right = 'auto';
     hud.style.bottom = 'auto';
     hud.style.left = '25px';
-    hud.style.top = '25px';
+    hud.style.top = Math.round(document.getElementById('laser-bed-host').getBoundingClientRect().top + 20) + 'px';
   })();
 
   function hudMotion() {
@@ -3812,9 +3813,18 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     refreshTickers();
   };
   window.__hudToggleCalc = function () { setCalc(!state.calc); };
-  window.__hudExitCalc = function () { if (state.calc) setCalc(false); };
+  window.__hudExitCalc = function () {
+    if (state.calc) setCalc(false);
+    hud.classList.remove('canvas-calculator');
+  };
   window.__hudFromBedCalc = function () {
-    /* Seq 3: the picker summons the calculator; no Numeric HUD card is mounted. */
+    /* Seq 7: the picker owns calculator visibility; its surface retains presets. */
+    if (hud.classList.contains('canvas-calculator')) {
+      closeAllParamPopovers();
+      state.calc = false;
+      hud.classList.remove('canvas-calculator', 'calc-mode');
+      return;
+    }
     hud.classList.add('canvas-calculator');
     clearMotionTimer();
     state.collapsed = false;
@@ -4811,18 +4821,21 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     clearTimeout(el._glideTimer);
     el._glideTimer = setTimeout(function () { el.classList.remove('is-gliding'); }, 460);
   }
-  var TOP_BAND = 25;
+  function stageTopBand() {
+    var stage = document.getElementById('laser-bed-host');
+    return Math.round((stage ? stage.getBoundingClientRect().top : 0) + 20);
+  }
   function findOpenSpace(el, avoids) {
     var w = el.offsetWidth || 280;
     var vw = window.innerWidth;
-    var top = TOP_BAND;
+    var top = stageTopBand();
     var gap = 16;
-    var candidates = [TOP_BAND];
+    var candidates = [20];
     avoids.forEach(function (a) {
       if (a && Math.abs(a.top - top) < 90) candidates.push(Math.round(a.right + gap));
     });
-    candidates.push(Math.max(TOP_BAND, Math.round((vw - w) / 2)));
-    candidates.push(Math.max(TOP_BAND, Math.round(vw - w - TOP_BAND)));
+    candidates.push(Math.max(20, Math.round((vw - w) / 2)));
+    candidates.push(Math.max(20, Math.round(vw - w - 20)));
     candidates.sort(function (a, b) { return a - b; });
     for (var i = 0; i < candidates.length; i++) {
       var left = candidates[i];
@@ -4834,7 +4847,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       }
       if (!hit) return { left: left, top: top };
     }
-    return { left: TOP_BAND, top: top };
+    return { left: 20, top: top };
   }
 
   window.__hostArrange = function (reason) {
@@ -4845,16 +4858,16 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var flipitOpen = !!(gcode && gcode.classList.contains('is-open') && gcode.style.display !== 'none');
     var tpOpen = !!(tp && !tp.classList.contains('is-hidden'));
     var vw = window.innerWidth;
-    var top = TOP_BAND;
+    var top = stageTopBand();
 
     if (flipitOpen && hud) {
       var gW = gcode.offsetWidth;
       var hW = hud.offsetWidth;
       var tW = tpOpen ? (tp.offsetWidth || 280) : 0;
-      placeCard(gcode, Math.max(TOP_BAND, (vw - gW) / 2), top);
-      placeCard(hud, Math.max(TOP_BAND, vw - hW - TOP_BAND), top);
+      placeCard(gcode, Math.max(20, (vw - gW) / 2), top);
+      placeCard(hud, Math.max(20, vw - hW - 20), top);
       if (tpOpen) {
-        var leftSlot = Math.max(TOP_BAND, ((vw - gW) / 2 - tW) / 2);
+        var leftSlot = Math.max(20, ((vw - gW) / 2 - tW) / 2);
         placeCard(tp, leftSlot, top);
       }
       flags.flipit = false;
