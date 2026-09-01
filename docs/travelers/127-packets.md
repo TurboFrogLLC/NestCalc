@@ -220,7 +220,20 @@ Facts: clean. Browser evidence: Zoom in and Fit were clickable from the header; 
 ## Seq 17 Merge
 
 Operator: Codex App
-Stamp: —
+Stamp: 8cec72d2a60afb244a7fdaa5ea7604be84041a25
+
+Operator return
+
+Repo: NestCalc
+Mode: Worker
+Operator: Codex App
+Branch: docs/blank-in-space-canvas
+Head: 8cec72d2a60afb244a7fdaa5ea7604be84041a25
+job_id: NGJ-20260901-blankspace
+flow_id: —
+goal_sha256: —
+Stamp: 8cec72d2a60afb244a7fdaa5ea7604be84041a25
+Facts: Seq 16 was clean; allowed-file diff held; release governance checks passed; PR 127 merged into `main` as 8cec72d2a60afb244a7fdaa5ea7604be84041a25. Feature branch retained; Close is still pending.
 
 ## Seq 18 Close
 
