@@ -53,12 +53,13 @@ permission to rewrite protected contracts.
 | --- | --- |
 | Goal prep | Inspect repository hygiene, read authority, and mint or reuse `flow_id` in the `NC-YYYYMMDD-<8-hex>` format. |
 | Freeze | Commit one active `GOAL.md` with v1 metadata, canonical `goal_sha256`, Allowed Files, protected surfaces, proof, and stopping condition. |
-| Traveler | Carry one PR from start to end using `docs/templates/traveler.md`; its Instruction controls the current operation. |
+| Traveler | Carry one PR from start to end using `docs/templates/traveler.md`. |
+| Packet | Current visit uses `docs/templates/packet.md`; its Instruction controls this operation. Management authors the packet. |
 | Cut | Implement on the named branch, within Allowed Files, with the Freeze hash unchanged. A completed Cut is not job end. |
-| Quality Control | While the PR is draft: Send for review, Wait, then Inspection. If Inspection needs work, apply Corrective Action on the same operation and inspect again. |
+| Quality Control | While the PR is draft: Send for review (listen), then Inspection when planned. If Inspection needs work, next Plan + Cut, or Corrective Action on this visit when Mode is Specialist. |
 | Release | With repo-backed confidence and named criteria satisfied, Merge unless the Traveler forbids it, then Close. |
 | Job end | Emit the Packslip from `docs/templates/packslip.md` only after Close. Print it in the CLI and, when a PR exists, post the same block there. |
-| Stopped operation | Emit the Non-conformance Report from `docs/templates/nonconformance.md`, leave Disposition blank, and wait. It is not a Packslip. |
+| Stopped operation | Emit the Non-conformance Report from `docs/templates/nonconformance.md`, leave Disposition blank. It is not a Packslip. |
 
 No Operator owns Freeze, Release, or a cycle. Only wReckless is Owner. Merge is
 permitted without a new Owner decision only when the Traveler allows it and the
@@ -92,14 +93,14 @@ python3 scripts/nestcalc-governance.py create-handoff \
 ```
 
 Current schema route and branch-prefix pins are leftover Machine encoding.
-They do not override `AGENTS.md`, the Traveler, or the frozen GOAL, and this
+They do not override `AGENTS.md`, the packet, or the frozen GOAL, and this
 contract does not authorize changing them.
 
 ## Preflight before Cut
 
-1. Read the Traveler, `AGENTS.md`, `docs/GLOSSARY.md`, and `docs/WORKFLOW.md`.
+1. Read the job traveler, the packet, `AGENTS.md`, `docs/GLOSSARY.md`, and `docs/WORKFLOW.md`.
 2. Run `python3 scripts/nestcalc-governance.py validate-goal --goal GOAL.md`.
-3. Confirm Traveler and any sidecar bindings match `flow_id`, `goal_sha256`,
+3. Confirm packet and any sidecar bindings match `flow_id`, `goal_sha256`,
    branch, and head.
 4. Identify relevant `L-nestcalc-*` lessons.
 5. Confirm required proof is reachable within Allowed Files or record the
@@ -107,9 +108,9 @@ contract does not authorize changing them.
 6. Run npm, Playwright, git, and committed scripts host-first.
 7. Treat missing Clerk auth environment as blocked proof, never a pass.
 
-A failed worker-local gate requires Corrective Action. Stay on the current
-operation when a known path exists. If two passes make no progress, stop and
-emit a Non-conformance Report.
+A failed Worker preflight requires Escalate. Stay on the current operation
+while progress continues. After two passes without progress, Escalate; emit a
+Non-conformance Report only when the law breaks.
 
 ## MODE semantics
 

@@ -7,8 +7,9 @@ Hash recipe: `docs/governance/README.md` (Goal canonicalization).
 Freeze stamp: `docs/WORKFLOW.md` ## Goal → ### Freeze.
 Memory: `docs/WORKFLOW.md` ## Goal → ### Memory files.
 Operation spine: `docs/WORKFLOW.md` ## Start.
-Traveler form: `docs/templates/traveler.md`.
-Tool: the-Feeler. Parent is the Operator on the traveler. Same class as `/goal`.
+Job sheet: `docs/templates/traveler.md`.
+Current visit: `docs/templates/packet.md`.
+Tool: the-Feeler. Parent is the Operator on the packet. Same class as `/goal`.
 
 <!-- nestcalc-governance:start -->
 ```json
@@ -66,10 +67,11 @@ Tool: the-Feeler. Parent is the Operator on the traveler. Same class as `/goal`.
 
 Point at `docs/WORKFLOW.md` ## Proof. Name only extra proof this goal needs.
 
-### Traveler
+### Traveler and packet
 
-`docs/templates/traveler.md`. Instruction is this operation only.
-After Freeze, emit the next traveler.
+Job sheet: `docs/templates/traveler.md`.
+Current visit: `docs/templates/packet.md`. Instruction is this operation only.
+After Freeze, emit the next packet. Management authors it.
 
 ### Stopping Condition
 

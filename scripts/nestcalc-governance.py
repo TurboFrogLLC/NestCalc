@@ -584,6 +584,7 @@ def validate_manifest(root: Path) -> tuple[Result, dict[str, Any] | None]:
     required_authority = {
         "glossary": "docs/GLOSSARY.md",
         "traveler": "docs/templates/traveler.md",
+        "packet": "docs/templates/packet.md",
         "packslip": "docs/templates/packslip.md",
         "nonconformance": "docs/templates/nonconformance.md",
     }

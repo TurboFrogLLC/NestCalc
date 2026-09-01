@@ -1,29 +1,23 @@
 # Packslip
 
 Rules: `README.md`.
+Job-end receipt. The traveler after Close.
 
 ```text
 Repo: NestCalc
 Owner: wReckless
+Part:
+Description:
 PR:
 Branch:
 Head:
+Session: fresh | continuous
+job_id:
 flow_id:
 goal_sha256:
-Trace:
-Cycle: Full | Lite
 Date:
 
-Seq  Label              Operator     Stamp                 Still open
-     Plan
-     Freeze
-     Bind
-     Cut
-     Send for review
-     Wait
-     Inspection
-     Merge
-     Close
+Seq  Label              Notes     Stamp
 
 Closed Corrective Action:
 Still open: none | Non-conformance …

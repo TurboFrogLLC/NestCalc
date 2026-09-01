@@ -9,22 +9,21 @@ The same operation may appear more than once.
 Completing an operation is not job-end. Packslip is job-end.
 
 Tools are for this operation. A tool has a parent Operator.
-Parent cannot flip itself mid-session. Model bump = Owner pastes the same traveler into the next session.
+Parent cannot flip itself mid-session. Model bump = Owner pastes the same packet into the next session.
 
 ## Start
 
-Operators do not pick their own start. The traveler's Operator line is who runs this operation.
+Operators do not pick their own start. The packet Operator line is who runs this operation.
 
-1. Read the traveler. Instruction is this operation.
+1. Read the traveler. Instruction is this operation on the packet.
 2. Echo `job_id` every turn when no goal is on; echo `flow_id` and `goal_sha256` every turn when a goal is on.
 3. Stay on the named Branch + Head. Wrong branch or worktree: host fix or
    Escalate in Worker Mode; Corrective Action in Specialist Mode. Create or
-   switch is host work, not traveler Instruction.
+   switch is host work, not packet Instruction.
 4. Do this operation only. Do not rewrite the traveler.
 5. Stamp this operation before the next operation runs.
-   After stamp, if the next Station is already named on the job traveler at
-   `docs/travelers/<PR>.md`, the finishing Operator emits that Ops Packet from
-   that row; if it is not named, → Owner. Completing a Station is not job-end.
+   The job traveler row is Label, Notes, Stamp. It is not the packet.
+   Management authors the next packet. Completing a visit is not job-end.
 6. Job end is the packslip. Non-conformance is the Non-conformance Report.
 
 First `main` exception: Start-branch at job start only (host). Create or switch is host work.
@@ -32,17 +31,18 @@ The second `main` exception lives in AGENTS Never.
 
 Typical first-name: Codex App for product freeze, Grok Build for docs freeze.
 A named Codex CLI (or any other Operator) may run a full cycle including freeze.
-Codex does not touch UI / chrome unless the traveler's Instruction names it.
+Codex does not touch UI / chrome unless the packet Instruction names it.
 
 ## Operation stamps
 
 | Operation | Stamp |
 | --- | --- |
-| Freeze | Product freeze: v1 fence on `GOAL.md` — `flow_id`, `goal_sha256`, hash match, one Active Goal. Non-goal freeze: planning Station stamp on the job traveler (commit SHA), not a `GOAL.md` v1 fence. |
+| Plan | Commit that wrote or revised the routing. |
+| Start-branch | Named feature Branch exists. HEAD is that Branch. |
+| Freeze | Product freeze: v1 fence on `GOAL.md` — `flow_id`, `goal_sha256`, hash match, one Active Goal. Non-goal freeze: planning stamp on the job traveler (commit SHA), not a `GOAL.md` v1 fence. |
 | Cut | Named branch. Allowed Files only. Freeze hash unchanged. |
-| Send for review | PR marked ready. |
-| Wait | Named review held. |
-| Inspection | Review looked at. |
+| Send for review | PR marked ready. Named review tagged. Listen on that thread. |
+| Inspection | Review looked at. Disposition only. |
 | Merge | On `main` when cleared. |
 | Close | Cleanup after Merge. |
 | Job end | Packslip. Print in the CLI. Post on the PR when one exists. |
@@ -60,8 +60,8 @@ The PR stays draft until Quality Control.
 - Docs-only governance can land without a new GOAL after a land.
 
 GOAL states outcomes only. The Ops Packet Instruction is the write path for
-this Station. GOAL must not name a concrete write path that disagrees with the
-Ops Packet. Traveler Instruction still wins for this operation.
+this visit. GOAL must not name a concrete write path that disagrees with the
+Ops Packet. Packet Instruction still wins for this operation.
 
 ### v1 metadata
 
@@ -78,10 +78,11 @@ Hash mismatch, secrets in the block, or more than one Active Goal still stop.
 The full recipe and hash steps live in `docs/governance/README.md`.
 The copy template is `docs/templates/goal-form.md`.
 
-`create-handoff` JSON is a sidecar. The traveler is `docs/templates/traveler.md`.
-After freeze, the parent emits the current operation on that traveler.
+`create-handoff` JSON is a sidecar. The job sheet is `docs/templates/traveler.md`.
+The current visit is `docs/templates/packet.md`.
+After freeze, the parent emits the current packet.
 Do not write start-check or the land suite into that Instruction.
-Traveler Instruction wins over GOAL for this operation.
+Packet Instruction wins over GOAL for this operation.
 
 ### Memory files
 
@@ -100,24 +101,24 @@ Lessons point at an `NCMR-` when a Non-conformance Report exists. Do not paste t
 ### Freeze
 
 When the goal workflow is on, product freeze is the `GOAL.md` v1 fence. A
-non-goal freeze is a planning Station stamp on the job traveler (commit SHA),
+non-goal freeze is a planning stamp on the job traveler (commit SHA),
 not a `GOAL.md` v1 fence.
 
 - Freeze `GOAL.md` with `flow_id` and `goal_sha256` when the goal workflow is on.
 - Commit that freeze before implementation. The freeze commit is not
   the implementation.
-- The traveler's Operator line is who freezes. Typical: Codex App (product), Grok Build (docs).
+- The packet Operator line is who freezes. Typical: Codex App (product), Grok Build (docs).
 - Echo `flow_id` and `goal_sha256` every turn.
 - `/goal` is a Codex tool (thread loop). It is not the repo freeze.
-  If the next operation must invoke `/goal`, the traveler's first word is
+  If the next operation must invoke `/goal`, the packet's first word is
   `/goal`. Then the packet. Do not bury it in Instruction.
   The executor does not add `/goal` after the fact.
-  If the traveler omits `/goal`, the next operation reads `GOAL.md` only.
+  If the packet omits `/goal`, the next operation reads `GOAL.md` only.
   Keep any `/goal` line short. Point it at `GOAL.md`. Do not paste the sheet.
 
 ### Worker-local gates
 
-This operation is run by the Operator on the traveler.
+This operation is run by the Operator on the packet.
 
 Corrective Action and the Non-conformance Report are the Specialist ladder
 (Mode Specialist). Worker stop remains Escalate. See `docs/GLOSSARY.md` for
@@ -146,12 +147,12 @@ Do not send to us unless an Owner gate is hit or confidence is not cleared.
 
 ## Proof
 
-Host only. Release proof, in the traveler worktree. Not in the traveler.
+Host only. Release proof, in the traveler worktree. Not in the packet.
 Not at freeze. Not at Cut. Not at every operation.
 
 `cd` the traveler worktree. If none is named, use the primary clone:
 `/Users/computer/wrecklesstoddler/vibe/projects/nestcalc`
-That `cd` is host setup. It is not traveler Instruction.
+That `cd` is host setup. It is not packet Instruction.
 
 ```text
 python3 scripts/nestcalc-governance.py check
@@ -177,14 +178,14 @@ Use the strongest verification the touched surface warrants.
 
 The PR is draft until this band.
 
-1. Send for review — mark ready. Named review: `@codex review` and `agents-pr-review` (companion). Pointer only.
-2. Wait.
-3. Inspection — look at the thread or the pass.
+1. Send for review — mark ready. Named review: `@codex review` and `agents-pr-review` (companion). Listen on that thread.
+2. Inspection — look at the thread or the pass. Only when that visit is planned.
 
-If Inspection needs work: Corrective Action on this operation, then Inspection again.
+If Inspection needs work: next Plan + new Cut, or Corrective Action on this visit when Mode is Specialist.
 If the law broke: Non-conformance Report.
-If this Station cannot finish: Escalate.
+If this visit cannot finish: Escalate.
 If Inspection is clean: Release.
+Midstream spitball may Send for review without an Inspection row.
 
 ## Release
 
@@ -199,9 +200,4 @@ Merge, then Close. Two operations.
 - If next cannot be decided, next is the Owner.
 - Owner at land only on escalation: route change, failed or missing confidence, failed criteria, or a hard gate.
 
-Cycle:
-
-| Cycle | Use |
-| --- | --- |
-| Full | Product / machine / Allowed Files. Cut → Quality Control → Release when review is named. |
-| Lite | Skill or docs. Implement, stamp, draft PR, Quality Control. Merge unless this traveler forbids it. |
+The job traveler Seq list is the cycle. Do not invent a Cycle field.

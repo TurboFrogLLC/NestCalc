@@ -5,12 +5,15 @@ Rules: `README.md`.
 ```text
 Repo: NestCalc
 Owner: wReckless
+Part:
+Description:
 PR:
 Branch:
 Head:
+Session: fresh | continuous
+job_id:
 flow_id:
 goal_sha256:
-Trace:
 Operation:
 Operator:
 Date:
