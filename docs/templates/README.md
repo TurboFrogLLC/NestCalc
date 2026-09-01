@@ -1,53 +1,46 @@
 # Templates
 
-Forms only in the sibling files. Rules live here.
+Forms only in the sibling files.
+
+When a term → `../GLOSSARY.md`.
+When operating → `../WORKFLOW.md`.
+When this visit → `packet.md`.
+When the job sheet → `traveler.md` or `docs/travelers/<PR>.md`.
 
 | File | Is |
 | --- | --- |
-| `traveler.md` | Ops Packet: current Station only |
-| `docs/travelers/<PR>.md` | Job traveler |
-| `packslip.md` | Job-end receipt |
+| `traveler.md` | Job traveler stencil. Plan creates the routing. |
+| `docs/travelers/<PR>.md` | Live job traveler |
+| `packet.md` | Ops Packet. Current visit only. |
+| `packslip.md` | Job-end receipt. That traveler after Close. |
 | `nonconformance.md` | Non-conformance Report |
 | `goal-form.md` | Copy sheet for `GOAL.md` |
 
-Terms: `../GLOSSARY.md`.
-Procedure: `../WORKFLOW.md`.
-
 ## Traveler
 
-One PR, one traveler. This block is the current operation.
-Two bands. Real blank lines. No YAML `---` fences. No host commands.
-Instruction is this operation only.
-Operator is Codex App, Codex CLI, or Grok Build.
-Station binds the room. Mode is Worker or Specialist.
-Use `job_id` for a non-goal job; use `flow_id` and `goal_sha256` when a goal is on.
-Owner may sit any seat. Operators do not rewrite the traveler. Management may.
+Header + Seq list. Notes are the short callout.
+Operators stamp a row. They do not rewrite the routing. Management may.
+Do not put Waypoint or Sign on this form.
 
-When the operation must invoke `/goal`, the first word of the copyable block is `/goal`.
-Then the packet. The executor does not add `/goal` if this packet omits it.
+## Ops Packet
 
-Host-shell: terminal box first (`cd` the worktree), then this block.
+Current visit only. Two bands. No YAML `---` fences. No host commands.
+When `/goal` is named, it is the first word of the copyable block.
+Start-branch never `/goal`.
+Host-present work: terminal box first (`cd` the worktree), then this block.
 Primary clone: `/Users/computer/wrecklesstoddler/vibe/projects/nestcalc`
 Operators do not emit the terminal box.
 
-Do not put Waypoint or Sign on this form.
-
 ## Packslip
 
-Job-end only. That is when the job is done.
-First word is never `/goal`. No Model.
+Job-end only. First word is never `/goal`. No Model.
 Print in the CLI. Post on the PR when one exists.
-Do not emit because an operation finished. Do not emit for a Non-conformance.
-Release when named: Merge, then Close on this slip, then print, then post.
-The same operation may appear more than once. Skip a row that did not run.
-A Corrective Action is a new row. Stamp is a commit SHA.
+Stamp is a commit SHA or `NCMR-`.
 
 ## Non-conformance Report
 
-Facts only. Disposition blank. Management fills it.
-`NCMR-` is the stamp. Do not expand it.
+Facts only. Disposition blank. `NCMR-` is the stamp.
 
 ## GOAL form
 
 Copy `goal-form.md` to `GOAL.md`. Replace placeholders. Point; do not paste procedure.
-`skills` stays empty unless this traveler names a skill.
