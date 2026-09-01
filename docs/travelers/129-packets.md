@@ -20,6 +20,12 @@ Seq 1 Plan — Owner: ticker-door chrome on 127 blank canvas. ops-multi-codex.
 - Implementation: `852a93c41f565ae0fa1712743e5990d36e527eaa`; `git diff --check` passed.
 - Next: Send for review.
 
+## Seq 10 Send for review — return
+
+- Replied to and resolved both remediated P2 review threads.
+- Requested a new named review with `@codex review` on the remediation tip; listening for its new disposition.
+- Next: Inspection of the new review only.
+
 ## Seq 4 Send for review — return
 
 - PR 129 marked ready for review and named review requested with `@codex review`.
