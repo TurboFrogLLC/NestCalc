@@ -24,8 +24,8 @@ This section supersedes older R1–R13 statements where they name LaserBed or th
 - The app header spans the top; the canvas well begins at a fixed hard pad below its lower edge. General window controls remain in that header band.
 - Fit frames the blank plus open gutter only. The open gutter is interaction space, not a machine envelope or drawn plate; blank-edge drags retain their starting Fit scale until the next Fit.
 - The blank retains current bottom-left growth. The owner notes do not confirm a bottom-right flip, so Seq 3 does not change origin behavior.
-- The blank ticker and calculator picker are the only always-visible HUD. They remain pinned to the blank.
-- The Numeric HUD parameter card is not mounted. Its retained calculator surface is hidden at load and appears only after the picker is clicked.
+- The blank ticker is the only always-visible HUD. Its attached menu-bar picker opens above the ticker and contains Part, Gap, Margin, and Reset words.
+- The travel row contains the −90/+90 pair, blank-size field, calculator, and chevron. The Numeric HUD parameter card is hidden at load and appears only after a picker field is selected.
 - Calculator presets remain on that calculator surface. This operation does not add an AutoNest trigger or alter calculator / AutoNest math.
 - `LASER-BED-v3.*` and `NUMERIC-HUD-v3.*` remain individual lock files on disk; this host simply stops presenting their bed and parameter-card surfaces.
 
@@ -64,9 +64,9 @@ Wordmarks stay as locked: **FLiP** white 700 + **IT** amber 800 · **tool** whit
 | **R27** | toolPath boots hidden | HTML `is-hidden` + `setToolpathOpen(false)` |
 | **R29** | Blank-in-space primary canvas | canvas well begins below header; no grid, rim, rulers, nest box, or part rendering; BL origin retained; Fit frames blank + gutter only |
 | **R30** | Header-aware overlay placement | zoom/Fit are mounted in the header stacking context; calculator and opened cards begin below header; ticker converts stage-local blank coordinates to viewport coordinates |
-| **R1** | Boot blank HUD / FLiPIT closed | ticker + picker visible; calculator, FLiPIT, and toolPath hidden; picker is calculator mount/dismiss control; header FLiPIT control opens the closed FLiPIT surface |
-| **R2** | Picker reveals calculator surface | `__hudFromBedCalc` toggles `canvas-calculator`, then arranges its now-measurable surface; revealed surface contains calculator keys plus Blank / Gap / Margin preset controls |
-| **R3** | Picker dismisses calculator surface | second picker click closes popovers, clears calculator mount, and restores ticker-only HUD; source Clear + name X fully unload |
+| **R1** | Boot blank HUD / FLiPIT closed | ticker travel row visible; picker and calculator, FLiPIT, and toolPath hidden; header FLiPIT control opens the closed FLiPIT surface |
+| **R2** | Ticker-door picker | chevron reveals the attached picker above the travel row; Part, Gap, and Margin select the retained calculator controls and keep their presets on that surface |
+| **R3** | Calculator gate | calculator remains hidden until a picker field is selected; source Clear + name X fully unload |
 | **R4** | AUTO-SIZE 2nd click **closes** collapsed FlipIt · Output tab gated until Flip IT · READY/DONE inset status | `__flipitAutoSize` closes when already open+collapsed (no re-detect) · `#tab-output.is-gated` until `hasOutput()` · stage-status inset + 1.7px glow · READY type `--ink-30` |
 | **R5** | Blank ticker remains live | blank drag updates retained Blank fields; ticker is pinned using the canvas-stage viewport offset and floats beside picker |
 | **R6** | HUD param↔calc stacked opacity crossfade · header radius eases with 0fr · calc→collapse does not flash params | `#hud-stage` height 240ms · no `display` swap · header `border-radius` + `border-bottom-color` 240ms · defer `calc-mode` clear until collapse end |
@@ -89,7 +89,8 @@ Hide primitives stay surface-owned (`ALIGNMENT-v3` §4). Host does not invent a 
 | HUD **AUTO-SIZE** (`#btn-auto-size`) | First click opens FLiPIT **collapsed** (never expanded). No source → toast `LOAD A PROGRAM TO AUTO-SIZE`. If FLiPIT is already open **and** collapsed, a second click **closes** it (does not re-run detect). In-panel `#btn-detect` still sizes. Footer chips stay mounted in HUD calculator mode. Label stays **AUTO-SIZE**. |
 | FLiPIT Auto-Size (`#btn-detect`) | Existing in-panel detect. Expand/collapse chrome unchanged. Arms after a real file load. |
 | FLiPIT close (`#btn-close`) | `closeGcode()` + R11 `lastGcodePos`. |
-| Blank picker (`#bt-calc`) | Opens and dismisses calculator surface. Revealed surface keeps calculator keys and Blank / Gap / Margin fields with presets. Ticker height is **34**; picker remains beside it and never disappears on hover. |
+| Ticker door (`#bt-door`) | Reveals or closes the attached menu-bar picker above the travel row. The row is −90, +90, blank size, calculator, chevron; picker words are Part, Gap, Margin, Reset. |
+| Ticker picker field | Reveals the calculator surface and its retained parameter/preset controls. The calculator button does not reveal the card until the picker door is open. |
 | FLiPIT Open (`#btn-open`) | Native local file picker. Accept `.txt`, `.nc`, `.cnc`, and `text/plain`. Load into Source. **No sample / BRACKET_PLATE fallback.** |
 | Source **Clear** (`#btn-clear`) and program-name **X** (`#prog-clear`) | Full unload: empty source + output, no bounds, status none, detect unarmed, process idle, program name cleared. Not name-only. |
 | Output tab (`#tab-output`) | Gated (`is-gated`, `aria-disabled`) until Output has content after Flip IT. No hover, click does nothing, lighter gray than Source. Live after process. |
@@ -173,3 +174,4 @@ Do not require `file://`.
 | 2026-08-17 | **R11** `NC-FLIPIT-20260817-R11`. Filled preset chips load only. Pencil Edit is required to write a slot via Confirm/Cancel. Rails start on the origin, fill the band, and overhang the far end only. |
 | 2026-08-17 | **R12** `NC-FLIPIT-20260817-R12`. Compact HUD height after popover close. Four-side frost frame; numbers inside the blue. FlipIt centers and HUD rights with a 420ms glide. Token-aware G-code highlight. Default part 1.250×3.375, Flip visual rotate, dotted nest box. |
 | 2026-08-17 | **R13** `NC-FLIPIT-20260817-R13`. Blank/Gap/Margin: Edit is a visible write mode; Confirm stores the armed slot from live fields; Cancel exits without writing; main OK applies live values to HUD + bed and never writes a preset (Blank 12×12 no longer reverts). Enter settles a numeric field without closing the popover. Single equal-width frost-blue rail (no outer lip). Highlighted X/Y/Z/R are black at 4 decimal places. Ticker + calc, HUD, and zoom share the front surface; `#bt-calc` hover stays visible. |
+| 2026-09-01 | **R31** ticker-door chrome port: retained the 127 blank-in-space stage and moved only the ticker-door menu bar onto it. The picker opens above the −90/+90, blank-size, calculator, chevron travel row; no bed, grid, ruler, nest box, or Numeric HUD card is restored. |
