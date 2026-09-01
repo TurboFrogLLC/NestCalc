@@ -19,3 +19,9 @@ Seq 1 Plan — Owner: ticker-door chrome on 127 blank canvas. ops-multi-codex.
 - The calculator card is hidden at load and a picker field reveals its retained controls and presets. No LaserBed, grid, rulers, nest box, Numeric HUD card, or AutoNest changes were brought over.
 - Implementation: `852a93c41f565ae0fa1712743e5990d36e527eaa`; `git diff --check` passed.
 - Next: Send for review.
+
+## Seq 4 Send for review — return
+
+- PR 129 marked ready for review and named review requested with `@codex review`.
+- Listening on the PR review thread; no review disposition is present yet.
+- Next: Inspection after the review thread responds.
