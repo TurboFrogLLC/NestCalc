@@ -52,3 +52,28 @@ Owner scrap: convex join did not read. Leave Cut G chrome. Record leftover in TI
 ## Seq 30 — Merge — 2026-08-31
 
 PR #125 was fast-forwarded into `feat/v3-ticker-door` at `3148864f045d50a9f44ebef2d94127f57d210c86`; GitHub reports the PR merged with that same merge commit. `main` was not checked out or updated. The Cut G chrome remains as shipped, and the join fine-tune leftover remains locked in `TICKER-MENU-BAR.md`.
+
+## Seq 31 — Close — 2026-08-31
+
+```text
+Repo: NestCalc
+Owner: wReckless
+PR: #125 https://github.com/TurboFrogLLC/NestCalc/pull/125
+Branch: docs/ticker-menu-bar
+Head: ef395beab09b1622153a37280121451e4c41bc68
+flow_id: —
+goal_sha256: —
+Trace: docs/howmany-v3-components/TICKER-MENU-BAR.md
+Cycle: Lite
+Date: 2026-08-31
+
+Seq  Label              Operator     Stamp                 Still open
+30   Merge              Codex App    3148864f045d50a9f44ebef2d94127f57d210c86      Close
+31   Close              Codex App    ef395beab09b1622153a37280121451e4c41bc68      —
+
+Closed Corrective Action: none
+Still open:
+Next:
+```
+
+Packslip posted on PR #125. Cut G chrome remains landed on `feat/v3-ticker-door`; the join fine-tune and #124 HUD/calc phone-webview issue remain documented leftovers.
