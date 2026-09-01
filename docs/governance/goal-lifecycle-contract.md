@@ -108,9 +108,9 @@ contract does not authorize changing them.
 6. Run npm, Playwright, git, and committed scripts host-first.
 7. Treat missing Clerk auth environment as blocked proof, never a pass.
 
-A failed worker-local gate requires Corrective Action. Stay on the current
-operation when a known path exists. If two passes make no progress, stop and
-emit a Non-conformance Report.
+A failed Worker preflight requires Escalate. Stay on the current operation
+while progress continues. After two passes without progress, Escalate; emit a
+Non-conformance Report only when the law breaks.
 
 ## MODE semantics
 
