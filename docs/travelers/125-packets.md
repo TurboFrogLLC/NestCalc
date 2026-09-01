@@ -108,3 +108,7 @@ Cut F host at `f3cc1220cfc4c42f77efa8ec2256e3d6df589750`, confirmed as the origi
 ## Seq 23 — Send F — 2026-08-31
 
 Owner-deferred review: no PR comment and no `@codex review` were posted. Draft state unchanged.
+
+## Seq 24 — Wait F — 2026-08-31
+
+**owner-deferred-review.** No PR short-read was performed and no review wait was started, per the Owner's Send F instruction.
