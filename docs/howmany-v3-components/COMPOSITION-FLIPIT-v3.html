@@ -231,7 +231,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     min-height: 22px;
     gap: 8px;
     padding: 0 8px;
-    border-radius: 6px 6px 0 6px;
+    border-radius: 6px 6px 0 0;
     border-bottom: 0;
     overflow: hidden;
     clip-path: inset(100% 0 0 0);
@@ -239,6 +239,22 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     opacity: 0;
     pointer-events: none;
     transition: clip-path 240ms ease, transform 240ms ease, opacity 160ms ease;
+  }
+  /* Cut G: the grid owns this convex step quarter; travel shared edges stay square. */
+  .bt-picker::before {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    left: 0;
+    bottom: 0;
+    width: 6px;
+    height: 6px;
+    box-sizing: border-box;
+    background: #E8E8E8;
+    border-left: 1.1px solid rgba(26, 20, 40, 0.22);
+    border-bottom: 1.1px solid rgba(26, 20, 40, 0.22);
+    border-bottom-left-radius: 6px;
+    pointer-events: none;
   }
   .bt-picker::after {
     content: "";
