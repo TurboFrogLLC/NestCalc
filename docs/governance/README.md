@@ -33,10 +33,10 @@ NestCalc files are sole authority after write.
 | Schemas under `docs/governance/schemas/` | Protected artifact contracts |
 
 `docs/governance/manifest.json` pins required repository paths. In addition,
-`validate_manifest` directly requires the glossary, Traveler, Packslip, and
-Non-conformance Report template. `packet.md` is on `required_paths`. Removing
-any one fails closed even if the manifest's `required_paths` list is weakened
-for the four hardcoded authority files.
+`validate_manifest` directly requires five authorities: the glossary, Traveler,
+Packet, Packslip, and Non-conformance Report template. Removing any one fails
+closed even if the manifest's `required_paths` list is weakened for the five
+hardcoded authority files.
 
 ## Lifecycle recipe
 
