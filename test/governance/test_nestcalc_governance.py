@@ -28,10 +28,11 @@ class GovernanceContractsTest(unittest.TestCase):
         self.assertEqual(result.details["invalid_fixtures"], 6)
         self.assertTrue(result.details["advisory_mode"])
 
-    def test_manifest_requires_all_four_authority_files_directly(self) -> None:
+    def test_manifest_requires_all_five_authority_files_directly(self) -> None:
         required_authority = (
             "docs/GLOSSARY.md",
             "docs/templates/traveler.md",
+            "docs/templates/packet.md",
             "docs/templates/packslip.md",
             "docs/templates/nonconformance.md",
         )
