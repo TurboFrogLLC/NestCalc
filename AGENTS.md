@@ -5,7 +5,8 @@ Repo NestCalc. Product FLiPIT. Next.js 16 PWA. Clerk. Serwist. Vercel.
 ## Pointers
 
 - When a term is used → `docs/GLOSSARY.md`
-- When handing work → `docs/templates/traveler.md`
+- When tracking this job → `docs/templates/traveler.md` or `docs/travelers/<PR>.md`
+- When this visit → `docs/templates/packet.md`
 - When the job ends → `docs/templates/packslip.md`
 - When Non-conformance → `docs/templates/nonconformance.md`
 - When operating → `docs/WORKFLOW.md` (procedure)
@@ -17,7 +18,7 @@ Repo NestCalc. Product FLiPIT. Next.js 16 PWA. Clerk. Serwist. Vercel.
 
 ## Commands
 
-Host first. Not traveler Instruction. Land suite at Release, in the traveler worktree.
+Host first. Not packet Instruction. Land suite at Release, in the traveler worktree.
 Do not sandbox-first npm, Playwright, git, or committed `scripts/*.py`.
 A script is not host-first until it is on HEAD and check is re-run from the host.
 Missing Clerk auth env is blocked proof.
@@ -44,9 +45,9 @@ git rev-parse HEAD
 ### Always
 
 - One worktree + one branch. Engine and chrome stay split unless the GOAL names both.
-- Read the traveler first. Do this operation's Instruction. No host commands in the traveler.
+- Read the traveler first. Do this operation's Instruction. No host commands in the packet.
 - Stay on Branch + Head. Create or switch is host work.
-- Echo `flow_id` and `goal_sha256` when a goal is on.
+- Echo `job_id` every turn when no goal is on; echo `flow_id` and `goal_sha256` when a goal is on.
 - Post-bootstrap `GOAL.md` carries the v1 fence. Freeze stamp: `flow_id`, `goal_sha256`, hash match, one Active Goal.
 - Preserve calculator math, AutoNest, FLiPIT identity, and V3 HTML + SPEC unless the GOAL or a new Owner decision names them.
 - Secrets stay out of git. Operators fail-closed on governance files.
@@ -63,7 +64,7 @@ git rev-parse HEAD
 - Merge unless Release is cleared (repo-backed confidence and named criteria) and this traveler does not forbid merge.
 - Invent the next operation. Soft-infer.
 - Rewrite the traveler.
-- Let Codex touch UI / chrome unless the traveler's Instruction names it.
+- Let Codex touch UI / chrome unless the packet Instruction names it.
 - Emit a packslip for a Non-conformance.
 - Act as Owner. Only wReckless is Owner.
 - Silent job end (no packslip) is Non-conformance.
@@ -73,13 +74,13 @@ git rev-parse HEAD
 - Quiet and freeze from WORKFLOW. No nestcalc-goal-grilling.
 - If next is unknown → Owner.
 
-Quality Control: Send for review → Wait → Inspection. When the PR is draft → `docs/WORKFLOW.md` ## Quality Control.
+Quality Control: Send for review (listen) then Inspection when planned. When the PR is draft → `docs/WORKFLOW.md` ## Quality Control.
 When Inspection is clean → `docs/WORKFLOW.md` ## Release.
 
 ## Roles
 
 No Operator owns freeze, land, or a cycle. Owner starts the work and receives the packslip.
-Typical first-name is a hint. The traveler Operator line is who runs this operation. Any named Operator may run a full cycle.
+Typical first-name is a hint. The packet Operator line is who runs this operation. Any named Operator may run a full cycle.
 
 | Role | Who |
 | --- | --- |
@@ -98,7 +99,7 @@ Do not auto-spawn Codex.
 4. `LESSONS_LEARNED.md`
 5. V3 HTML + SPEC under `docs/howmany-v3-components/`
 
-Traveler Instruction wins over GOAL for this operation.
+Packet Instruction wins over GOAL for this operation.
 Live GitHub wins mutable facts. Conversation memory is advisory.
 `docs/governance/MODE` stays advisory until a dedicated promotion goal. Contracts still fail closed.
 
