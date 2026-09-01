@@ -2162,6 +2162,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     .app-header__mark .label-it { color: #c98c00; }
     .app-header__label { margin-left: 10px; color: var(--ink-50); font-size: 12px; }
     .app-header__spacer { flex: 1; }
+    .app-header__flipit { border: 1px solid rgba(26,20,40,0.22); border-radius: 7px; padding: 7px 10px; background: var(--ink); color: #fff; font: 800 12px/1 var(--font-mono); letter-spacing: .02em; cursor: pointer; }
+    .app-header__flipit .label-it { color: #FFCE1B; }
+    .app-header__flipit:hover { background: rgba(26,20,40,0.92); }
     .bed-stage { inset: var(--app-header-h) 0 0; background: #f7f5fa; }
     /* Retain the blank's interaction layer, but remove every drawn bed primitive. */
     #lb-bed-fill, #lb-major-grid, #lb-bed-rim, #lb-edge-x, #lb-edge-y, #lb-camera > circle, #lb-nest-box, #lb-part-g, #lb-bed-rulers { display: none; }
@@ -2176,6 +2179,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     #hud.canvas-calculator #hud-body { display: block; grid-template-rows: 1fr; }
     #hud.canvas-calculator .hud-stage { display: flex; flex-direction: column; gap: 8.8px; height: auto !important; }
     #hud.canvas-calculator #hud-mode, #hud.canvas-calculator .classic-calc { position: static; display: flex; opacity: 1; pointer-events: auto; }
+    #hud.canvas-calculator [data-param="part"] { display: none; }
 </style>
 </head>
 <body>
@@ -2184,6 +2188,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     <div class="app-header__mark"><span class="label-flip">FLiP</span><span class="label-it">IT</span></div>
     <div class="app-header__label">Blank canvas</div>
     <div class="app-header__spacer"></div>
+    <button type="button" class="app-header__flipit" id="btn-header-flipit" title="Open FLiPIT" aria-pressed="false"><span class="label-flip">FLiP</span><span class="label-it">IT</span></button>
   </header>
 
   <div class="bed-stage" id="laser-bed-host">
@@ -2643,7 +2648,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 (function () {
   /* The blank, not a machine envelope, is this composition's canvas subject. */
   var state = {
-    blankW: 12, blankH: 8, snap: 0.125, zoom: 1, panX: 0, panY: 0, dragging: null, start: null,
+    blankW: 12, blankH: 8, snap: 0.125, zoom: 1, fitScale: null, panX: 0, panY: 0, dragging: null, start: null,
     partW: 1.250, partH: 3.375, partRot: 0,
     margin: { l: 0.25, r: 0.25, t: 0.25, b: 0.25 }
   };
@@ -2681,7 +2686,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var blankWithGutterH = state.blankH + 8;
     return Math.min(Math.max(80, W - PAD * 2) / blankWithGutterW, Math.max(80, H - PAD * 2) / blankWithGutterH);
   }
-  function pxPerInch() { return fittedScale() * state.zoom; }
+  function pxPerInch() { return (state.fitScale == null ? fittedScale() : state.fitScale) * state.zoom; }
   function labelStep() {
     var s = pxPerInch(), candidates = [12, 6, 3, 1];
     for (var i = candidates.length - 1; i >= 0; i--) if (candidates[i] * s >= MIN_LABEL_PX) return candidates[i];
@@ -2811,7 +2816,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   };
   function fitBed() {
     state.zoom = 1;
-    var s = fittedScale();
+    state.fitScale = fittedScale();
+    var s = state.fitScale;
     var W = svg.clientWidth || window.innerWidth;
     var H = svg.clientHeight || window.innerHeight;
     state.panX = (W - state.blankW * s) / 2;
@@ -2826,13 +2832,13 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     else if (t === hitTop || id === 'lb-hit-top') { state.dragging = 'y'; document.body.classList.add('lb-dragging-y'); }
     else if (e.currentTarget === blankLayer) return;
     else { state.dragging = 'pan'; document.body.classList.add('lb-panning', 'lb-dragging'); }
-    state.start = { cx: e.clientX, cy: e.clientY, w: state.blankW, h: state.blankH, panX: state.panX, panY: state.panY };
+    state.start = { cx: e.clientX, cy: e.clientY, w: state.blankW, h: state.blankH, panX: state.panX, panY: state.panY, scale: pxPerInch() };
     try { e.target.setPointerCapture(e.pointerId); } catch (_) {}
     e.preventDefault();
   }
   function onPointerMove(e) {
     if (!state.dragging || !state.start) return;
-    var dx = e.clientX - state.start.cx, dy = e.clientY - state.start.cy, s = pxPerInch();
+    var dx = e.clientX - state.start.cx, dy = e.clientY - state.start.cy, s = state.start.scale;
     if (state.dragging === 'pan') { state.panX = state.start.panX + dx; state.panY = state.start.panY + dy; }
     else if (state.dragging === 'x') state.blankW = Math.max(state.snap, snap(state.start.w + dx / s));
     else if (state.dragging === 'y') state.blankH = Math.max(state.snap, snap(state.start.h - dy / s));
@@ -2856,7 +2862,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     e.preventDefault();
     var factor = e.deltaY < 0 ? 1.1 : 1 / 1.1;
     var newZoom = Math.min(12, Math.max(0.35, state.zoom * factor));
-    var s0 = pxPerInch(), s1 = fittedScale() * newZoom;
+    var s0 = pxPerInch(), s1 = (state.fitScale == null ? fittedScale() : state.fitScale) * newZoom;
     var wx = (e.clientX - state.panX) / s0, wy = (state.panY - e.clientY) / s0;
     state.zoom = newZoom;
     state.panX = e.clientX - wx * s1;
@@ -3841,6 +3847,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     closeAllParamPopovers();
     if (typeof window.__flipitToggle === 'function') window.__flipitToggle();
   });
+  document.getElementById('btn-header-flipit').addEventListener('click', function () {
+    closeAllParamPopovers();
+    if (typeof window.__flipitToggle === 'function') window.__flipitToggle();
+  });
 
   setCalc(false);
   refreshTickers();
@@ -4299,12 +4309,14 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     return isGcodeOpen() && panel.classList.contains('is-expanded');
   }
   function syncHudFlipitChrome() {
-    var btn = document.getElementById('btn-gcode');
-    if (!btn) return;
     var open = isGcodeOpen();
     var expanded = open && panel.classList.contains('is-expanded');
-    btn.setAttribute('aria-pressed', expanded ? 'true' : 'false');
-    btn.title = !open ? 'Open FLiPIT' : (expanded ? 'Close FLiPIT' : 'Expand FLiPIT');
+    ['btn-gcode', 'btn-header-flipit'].forEach(function (id) {
+      var btn = document.getElementById(id);
+      if (!btn) return;
+      btn.setAttribute('aria-pressed', expanded ? 'true' : 'false');
+      btn.title = !open ? 'Open FLiPIT' : (expanded ? 'Close FLiPIT' : 'Expand FLiPIT');
+    });
   }
   function openGcode(expanded) {
     panel.classList.add('is-open');
