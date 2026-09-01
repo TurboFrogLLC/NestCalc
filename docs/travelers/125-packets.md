@@ -79,7 +79,7 @@ Owner-deferred review: no PR comment and no `@codex review` were posted. Draft s
 
 ## Seq 17 — Inspection D — 2026-08-31
 
-**Clean.** Cut D lock verified in the host and SPEC: closed ticker retains its only bounding stroke; open picker overlaps the travel top by 1.1px with left/top/right borders and no bottom border, producing the required inverted-L without an empty full-width shell. No #124 HUD residual work, merge, or PR comment.
+**Clean.** Cut D lock verified in the host and SPEC: closed ticker retains its only bounding stroke; open picker overlaps the travel top by 1.1px with left/top/right borders and no bottom border, producing the required inverted-L without an empty full-width empty shell. No #124 HUD residual work, merge, or PR comment.
 
 ## Seq 18 — Cut E look — 2026-08-31
 
@@ -95,4 +95,8 @@ Owner-deferred review: no PR comment and no `@codex review` were posted. Draft s
 
 ## Seq 21 — Inspection E — 2026-08-31
 
-**Clean.** Cut E lock verified in the host and SPEC: the 1.1px `rgba(26, 20, 40, 0.22)` join rule is inset 8px at each picker side without restoring its bottom border; the inside travel corner is radius 6; −90/+90 are flush and all other travel gaps remain 2px. No #124 HUD residual work, merge, or PR comment.
+**Clean.** Cut E lock verified in the host and SPEC: the 1.1px `rgba(26, 20, 40, 0.22)` join rule is inset 8px at each picker side without restoring its bottom border; the travel inside top-right is radius 6; −90/+90 are flush and all other travel gaps remain 2px. No #124 HUD residual work, merge, or PR comment.
+
+## 2026-08-31 Cut F look opened
+
+Owner look on local host: Cut E radiused the **wrong** corner (travel top-right under the picker). Wanted the **inside left** picker×travel join as a 6px concave fillet. Input radius 6. Swap off Blank/Part/Gap. Send-to-presets freezes the page after HUD hide. No `@codex review` on Send F.
