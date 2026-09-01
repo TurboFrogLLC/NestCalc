@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
 ═══════════════════════════════════════════════════════════════════════════════
-FlipIt composition — Numeric HUD + FLiPIT + toolPath + LaserBed
+FlipIt composition — blank-in-space canvas + FLiPIT + toolPath
 Host only. Individuals remain standalone lock files in this folder.
 
 Product: FlipIt
@@ -18,8 +18,8 @@ Authority (do not restyle locks from this host):
 Bridges in this host:
   · R17 FLiPIT waypoints ↔ toolPath (class is-hidden)
   · R27 toolPath boots hidden
-  · R29 LaserBed under .bed-stage (full-viewport primary canvas)
-  · R30 HUD position hold (from individual tip — not rewritten here)
+  · Seq 3 blank-in-space canvas: no drawn LaserBed or Numeric HUD card
+  · ticker + picker are the blank HUD; calculator appears only on picker click
   · R1  Boot: HUD open · FLiPIT closed · HUD ↔ FLiPIT chrome
         HUD AUTO-SIZE + FLiPIT chips · calc-mode keeps chips
         LaserBed calc chip → HUD calculator · real local file open
@@ -59,7 +59,7 @@ Prior composition/lock archives stay on disk.
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>FlipIt — composition (Numeric HUD + FLiPIT + toolPath + LaserBed)</title>
+<title>FlipIt — composition (blank-in-space canvas + FLiPIT + toolPath)</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; overflow: hidden; font-family: var(--font); color: var(--ink); background: #fff; }
@@ -2153,9 +2153,38 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       pointer-events: none;
     }
     .toolpath-canvas.has-part .toolpath-empty { display: none; }
+
+    /* ── Seq 3 — blank-in-space composition surface ── */
+    :root { --app-header-h: 64px; --canvas-pad: 48px; }
+    .app-header { position: fixed; inset: 0 0 auto; z-index: 100; height: var(--app-header-h); display: flex; align-items: center; padding: 0 20px; background: rgba(255,255,255,0.96); border-bottom: 1px solid rgba(26,20,40,0.12); box-shadow: 0 1px 0 rgba(255,255,255,0.8); }
+    .app-header__mark { font-family: var(--font-mono); font-size: 13px; font-weight: 800; letter-spacing: .08em; }
+    .app-header__mark .label-flip { color: var(--ink); }
+    .app-header__mark .label-it { color: #c98c00; }
+    .app-header__label { margin-left: 10px; color: var(--ink-50); font-size: 12px; }
+    .app-header__spacer { flex: 1; }
+    .bed-stage { inset: var(--app-header-h) 0 0; background: #f7f5fa; }
+    /* Retain the blank's interaction layer, but remove every drawn bed primitive. */
+    #lb-bed-fill, #lb-major-grid, #lb-bed-rim, #lb-edge-x, #lb-edge-y, #lb-camera > circle, #lb-nest-box, #lb-part-g, #lb-bed-rulers { display: none; }
+    #lb-blank { fill: #fff; fill-opacity: 1; stroke: #1a1428; stroke-width: 1.5; clip-path: none; }
+    .lb-chrome { position: fixed; top: 17px; right: 20px; z-index: 101; }
+    .lb-chrome button { background: #fff; }
+    .blank-ticker-cluster { z-index: 90; }
+    /* The retained Numeric HUD markup becomes calculator-only chrome in this host. */
+    #hud { display: none; z-index: 90; }
+    #hud.canvas-calculator { display: flex; }
+    #hud.canvas-calculator .keypad-header, #hud.canvas-calculator #hud-mode, #hud.canvas-calculator .hud-footer-sep, #hud.canvas-calculator .hud-controls { display: none !important; }
+    #hud.canvas-calculator #hud-body { display: block; grid-template-rows: 1fr; }
+    #hud.canvas-calculator .hud-stage { height: auto !important; }
+    #hud.canvas-calculator .classic-calc { position: static; opacity: 1; pointer-events: auto; }
 </style>
 </head>
 <body>
+
+  <header class="app-header">
+    <div class="app-header__mark"><span class="label-flip">FLiP</span><span class="label-it">IT</span></div>
+    <div class="app-header__label">Blank canvas</div>
+    <div class="app-header__spacer"></div>
+  </header>
 
   <div class="bed-stage" id="laser-bed-host">
     <svg class="lb-world" id="lb-world" xmlns="http://www.w3.org/2000/svg">
@@ -2612,7 +2641,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 /* ── LaserBed ── */
 /* LaserBed host + blank ticker right-pin residual */
 (function () {
-  var BED = 48;
+  /* The blank, not a machine envelope, is this composition's canvas subject. */
   var state = {
     blankW: 12, blankH: 8, snap: 0.125, zoom: 1, panX: 0, panY: 0, dragging: null, start: null,
     partW: 1.250, partH: 3.375, partRot: 0,
@@ -2648,7 +2677,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   function fittedScale() {
     var W = svg.clientWidth || window.innerWidth;
     var H = svg.clientHeight || window.innerHeight;
-    return Math.min(Math.max(80, W - PAD * 2) / BED, Math.max(80, H - PAD * 2) / BED);
+    var blankWithGutterW = state.blankW + 4;
+    var blankWithGutterH = state.blankH + 8;
+    return Math.min(Math.max(80, W - PAD * 2) / blankWithGutterW, Math.max(80, H - PAD * 2) / blankWithGutterH);
   }
   function pxPerInch() { return fittedScale() * state.zoom; }
   function labelStep() {
@@ -2725,40 +2756,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
   function drawMajorGrid(step) {
     majorGrid.innerHTML = '';
-    for (var i = 1; i < BED; i++) {
-      majorGrid.appendChild(line(i, 0, i, BED, 1, '#000', 0.10));
-      majorGrid.appendChild(line(0, i, BED, i, 1, '#000', 0.10));
-    }
-    for (var j = step; j < BED; j += step) {
-      majorGrid.appendChild(line(j, 0, j, BED, 1, '#000', 0.30));
-      majorGrid.appendChild(line(0, j, BED, j, 1, '#000', 0.30));
-    }
   }
   function drawBedRulers() {
-    var s = pxPerInch(), L = labelStep(), T = tickStep(L);
-    bedRulers.innerHTML = ''; drawMajorGrid(L);
-    var fontWorld = 11 / s, tickOut = Math.max(0.4, 11 / s), gap = Math.max(0.12, 3 / s);
-    var railW = 36 / s;
-    var frameRun = BED + 2 * railW;
-    bedRulers.appendChild(railRect(-railW, -railW, frameRun, railW, '#E8EEF8'));
-    bedRulers.appendChild(railRect(-railW, BED, frameRun, railW, '#E8EEF8'));
-    bedRulers.appendChild(railRect(-railW, 0, railW, BED, '#E8EEF8'));
-    bedRulers.appendChild(railRect(BED, 0, railW, BED, '#E8EEF8'));
-    var numOff = Math.min(railW - fontWorld * 1.35, tickOut * 1.15 + gap + fontWorld * 0.4);
-    if (numOff < tickOut + gap + fontWorld * 0.2) numOff = tickOut + gap + fontWorld * 0.25;
-    for (var i = 0; i <= BED; i += T) {
-      var isLabel = (i % L === 0) && i !== 0, isMajor = (i % L === 0);
-      var len = isMajor ? tickOut * 1.4 : tickOut * 0.75;
-      if (i > 0) {
-        bedRulers.appendChild(line(i, 0, i, -len, 1, '#000', 0.30));
-        bedRulers.appendChild(line(0, i, -len, i, 1, '#000', 0.30));
-      }
-      if (isLabel) {
-        bedRulers.appendChild(label(i, -numOff, String(i), fontWorld, 'middle', 'middle'));
-        bedRulers.appendChild(label(-numOff, i, String(i), fontWorld, 'middle', 'middle'));
-      }
-    }
-    bedRulers.appendChild(label(-numOff * 0.72, -numOff * 0.72, '0', fontWorld, 'middle', 'middle'));
+    bedRulers.innerHTML = '';
   }
 
   /* Right-pin residual: 20px from blank right · 10px above blank top */
@@ -2813,8 +2813,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var s = fittedScale();
     var W = svg.clientWidth || window.innerWidth;
     var H = svg.clientHeight || window.innerHeight;
-    state.panX = (W - BED * s) / 2;
-    state.panY = (H + BED * s) / 2;
+    state.panX = (W - state.blankW * s) / 2;
+    state.panY = (H + state.blankH * s) / 2;
   }
 
   function onPointerDown(e) {
@@ -3814,17 +3814,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   window.__hudToggleCalc = function () { setCalc(!state.calc); };
   window.__hudExitCalc = function () { if (state.calc) setCalc(false); };
   window.__hudFromBedCalc = function () {
-    if (isHudCollapsed()) {
-      clearMotionTimer();
-      state.calc = false;
-      calcToggle.classList.remove('active-calc');
-      calcToggle.setAttribute('aria-pressed', 'false');
-      setCollapsed(false);
-      applyModeVisibility();
-      applyBodyHeight();
-      return;
-    }
-    setCalc(!state.calc);
+    /* Seq 3: the picker summons the calculator; no Numeric HUD card is mounted. */
+    hud.classList.add('canvas-calculator');
+    clearMotionTimer();
+    state.collapsed = false;
+    hud.classList.remove('collapsed');
+    setCalc(true);
   };
 
   document.getElementById('btn-auto-size').addEventListener('click', function () {

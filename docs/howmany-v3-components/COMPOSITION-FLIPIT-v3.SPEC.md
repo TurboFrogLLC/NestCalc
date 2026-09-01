@@ -1,18 +1,35 @@
-# FlipIt — Composition host — Living SPEC
+# FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living (residual R13 — preset write-mode + OK apply, single rail, XYZR 4dp, front surface)  
+**Status:** Living — Seq 3 blank-in-space canvas passed host validation
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
-**Branch:** `docs/flipit-v3-refinements`  
-**Trace:** `NC-FLIPIT-20260817-R13`  
-**Host tip blob:** `a5171b91ba3841bdcd85da60bc8625e0db9b11ea`  
+**Branch:** `docs/blank-in-space-canvas`
+**Trace:** `NGJ-20260901-blankspace`
+**Host tip blob:** pending Seq 3 commit
 **Class:** Exploratory composition host only · not product GOAL · not a shared import  
 
 **Host rule**  
 This file is the **host only**. The four individual HTML tips stay standalone lock files. Do not overwrite them from this assembly. Do not add `flipit-v3-align.js` or `@import` into the tips.
 
 Prior composition/lock archives (`COMPOSITION-HUD-DECODER-v3.*`, `DE-CODER-v3-LOCKED.*`) stay on disk. They are not this host.
+
+---
+
+## Seq 3 — blank-in-space canvas
+
+This section supersedes older R1–R13 statements where they name LaserBed or the Numeric HUD as a mounted composition surface.
+
+- The blank is the canvas subject, surrounded by empty space. There is no drawn laser bed, grid, machine rim, ruler, nest box, or part rendering.
+- The app header spans the top; the canvas well begins at a fixed hard pad below its lower edge. General window controls remain in that header band.
+- Fit frames the blank plus open gutter only. The open gutter is interaction space, not a machine envelope or drawn plate.
+- The blank retains current bottom-left growth. The owner notes do not confirm a bottom-right flip, so Seq 3 does not change origin behavior.
+- The blank ticker and calculator picker are the only always-visible HUD. They remain pinned to the blank.
+- The Numeric HUD parameter card is not mounted. Its retained calculator surface is hidden at load and appears only after the picker is clicked.
+- Calculator presets remain on that calculator surface. This operation does not add an AutoNest trigger or alter calculator / AutoNest math.
+- `LASER-BED-v3.*` and `NUMERIC-HUD-v3.*` remain individual lock files on disk; this host simply stops presenting their bed and parameter-card surfaces.
+
+Host validation: initial browser snapshot showed header + blank ticker/picker with no numeric card; clicking the picker revealed calculator controls only.
 
 ---
 
