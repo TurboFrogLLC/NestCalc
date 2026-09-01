@@ -6,7 +6,7 @@
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
 **Branch:** `docs/blank-in-space-canvas`
 **Trace:** `NGJ-20260901-blankspace`
-**Host tip blob:** pending Seq 3 commit
+**Host tip blob:** `55a1688ec9720fdb34409435fa56b46f3a5783ec` (Seq 3 composition commit)
 **Class:** Exploratory composition host only · not product GOAL · not a shared import  
 
 **Host rule**  
