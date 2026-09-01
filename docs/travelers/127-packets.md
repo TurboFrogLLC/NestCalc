@@ -130,12 +130,35 @@ Facts: `@codex review` requested on the new head at https://github.com/TurboFrog
 Operator: Codex App
 Stamp: —
 
-## Seq 10 Merge
+## Seq 10 Plan
+
+Operator: Owner
+Stamp: —
+
+## Seq 11 Cut
+
+Operator: Codex App
+Stamp: a5fb5b0842449f60ec218e37ec64780a7362d02f
+
+Operator return
+
+Repo: NestCalc
+Mode: Worker
+Operator: Codex App
+Branch: docs/blank-in-space-canvas
+Head: a5fb5b0842449f60ec218e37ec64780a7362d02f
+job_id: NGJ-20260901-blankspace
+flow_id: —
+goal_sha256: —
+Stamp: a5fb5b0842449f60ec218e37ec64780a7362d02f
+Facts: header now exposes a FLiPIT open/toggle control; revealed calculator hides Part and retains only Blank, Gap, and Margin preset rows; blank-edge drag uses its pointer-down Fit scale until the explicit Fit control reframes; AutoNest untouched; local browser checks passed (header FLiPIT opens and calculator rows are Blank/Gap/Margin only).
+
+## Seq 12 Send for review
 
 Operator: Codex App
 Stamp: —
 
-## Seq 11 Close
+## Seq 13 Inspection
 
 Operator: Codex App
 Stamp: —
