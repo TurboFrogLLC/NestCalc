@@ -5,7 +5,7 @@ Not `main`.
 Product is FLiPIT. Host stays `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`.
 
 Owner locked. Desktop chrome. Phone is the remote look surface only.
-Cuts A–F landed. Cut G look is this traveler.
+Cuts A–G landed. Owner closed the traveler. Convex join is scrap / leftover.
 
 ## Picture
 
@@ -17,18 +17,15 @@ Shut — one stroke around the ticker:
 [ −90 ][+90]  12.000 × 8.000  [calc] [▴]
 ```
 
-Open — inverted-L. Inset join line. Convex quarter at the inside-left step.
+Open — inverted-L. Inset join line. Current join is the Cut G host as-shipped.
 
 ```
                          ┌ Part  Gap  Margin  Reset ┐
                          │  ─── inset 8px ───  │
 [−90][+90]  12.000 × 8.000  [calc] [▾]
-                         ^ 6px convex quarter in the grid
 ```
 
-The stroke walks **around** the step. It does not scoop into the chrome.
-
-## Cut lock (landed A–F)
+## Cut lock (landed A–G)
 
 ```
 picker height    = 22
@@ -50,16 +47,10 @@ Idle hits stay idle. Tap highlight transparent. Click blurs.
 Closed: one stroke around the ticker. Open: inverted-L. Picker overlaps travel top by 1.1px.
 Inset join line under picker does not touch picker L/R.
 
-## Cut G (open)
+## Leftover — join fine-tune
 
-- Kill the Cut F concave scoop at picker left × travel top.
-- Paint a **convex** 6px quarter in the grid at that step. Fill `#E8E8E8`. Stroke 1.1px `rgba(26,20,40,0.22)`.
-- Shared edges stay square. Picker does not lift off the ticker on the right.
-- Travel top-right under the picker stays flat.
-- Outer L corners keep picker 6 / ticker 8.
-- Inset join line unchanged.
-- Not `border-radius` on the travel box that turns into the chrome.
+Owner scrap 2026-08-31: convex quarter at picker left × travel top did not read. Do not keep iterating the join on this traveler. Later pass may replace the step with a true outer-union radius so picker + ticker read as one outline. Host keeps the Cut G chrome until that pass.
 
 ## Out
 
-React port. Slick mobile layout. HUD disappear leftover from #124. Live-resize on blank drag.
+React port. Slick mobile layout. HUD disappear leftover from #124. Live-resize on blank drag. Join fine-tune (this leftover).
