@@ -174,7 +174,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     min-height: 42.2px;
   }
   .bt-travel-box { border-radius: 8px; }
-  .blank-ticker-cluster.is-door-open .bt-travel-box { border-radius: 8px 6px 8px 8px; }
+  .blank-ticker-cluster.is-door-open .bt-travel-box { border-radius: 8px 0 8px 8px; }
   .bt-travel {
     display: inline-flex;
     align-items: center;
@@ -231,7 +231,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     min-height: 22px;
     gap: 8px;
     padding: 0 8px;
-    border-radius: 6px 6px 0 0;
+    border-radius: 6px 6px 0 6px;
     border-bottom: 0;
     overflow: hidden;
     clip-path: inset(100% 0 0 0);
@@ -313,7 +313,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     margin: 0;
     padding: 0 4px;
     border: 0;
-    border-radius: 8px;
+    border-radius: 6px;
     background: #ffffff;
     color: #1A1428;
     font-family: var(--font-mono);
@@ -711,7 +711,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     .preset-slot.is-lit { outline: 2px solid #FFCE1B; outline-offset: 1px; }
     .preset-panel-editor { display: flex; align-items: center; gap: 5px; padding-top: 3px; }
     .preset-panel-editor label { display: flex; align-items: center; gap: 3px; font-size: 10px; font-weight: 700; }
-    .preset-panel-editor input { width: 44px; height: 28px; box-sizing: border-box; border: 1.1px solid rgba(26,20,40,.22); border-radius: 8px; background: rgba(255,255,255,.88); color: var(--ink); font: 700 10px var(--font-mono); text-align: center; }
+    .preset-panel-editor input { width: 44px; height: 28px; box-sizing: border-box; border: 1.1px solid rgba(26,20,40,.22); border-radius: 6px; background: rgba(255,255,255,.88); color: var(--ink); font: 700 10px var(--font-mono); text-align: center; }
     .preset-panel-editor input[aria-invalid="true"], .bt-edit input[aria-invalid="true"] { border-color: #C4293A; box-shadow: 0 0 0 1px rgba(196,41,58,.22); }
     .preset-panel-editor.is-margin { flex-wrap: wrap; }
     .preset-send { margin-left: auto; min-width: 92px; background: rgba(26,20,40,.82); color: #FFCE1B; }
@@ -2462,9 +2462,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         <div class="bt-edit" id="bt-edit">
           <div class="bt-edit-fields" id="bt-edit-xy">
             <label class="bt-axis"><span>X</span><input id="bt-edit-x" data-bt-xy="x" type="text" inputmode="decimal" aria-label="X" /></label>
-            <button type="button" class="bt-hit" id="bt-edit-swap" title="Swap X &amp; Y" aria-label="Swap X and Y">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
-            </button>
             <label class="bt-axis"><span>Y</span><input id="bt-edit-y" data-bt-xy="y" type="text" inputmode="decimal" aria-label="Y" /></label>
             <button type="button" class="bt-hit" id="bt-edit-link" title="Link X &amp; Y" aria-pressed="false">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
@@ -4560,17 +4557,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       tickerEdit.draft[k] = n;
     });
   });
-  var editSwap = document.getElementById('bt-edit-swap');
-  if (editSwap) {
-    editSwap.addEventListener('click', function (e) {
-      e.preventDefault();
-      if (!tickerEdit.draft || tickerEdit.key === 'margin') return;
-      var t = tickerEdit.draft.x;
-      tickerEdit.draft.x = tickerEdit.draft.y;
-      tickerEdit.draft.y = t;
-      paintTickerEdit();
-    });
-  }
   var editLink = document.getElementById('bt-edit-link');
   if (editLink) {
     editLink.addEventListener('click', function (e) {
@@ -4590,7 +4576,13 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       e.stopPropagation();
       var activeFields = document.querySelector('.bt-edit-fields.is-on');
       if (rejectClearedTickerFields(activeFields)) return;
-      if (typeof window.__hudPresetMorph === 'function') window.__hudPresetMorph(tickerEdit.key, tickerEdit.draft);
+      if (!tickerEdit.key || !tickerEdit.draft || typeof window.__hudPresetMorph !== 'function') return;
+      try {
+        if (window.__hudPresetMorph(tickerEdit.key, tickerEdit.draft) !== false) exitTickerEdit();
+      } catch (_) {
+        exitTickerEdit();
+        closePresetDoor();
+      }
     });
   }
   var editOk = document.getElementById('bt-edit-ok');
