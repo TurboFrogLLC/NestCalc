@@ -19,7 +19,8 @@ When the job sheet → `traveler.md` or `docs/travelers/<PR>.md`.
 ## Traveler
 
 Header + Seq list. Notes are the short callout.
-Operators stamp a row. They do not rewrite the routing. Management may.
+Operators stamp a row with a commit SHA, review id, or `NCMR-`, matching the
+packet stamp contract. They do not rewrite the routing. Management may.
 Do not put Waypoint or Sign on this form.
 
 ## Ops Packet
