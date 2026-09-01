@@ -26,6 +26,12 @@ Seq 1 Plan — Owner: ticker-door chrome on 127 blank canvas. ops-multi-codex.
 - Requested a new named review with `@codex review` on the remediation tip; listening for its new disposition.
 - Next: Inspection of the new review only.
 
+## Seq 11 Inspection — return
+
+- Read the new named review only: it is still marked **Running** on `0491e06` and has no new review disposition or threads.
+- The prior two P2 threads are resolved. PR checks are successful and merge state is `CLEAN`, but the named review is still a required unresolved gate.
+- Inspection is pending; no Merge or Close was performed.
+
 ## Seq 4 Send for review — return
 
 - PR 129 marked ready for review and named review requested with `@codex review`.
