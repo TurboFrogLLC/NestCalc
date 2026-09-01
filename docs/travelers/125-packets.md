@@ -112,3 +112,7 @@ Owner-deferred review: no PR comment and no `@codex review` were posted. Draft s
 ## Seq 24 — Wait F — 2026-08-31
 
 **owner-deferred-review.** No PR short-read was performed and no review wait was started, per the Owner's Send F instruction.
+
+## Seq 25 — Inspection F — 2026-08-31
+
+**Clean.** Cut F lock verified in the host and SPEC: the travel outer top-right is flat, the picker-left connector is the 6px inverse fillet, and the 8px-inset join rule remains. Ticker and Bed Presets inputs are radius 6; Blank, Part, and Gap ticker edit have adjacent X/Y inputs with Link only. Browser verification confirmed ticker Send opens Bed Presets, exits ticker edit, leaves picker and Zoom In interactive, and adds no Send-handler console error. No merge or PR comment.
