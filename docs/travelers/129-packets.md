@@ -25,3 +25,9 @@ Seq 1 Plan — Owner: ticker-door chrome on 127 blank canvas. ops-multi-codex.
 - PR 129 marked ready for review and named review requested with `@codex review`.
 - Listening on the PR review thread; no review disposition is present yet.
 - Next: Inspection after the review thread responds.
+
+## Seq 5 Inspection — return
+
+- Read PR 129: `@codex review` is still marked **Running** and has supplied no review disposition or findings.
+- PR merge state is `CLEAN`; Socket Security and Vercel checks are successful. Those checks do not clear the required named review.
+- Inspection remains pending. No merge or Close was performed.
