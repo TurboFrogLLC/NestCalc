@@ -2187,6 +2187,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     #hud.canvas-calculator .hud-stage { display: flex; flex-direction: column; gap: 8.8px; height: auto !important; }
     #hud.canvas-calculator #hud-mode, #hud.canvas-calculator .classic-calc { position: static; display: flex; opacity: 1; pointer-events: auto; }
     #hud.canvas-calculator [data-param="part"] { display: none; }
+    #hud.canvas-calculator.ticker-part-open [data-param="part"] { display: flex; }
 </style>
 </head>
 <body>
@@ -2773,7 +2774,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     bedRulers.innerHTML = '';
   }
 
-  /* Right-pin residual: 20px from blank right · 10px above blank top */
+  /* Right-pin residual: 20px from blank right · 10px above blank top. */
   function positionBlankTicker() {
     var pin = blankCluster || blankTicker;
     if (!pin) return;
@@ -2786,9 +2787,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var txt = state.blankW.toFixed(3) + ' × ' + state.blankH.toFixed(3);
     if (btReadout) btReadout.textContent = txt;
 
+    /* The cluster's flow height is the live travel-row height (42.2px today). */
     var tw = pin.offsetWidth || 140;
+    var th = pin.offsetHeight || TICKER_H;
     pin.style.left = Math.round(screenRight - tw - GAP_RIGHT) + 'px';
-    pin.style.top = Math.round(screenTop - TICKER_H - GAP_TOP) + 'px';
+    pin.style.top = Math.round(screenTop - th - GAP_TOP) + 'px';
   }
   function syncHudBlankFromBed() {
     if (typeof window.__hudSyncBlank === 'function') window.__hudSyncBlank(state.blankW, state.blankH);
@@ -4840,6 +4843,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       item.classList.toggle('is-lit', item === chip);
     });
     var hud = document.getElementById('hud');
+    if (hud) hud.classList.toggle('ticker-part-open', key === 'part');
     if (hud && !hud.classList.contains('canvas-calculator') && typeof window.__hudFromBedCalc === 'function') window.__hudFromBedCalc();
     requestAnimationFrame(function () {
       var field = document.querySelector('.param-ticker[data-open="' + key + '"]');
