@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
 ═══════════════════════════════════════════════════════════════════════════════
-FlipIt composition — Numeric HUD + FLiPIT + toolPath + LaserBed
+FlipIt composition — blank-in-space canvas + FLiPIT + toolPath
 Host only. Individuals remain standalone lock files in this folder.
 
 Product: FlipIt
@@ -18,8 +18,8 @@ Authority (do not restyle locks from this host):
 Bridges in this host:
   · R17 FLiPIT waypoints ↔ toolPath (class is-hidden)
   · R27 toolPath boots hidden
-  · R29 LaserBed under .bed-stage (full-viewport primary canvas)
-  · R30 HUD position hold (from individual tip — not rewritten here)
+  · Seq 3 blank-in-space canvas: no drawn LaserBed or Numeric HUD card
+  · ticker + picker are the blank HUD; calculator appears only on picker click
   · R1  Boot: HUD open · FLiPIT closed · HUD ↔ FLiPIT chrome
         HUD AUTO-SIZE + FLiPIT chips · calc-mode keeps chips
         LaserBed calc chip → HUD calculator · real local file open
@@ -59,7 +59,7 @@ Prior composition/lock archives stay on disk.
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>FlipIt — composition (Numeric HUD + FLiPIT + toolPath + LaserBed)</title>
+<title>FlipIt — composition (blank-in-space canvas + FLiPIT + toolPath)</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; overflow: hidden; font-family: var(--font); color: var(--ink); background: #fff; }
@@ -2153,9 +2153,49 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       pointer-events: none;
     }
     .toolpath-canvas.has-part .toolpath-empty { display: none; }
+
+    /* ── Seq 3 — blank-in-space composition surface ── */
+    :root { --app-header-h: 64px; --canvas-pad: 48px; }
+    .app-header { position: fixed; inset: 0 0 auto; z-index: 100; height: var(--app-header-h); display: flex; align-items: center; padding: 0 20px; background: rgba(255,255,255,0.96); border-bottom: 1px solid rgba(26,20,40,0.12); box-shadow: 0 1px 0 rgba(255,255,255,0.8); }
+    .app-header__mark { font-family: var(--font-mono); font-size: 13px; font-weight: 800; letter-spacing: .08em; }
+    .app-header__mark .label-flip { color: var(--ink); }
+    .app-header__mark .label-it { color: #c98c00; }
+    .app-header__label { margin-left: 10px; color: var(--ink-50); font-size: 12px; }
+    .app-header__spacer { flex: 1; }
+    .app-header__chrome { display: flex; gap: 6px; margin-right: 10px; }
+    .app-header__chrome button { width: 28px; height: 28px; padding: 0; border: 1px solid #a2a2a2; border-radius: 4px; background: #fff; color: #171717; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; line-height: 0; }
+    .app-header__chrome button:active { transform: translateY(1px); background: #f3f3f3; }
+    .app-header__flipit { border: 1px solid rgba(26,20,40,0.22); border-radius: 7px; padding: 7px 10px; background: var(--ink); color: #fff; font: 800 12px/1 var(--font-mono); letter-spacing: .02em; cursor: pointer; }
+    .app-header__flipit .label-it { color: #FFCE1B; }
+    .app-header__flipit:hover { background: rgba(26,20,40,0.92); }
+    .bed-stage { inset: var(--app-header-h) 0 0; background: #f7f5fa; }
+    /* Retain the blank's interaction layer, but remove every drawn bed primitive. */
+    #lb-bed-fill, #lb-major-grid, #lb-bed-rim, #lb-edge-x, #lb-edge-y, #lb-camera > circle, #lb-nest-box, #lb-part-g, #lb-bed-rulers { display: none; }
+    #lb-blank { fill: #fff; fill-opacity: 1; stroke: #1a1428; stroke-width: 1.5; clip-path: none; }
+    .blank-ticker-cluster { z-index: 90; }
+    /* The retained Numeric HUD markup becomes calculator-only chrome in this host. */
+    #hud { display: none; z-index: 90; }
+    #hud.canvas-calculator { display: flex; }
+    #hud.canvas-calculator .keypad-header, #hud.canvas-calculator .hud-footer-sep, #hud.canvas-calculator .hud-controls { display: none !important; }
+    #hud.canvas-calculator #hud-body { display: block; grid-template-rows: 1fr; }
+    #hud.canvas-calculator .hud-stage { display: flex; flex-direction: column; gap: 8.8px; height: auto !important; }
+    #hud.canvas-calculator #hud-mode, #hud.canvas-calculator .classic-calc { position: static; display: flex; opacity: 1; pointer-events: auto; }
+    #hud.canvas-calculator [data-param="part"] { display: none; }
 </style>
 </head>
 <body>
+
+  <header class="app-header">
+    <div class="app-header__mark"><span class="label-flip">FLiP</span><span class="label-it">IT</span></div>
+    <div class="app-header__label">Blank canvas</div>
+    <div class="app-header__spacer"></div>
+    <div class="app-header__chrome" aria-label="Canvas controls">
+      <button type="button" id="lb-zoom-in" title="Zoom in"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg></button>
+      <button type="button" id="lb-zoom-out" title="Zoom out"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg></button>
+      <button type="button" id="lb-fit" title="Fit"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg></button>
+    </div>
+    <button type="button" class="app-header__flipit" id="btn-header-flipit" title="Open FLiPIT" aria-pressed="false"><span class="label-flip">FLiP</span><span class="label-it">IT</span></button>
+  </header>
 
   <div class="bed-stage" id="laser-bed-host">
     <svg class="lb-world" id="lb-world" xmlns="http://www.w3.org/2000/svg">
@@ -2190,12 +2230,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         <rect id="lb-hit-top"    x="0"     y="7.65" width="12"  height="0.7" fill="transparent" style="cursor:ns-resize"/>
       </g>
     </svg>
-    <div class="lb-chrome">
-      <button type="button" id="lb-zoom-in" title="Zoom in"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg></button>
-      <button type="button" id="lb-zoom-out" title="Zoom out"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg></button>
-      <button type="button" id="lb-fit" title="Fit"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg></button>
-    </div>
-
     <!-- Blank ticker cluster — pill + disconnected calc, right-pinned -->
     <div class="blank-ticker-cluster" id="blank-ticker-cluster">
       <div class="blank-ticker" id="blank-ticker" aria-label="Blank size">
@@ -2213,7 +2247,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     </div>
   
     <!-- Numeric HUD (lock: NUMERIC-HUD-v3) -->
-<div class="keypad" id="hud" role="dialog" aria-label="Numeric HUD">
+<div class="keypad" id="hud" role="dialog" aria-label="Calculator">
     <div class="keypad-header" id="hud-header" title="Drag HUD">
       <button type="button" class="tool press" id="calc-toggle" title="Calculator mode" aria-label="Calculator mode" aria-pressed="false">
         <svg width="16.5" height="16.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.54" stroke-linecap="round" stroke-linejoin="round">
@@ -2612,9 +2646,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 /* ── LaserBed ── */
 /* LaserBed host + blank ticker right-pin residual */
 (function () {
-  var BED = 48;
+  /* The blank, not a machine envelope, is this composition's canvas subject. */
   var state = {
-    blankW: 12, blankH: 8, snap: 0.125, zoom: 1, panX: 0, panY: 0, dragging: null, start: null,
+    blankW: 12, blankH: 8, snap: 0.125, zoom: 1, fitScale: null, panX: 0, panY: 0, dragging: null, start: null,
     partW: 1.250, partH: 3.375, partRot: 0,
     margin: { l: 0.25, r: 0.25, t: 0.25, b: 0.25 }
   };
@@ -2648,9 +2682,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   function fittedScale() {
     var W = svg.clientWidth || window.innerWidth;
     var H = svg.clientHeight || window.innerHeight;
-    return Math.min(Math.max(80, W - PAD * 2) / BED, Math.max(80, H - PAD * 2) / BED);
+    var blankWithGutterW = state.blankW + 4;
+    var blankWithGutterH = state.blankH + 8;
+    return Math.min(Math.max(80, W - PAD * 2) / blankWithGutterW, Math.max(80, H - PAD * 2) / blankWithGutterH);
   }
-  function pxPerInch() { return fittedScale() * state.zoom; }
+  function pxPerInch() { return (state.fitScale == null ? fittedScale() : state.fitScale) * state.zoom; }
   function labelStep() {
     var s = pxPerInch(), candidates = [12, 6, 3, 1];
     for (var i = candidates.length - 1; i >= 0; i--) if (candidates[i] * s >= MIN_LABEL_PX) return candidates[i];
@@ -2725,40 +2761,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
   function drawMajorGrid(step) {
     majorGrid.innerHTML = '';
-    for (var i = 1; i < BED; i++) {
-      majorGrid.appendChild(line(i, 0, i, BED, 1, '#000', 0.10));
-      majorGrid.appendChild(line(0, i, BED, i, 1, '#000', 0.10));
-    }
-    for (var j = step; j < BED; j += step) {
-      majorGrid.appendChild(line(j, 0, j, BED, 1, '#000', 0.30));
-      majorGrid.appendChild(line(0, j, BED, j, 1, '#000', 0.30));
-    }
   }
   function drawBedRulers() {
-    var s = pxPerInch(), L = labelStep(), T = tickStep(L);
-    bedRulers.innerHTML = ''; drawMajorGrid(L);
-    var fontWorld = 11 / s, tickOut = Math.max(0.4, 11 / s), gap = Math.max(0.12, 3 / s);
-    var railW = 36 / s;
-    var frameRun = BED + 2 * railW;
-    bedRulers.appendChild(railRect(-railW, -railW, frameRun, railW, '#E8EEF8'));
-    bedRulers.appendChild(railRect(-railW, BED, frameRun, railW, '#E8EEF8'));
-    bedRulers.appendChild(railRect(-railW, 0, railW, BED, '#E8EEF8'));
-    bedRulers.appendChild(railRect(BED, 0, railW, BED, '#E8EEF8'));
-    var numOff = Math.min(railW - fontWorld * 1.35, tickOut * 1.15 + gap + fontWorld * 0.4);
-    if (numOff < tickOut + gap + fontWorld * 0.2) numOff = tickOut + gap + fontWorld * 0.25;
-    for (var i = 0; i <= BED; i += T) {
-      var isLabel = (i % L === 0) && i !== 0, isMajor = (i % L === 0);
-      var len = isMajor ? tickOut * 1.4 : tickOut * 0.75;
-      if (i > 0) {
-        bedRulers.appendChild(line(i, 0, i, -len, 1, '#000', 0.30));
-        bedRulers.appendChild(line(0, i, -len, i, 1, '#000', 0.30));
-      }
-      if (isLabel) {
-        bedRulers.appendChild(label(i, -numOff, String(i), fontWorld, 'middle', 'middle'));
-        bedRulers.appendChild(label(-numOff, i, String(i), fontWorld, 'middle', 'middle'));
-      }
-    }
-    bedRulers.appendChild(label(-numOff * 0.72, -numOff * 0.72, '0', fontWorld, 'middle', 'middle'));
+    bedRulers.innerHTML = '';
   }
 
   /* Right-pin residual: 20px from blank right · 10px above blank top */
@@ -2767,7 +2772,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (!pin) return;
     var s = pxPerInch();
     var screenRight = state.panX + state.blankW * s;
-    var screenTop = state.panY - state.blankH * s;
+    var stageTop = svg.getBoundingClientRect().top;
+    var screenTop = stageTop + state.panY - state.blankH * s;
 
     pin.classList.add('is-on');
     var txt = state.blankW.toFixed(3) + ' × ' + state.blankH.toFixed(3);
@@ -2810,11 +2816,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   };
   function fitBed() {
     state.zoom = 1;
-    var s = fittedScale();
+    state.fitScale = fittedScale();
+    var s = state.fitScale;
     var W = svg.clientWidth || window.innerWidth;
     var H = svg.clientHeight || window.innerHeight;
-    state.panX = (W - BED * s) / 2;
-    state.panY = (H + BED * s) / 2;
+    state.panX = (W - state.blankW * s) / 2;
+    state.panY = (H + state.blankH * s) / 2;
   }
 
   function onPointerDown(e) {
@@ -2825,13 +2832,13 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     else if (t === hitTop || id === 'lb-hit-top') { state.dragging = 'y'; document.body.classList.add('lb-dragging-y'); }
     else if (e.currentTarget === blankLayer) return;
     else { state.dragging = 'pan'; document.body.classList.add('lb-panning', 'lb-dragging'); }
-    state.start = { cx: e.clientX, cy: e.clientY, w: state.blankW, h: state.blankH, panX: state.panX, panY: state.panY };
+    state.start = { cx: e.clientX, cy: e.clientY, w: state.blankW, h: state.blankH, panX: state.panX, panY: state.panY, scale: pxPerInch() };
     try { e.target.setPointerCapture(e.pointerId); } catch (_) {}
     e.preventDefault();
   }
   function onPointerMove(e) {
     if (!state.dragging || !state.start) return;
-    var dx = e.clientX - state.start.cx, dy = e.clientY - state.start.cy, s = pxPerInch();
+    var dx = e.clientX - state.start.cx, dy = e.clientY - state.start.cy, s = state.start.scale;
     if (state.dragging === 'pan') { state.panX = state.start.panX + dx; state.panY = state.start.panY + dy; }
     else if (state.dragging === 'x') state.blankW = Math.max(state.snap, snap(state.start.w + dx / s));
     else if (state.dragging === 'y') state.blankH = Math.max(state.snap, snap(state.start.h - dy / s));
@@ -2855,7 +2862,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     e.preventDefault();
     var factor = e.deltaY < 0 ? 1.1 : 1 / 1.1;
     var newZoom = Math.min(12, Math.max(0.35, state.zoom * factor));
-    var s0 = pxPerInch(), s1 = fittedScale() * newZoom;
+    var s0 = pxPerInch(), s1 = (state.fitScale == null ? fittedScale() : state.fitScale) * newZoom;
     var wx = (e.clientX - state.panX) / s0, wy = (state.panY - e.clientY) / s0;
     state.zoom = newZoom;
     state.panX = e.clientX - wx * s1;
@@ -3122,7 +3129,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     hud.style.right = 'auto';
     hud.style.bottom = 'auto';
     hud.style.left = '25px';
-    hud.style.top = '25px';
+    hud.style.top = Math.round(document.getElementById('laser-bed-host').getBoundingClientRect().top + 20) + 'px';
   })();
 
   function hudMotion() {
@@ -3812,19 +3819,24 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     refreshTickers();
   };
   window.__hudToggleCalc = function () { setCalc(!state.calc); };
-  window.__hudExitCalc = function () { if (state.calc) setCalc(false); };
+  window.__hudExitCalc = function () {
+    if (state.calc) setCalc(false);
+    hud.classList.remove('canvas-calculator');
+  };
   window.__hudFromBedCalc = function () {
-    if (isHudCollapsed()) {
-      clearMotionTimer();
+    /* Seq 7: the picker owns calculator visibility; its surface retains presets. */
+    if (hud.classList.contains('canvas-calculator')) {
+      closeAllParamPopovers();
       state.calc = false;
-      calcToggle.classList.remove('active-calc');
-      calcToggle.setAttribute('aria-pressed', 'false');
-      setCollapsed(false);
-      applyModeVisibility();
-      applyBodyHeight();
+      hud.classList.remove('canvas-calculator', 'calc-mode');
       return;
     }
-    setCalc(!state.calc);
+    hud.classList.add('canvas-calculator');
+    clearMotionTimer();
+    state.collapsed = false;
+    hud.classList.remove('collapsed');
+    setCalc(true);
+    if (typeof window.__hostArrange === 'function') window.__hostArrange('calculator');
   };
 
   document.getElementById('btn-auto-size').addEventListener('click', function () {
@@ -3833,6 +3845,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (typeof window.__flipitAutoSize === 'function') window.__flipitAutoSize();
   });
   document.getElementById('btn-gcode').addEventListener('click', function () {
+    closeAllParamPopovers();
+    if (typeof window.__flipitToggle === 'function') window.__flipitToggle();
+  });
+  document.getElementById('btn-header-flipit').addEventListener('click', function () {
     closeAllParamPopovers();
     if (typeof window.__flipitToggle === 'function') window.__flipitToggle();
   });
@@ -4294,12 +4310,14 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     return isGcodeOpen() && panel.classList.contains('is-expanded');
   }
   function syncHudFlipitChrome() {
-    var btn = document.getElementById('btn-gcode');
-    if (!btn) return;
     var open = isGcodeOpen();
     var expanded = open && panel.classList.contains('is-expanded');
-    btn.setAttribute('aria-pressed', expanded ? 'true' : 'false');
-    btn.title = !open ? 'Open FLiPIT' : (expanded ? 'Close FLiPIT' : 'Expand FLiPIT');
+    ['btn-gcode', 'btn-header-flipit'].forEach(function (id) {
+      var btn = document.getElementById(id);
+      if (!btn) return;
+      btn.setAttribute('aria-pressed', expanded ? 'true' : 'false');
+      btn.title = !open ? 'Open FLiPIT' : (expanded ? 'Close FLiPIT' : 'Expand FLiPIT');
+    });
   }
   function openGcode(expanded) {
     panel.classList.add('is-open');
@@ -4816,18 +4834,21 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     clearTimeout(el._glideTimer);
     el._glideTimer = setTimeout(function () { el.classList.remove('is-gliding'); }, 460);
   }
-  var TOP_BAND = 25;
+  function stageTopBand() {
+    var stage = document.getElementById('laser-bed-host');
+    return Math.round((stage ? stage.getBoundingClientRect().top : 0) + 20);
+  }
   function findOpenSpace(el, avoids) {
     var w = el.offsetWidth || 280;
     var vw = window.innerWidth;
-    var top = TOP_BAND;
+    var top = stageTopBand();
     var gap = 16;
-    var candidates = [TOP_BAND];
+    var candidates = [20];
     avoids.forEach(function (a) {
       if (a && Math.abs(a.top - top) < 90) candidates.push(Math.round(a.right + gap));
     });
-    candidates.push(Math.max(TOP_BAND, Math.round((vw - w) / 2)));
-    candidates.push(Math.max(TOP_BAND, Math.round(vw - w - TOP_BAND)));
+    candidates.push(Math.max(20, Math.round((vw - w) / 2)));
+    candidates.push(Math.max(20, Math.round(vw - w - 20)));
     candidates.sort(function (a, b) { return a - b; });
     for (var i = 0; i < candidates.length; i++) {
       var left = candidates[i];
@@ -4839,7 +4860,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       }
       if (!hit) return { left: left, top: top };
     }
-    return { left: TOP_BAND, top: top };
+    return { left: 20, top: top };
   }
 
   window.__hostArrange = function (reason) {
@@ -4848,22 +4869,23 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var tp = document.getElementById('backplot');
     var flags = window.__cardUserDrag;
     var flipitOpen = !!(gcode && gcode.classList.contains('is-open') && gcode.style.display !== 'none');
+    var hudVisible = !!(hud && hud.classList.contains('canvas-calculator') && hud.offsetWidth > 0);
     var tpOpen = !!(tp && !tp.classList.contains('is-hidden'));
     var vw = window.innerWidth;
-    var top = TOP_BAND;
+    var top = stageTopBand();
 
-    if (flipitOpen && hud) {
+    if (flipitOpen) {
       var gW = gcode.offsetWidth;
-      var hW = hud.offsetWidth;
+      var hW = hudVisible ? hud.offsetWidth : 0;
       var tW = tpOpen ? (tp.offsetWidth || 280) : 0;
-      placeCard(gcode, Math.max(TOP_BAND, (vw - gW) / 2), top);
-      placeCard(hud, Math.max(TOP_BAND, vw - hW - TOP_BAND), top);
+      placeCard(gcode, Math.max(20, (vw - gW) / 2), top);
+      if (hudVisible) placeCard(hud, Math.max(20, vw - hW - 20), top);
       if (tpOpen) {
-        var leftSlot = Math.max(TOP_BAND, ((vw - gW) / 2 - tW) / 2);
+        var leftSlot = Math.max(20, ((vw - gW) / 2 - tW) / 2);
         placeCard(tp, leftSlot, top);
       }
       flags.flipit = false;
-      flags.hud = false;
+      if (hudVisible) flags.hud = false;
       if (tpOpen) flags.toolpath = false;
       return;
     }
