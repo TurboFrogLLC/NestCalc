@@ -49,3 +49,41 @@ PR 128 is ready for review. Requested the named `@codex review` at https://githu
 ## Seq 5 Inspection — Operator return
 
 Read the named review thread. Codex completed its review of `ff82d1c8fe` with “Didn't find any major issues,” and there are no review comments or open P1 findings. Inspection is clean.
+
+## Seq 6 Merge — Operator return
+
+After the clean Seq 5 inspection and successful build, PR 128 was merged into `main`. Merge SHA: `f32df8b84746366f8c5003160df79d35a0af27f4`.
+
+## Seq 7 Close — Operator return
+
+Synced local `main` to merge SHA `f32df8b84746366f8c5003160df79d35a0af27f4`. The feature branch `feat/serve-flipit-path` is retained. The following packslip is printed and posted on PR 128.
+
+### Packslip
+
+```text
+Repo: NestCalc
+Owner: wReckless
+Part: serve blank canvas on /flipit
+Description: Vercel path returns COMPOSITION-FLIPIT-v3.html; / stays product calculator
+PR: 128
+Branch: feat/serve-flipit-path
+Head: f32df8b84746366f8c5003160df79d35a0af27f4
+Session: continuous
+job_id: NGJ-20260901-flipitpath
+flow_id:
+goal_sha256:
+Date: 2026-09-01
+
+Seq  Label              Notes                                      Stamp
+1    Plan               Owner locked /flipit + ops-multi-app
+2    Start-branch       feat/serve-flipit-path from origin/main   3ba19f5378160987167a750eeeb302058a9123d6
+3    Cut                /flipit route serves composition host     2574ffd2ce1735ad788f5d693467c3691852ad8b
+4    Send for review    PR 128; listen                            @codex review
+5    Inspection         review thread                             clean; no findings
+6    Merge              PR 128 into main                          f32df8b84746366f8c5003160df79d35a0af27f4
+7    Close              packslip on PR 128                        f32df8b84746366f8c5003160df79d35a0af27f4
+
+Closed Corrective Action: none
+Still open: none
+Next: none
+```
