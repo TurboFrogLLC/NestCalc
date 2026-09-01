@@ -22,9 +22,8 @@ Operators do not pick their own start. The packet Operator line is who runs this
    switch is host work, not packet Instruction.
 4. Do this operation only. Do not rewrite the traveler.
 5. Stamp this operation before the next operation runs.
-   After stamp, if the next Operation is already named on the job traveler at
-   `docs/travelers/<PR>.md`, the finishing Operator emits that Ops Packet from
-   that row; if it is not named, → Owner. Completing a visit is not job-end.
+   The job traveler row is Label, Notes, Stamp. It is not the packet.
+   Management authors the next packet. Completing a visit is not job-end.
 6. Job end is the packslip. Non-conformance is the Non-conformance Report.
 
 First `main` exception: Start-branch at job start only (host). Create or switch is host work.
