@@ -37,6 +37,10 @@ Cut B host at `ef538f0ee1ad72a530547f705e13cdd9095a2532`, confirmed as the origi
 
 Owner-deferred review: no PR comment and no `@codex review` were posted. Draft state unchanged.
 
+## Seq 28 — Wait G — 2026-08-31
+
+**owner-deferred-review.** No PR short-read was performed and no review wait was started, per the Owner's Send G instruction.
+
 ## Seq 8 — Wait B — 2026-08-31
 
 **owner-deferred-review.** No PR short-read was performed and no review wait was started, per the Owner's Send B instruction.
