@@ -1,0 +1,4 @@
+interface:
+  display_name: "Repo Hygiene Gate"
+  short_description: "Classify repo state before changes"
+  default_prompt: "Use $codex-repo-hygiene-gate to check branch, worktree, refs, and scope before work."
