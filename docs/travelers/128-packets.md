@@ -41,3 +41,7 @@ Started the existing `feat/serve-flipit-path` branch from `origin/main` at `3ba1
 ## Seq 3 Cut — Operator return
 
 Added `GET /flipit`, which serves the locked `COMPOSITION-FLIPIT-v3.html` bytes as `text/html; charset=utf-8` using the existing Node route-handler pattern. `/` and AutoNest are unchanged. `src/proxy.ts` remains unchanged, so `/flipit` retains the same Clerk protection as `/`.
+
+## Seq 4 Send for review — Operator return
+
+PR 128 is ready for review. Requested the named `@codex review` at https://github.com/TurboFrogLLC/NestCalc/pull/128#issuecomment-5498572072 and began listening for the review-thread disposition.
