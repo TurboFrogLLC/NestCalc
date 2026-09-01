@@ -41,6 +41,10 @@ Owner-deferred review: no PR comment and no `@codex review` were posted. Draft s
 
 **owner-deferred-review.** No PR short-read was performed and no review wait was started, per the Owner's Send G instruction.
 
+## Seq 29 — Inspection G — 2026-08-31
+
+**Clean.** Cut G lock verified in the host and SPEC: the Cut F concave scoop is absent; a filled 6px convex grid quarter walks the 1.1px outline at picker-left × travel-top; shared edges are square; travel top-right is flat; picker/ticker outer radii and the 8px-inset join rule remain. Visual browser check of the open picker confirms the joined outline; only the known local `http.server` POST 501 and favicon 404 appeared in the console. No merge or PR comment.
+
 ## Seq 8 — Wait B — 2026-08-31
 
 **owner-deferred-review.** No PR short-read was performed and no review wait was started, per the Owner's Send B instruction.
