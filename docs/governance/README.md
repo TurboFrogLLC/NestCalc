@@ -21,7 +21,8 @@ NestCalc files are sole authority after write.
 | `AGENTS.md` | Routing, protected surfaces, roles, and hard boundaries |
 | `docs/GLOSSARY.md` | Canonical role, operation, stamp, and artifact terms |
 | `docs/WORKFLOW.md` | Procedure, Freeze contract, proof, Quality Control, and Release |
-| `docs/templates/traveler.md` | One-PR Traveler and current-operation Instruction |
+| `docs/templates/traveler.md` | Job traveler. Header + routing. |
+| `docs/templates/packet.md` | Ops Packet. Current-visit Instruction. |
 | `docs/templates/packslip.md` | Job-end receipt emitted only after Close |
 | `docs/templates/nonconformance.md` | Stopped-operation report with blank Disposition |
 | `docs/templates/goal-form.md` | Copy sheet for `GOAL.md` |
@@ -33,29 +34,30 @@ NestCalc files are sole authority after write.
 
 `docs/governance/manifest.json` pins required repository paths. In addition,
 `validate_manifest` directly requires the glossary, Traveler, Packslip, and
-Non-conformance Report template. Removing any one fails closed even if the
-manifest's `required_paths` list is weakened.
+Non-conformance Report template. `packet.md` is on `required_paths`. Removing
+any one fails closed even if the manifest's `required_paths` list is weakened
+for the four hardcoded authority files.
 
 ## Lifecycle recipe
 
 1. **Goal prep and Freeze** — inspect hygiene and authority; commit one active
    `GOAL.md` with v1 metadata, canonical hash, bounded outcomes, Allowed Files,
    protected surfaces, proof, and stopping condition.
-2. **Traveler** — use `docs/templates/traveler.md` for the one PR. Its
-   Instruction names the current operation and wins over GOAL for that
-   operation.
+2. **Traveler and packet** — job sheet `docs/templates/traveler.md`. Current
+   visit `docs/templates/packet.md`. Packet Instruction wins over GOAL for that
+   operation. Management authors the packet.
 3. **Cut** — implement on the named branch and head, within Allowed Files, with
    the Freeze hash unchanged. Finishing Cut is not job end.
-4. **Quality Control** — keep the PR draft through Send for review, Wait, and
-   Inspection. Findings return to Corrective Action on the same operation,
-   followed by another Inspection.
+4. **Quality Control** — keep the PR draft through Send for review (listen) and
+   Inspection when that visit is planned. Findings return to next Plan + Cut, or
+   Corrective Action on the same visit when Mode is Specialist.
 5. **Release** — when repository evidence satisfies confidence and named
    criteria, Merge unless the Traveler forbids it, then Close.
 6. **Packslip** — emit only at job end after Close. Print it in the CLI and, if
    a PR exists, post the same block on the PR.
 7. **Non-conformance Report** — when the operation cannot progress after the
    required attempts, stop, emit `docs/templates/nonconformance.md` with blank
-   Disposition, and wait. Never substitute a Packslip.
+   Disposition. Never substitute a Packslip.
 
 Only wReckless is Owner. Operators run the named operation; none owns Freeze,
 Release, or a cycle. Production, identity, MODE, and unresolved escalation
@@ -125,7 +127,7 @@ goal alone, update `goal_memory_commit` in a second goal-memory commit, then run
 Freeze is valid.
 
 The goal-memory commit supplied to `create-handoff` exists, contains `GOAL.md`,
-contains no implementation path, and predates implementation. The Traveler,
+contains no implementation path, and predates implementation. The packet,
 not the sidecar, supplies the current operation. Do not edit an active product
 GOAL as part of an unrelated governance wave.
 
