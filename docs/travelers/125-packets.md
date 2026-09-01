@@ -100,3 +100,7 @@ Owner-deferred review: no PR comment and no `@codex review` were posted. Draft s
 ## 2026-08-31 Cut F look opened
 
 Owner look on local host: Cut E radiused the **wrong** corner (travel top-right under the picker). Wanted the **inside left** picker×travel join as a 6px concave fillet. Input radius 6. Swap off Blank/Part/Gap. Send-to-presets freezes the page after HUD hide. No `@codex review` on Send F.
+
+## Seq 22 — Cut F look — 2026-08-31
+
+Cut F host at `f3cc1220cfc4c42f77efa8ec2256e3d6df589750`, confirmed as the origin branch SHA. The travel outer top-right is flat and the 6px inverse fillet is at the picker-left connector; the inset join line remains. Ticker and Bed Presets inputs are radius 6, swap is absent from ticker X/Y edit, and ticker Send safely exits edit after opening Bed Presets. Browser verification confirmed Send leaves the picker and Zoom In interactive, with no Send-handler console error. No #124 HUD residual work.
