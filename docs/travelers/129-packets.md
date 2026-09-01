@@ -37,3 +37,10 @@ Seq 1 Plan — Owner: ticker-door chrome on 127 blank canvas. ops-multi-codex.
 - Review `5084236074` on `ac59ce2` is **COMMENTED** with two open P2 threads: Part picker controls are hidden, and ticker placement uses stale 34px height instead of the 42.2px travel row.
 - Work remains. Merge was not performed.
 - New remediation Plan and Cut rows were added; next: Seq 8 Plan, then Seq 9 Cut.
+
+## Seq 9 Cut — return
+
+- Fixed `discussion_r3909458457`: selecting Part now adds `ticker-part-open`, which exposes the retained Part row and its controls.
+- Fixed `discussion_r3909458463`: ticker placement subtracts the live cluster height, preserving the 10px gap above the blank despite the 42.2px travel row.
+- No bed, grid, rulers, nest box, Numeric HUD-at-load, or AutoNest changes. Implementation: `75bd3536b6df6a12ffdfd3270d042e97b53e4b0f`.
+- Next: Send for review.
