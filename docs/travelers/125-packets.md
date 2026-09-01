@@ -120,3 +120,7 @@ Owner-deferred review: no PR comment and no `@codex review` were posted. Draft s
 ## 2026-08-31 Cut G look opened
 
 Owner: Cut F scoop is concave. Want convex. Quarter lives in the grid at picker left × travel top so the stroke walks around the step. Shared edges square. No `@codex review` on Send G.
+
+## Seq 26 — Cut G look — 2026-08-31
+
+Cut G host at `8ceed5bd9c098cc80a72cd839ef869be20450d84`, confirmed as the origin branch SHA. The Cut F concave scoop is removed; a filled 6px convex grid quarter carries the 1.1px `rgba(26, 20, 40, 0.22)` outline around the picker-left × travel-top step. Shared edges remain square, the travel outer top-right stays flat, and the 8px-inset join line remains. No swap, Send-lockup, or #124 HUD work.
