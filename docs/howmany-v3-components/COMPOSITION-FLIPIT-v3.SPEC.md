@@ -39,7 +39,7 @@ Host validation: initial browser snapshot showed header + blank ticker/picker wi
 |---------|---------------|-----------|--------:|
 | Canvas well | `.bed-stage` · `#laser-bed-host` | host — begins below the fixed header | 0 |
 | Blank body | `#lb-blank` (in `#lb-camera`) | host — sole drawn canvas subject | **0** |
-| Header controls (zoom / Fit / FLiPIT) | `.app-header` · `.lb-chrome` · `#btn-header-flipit` | host — fixed in the header | **101** |
+| Header controls (zoom / Fit / FLiPIT) | `.app-header` · `.app-header__chrome` · `#btn-header-flipit` | host — mounted in the header stacking context | **101** |
 | Blank hits + arc overlay | `#lb-blank-layer` | grab targets only | **10** |
 | toolPath | `#backplot.toolpath` | `TOOLPATH-v3.SPEC.md` · tip `2e9e2ace` | 20 |
 | FLiPIT | `#gcode` · class `.gcode` | `FLIPIT-v3.SPEC.md` · tip `37d628e9` | 30 |
@@ -63,9 +63,9 @@ Wordmarks stay as locked: **FLiP** white 700 + **IT** amber 800 · **tool** whit
 | **R17** | FLiPIT Source + Output waypoints (`#btn-toolpath-src` · `#btn-toolpath-out`) toggle toolPath | class `is-hidden` on `#backplot` · `aria-pressed` sync · `__setToolpathOpen` |
 | **R27** | toolPath boots hidden | HTML `is-hidden` + `setToolpathOpen(false)` |
 | **R29** | Blank-in-space primary canvas | canvas well begins below header; no grid, rim, rulers, nest box, or part rendering; BL origin retained; Fit frames blank + gutter only |
-| **R30** | Header-aware overlay placement | calculator and opened cards begin below header; ticker converts stage-local blank coordinates to viewport coordinates |
+| **R30** | Header-aware overlay placement | zoom/Fit are mounted in the header stacking context; calculator and opened cards begin below header; ticker converts stage-local blank coordinates to viewport coordinates |
 | **R1** | Boot blank HUD / FLiPIT closed | ticker + picker visible; calculator, FLiPIT, and toolPath hidden; picker is calculator mount/dismiss control; header FLiPIT control opens the closed FLiPIT surface |
-| **R2** | Picker reveals calculator surface | `__hudFromBedCalc` toggles `canvas-calculator`; revealed surface contains calculator keys plus Blank / Gap / Margin preset controls |
+| **R2** | Picker reveals calculator surface | `__hudFromBedCalc` toggles `canvas-calculator`, then arranges its now-measurable surface; revealed surface contains calculator keys plus Blank / Gap / Margin preset controls |
 | **R3** | Picker dismisses calculator surface | second picker click closes popovers, clears calculator mount, and restores ticker-only HUD; source Clear + name X fully unload |
 | **R4** | AUTO-SIZE 2nd click **closes** collapsed FlipIt · Output tab gated until Flip IT · READY/DONE inset status | `__flipitAutoSize` closes when already open+collapsed (no re-detect) · `#tab-output.is-gated` until `hasOutput()` · stage-status inset + 1.7px glow · READY type `--ink-30` |
 | **R5** | Blank ticker remains live | blank drag updates retained Blank fields; ticker is pinned using the canvas-stage viewport offset and floats beside picker |
@@ -102,7 +102,7 @@ Hide primitives stay surface-owned (`ALIGNMENT-v3` §4). Host does not invent a 
 | Blank z-order | `#lb-blank` lives in the world (behind cards). Ticker cluster **82** shares the front surface with zoom **82** and HUD **80**. Overlay `#lb-blank-layer` **10** is arc + hits only. |
 | Free-corner grab | Outside quarter-arc (~18px, 2px stroke). `#lb-hit-corner` is a circle on the arc midpoint (XY resize). Green stroke on arc while `lb-dragging-xy`. Blank outline glow is **−50% of R9** (0.6px / 0.14) and clipped to the bed (`#lb-bed-clip`) so rulers stay unlit. |
 | Card layout | Opened cards start 20px below canvas well viewport top, clearing the fixed header. FlipIt centers; calculator uses right slot; user drag wins until next rearrange. |
-| Header controls | `#lb-zoom-in` / `#lb-zoom-out` / `#lb-fit` and `#btn-header-flipit` live in the fixed header above canvas and cards. |
+| Header controls | `#lb-zoom-in` / `#lb-zoom-out` / `#lb-fit` and `#btn-header-flipit` are mounted in the fixed header above canvas and cards, so the stage cannot intercept them. |
 | FlipIt unit switch | IN/MM labels flex-centered to the track background. |
 | HUD presets | Blank, Gap, Margin only (not Part). Everyday filled-chip click **loads only** (no arm, no save prompt). Pencil **Edit** enters a visible write mode (confirm bar + chip ring; not a dead lit pencil). Only then can a slot be armed; Confirm stores the armed slot from **live fields**, toasts `Preset saved`, and exits edit; Cancel exits without writing. Main Save/OK **always** commits current live field values to the HUD ticker **and** the bed blank via `__bedSetBlank` and never writes a preset. Enter in a numeric field settles/formats that field and does not close the popover. `localStorage` key `howmany.flipit.v3.presets`. |
 | Margin ticker | Two-line summary grows the ticker (`:has(.m-line)` min-height 40px) and remasures `#hud-stage` so the row is not clipped. Collapse timing unchanged. |

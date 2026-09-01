@@ -2162,6 +2162,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     .app-header__mark .label-it { color: #c98c00; }
     .app-header__label { margin-left: 10px; color: var(--ink-50); font-size: 12px; }
     .app-header__spacer { flex: 1; }
+    .app-header__chrome { display: flex; gap: 6px; margin-right: 10px; }
+    .app-header__chrome button { width: 28px; height: 28px; padding: 0; border: 1px solid #a2a2a2; border-radius: 4px; background: #fff; color: #171717; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; line-height: 0; }
+    .app-header__chrome button:active { transform: translateY(1px); background: #f3f3f3; }
     .app-header__flipit { border: 1px solid rgba(26,20,40,0.22); border-radius: 7px; padding: 7px 10px; background: var(--ink); color: #fff; font: 800 12px/1 var(--font-mono); letter-spacing: .02em; cursor: pointer; }
     .app-header__flipit .label-it { color: #FFCE1B; }
     .app-header__flipit:hover { background: rgba(26,20,40,0.92); }
@@ -2169,8 +2172,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     /* Retain the blank's interaction layer, but remove every drawn bed primitive. */
     #lb-bed-fill, #lb-major-grid, #lb-bed-rim, #lb-edge-x, #lb-edge-y, #lb-camera > circle, #lb-nest-box, #lb-part-g, #lb-bed-rulers { display: none; }
     #lb-blank { fill: #fff; fill-opacity: 1; stroke: #1a1428; stroke-width: 1.5; clip-path: none; }
-    .lb-chrome { position: fixed; top: 17px; right: 20px; z-index: 101; }
-    .lb-chrome button { background: #fff; }
     .blank-ticker-cluster { z-index: 90; }
     /* The retained Numeric HUD markup becomes calculator-only chrome in this host. */
     #hud { display: none; z-index: 90; }
@@ -2188,6 +2189,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     <div class="app-header__mark"><span class="label-flip">FLiP</span><span class="label-it">IT</span></div>
     <div class="app-header__label">Blank canvas</div>
     <div class="app-header__spacer"></div>
+    <div class="app-header__chrome" aria-label="Canvas controls">
+      <button type="button" id="lb-zoom-in" title="Zoom in"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg></button>
+      <button type="button" id="lb-zoom-out" title="Zoom out"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg></button>
+      <button type="button" id="lb-fit" title="Fit"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg></button>
+    </div>
     <button type="button" class="app-header__flipit" id="btn-header-flipit" title="Open FLiPIT" aria-pressed="false"><span class="label-flip">FLiP</span><span class="label-it">IT</span></button>
   </header>
 
@@ -2224,12 +2230,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         <rect id="lb-hit-top"    x="0"     y="7.65" width="12"  height="0.7" fill="transparent" style="cursor:ns-resize"/>
       </g>
     </svg>
-    <div class="lb-chrome">
-      <button type="button" id="lb-zoom-in" title="Zoom in"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg></button>
-      <button type="button" id="lb-zoom-out" title="Zoom out"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg></button>
-      <button type="button" id="lb-fit" title="Fit"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg></button>
-    </div>
-
     <!-- Blank ticker cluster — pill + disconnected calc, right-pinned -->
     <div class="blank-ticker-cluster" id="blank-ticker-cluster">
       <div class="blank-ticker" id="blank-ticker" aria-label="Blank size">
@@ -3836,6 +3836,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     state.collapsed = false;
     hud.classList.remove('collapsed');
     setCalc(true);
+    if (typeof window.__hostArrange === 'function') window.__hostArrange('calculator');
   };
 
   document.getElementById('btn-auto-size').addEventListener('click', function () {
@@ -4868,22 +4869,23 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var tp = document.getElementById('backplot');
     var flags = window.__cardUserDrag;
     var flipitOpen = !!(gcode && gcode.classList.contains('is-open') && gcode.style.display !== 'none');
+    var hudVisible = !!(hud && hud.classList.contains('canvas-calculator') && hud.offsetWidth > 0);
     var tpOpen = !!(tp && !tp.classList.contains('is-hidden'));
     var vw = window.innerWidth;
     var top = stageTopBand();
 
-    if (flipitOpen && hud) {
+    if (flipitOpen) {
       var gW = gcode.offsetWidth;
-      var hW = hud.offsetWidth;
+      var hW = hudVisible ? hud.offsetWidth : 0;
       var tW = tpOpen ? (tp.offsetWidth || 280) : 0;
       placeCard(gcode, Math.max(20, (vw - gW) / 2), top);
-      placeCard(hud, Math.max(20, vw - hW - 20), top);
+      if (hudVisible) placeCard(hud, Math.max(20, vw - hW - 20), top);
       if (tpOpen) {
         var leftSlot = Math.max(20, ((vw - gW) / 2 - tW) / 2);
         placeCard(tp, leftSlot, top);
       }
       flags.flipit = false;
-      flags.hud = false;
+      if (hudVisible) flags.hud = false;
       if (tpOpen) flags.toolpath = false;
       return;
     }
