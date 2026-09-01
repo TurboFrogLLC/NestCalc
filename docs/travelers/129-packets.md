@@ -31,3 +31,9 @@ Seq 1 Plan — Owner: ticker-door chrome on 127 blank canvas. ops-multi-codex.
 - Read PR 129: `@codex review` is still marked **Running** and has supplied no review disposition or findings.
 - PR merge state is `CLEAN`; Socket Security and Vercel checks are successful. Those checks do not clear the required named review.
 - Inspection remains pending. No merge or Close was performed.
+
+## Seq 5 Inspection — disposition
+
+- Review `5084236074` on `ac59ce2` is **COMMENTED** with two open P2 threads: Part picker controls are hidden, and ticker placement uses stale 34px height instead of the 42.2px travel row.
+- Work remains. Merge was not performed.
+- New remediation Plan and Cut rows were added; next: Seq 8 Plan, then Seq 9 Cut.
