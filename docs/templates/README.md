@@ -44,3 +44,4 @@ Facts only. Disposition blank. `NCMR-` is the stamp.
 ## GOAL form
 
 Copy `goal-form.md` to `GOAL.md`. Replace placeholders. Point; do not paste procedure.
+The GOAL `skills` array stays empty unless the packet names a skill.
