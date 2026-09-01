@@ -69,14 +69,60 @@ Facts: PR 127 marked ready; `@codex review` posted at https://github.com/TurboFr
 ## Seq 5 Inspection
 
 Operator: Codex App
+Stamp: 5080569893
+
+Operator return
+
+Repo: NestCalc
+Mode: Worker
+Operator: Codex App
+Branch: docs/blank-in-space-canvas
+Head: 68015ead0e8ebd02a1b446fcd3df2e4a2d1c284c
+job_id: NGJ-20260901-blankspace
+flow_id: —
+goal_sha256: —
+Stamp: 5080569893
+Facts: Codex review COMMENTED on `78396d56db`; five P2s remain: header-aware calculator placement, stage-to-viewport ticker offset, retained Blank/Gap/Margin presets, picker dismissal, and living SPEC contract rewrite. Not clean; no merge.
+
+## Seq 6 Plan
+
+Operator: Owner
 Stamp: —
 
-## Seq 6 Merge
+## Seq 7 Cut
+
+Operator: Codex App
+Stamp: 4aec96c21675d5ede81389e9180c4edc827f4c04
+
+Operator return
+
+Repo: NestCalc
+Mode: Worker
+Operator: Codex App
+Branch: docs/blank-in-space-canvas
+Head: 4aec96c21675d5ede81389e9180c4edc827f4c04
+job_id: NGJ-20260901-blankspace
+flow_id: —
+goal_sha256: —
+Stamp: 4aec96c21675d5ede81389e9180c4edc827f4c04
+Facts: calculator and opened-card placement now starts below the header; ticker pin adds the canvas-stage viewport offset; revealed calculator retains Blank/Gap/Margin presets; picker toggles calculator open and dismissed; SPEC surfaces, bridges, and How to use no longer require a 48×48 LaserBed or initially open Numeric HUD; AutoNest untouched; browser checks passed.
+
+## Seq 8 Send for review
 
 Operator: Codex App
 Stamp: —
 
-## Seq 7 Close
+## Seq 9 Inspection
+
+Operator: Codex App
+Stamp: —
+
+## Seq 10 Merge
+
+Operator: Codex App
+Stamp: —
+
+## Seq 11 Close
 
 Operator: Codex App
 Stamp: —
