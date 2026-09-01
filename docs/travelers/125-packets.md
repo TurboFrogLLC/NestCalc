@@ -48,3 +48,7 @@ Cut G host `8ceed5bd9c098cc80a72cd839ef869be20450d84`. Convex quarter attempted.
 ## 2026-08-31 Owner close
 
 Owner scrap: convex join did not read. Leave Cut G chrome. Record leftover in TICKER-MENU-BAR.md. Merge #125 into feat/v3-ticker-door (#121). Not main. Keep docs/ticker-menu-bar. No vercel --prod.
+
+## Seq 30 — Merge — 2026-08-31
+
+PR #125 was fast-forwarded into `feat/v3-ticker-door` at `3148864f045d50a9f44ebef2d94127f57d210c86`; GitHub reports the PR merged with that same merge commit. `main` was not checked out or updated. The Cut G chrome remains as shipped, and the join fine-tune leftover remains locked in `TICKER-MENU-BAR.md`.
