@@ -10,7 +10,7 @@ Owner may sit any other seat. Those labels bound everyone else.
 | --- | --- | --- |
 | Owner | wReckless only. May sit any other seat. Hard gates. | Human. Surface. Operator. |
 | Operations Manager | SuperGrok. Orchestrator. | Operator. Owner. Surface. |
-| Operator | Codex App, Codex CLI, or Grok Build. Parent AI on the traveler. | Surface. Owner. SuperGrok. a tool. |
+| Operator | Codex App, Codex CLI, or Grok Build. Parent AI on the packet. | Surface. Owner. SuperGrok. a tool. |
 | Operation | The Seq Label. May appear more than once. | Operator. Surface. Department. Station. |
 | Mode | Worker or Specialist. Toolbox size for this packet. | Role. Operator. |
 | Worker | A→B only. Named Instruction. No specialist toolbox. | Specialist. |
@@ -23,7 +23,7 @@ Owner may sit any other seat. Those labels bound everyone else.
 | Part | What this job produces. | Branch. Description. |
 | Description | Short planning English. Not the Branch name. | Trace. Cycle. |
 | Notes | Short callout on this Seq row. | Instruction. |
-| Session | `fresh` or `continuous` on the packet. Owner names it. | A CLI flag. |
+| Session | `fresh` or `continuous` on the packet. Owner names it. Job sheet Session is the job default. | A CLI flag. |
 | job_id | `NGJ-` handle for a non-goal job. | flow_id. |
 | Ops Packet | Current visit only. Blueprint. Issued to the Operator. | Traveler. Packslip. |
 | Traveler | The job. Header + routing. Plan creates it. Lives on the draft PR. | Ops Packet. Packslip. |
@@ -39,7 +39,7 @@ Owner may sit any other seat. Those labels bound everyone else.
 | Release | Merge, then Close. | Quality Control. |
 | Merge | Onto `main`. Default unless this traveler forbids it. | |
 | Close | Cleanup after Merge. | |
-| Start-branch | Host visit: create or switch to the named feature Branch from current main. Mid-job main thrash prohibited. | Checkout-sync. |
+| Start-branch | Host visit: limited fetch of origin/main + create or switch to the named feature Branch. Do not leave the worktree on main. Mid-job main thrash prohibited. | Checkout-sync. |
 | Law | `AGENTS.md` + `docs/WORKFLOW.md` | |
 | Sidecar | `create-handoff` JSON only. | Traveler. |
 | Product | FLiPIT | HowMany as the product name. |
