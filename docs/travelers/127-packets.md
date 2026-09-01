@@ -174,4 +174,42 @@ Facts: `@codex review` requested on the new head at https://github.com/TurboFrog
 ## Seq 13 Inspection
 
 Operator: Codex App
+Stamp: 5080818866
+
+## Seq 14 Plan
+
+Operator: Owner
+Stamp: e7e1da57fe029e8df2e2373ecdf1298581457e8a
+
+## Seq 15 Cut
+
+Operator: Codex App
+Stamp: aa5666865206a23e0637068928bea586cd8e2cd9
+
+Operator return
+
+Repo: NestCalc
+Mode: Worker
+Operator: Codex App
+Branch: docs/blank-in-space-canvas
+Head: aa5666865206a23e0637068928bea586cd8e2cd9
+job_id: NGJ-20260901-blankspace
+flow_id: —
+goal_sha256: —
+Stamp: aa5666865206a23e0637068928bea586cd8e2cd9
+Facts: zoom and Fit controls now mount in the header stacking context; `__hostArrange` skips hidden `#hud` and runs after picker reveal; AutoNest untouched; no `@codex review` posted.
+
+## Seq 16 Inspection
+
+Operator: Codex App
+Stamp: —
+
+## Seq 17 Merge
+
+Operator: Codex App
+Stamp: —
+
+## Seq 18 Close
+
+Operator: Codex App
 Stamp: —
