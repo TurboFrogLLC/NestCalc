@@ -3,7 +3,7 @@
 Product: FLiPIT
 Host: `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`
 Stage: blank-in-space (127)
-Lock: Cut 10 / PR 131
+Lock: Cut 11 / PR 131
 
 This replaces the former ticker-picker blueprint. It is intentionally not a picker schematic.
 
@@ -72,3 +72,10 @@ This supersedes the Cut 6 sheet side: the sheet is fixed at left 48px and top `6
 - Clicking PART SIZE, BLANK, or GAP replaces that chip's readout with one X/Y editor row. The first field select-alls on open; Check commits, X cancels, and there is no link or swap control.
 - Clicking MARGIN expands that same chip downward into L, R, B, T fields and Check/X. The outer chip keeps its complete 6.6px corners, full 1.1px stroke, own shadow, and visible bottom corners.
 - No popover or dark 286px panel participates in the interaction. There is no picker, calculator, chevron, or restored bed.
+
+## Cut 11 editor + gutter tweak
+
+- Each in-chip input is direct white 12.1px / 650 / mono text with no nested field box, border, or padding. Its measured width grows right with its value. GAP alone puts a link control between Y and Check; no other editor has link or swap.
+- Clicking the ticker's blank size opens the BLANK chip editor contract, including select-all, Check, and X. The ticker remains one 28.6px row with its existing rotate pair and live count.
+- MARGIN's closed text has no plus separators. Its open L/R then B/T editor is an even two-column grid with a taller complete parent chip: 6.6px corners, 1.1px stroke, and own shadow.
+- The 48px header-to-ticker gap equals the 48px sheet-right-to-blank gap. During the existing sheet-width glide, the blank moves right by exactly the sheet's width delta and moves back on close; browser-width clamping remains in force.

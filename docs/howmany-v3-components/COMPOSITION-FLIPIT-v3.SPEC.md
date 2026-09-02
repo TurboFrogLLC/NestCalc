@@ -1,6 +1,6 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Cut 10 side-stack sheet + ticker lock
+**Status:** Living — Cut 11 side-stack sheet + ticker lock
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
@@ -24,7 +24,7 @@ This section supersedes the ticker-door R1 / R2 / R3 contracts below. Seq 3's bl
 - The stack is left-side, top-to-bottom **PART SIZE**, **BLANK**, **GAP**, **MARGIN**. Labels sit above their chips, share the same left edge, and use 11px / 650 / 0.04em / uppercase. Rows use an 8.8px gap.
 - Chips are 28.6px high, 6.6px radius, narrower than the previous 21ch pills. MARGIN retains a 40px minimum when its value becomes two lines; its chip owns its radius and shadow.
 - The sheet reserves its lane during Fit. Fit and camera frame the blank, its ticker, and the sheet as one subject. The blank is clamped within browser width and cannot collide with the sheet; it may sit lower in Y. The ticker paints in front and never clips through the chips.
-- The ticker is a readout only: it is 28.6px high, wider rather than taller, and shows live `W.WWW × H.HHH` plus the count number only. FLiPIT remains the product name.
+- The ticker is 28.6px high, wider rather than taller, and shows live `W.WWW × H.HHH` plus the count number only. FLiPIT remains the product name.
 - There is no picker bar, calculator button, chevron door, reset action, or numeric calculator surface. The Lucide rotate pair rotates the part; the blank arc remains the only stage-grab affordance. The hidden bed, grid, nest, and part surfaces remain absent from this host.
 
 ---
@@ -52,6 +52,14 @@ The size and count both use 12.1px / 650 / mono; the live count is `#538BEC` and
 Clicking a side chip turns that same chip into the editor: the first field receives focus and select-all. PART SIZE, BLANK, and GAP keep one chip row with X/Y fields and Check/X controls. Check commits the live values; X restores the values from open. There are no link or swap controls.
 
 MARGIN expands downward inside its own complete 6.6px, 1.1px-stroked, shadowed chip into L, R, B, and T fields plus Check/X. Its bottom corners stay visible through the sheet stack. The retained popover is never opened; no picker, calculator, chevron, dark secondary panel, or bed is restored.
+
+## Cut 11 — editor + gutter tweak
+
+Editors use the closed-chip readout type (12.1px / 650 / mono) directly on white fill: no inner field border or padding. An active input grows right to retain every character. GAP alone carries a link control between Y and Check; PART SIZE, BLANK, and MARGIN have neither link nor swap. The ticker's live blank-size field opens that same BLANK editor with the same Check/X contract.
+
+MARGIN's closed readout has no plus signs. Its open L/R then B/T layout is an even two-column grid with shared column edges, more internal height, and the parent chip's complete 6.6px corners, 1.1px stroke, and shadow.
+
+The single 48px measure serves both gutters: header-bottom to ticker-top and sheet-right to blank-left. Sheet width glides right while any chip is open; the blank follows that width delta and returns on close. Fit, pan, and zoom still clamp the blank inside browser width. No picker, calculator, chevron, popover, or bed is restored.
 
 ---
 
