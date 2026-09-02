@@ -24,3 +24,7 @@ Worker: Codex App. The shared travel-hit off color is #111111 for the hamburger 
 ## Seq 5 Cut 2 — two-group plus trim
 Worker: Codex App. While armed, the FLiPIT host consumes the existing `calculateAutoNest` result with live blank, part, gap, and four margins. A strictly better two-group result draws both returned frost-blue grids, displays its total in the blue count, and appends one engine-specified vertical or horizontal trim line; otherwise Cut 1 best-uniform remains live. The standalone host preserves hamburger-off `nestLayout`, black/off glyph state, and the no picker / calculator / chevron / bed boundary. Engine unchanged.
 Implementation commit: d034a1ee4f9edf4d3f41c43633f2e1e1e79e22dc
+
+## Seq 5b Cut 3 — isolated blanks, full margins
+Worker: Codex App. The armed host now supplies `trimEdgePolicy: 'full'` to the unchanged AutoNest engine. Each vertical or horizontal trim side is therefore an independent blank that receives the current ticker L/R/T/B margins, including the trim-facing edge; the existing achieved-margin renderer insets both frost-blue groups accordingly and keeps one trim line. Hamburger-off grid, amber armed glyph, best-uniform fallback, chips, presets, Fit, and stops are unchanged.
+Implementation commit: 33a252a622285bc859d57cd9b529e22af1799473

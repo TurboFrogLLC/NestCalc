@@ -21,6 +21,7 @@ Seq  Label              Notes                                              Stamp
 3d   Cut                1d hamburger amber when armed                     applied from 59855c8e5c8a919291f7d01836c3902c114e3513
 4    Look               Owner htmlpreview. No Codex.
 5    Cut                2 calculateAutoNest two-group + trim line          d034a1ee4f9edf4d3f41c43633f2e1e1e79e22dc
+5b   Cut                3 isolated blanks full margins                    33a252a622285bc859d57cd9b529e22af1799473
 6    Look               Owner htmlpreview. No Codex.
 7    Send for review
 8    Inspection
