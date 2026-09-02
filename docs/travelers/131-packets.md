@@ -70,3 +70,8 @@ Seq 29 Cut 19 parts on blank — Codex App: restored only live part tiles inside
 Stamp: fe2a1b53018fe0d4651bf3520059946094f0c859
 
 NEXT: Owner direction after Cut 19.
+
+Seq 30 Cut 20 presets block under margin — Codex App: added PRESETS immediately below MARGIN with Lucide + / − slot controls and four initial margin-snapshot buttons in a 2×2, 154px-wide frost-blue grid. The side ghost editors, external Check/X, centered ticker, Fit and stops, live blank parts, and the absence of picker, calculator, chevron, popover, and bed remain locked.
+Stamp: 0fcc181bc35893bf751829621d49ecd90056a243
+
+NEXT: Owner direction after Cut 20.
