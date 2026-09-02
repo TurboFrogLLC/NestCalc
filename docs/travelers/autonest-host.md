@@ -30,7 +30,7 @@ Seq  Label              Notes                                              Stamp
 5h   Cut                8b measured count well + drawn arc inset          6f29bfc8e8542aecfe93c3be4f241533198f7ce7
 5i   Cut                8c HUD inner seats                                2749f1137c04310a73996ceee6bbbdf38798cc27
 6    Look               Owner htmlpreview. No Codex.
-7    Send for review
+7    Send for review                                                  72d614ac5c5e9c1615cc2eac6fda771e614b6423
 8    Inspection
 9    Merge
 10   Close

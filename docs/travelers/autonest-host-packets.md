@@ -56,3 +56,6 @@ Implementation commit: 6f29bfc8e8542aecfe93c3be4f241533198f7ce7
 ## Seq 5i Cut 8c — HUD inner seats
 Worker: Codex App. The outer `#blank-ticker-pin` remains fixed. During blank-editor open, the host measures the actual `#bt-travel-box` rectangles for both rotate hits, the size editor, hamburger, and blue count well, plus every adjacent gap, and writes that map to the row’s CSS grid. Check or X closes onto those same seats: the closed size pair, 5px-inset fixed count well, and inset-rule gaps cannot stretch, while Check/X remain outside the pin. Bar token, eye toggle, green arm, AutoNest math, SVG-inch space, bands, arc inset, origins, full trim-edge policy, trim, and no picker / calculator / chevron / bed boundary are unchanged.
 Implementation commit: 2749f1137c04310a73996ceee6bbbdf38798cc27
+
+## Seq 7 Send for review
+Worker: Codex App. Confirmed `origin/docs/autonest-host` at `72d614ac5c5e9c1615cc2eac6fda771e614b6423`, marked PR 133 ready for review, and posted exactly one `@codex review` request on that head. PR remains open; no merge was performed.
