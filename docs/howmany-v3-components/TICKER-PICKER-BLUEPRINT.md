@@ -3,7 +3,7 @@
 Product: FLiPIT
 Host: `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`
 Stage: blank-in-space (127)
-Lock: Cut 26 / PR 131
+Lock: Cut 27 / PR 131
 
 This replaces the former ticker-picker blueprint. It is intentionally not a picker schematic.
 
@@ -160,3 +160,9 @@ This supersedes the Cut 6 sheet side: the sheet is fixed at left 48px and top `6
 - Idle slot tap hydrates live Blank, Gap, and Margin and arms that selected live slot with `rgba(255,206,27,0.55)` fill and `rgba(201,140,0,0.85)` stroke. Card close retains the arm; a live chip editor remains the only path here that clears it and never writes the slot.
 - The blocking `#E8E8E8` card is 252.4px wide with 15px padding on all four edges. Its 222.4px content width keeps the name field at 222.4 × 31.46 and each paired axis field at 106.8 × 31.46 with the 8.8px gap. A 1.1px rule inset by that pad separates Margin from the one-row Copy live / Check / X footer.
 - Opening, hydrating, or closing the card does not change the closed centered ticker pin's left coordinate or width. Pencil paths, layer z-index, ghost editors, parts-on-blank, Fit, and stops remain locked.
+
+## Cut 27 pencil-on-selected and inline actions
+
+- When a live slot is armed, pencil-on opens that selected slot’s card immediately; pencil-on without an arm opens no card. Idle hydration retains its gold arm, while a live chip editor still clears the arm without writing the slot.
+- Retain the 252.4px card, 15px pad, 222.4px content width, 106.8 × 31.46 axis cells, and one-row Copy live footer. A second 1.1px rule, inset by the card pad, sits between the name field and Blank without adding a label.
+- Check and X remain 22 × 22 Lucide hits immediately after the PART SIZE, GAP, MARGIN, and center-bar size readout. GAP Link stays between its numbers and Check. MARGIN’s actions align with the first number row, not the two-row grid’s vertical center. Pencil paths, gold tokens, layer z-index, parts-on-blank, Fit, and stops remain locked.

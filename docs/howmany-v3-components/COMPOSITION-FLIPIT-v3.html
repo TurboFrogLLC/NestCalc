@@ -2236,6 +2236,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }
     #hud .param-row[data-param="margin"] .chip-editor-field,
     #hud .param-row[data-param="margin"] .chip-editor-field input { height: auto; line-height: 1; }
+    #hud .param-row[data-param="margin"] .chip-seat { align-items: flex-start; }
+    #hud .param-row[data-param="margin"] .chip-editor-actions:not([hidden]) { align-self: flex-start; margin-top: 2.65px; }
     /* Cut 23: named presets stay in the sheet; their editor is a blocking card, never the old popover. */
     #hud .margin-presets { display: flex; flex-direction: column; gap: 4.4px; width: 154px; }
     #hud .margin-presets__head { display: flex; align-items: center; justify-content: space-between; min-height: 11px; }
@@ -2259,8 +2261,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     .margin-preset-card-layer.is-open { visibility: visible; pointer-events: auto; }
     .margin-preset-card { box-sizing: border-box; width: 252.4px; padding: 15px; border-radius: 7.26px; background: #E8E8E8; box-shadow: 0 2px 7px rgba(0,0,0,.24); color: var(--ink); }
     .margin-preset-card input { box-sizing: border-box; height: 31.46px; border: 1.1px solid rgba(83,139,236,.35); border-radius: 7.26px; background: #fff; color: var(--ink); box-shadow: 0 0.5px 1px rgba(0,0,0,.25); font: 650 13.31px/1 var(--font-mono); font-variant-numeric: tabular-nums; }
-    .margin-preset-card__name { width: 222.4px; padding: 0 8.8px; margin: 0 0 8.8px; }
-    .margin-preset-card__fields { display: flex; flex-direction: column; gap: 8.8px; }
+    .margin-preset-card__name { width: 222.4px; padding: 0 8.8px; margin: 0; }
+    .margin-preset-card__fields { display: flex; flex-direction: column; gap: 8.8px; margin-top: 8.8px; padding-top: 8.8px; border-top: 1.1px solid rgba(26,20,40,.22); }
     .margin-preset-card__section { display: flex; flex-direction: column; gap: 4.4px; }
     .margin-preset-card__section-label { font: 650 11px/1 var(--font-mono); }
     .margin-preset-card__pair { display: grid; grid-template-columns: 106.8px 106.8px; gap: 8.8px; }
@@ -3281,7 +3283,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     });
   }
   var editMarginPreset = document.querySelector('[data-margin-preset-edit]');
-  if (editMarginPreset) editMarginPreset.addEventListener('click', function () { marginPresetEditing = !marginPresetEditing; clearMarginPresetArm(); renderMarginPresetSlots(); });
+  if (editMarginPreset) editMarginPreset.addEventListener('click', function () {
+    marginPresetEditing = !marginPresetEditing;
+    if (marginPresetEditing && marginPresetArmed !== null) openMarginPresetCard(marginPresetArmed);
+    else renderMarginPresetSlots();
+  });
   var addMarginPreset = document.querySelector('[data-margin-preset-add]');
   if (addMarginPreset) addMarginPreset.addEventListener('click', function () {
     marginPresetSlots.push(emptyMarginPreset());

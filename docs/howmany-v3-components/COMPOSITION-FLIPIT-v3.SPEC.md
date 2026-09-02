@@ -1,6 +1,6 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Cut 26 preset arm, card pad, HUD lock
+**Status:** Living — Cut 27 pencil-on-selected and inline actions
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
@@ -144,6 +144,10 @@ The blocking card layer is a body-level fixed sibling at z-index 201, above the 
 ## Cut 26 — preset arm, card pad, HUD lock
 
 An idle preset tap hydrates live Blank, Gap, and Margin and arms that selected live slot with `rgba(255,206,27,0.55)` fill and `rgba(201,140,0,0.85)` stroke. Closing its card retains the arm; opening a live chip editor still clears it without writing the slot. The `#E8E8E8` card is **252.4px** wide with **15px** padding on every edge, preserving its 222.4px inner width: the name stays 222.4 × 31.46 and each paired axis field stays 106.8 × 31.46 with an 8.8px gap. A 1.1px rule, inset by the card padding, separates Margin from the one-row Copy live / Check / X footer. Opening, hydrating, or closing the card does not change the centered ticker pin's closed left coordinate or width.
+
+## Cut 27 — pencil-on-selected and inline actions
+
+With a live preset already armed, pressing the pencil opens that selected slot’s card immediately; a pencil press with no armed slot enters edit mode but opens no card. Idle slot hydration still keeps the gold arm, and a live chip edit still clears it without writing. The retained 252.4px card adds a second 1.1px inset rule between its name field and the Blank section; its 15px pad, 222.4px content width, fields, footer rule, and Copy live row stay unchanged. PART SIZE, GAP, MARGIN, and the centered blank-size editor keep their 22 × 22 Lucide Check/X hits inline immediately after the readout; GAP Link stays between its numbers and Check, and MARGIN’s actions align to its first numeric row rather than the middle of its two-row grid.
 
 ---
 
