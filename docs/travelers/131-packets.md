@@ -58,4 +58,7 @@ Stamp: 06e5345c0ffae9dc2118c95615dca1e625f1f945
 Seq 26 Cut 16 ghost highlight + margin center — Grok Build: selected-number blue has 3px air top and bottom to the inner stroke on PART SIZE, GAP, MARGIN, and the center size slot; open side chips paint #E8E8E8 so the select shows; closed chips stay frost-blue; center bar stays #E8E8E8; MARGIN two-line L R / B T is vertically centered with equal padding and equal column/row gap; width stays; Check/X stay outside right. No picker, calc, chevron, popover, bed, or GOAL.md.
 Stamp: a720e90a51f2baf590d6b794fd7ec40661a4d57a
 
-NEXT: Owner direction after Cut 16.
+Seq 27 Cut 17 margin vertical inset — Codex App: browser-measured closed GAP text-to-inner-stroke inset at 7px top and 7.45px bottom from sub-pixel layout, then applied the 7px token to both closed and open two-line MARGIN grids. Column/row gaps remain equal; width stays; Check/X remain outside right; open fill stays #E8E8E8. No picker, calc, chevron, popover, bed, or GOAL.md.
+Stamp: c2e7acb39745340174ffa053b69b222b449adfb5
+
+NEXT: Owner direction after Cut 17.
