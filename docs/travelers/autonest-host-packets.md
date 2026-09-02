@@ -39,4 +39,4 @@ Implementation commit: 872f46b87d496e1b3ba253918a40ebf3e318043b
 
 ## Seq 5e Cut 6 — red margin band
 Worker: Codex App. Each blank now draws fill-only L/R/T/B reserved-margin bands in `rgba(220,48,48,0.22)` at the live ticker inch values. Uniform mode uses the parent blank; armed two-group mode uses each returned isolated blank at its own Cut 4 bottom-left origin. The bands are appended before the frost-blue tiles and the one trim line, with no extra stroke, no additional scale, and no change to the full trim-edge policy, hamburger, chips, presets, Fit, or stops.
-Implementation commit: pending
+Implementation commit: c9180ba1328a09ade53f908df44eaebde7369383
