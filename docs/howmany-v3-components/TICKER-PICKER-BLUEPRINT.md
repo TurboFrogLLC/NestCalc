@@ -141,3 +141,10 @@ This supersedes the Cut 6 sheet side: the sheet is fixed at left 48px and top `6
 - Place PRESETS directly under MARGIN in the left sheet. The 11px / 650 / 0.04em uppercase label shares the side-label type; its right edge carries Lucide plus and minus at the header's 2px stroke weight. Plus appends one margin-preset slot; minus removes the last. Start with four.
 - The slots are a 2×2 grid: two 31.46px frost-blue chips per 154px row with one shared 8.8px gap. Both rows therefore measure exactly 154px, matching the PART SIZE, GAP, and MARGIN chips.
 - Slot chips retain 7.26px radius, 1.1px stroke, `0 0.5px 1px rgba(0,0,0,.25)` shadow, and 13.31px / 650 / mono type. They apply a stored margin value only; no picker, popover, calculator, chevron, or bed is reintroduced.
+
+## Cut 21 preset card
+
+- PRESETS reads `PRESETS`, Lucide pencil, plus, minus. Slot buttons show a name only—never an ordinal—and retain the GAP-chip 72.6 × 31.46 token in the 154px two-column grid.
+- Idle tap hydrates the live Blank X/Y, Gap X/Y, and Margin L/R/B/T state. Pencil then slot tap arms that slot (`#FFCE1B` at 22% opacity) and opens a blocking 171.6px, 8.8px-padded, 7.26px-radius `#E8E8E8` card.
+- The card carries a 154 × 31.46 name field; 72.6 × 31.46 paired Blank, Gap, and Margin fields; Copy live; and unboxed 22px-hit / 14px Lucide Check and X at the bottom. Empty fields hydrate from the live tickers. Check saves, X cancels, and a blank name becomes `Preset`.
+- Opening a live chip editor clears any preset arm and never writes that slot. The card is not the old picker or popover; center-bar lock, ghost editors, parts on blank, Fit, stops, and boot sizes stay unchanged.

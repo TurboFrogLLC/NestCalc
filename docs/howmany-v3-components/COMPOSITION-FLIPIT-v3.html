@@ -2236,7 +2236,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }
     #hud .param-row[data-param="margin"] .chip-editor-field,
     #hud .param-row[data-param="margin"] .chip-editor-field input { height: auto; line-height: 1; }
-    /* Cut 20: margin presets are a sheet block, never a picker or popover. */
+    /* Cut 21: named presets stay in the sheet; their editor is a blocking card, never the old popover. */
     #hud .margin-presets { display: flex; flex-direction: column; gap: 4.4px; width: 154px; }
     #hud .margin-presets__head { display: flex; align-items: center; justify-content: space-between; min-height: 11px; }
     #hud .margin-presets__label { font-size: 11px; font-weight: 650; letter-spacing: 0.04em; line-height: 1; }
@@ -2253,6 +2253,19 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       font: 650 13.31px/31.46px var(--font-mono); font-variant-numeric: tabular-nums; text-align: center; cursor: pointer;
     }
     #hud .margin-presets__slot:hover { background: #E8E8E8; }
+    #hud .margin-presets__slot.is-armed { background: rgba(255,206,27,.22); }
+    .margin-preset-card-layer { position: fixed; inset: 0; z-index: 130; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,.18); }
+    .margin-preset-card-layer[hidden] { display: none; }
+    .margin-preset-card { box-sizing: border-box; width: 171.6px; padding: 8.8px; border-radius: 7.26px; background: #E8E8E8; box-shadow: 0 2px 7px rgba(0,0,0,.24); color: var(--ink); }
+    .margin-preset-card input, .margin-preset-card__copy { box-sizing: border-box; height: 31.46px; border: 1.1px solid rgba(83,139,236,.35); border-radius: 7.26px; background: #fff; color: var(--ink); box-shadow: 0 0.5px 1px rgba(0,0,0,.25); font: 650 13.31px/1 var(--font-mono); font-variant-numeric: tabular-nums; }
+    .margin-preset-card__name { width: 154px; padding: 0 8.8px; margin: 0 0 8.8px; }
+    .margin-preset-card__fields { display: grid; grid-template-columns: 72.6px 72.6px; gap: 8.8px; }
+    .margin-preset-card__field { display: flex; flex-direction: column; gap: 3px; font: 650 9px/1 var(--font-mono); }
+    .margin-preset-card__field input { width: 72.6px; padding: 0 6px; }
+    .margin-preset-card__copy { width: 154px; margin-top: 8.8px; padding: 0; cursor: pointer; }
+    .margin-preset-card__actions { display: flex; justify-content: flex-end; gap: 4.4px; margin-top: 8.8px; }
+    .margin-preset-card__action { width: 22px; height: 22px; padding: 0; border: 0; background: transparent; color: var(--ink); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+    .margin-preset-card__action svg { width: 14px; height: 14px; }
 </style>
 </head>
 <body>
@@ -2437,12 +2450,33 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
               <div class="margin-presets__head">
                 <span class="margin-presets__label">PRESETS</span>
                 <span class="margin-presets__controls" aria-label="Preset slots">
+                  <button type="button" class="margin-presets__control" data-margin-preset-edit title="Edit presets" aria-label="Edit presets" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
                   <button type="button" class="margin-presets__control" data-margin-preset-add title="Add preset slot" aria-label="Add preset slot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
                   <button type="button" class="margin-presets__control" data-margin-preset-remove title="Remove last preset slot" aria-label="Remove last preset slot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/></svg></button>
                 </span>
               </div>
               <div class="margin-presets__grid" data-margin-preset-grid></div>
             </section>
+            <div class="margin-preset-card-layer" data-margin-preset-card-layer hidden>
+              <section class="margin-preset-card" role="dialog" aria-modal="true" aria-labelledby="margin-preset-card-title">
+                <input class="margin-preset-card__name" data-margin-preset-name id="margin-preset-card-title" type="text" autocomplete="off" aria-label="Preset name" placeholder="Preset" />
+                <div class="margin-preset-card__fields">
+                  <label class="margin-preset-card__field">Blank X<input data-margin-preset-field="blank.x" type="text" inputmode="decimal" autocomplete="off" /></label>
+                  <label class="margin-preset-card__field">Blank Y<input data-margin-preset-field="blank.y" type="text" inputmode="decimal" autocomplete="off" /></label>
+                  <label class="margin-preset-card__field">Gap X<input data-margin-preset-field="gap.x" type="text" inputmode="decimal" autocomplete="off" /></label>
+                  <label class="margin-preset-card__field">Gap Y<input data-margin-preset-field="gap.y" type="text" inputmode="decimal" autocomplete="off" /></label>
+                  <label class="margin-preset-card__field">Margin L<input data-margin-preset-field="margin.l" type="text" inputmode="decimal" autocomplete="off" /></label>
+                  <label class="margin-preset-card__field">Margin R<input data-margin-preset-field="margin.r" type="text" inputmode="decimal" autocomplete="off" /></label>
+                  <label class="margin-preset-card__field">Margin B<input data-margin-preset-field="margin.b" type="text" inputmode="decimal" autocomplete="off" /></label>
+                  <label class="margin-preset-card__field">Margin T<input data-margin-preset-field="margin.t" type="text" inputmode="decimal" autocomplete="off" /></label>
+                </div>
+                <button type="button" class="margin-preset-card__copy" data-margin-preset-copy>Copy live</button>
+                <div class="margin-preset-card__actions">
+                  <button type="button" class="margin-preset-card__action" data-margin-preset-save title="Save preset" aria-label="Save preset"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button>
+                  <button type="button" class="margin-preset-card__action" data-margin-preset-cancel title="Cancel preset edit" aria-label="Cancel preset edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+                </div>
+              </section>
+            </div>
           </div>
 
         </div>
@@ -3161,46 +3195,84 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
   function fmt3(n) { return (Number.isFinite(n) ? n : 0).toFixed(3); }
 
-  /* Cut 20: the margin-preset sheet has its own slots; it never opens a picker. */
-  var marginPresetSlots = Array.from({ length: 4 }, function () {
-    return { l: paramState.margin.l, r: paramState.margin.r, t: paramState.margin.t, b: paramState.margin.b };
-  });
-  function copyMarginPreset() {
-    return { l: paramState.margin.l, r: paramState.margin.r, t: paramState.margin.t, b: paramState.margin.b };
-  }
+  /* Cut 21: a preset is a named live-field hydrate, not a picker or popover. */
+  function copyLivePreset() { return { name: 'Preset', blank: { x: paramState.blank.x, y: paramState.blank.y }, gap: { x: paramState.gap.x, y: paramState.gap.y }, margin: { l: paramState.margin.l, r: paramState.margin.r, b: paramState.margin.b, t: paramState.margin.t } }; }
+  function emptyMarginPreset() { return { name: '', blank: {}, gap: {}, margin: {} }; }
+  var marginPresetSlots = Array.from({ length: 4 }, copyLivePreset);
+  var marginPresetEditing = false, marginPresetArmed = null, marginPresetCardSlot = null;
+  var marginPresetCardLayer = document.querySelector('[data-margin-preset-card-layer]');
+  function clearMarginPresetArm() { if (marginPresetArmed === null) return; marginPresetArmed = null; renderMarginPresetSlots(); }
   function renderMarginPresetSlots() {
-    var grid = document.querySelector('[data-margin-preset-grid]');
-    if (!grid) return;
-    grid.innerHTML = marginPresetSlots.map(function (_, index) {
-      var ordinal = index + 1;
-      return '<button type="button" class="margin-presets__slot" data-margin-preset-slot="' + index + '" aria-label="Apply margin preset ' + ordinal + '">Preset ' + ordinal + '</button>';
-    }).join('');
+    var grid = document.querySelector('[data-margin-preset-grid]'); if (!grid) return;
+    grid.replaceChildren();
+    marginPresetSlots.forEach(function (preset, index) {
+      var button = document.createElement('button');
+      button.type = 'button'; button.className = 'margin-presets__slot';
+      button.setAttribute('data-margin-preset-slot', String(index)); button.setAttribute('aria-label', (preset.name || 'Preset') + ' preset');
+      button.setAttribute('aria-pressed', String(marginPresetArmed === index)); button.classList.toggle('is-armed', marginPresetArmed === index);
+      button.textContent = preset.name || 'Preset'; grid.appendChild(button);
+    });
+    var pencil = document.querySelector('[data-margin-preset-edit]'); if (pencil) pencil.setAttribute('aria-pressed', String(marginPresetEditing));
+  }
+  function presetNumber(preset, path, live) { var value = preset; path.split('.').forEach(function (part) { value = value && value[part]; }); return Number.isFinite(value) ? value : live; }
+  function writeMarginPresetCard(preset) {
+    var live = copyLivePreset(), name = document.querySelector('[data-margin-preset-name]'); if (name) name.value = preset.name || '';
+    document.querySelectorAll('[data-margin-preset-field]').forEach(function (input) {
+      var path = input.getAttribute('data-margin-preset-field');
+      var liveValue = path === 'blank.x' ? live.blank.x : path === 'blank.y' ? live.blank.y : path === 'gap.x' ? live.gap.x : path === 'gap.y' ? live.gap.y : live.margin[path.slice(-1)];
+      input.value = fmt3(presetNumber(preset, path, liveValue));
+    });
+  }
+  function openMarginPresetCard(index) {
+    var preset = marginPresetSlots[index]; if (!preset || !marginPresetCardLayer) return;
+    marginPresetArmed = index; marginPresetCardSlot = index; renderMarginPresetSlots(); writeMarginPresetCard(preset); marginPresetCardLayer.hidden = false;
+    var name = document.querySelector('[data-margin-preset-name]'); if (name) name.focus();
+  }
+  function closeMarginPresetCard() { if (marginPresetCardLayer) marginPresetCardLayer.hidden = true; marginPresetCardSlot = null; marginPresetArmed = null; marginPresetEditing = false; renderMarginPresetSlots(); }
+  function copyLiveIntoMarginPresetCard() { if (marginPresetCardSlot === null) return; writeMarginPresetCard(Object.assign({}, marginPresetSlots[marginPresetCardSlot], { blank: {}, gap: {}, margin: {} })); }
+  function readMarginPresetCard() {
+    if (marginPresetCardSlot === null) return null;
+    var prior = marginPresetSlots[marginPresetCardSlot], next = { name: '', blank: {}, gap: {}, margin: {} }, name = document.querySelector('[data-margin-preset-name]');
+    next.name = (name && name.value.trim()) || 'Preset';
+    document.querySelectorAll('[data-margin-preset-field]').forEach(function (input) {
+      var path = input.getAttribute('data-margin-preset-field'), value = parseLiveNumber(input);
+      var live = path === 'blank.x' ? paramState.blank.x : path === 'blank.y' ? paramState.blank.y : path === 'gap.x' ? paramState.gap.x : path === 'gap.y' ? paramState.gap.y : paramState.margin[path.slice(-1)];
+      var parts = path.split('.'); next[parts[0]][parts[1]] = value === null ? presetNumber(prior, path, live) : value;
+    });
+    return next;
   }
   function applyMarginPreset(index) {
-    var preset = marginPresetSlots[index];
-    if (!preset) return;
-    paramState.margin.l = preset.l; paramState.margin.r = preset.r;
-    paramState.margin.t = preset.t; paramState.margin.b = preset.b;
-    refreshTickers();
+    var preset = marginPresetSlots[index]; if (!preset) return; var live = copyLivePreset();
+    paramState.blank.x = presetNumber(preset, 'blank.x', live.blank.x); paramState.blank.y = presetNumber(preset, 'blank.y', live.blank.y);
+    paramState.gap.x = presetNumber(preset, 'gap.x', live.gap.x); paramState.gap.y = presetNumber(preset, 'gap.y', live.gap.y);
+    ['l', 'r', 'b', 't'].forEach(function (edge) { paramState.margin[edge] = presetNumber(preset, 'margin.' + edge, live.margin[edge]); });
+    refreshTickers(); clearMarginPresetArm();
   }
   var marginPresetGrid = document.querySelector('[data-margin-preset-grid]');
   if (marginPresetGrid) {
     marginPresetGrid.addEventListener('click', function (event) {
       var slot = event.target.closest('[data-margin-preset-slot]');
       if (!slot) return;
-      applyMarginPreset(Number(slot.getAttribute('data-margin-preset-slot')));
+      var index = Number(slot.getAttribute('data-margin-preset-slot'));
+      if (marginPresetEditing) openMarginPresetCard(index); else applyMarginPreset(index);
     });
   }
+  var editMarginPreset = document.querySelector('[data-margin-preset-edit]');
+  if (editMarginPreset) editMarginPreset.addEventListener('click', function () { marginPresetEditing = !marginPresetEditing; clearMarginPresetArm(); renderMarginPresetSlots(); });
   var addMarginPreset = document.querySelector('[data-margin-preset-add]');
   if (addMarginPreset) addMarginPreset.addEventListener('click', function () {
-    marginPresetSlots.push(copyMarginPreset());
+    marginPresetSlots.push(emptyMarginPreset());
     renderMarginPresetSlots();
   });
   var removeMarginPreset = document.querySelector('[data-margin-preset-remove]');
   if (removeMarginPreset) removeMarginPreset.addEventListener('click', function () {
     marginPresetSlots.pop();
+    if (marginPresetArmed !== null && marginPresetArmed >= marginPresetSlots.length) marginPresetArmed = null;
     renderMarginPresetSlots();
   });
+  var copyMarginPreset = document.querySelector('[data-margin-preset-copy]'); if (copyMarginPreset) copyMarginPreset.addEventListener('click', copyLiveIntoMarginPresetCard);
+  var saveMarginPreset = document.querySelector('[data-margin-preset-save]'); if (saveMarginPreset) saveMarginPreset.addEventListener('click', function () { var next = readMarginPresetCard(); if (next && marginPresetCardSlot !== null) marginPresetSlots[marginPresetCardSlot] = next; closeMarginPresetCard(); });
+  var cancelMarginPreset = document.querySelector('[data-margin-preset-cancel]'); if (cancelMarginPreset) cancelMarginPreset.addEventListener('click', closeMarginPresetCard);
   renderMarginPresetSlots();
 
   function marginSummaryParts(m) {
@@ -3881,6 +3953,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   function openChipEditor(key) {
     if (chipEditor.key === key) return;
     if (chipEditor.key) finishChipEditor(true);
+    clearMarginPresetArm();
     var isBlankTicker = key === 'blank';
     var ticker = isBlankTicker ? document.getElementById('blank-ticker') : document.querySelector('[data-ticker="' + key + '"]');
     if (!ticker) return;
