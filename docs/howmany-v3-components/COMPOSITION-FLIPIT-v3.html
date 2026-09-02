@@ -2236,6 +2236,23 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }
     #hud .param-row[data-param="margin"] .chip-editor-field,
     #hud .param-row[data-param="margin"] .chip-editor-field input { height: auto; line-height: 1; }
+    /* Cut 20: margin presets are a sheet block, never a picker or popover. */
+    #hud .margin-presets { display: flex; flex-direction: column; gap: 4.4px; width: 154px; }
+    #hud .margin-presets__head { display: flex; align-items: center; justify-content: space-between; min-height: 11px; }
+    #hud .margin-presets__label { font-size: 11px; font-weight: 650; letter-spacing: 0.04em; line-height: 1; }
+    #hud .margin-presets__controls { display: inline-flex; align-items: center; gap: 2.2px; }
+    #hud .margin-presets__control {
+      width: 22px; height: 22px; padding: 0; border: 0; border-radius: 0; background: transparent; color: var(--ink);
+      display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+    }
+    #hud .margin-presets__control svg { display: block; width: 14px; height: 14px; }
+    #hud .margin-presets__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8.8px; width: 154px; }
+    #hud .margin-presets__slot {
+      height: 31.46px; min-height: 31.46px; padding: 0 8.8px; border: 1.1px solid rgba(83,139,236,.35); border-radius: 7.26px;
+      background: var(--frost-blue); color: var(--ink); box-shadow: 0 0.5px 1px rgba(0,0,0,.25);
+      font: 650 13.31px/31.46px var(--font-mono); font-variant-numeric: tabular-nums; text-align: center; cursor: pointer;
+    }
+    #hud .margin-presets__slot:hover { background: #E8E8E8; }
 </style>
 </head>
 <body>
@@ -2415,6 +2432,17 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
                 </div>
               </div>
             </div>
+
+            <section class="margin-presets" aria-label="Margin presets">
+              <div class="margin-presets__head">
+                <span class="margin-presets__label">PRESETS</span>
+                <span class="margin-presets__controls" aria-label="Preset slots">
+                  <button type="button" class="margin-presets__control" data-margin-preset-add title="Add preset slot" aria-label="Add preset slot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+                  <button type="button" class="margin-presets__control" data-margin-preset-remove title="Remove last preset slot" aria-label="Remove last preset slot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/></svg></button>
+                </span>
+              </div>
+              <div class="margin-presets__grid" data-margin-preset-grid></div>
+            </section>
           </div>
 
         </div>
@@ -3132,6 +3160,48 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   PRESET_KEYS.forEach(paintPresetButtons);
 
   function fmt3(n) { return (Number.isFinite(n) ? n : 0).toFixed(3); }
+
+  /* Cut 20: the margin-preset sheet has its own slots; it never opens a picker. */
+  var marginPresetSlots = Array.from({ length: 4 }, function () {
+    return { l: paramState.margin.l, r: paramState.margin.r, t: paramState.margin.t, b: paramState.margin.b };
+  });
+  function copyMarginPreset() {
+    return { l: paramState.margin.l, r: paramState.margin.r, t: paramState.margin.t, b: paramState.margin.b };
+  }
+  function renderMarginPresetSlots() {
+    var grid = document.querySelector('[data-margin-preset-grid]');
+    if (!grid) return;
+    grid.innerHTML = marginPresetSlots.map(function (_, index) {
+      var ordinal = index + 1;
+      return '<button type="button" class="margin-presets__slot" data-margin-preset-slot="' + index + '" aria-label="Apply margin preset ' + ordinal + '">Preset ' + ordinal + '</button>';
+    }).join('');
+  }
+  function applyMarginPreset(index) {
+    var preset = marginPresetSlots[index];
+    if (!preset) return;
+    paramState.margin.l = preset.l; paramState.margin.r = preset.r;
+    paramState.margin.t = preset.t; paramState.margin.b = preset.b;
+    refreshTickers();
+  }
+  var marginPresetGrid = document.querySelector('[data-margin-preset-grid]');
+  if (marginPresetGrid) {
+    marginPresetGrid.addEventListener('click', function (event) {
+      var slot = event.target.closest('[data-margin-preset-slot]');
+      if (!slot) return;
+      applyMarginPreset(Number(slot.getAttribute('data-margin-preset-slot')));
+    });
+  }
+  var addMarginPreset = document.querySelector('[data-margin-preset-add]');
+  if (addMarginPreset) addMarginPreset.addEventListener('click', function () {
+    marginPresetSlots.push(copyMarginPreset());
+    renderMarginPresetSlots();
+  });
+  var removeMarginPreset = document.querySelector('[data-margin-preset-remove]');
+  if (removeMarginPreset) removeMarginPreset.addEventListener('click', function () {
+    marginPresetSlots.pop();
+    renderMarginPresetSlots();
+  });
+  renderMarginPresetSlots();
 
   function marginSummaryParts(m) {
     const { l, r, t, b } = m;

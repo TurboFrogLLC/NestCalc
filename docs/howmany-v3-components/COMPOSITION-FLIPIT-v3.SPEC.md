@@ -1,6 +1,6 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Cut 19 parts on blank
+**Status:** Living — Cut 20 presets block under margin
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
@@ -128,6 +128,10 @@ The centered travel box takes its left pin and width from the closed box only. O
 ## Cut 19 — parts on blank
 
 Only the live part tiles are visible inside the blank. Columns and rows use the same blank, part, gap, margin, and quarter-turn count calculation that drives the blue bar count; the rendered tile count therefore matches the bar through size edits and −90/+90 rotation. Laser-bed fill, grid, rim, rulers, nest-box chrome, picker, calculator, chevron, and other bed surfaces remain hidden.
+
+## Cut 20 — presets block under margin
+
+PRESETS sits directly below MARGIN in the left sheet. Its label uses the same type as PART SIZE, GAP, and MARGIN; Lucide plus and minus controls at the label's right add one slot or remove the last slot. Four slots are present at load. The slots form a two-column grid: each 154px row has exactly two frost-blue buttons and one shared gap, so both rows have the same measured length as the chips above. Each button uses the side-chip token — 31.46px height, 7.26px radius, 1.1px stroke, the established shadow, and 13.31px / 650 / mono type — and applies only its stored margin snapshot. Ghost editors, external Check/X actions, the centered ticker lock, live parts on the blank, Fit, hard stops, and the absence of picker, calculator, chevron, popover, and bed remain unchanged.
 
 ---
 

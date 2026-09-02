@@ -135,3 +135,9 @@ This supersedes the Cut 6 sheet side: the sheet is fixed at left 48px and top `6
 
 - Unhide only the live part tiles within the blank. Derive columns × rows from the existing blank, part, gap, margin, and quarter-turn count formula so the blue count equals the visible tile count.
 - Keep LaserBed fill, grid, rim, rulers, nest-box chrome, picker, calculator, chevron, and other bed surfaces absent.
+
+## Cut 20 presets block under margin
+
+- Place PRESETS directly under MARGIN in the left sheet. The 11px / 650 / 0.04em uppercase label shares the side-label type; its right edge carries Lucide plus and minus at the header's 2px stroke weight. Plus appends one margin-preset slot; minus removes the last. Start with four.
+- The slots are a 2×2 grid: two 31.46px frost-blue chips per 154px row with one shared 8.8px gap. Both rows therefore measure exactly 154px, matching the PART SIZE, GAP, and MARGIN chips.
+- Slot chips retain 7.26px radius, 1.1px stroke, `0 0.5px 1px rgba(0,0,0,.25)` shadow, and 13.31px / 650 / mono type. They apply a stored margin value only; no picker, popover, calculator, chevron, or bed is reintroduced.
