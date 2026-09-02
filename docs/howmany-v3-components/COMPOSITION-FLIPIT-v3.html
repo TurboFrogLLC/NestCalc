@@ -133,21 +133,23 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
   .blank-ticker-cluster.is-on { display: inline-flex; }
   .bt-travel-box {
-    display: inline-flex; align-items: center; gap: 8px; padding: 0 8px;
+    display: inline-flex; align-items: stretch; gap: 0; padding: 0;
     box-sizing: border-box; border: 1.1px solid rgba(26, 20, 40, 0.22);
     border-radius: 6.6px; background: #E8E8E8; color: #1A1428; pointer-events: auto;
-    flex-shrink: 0; height: 28.6px; min-height: 28.6px;
+    flex-shrink: 0; height: 28.6px; min-height: 28.6px; box-shadow: 0 0.5px 1px rgba(0,0,0,.25);
   }
-  .bt-travel { display: inline-flex; align-items: center; gap: 2px; height: 28px; }
+  .bt-travel { display: inline-flex; align-items: center; gap: 0; }
   .bt-hit {
     width: 28px; height: 28px; min-width: 28px; min-height: 28px; margin: 0; padding: 0;
     border: 0; border-radius: 6.6px; background: transparent; color: #1A1428;
     display: inline-flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
   }
   .bt-hit svg { display: block; width: 18px; height: 18px; pointer-events: none; }
+  .bt-hit + .bt-hit, .blank-ticker, .bt-parts { position: relative; }
+  .bt-hit + .bt-hit::before, .blank-ticker::before, .bt-parts::before {
+    content: ""; position: absolute; left: 0; top: 5px; bottom: 5px; width: 1px; background: rgba(26,20,40,.22);
+  }
   .blank-ticker {
-    height: 28px;
-    min-height: 28px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -168,7 +170,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     touch-action: none;
   }
   .blank-ticker .bt-readout { line-height: 1; letter-spacing: 0.01em; }
-  .bt-parts { font: 650 10px/1 var(--font); letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; }
+  .bt-parts { display: inline-flex; align-items: center; padding: 0 8px; font: 650 12.1px/1 var(--font-mono); font-variant-numeric: tabular-nums; color: #538BEC; letter-spacing: 0; text-transform: none; white-space: nowrap; }
 
 /* ── Numeric HUD (NUMERIC-HUD-v3) ── */
 :root {
@@ -2143,12 +2145,13 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       background: transparent; box-shadow: none; overflow: visible;
     }
     #hud::after, #hud .keypad-header, #hud .hud-footer-sep, #hud .hud-controls { display: none !important; }
-    #hud-body, #hud-body-inner { display: block; padding: 0; background: transparent; min-height: 0 !important; }
-    #hud .hud-stage, #hud #hud-mode, #hud .param-rows { position: static; display: flex; flex-direction: column; gap: 8.8px; height: auto !important; opacity: 1; pointer-events: auto; }
-    #hud .param-row { display: flex; flex-direction: column; align-items: stretch; gap: 4.4px; min-height: 0; }
+    #hud-body, #hud-body-inner { display: block; padding: 0; background: transparent; min-height: 0 !important; overflow: visible; }
+    #hud .hud-stage, #hud #hud-mode, #hud .param-rows { position: static; display: flex; flex-direction: column; gap: 8.8px; height: auto !important; opacity: 1; pointer-events: auto; overflow: visible; }
+    #hud .param-row { display: flex; flex-direction: column; align-items: stretch; gap: 4.4px; min-height: 0; overflow: visible; }
     #hud .param-row[data-param="margin"] { align-items: stretch; }
     #hud .param-label { flex: 0 0 auto; font-size: 11px; font-weight: 650; letter-spacing: 0.04em; line-height: 1; }
-    #hud .param-ticker { width: 154px; height: 28.6px; min-height: 28.6px; border-radius: 6.6px; box-shadow: 0 0.5px 1px rgba(0,0,0,.25); }
+    #hud .param-ticker { width: 154px; height: 28.6px; min-height: 28.6px; border-radius: 6.6px; box-shadow: 0 0.5px 1px rgba(0,0,0,.25); overflow: visible; }
+    #hud .param-row[data-param="margin"] .param-ticker { border: 1.1px solid rgba(83,139,236,.35); border-radius: 6.6px; box-shadow: 0 0.5px 1px rgba(0,0,0,.25); }
     #hud .param-row[data-param="margin"] .param-ticker:has(.m-line) { min-height: 40px; }
     #hud .param-popover { display: none !important; }
 </style>
@@ -2203,10 +2206,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     <!-- Ticker is a readout only; the field stack owns editing. -->
     <div class="blank-ticker-cluster" id="blank-ticker-cluster">
       <div class="bt-travel-box" id="bt-travel-box"><div class="bt-travel">
-        <button type="button" class="bt-hit" id="bt-rot-ccw" title="−90" aria-label="−90"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v6h6"/></svg></button>
-        <button type="button" class="bt-hit" id="bt-rot-cw" title="+90" aria-label="+90"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v6h-6"/></svg></button>
+        <button type="button" class="bt-hit" id="bt-rot-ccw" title="−90" aria-label="−90"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></button>
+        <button type="button" class="bt-hit" id="bt-rot-cw" title="+90" aria-label="+90"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg></button>
         <span class="blank-ticker" id="blank-ticker" aria-label="Blank size"><span class="bt-readout" id="bt-readout">12.000 × 8.000</span></span>
-        <span class="bt-parts" id="bt-parts" aria-label="Part count">0</span>
+        <span class="bt-parts" id="bt-parts" aria-label="Part count">14</span>
       </div></div>
     </div>
   
@@ -2590,7 +2593,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   var state = {
     blankW: 12, blankH: 8, snap: 0.125, zoom: 1, fitScale: null, panX: 0, panY: 0, dragging: null, start: null,
     partW: 1.250, partH: 3.375, partRot: 0,
-    margin: { l: 0.25, r: 0.25, t: 0.25, b: 0.25 }
+    margin: { l: 0.25, r: 0.25, t: 0.25, b: 0.25 },
+    gap: { x: 0.375, y: 0.125 }
   };
 
   var svg = document.getElementById('lb-world');
@@ -2610,6 +2614,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   var blankTicker = document.getElementById('blank-ticker');
   var blankCluster = document.getElementById('blank-ticker-cluster');
   var btReadout = document.getElementById('bt-readout');
+  var btParts = document.getElementById('bt-parts');
   if (!svg || !camera || !blank) return;
 
   var PAD = 48;
@@ -2721,6 +2726,18 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     pin.classList.add('is-on');
     var txt = state.blankW.toFixed(3) + ' × ' + state.blankH.toFixed(3);
     if (btReadout) btReadout.textContent = txt;
+    if (btParts) {
+      var quarterTurn = Math.abs((state.partRot || 0) % 180) === 90;
+      var partW = quarterTurn ? state.partH : state.partW;
+      var partH = quarterTurn ? state.partW : state.partH;
+      var m = state.margin;
+      var gap = state.gap;
+      var usableW = Math.max(0, state.blankW - m.l - m.r);
+      var usableH = Math.max(0, state.blankH - m.t - m.b);
+      var columns = Math.max(0, Math.floor((usableW + gap.x) / Math.max(partW + gap.x, 0.001) + 1e-9));
+      var rows = Math.max(0, Math.floor((usableH + gap.y) / Math.max(partH + gap.y, 0.001) + 1e-9));
+      btParts.textContent = String(columns * rows);
+    }
 
     /* The cluster's flow height is the live 28.6px ticker row. */
     var tw = pin.offsetWidth || 140;
@@ -2770,6 +2787,19 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     };
     render();
   };
+  window.__bedSetGap = function (x, y) {
+    if (Number.isFinite(x)) state.gap.x = x;
+    if (Number.isFinite(y)) state.gap.y = y;
+    render();
+  };
+  document.getElementById('bt-rot-ccw').addEventListener('click', function () {
+    state.partRot = (state.partRot - 90 + 360) % 360;
+    render();
+  });
+  document.getElementById('bt-rot-cw').addEventListener('click', function () {
+    state.partRot = (state.partRot + 90) % 360;
+    render();
+  });
   function fitBed() {
     state.zoom = 1;
     state.fitScale = fittedScale();
@@ -3041,6 +3071,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (typeof window.__bedSetBlank === 'function') window.__bedSetBlank(b.x, b.y);
     if (typeof window.__bedSetPart === 'function') window.__bedSetPart(p.x, p.y);
     if (typeof window.__bedSetNest === 'function') window.__bedSetNest(m);
+    if (typeof window.__bedSetGap === 'function') window.__bedSetGap(g.x, g.y);
     remasureHudStage();
   }
   function remasureHudStage() {

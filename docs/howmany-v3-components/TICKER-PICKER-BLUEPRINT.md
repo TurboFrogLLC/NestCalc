@@ -3,7 +3,7 @@
 Product: FLiPIT
 Host: `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`
 Stage: blank-in-space (127)
-Lock: Seq 7 / PR 131
+Lock: Seq 8 / PR 131
 
 This replaces the former ticker-picker blueprint. It is intentionally not a picker schematic.
 
@@ -58,3 +58,11 @@ The sheet is fixed at right 48px and top `64px + 48px`; no runtime placement may
 ## Cut 7 left sheet
 
 This supersedes the Cut 6 sheet side: the sheet is fixed at left 48px and top `64px + 48px`. Fit, pan, and zoom reserve the left lane so the blank cannot enter it; the right lane stays open. Ticker chrome and editor-chip state are unchanged.
+
+## Cut 8 blank ticker corrective
+
+- The outer bar alone is 28.6px high: `#E8E8E8`, 6.6px radius, and `0 0.5px 1px rgba(0,0,0,.25)` shadow. Its travel and size children do not carry an inner 28px height.
+- It uses the host's stock Lucide `rotate-ccw` and `rotate-cw` paths, each in a 28px hit with an 18px glyph, `viewBox="0 0 24 24"`, 2px round stroke.
+- Inset vertical rules separate rotate pair, size, and count without touching the bar's top or bottom edge. Size and count share 12.1px / 650 / mono; the count is `#538BEC`.
+- Rotate controls apply −90/+90. The count is live from blank, part, gap, margin, and rotation state; it does not construct AutoNest.
+- MARGIN keeps its complete 6.6px radius, full 1.1px stroke, and own shadow, with visible overflow through the sheet stack. No picker, calculator, chevron, popover, or Cut 10 editor is introduced.
