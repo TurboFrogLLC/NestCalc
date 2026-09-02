@@ -140,11 +140,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
   .bt-travel { display: inline-flex; align-items: center; gap: 0; }
   .bt-hit {
-    width: 30.8px; height: 30.8px; min-width: 30.8px; min-height: 30.8px; margin: 0; padding: 0;
-    border: 0; border-radius: 7.26px; background: transparent; color: #1A1428;
+    width: 24px; height: 24px; min-width: 24px; min-height: 24px; margin: 0; padding: 0;
+    border: 0; border-radius: 0; background: transparent; color: #1A1428;
     display: inline-flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
   }
-  .bt-hit svg { display: block; width: 19.8px; height: 19.8px; pointer-events: none; }
+  .bt-hit svg { display: block; width: 16px; height: 16px; pointer-events: none; }
   .bt-hit + .bt-hit, .blank-ticker, .bt-parts { position: relative; }
   .bt-hit + .bt-hit::before, .blank-ticker::before, .bt-parts::before {
     content: ""; position: absolute; left: 0; top: 5px; bottom: 5px; width: 1px; background: rgba(26,20,40,.22);
@@ -170,18 +170,18 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     user-select: none;
     touch-action: none;
   }
-  .blank-ticker .bt-readout { line-height: 1; letter-spacing: 0.01em; }
-  .bt-parts { display: inline-flex; align-items: center; padding: 0 8.8px; font: 650 14.64px/1 var(--font-mono); font-variant-numeric: tabular-nums; color: #538BEC; letter-spacing: 0; text-transform: none; white-space: nowrap; }
-  .blank-ticker.is-chip-editing { justify-content: flex-start; padding: 0 3.3px; }
-  .ticker-blank-editor { display: inline-flex; align-items: center; gap: 3.3px; width: max-content; }
-  .ticker-blank-editor input { width: 5ch; min-width: 5ch; height: 24px; box-sizing: border-box; padding: 0 6.6px; border: 0; border-radius: 3.3px; outline: 0; background: #fff; color: #1A1428; font: 650 13.31px/1 var(--font-mono); font-variant-numeric: tabular-nums; }
-  .ticker-blank-editor .chip-editor-by { font-size: 13.31px; }
+  .blank-ticker .bt-readout { line-height: 31.46px; letter-spacing: 0.01em; }
+  .bt-parts { display: inline-flex; align-items: center; padding: 0 8.8px; font: 650 14.64px/31.46px var(--font-mono); font-variant-numeric: tabular-nums; color: #538BEC; letter-spacing: 0; text-transform: none; white-space: nowrap; }
+  .blank-ticker.is-chip-editing { justify-content: flex-start; padding: 0 3.3px; height: 31.46px; line-height: 31.46px; }
+  .ticker-blank-editor { display: inline-flex; align-items: center; gap: 3.3px; width: max-content; height: 31.46px; }
+  .ticker-blank-editor input { width: 6ch; min-width: 6ch; max-width: 6ch; height: auto; box-sizing: content-box; padding: 0 6.6px; border: 0; border-radius: 3.3px; outline: 0; background: #fff; color: #1A1428; font: 650 13.31px/1 var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; }
+  .ticker-blank-editor .chip-editor-by { font-size: 13.31px; line-height: 1; }
   .chip-editor-action {
-    flex: 0 0 30.8px; width: 30.8px; height: 30.8px; min-width: 30.8px; min-height: 30.8px;
+    flex: 0 0 22px; width: 22px; height: 22px; min-width: 22px; min-height: 22px;
     margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; color: #1A1428;
     display: inline-flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
   }
-  .chip-editor-action svg { display: block; width: 19.8px; height: 19.8px; pointer-events: none; }
+  .chip-editor-action svg { display: block; width: 14px; height: 14px; pointer-events: none; }
   .chip-editor-action:hover { color: var(--blue); }
 
 /* ── Numeric HUD (NUMERIC-HUD-v3) ── */
@@ -2131,7 +2131,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     .toolpath-canvas.has-part .toolpath-empty { display: none; }
 
     /* ── Seq 3 — blank-in-space composition surface ── */
-    :root { --app-header-h: 64px; --canvas-pad: 48px; --hud-gap: 15px; }
+    :root { --app-header-h: 64px; --canvas-pad: 48px; --hud-gap: 15px; --stop: 15px; }
     .app-header { position: fixed; inset: 0 0 auto; z-index: 100; height: var(--app-header-h); display: flex; align-items: center; padding: 0 20px; background: rgba(255,255,255,0.96); border-bottom: 1px solid rgba(26,20,40,0.12); box-shadow: 0 1px 0 rgba(255,255,255,0.8); }
     .app-header__mark { font-family: var(--font-mono); font-size: 13px; font-weight: 800; letter-spacing: .08em; }
     .app-header__mark .label-flip { color: var(--ink); }
@@ -2166,22 +2166,36 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     #hud .param-row { display: flex; flex-direction: column; align-items: stretch; gap: 4.4px; min-height: 0; overflow: visible; }
     #hud .param-row[data-param="margin"] { align-items: stretch; }
     #hud .param-label { flex: 0 0 auto; font-size: 11px; font-weight: 650; letter-spacing: 0.04em; line-height: 1; }
-    #hud .param-ticker { width: 154px; height: 31.46px; min-height: 31.46px; border-radius: 7.26px; font-size: 13.31px; box-shadow: 0 0.5px 1px rgba(0,0,0,.25); overflow: visible; }
-    #hud .param-row[data-param="margin"] .param-ticker { border: 1.1px solid rgba(83,139,236,.35); border-radius: 7.26px; box-shadow: 0 0.5px 1px rgba(0,0,0,.25); }
-    #hud .param-row[data-param="margin"] .param-ticker:has(.m-line) { min-height: 44px; }
-    #hud .param-popover { display: none !important; }
-    #hud .param-ticker.is-chip-editing { width: max-content; min-width: 154px; cursor: text; padding: 3.3px; justify-content: flex-start; overflow: visible; }
-    #hud .chip-editor-row { display: flex; align-items: center; width: max-content; min-width: 0; gap: 2.2px; }
-    #hud .chip-editor-field {
-      display: flex; align-items: center; min-width: 0; flex: 0 0 auto; height: 24px; padding: 0 6.6px;
-      border: 0; border-radius: 3.3px; background: #fff;
+    #hud .param-ticker {
+      display: flex; flex-direction: row; align-items: center; justify-content: center;
+      width: 154px; height: 31.46px; min-height: 31.46px; max-height: 31.46px;
+      border-radius: 7.26px; padding: 0 8.8px;
+      font: 650 13.31px/31.46px var(--font-mono); font-variant-numeric: tabular-nums;
+      white-space: nowrap; box-shadow: 0 0.5px 1px rgba(0,0,0,.25); overflow: hidden;
     }
-    #hud .chip-editor-field > span { flex: 0 0 auto; font-size: 9px; font-weight: 650; color: #5B5670; margin-right: 4px; }
-    #hud .chip-editor-field input { width: 5ch; min-width: 5ch; padding: 0; border: 0; outline: 0; background: transparent; color: var(--ink); font: 650 13.31px/1 var(--font-mono); font-variant-numeric: tabular-nums; text-align: left; white-space: nowrap; }
+    #hud .param-row[data-param="margin"] .param-ticker { border: 1.1px solid rgba(83,139,236,.35); border-radius: 7.26px; box-shadow: 0 0.5px 1px rgba(0,0,0,.25); }
+    #hud .param-row[data-param="margin"] .param-ticker:has(.m-line) { height: 31.46px; min-height: 31.46px; max-height: 31.46px; }
+    #hud .param-popover { display: none !important; }
+    #hud .param-ticker.is-chip-editing {
+      width: max-content; min-width: 154px; max-height: 31.46px; height: 31.46px;
+      cursor: text; padding: 0 3.3px; justify-content: flex-start; align-items: center; overflow: visible;
+    }
+    #hud .chip-editor-row { display: flex; align-items: center; width: max-content; min-width: 0; height: 31.46px; gap: 2.2px; }
+    #hud .chip-editor-field {
+      display: flex; align-items: center; min-width: 0; flex: 0 0 auto; height: auto; padding: 0 6.6px;
+      border: 0; border-radius: 3.3px; background: #fff; line-height: 1;
+    }
+    #hud .chip-editor-field > span { flex: 0 0 auto; font-size: 9px; font-weight: 650; color: #5B5670; margin-right: 4px; line-height: 1; }
+    #hud .chip-editor-field input { width: 6ch; min-width: 6ch; max-width: 6ch; padding: 0; border: 0; outline: 0; background: transparent; color: var(--ink); font: 650 13.31px/1 var(--font-mono); font-variant-numeric: tabular-nums; text-align: left; white-space: nowrap; overflow: hidden; }
     #hud .chip-editor-by { flex: 0 0 auto; color: #5B5670; font: 650 13.31px/1 var(--font-mono); }
-    #hud .chip-margin-editor { display: grid; grid-template-columns: max-content max-content; justify-content: start; align-items: center; gap: 3.3px 6.6px; width: max-content; }
-    #hud .chip-margin-editor .chip-editor-field { height: 24px; }
-    #hud .param-row[data-param="margin"] .param-ticker.is-chip-editing { height: auto; min-height: 0; border: 1.1px solid rgba(83,139,236,.35); border-radius: 7.26px; box-shadow: 0 0.5px 1px rgba(0,0,0,.25); overflow: visible; }
+    #hud .chip-margin-editor { display: grid; grid-template-columns: max-content max-content; justify-content: start; align-items: center; column-gap: 3.3px; row-gap: 3.3px; width: max-content; }
+    #hud .chip-margin-editor .chip-editor-field { height: auto; }
+    #hud .param-row[data-param="margin"] .param-ticker.is-chip-editing {
+      height: auto; min-height: 0; max-height: none; align-items: center;
+      border: 1.1px solid rgba(83,139,236,.35); border-radius: 7.26px;
+      box-shadow: 0 0.5px 1px rgba(0,0,0,.25); overflow: visible; padding: 3.3px;
+    }
+    #hud .param-row[data-param="margin"] .chip-editor-row { height: auto; align-items: center; }
 </style>
 </head>
 <body>
@@ -2612,23 +2626,23 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   var btParts = document.getElementById('bt-parts');
   if (!svg || !camera || !blank) return;
 
-  var PAD = 48;
+  var STOP = 15;
   var HEADER_H = 64;
-  var HUD_GAP = 15;
   var TICKER_H = 31.46;
-  var HUD_BLANK_STOP = HUD_GAP + TICKER_H + HUD_GAP;
+  var HUD_BLANK_STOP = STOP + TICKER_H + STOP;
   var MIN_LABEL_PX = 36;
   var SHEET_INSET = 24;
+  function sheetLanePx() {
+    var sheet = document.getElementById('hud');
+    return (sheet ? sheet.offsetWidth : 154) + SHEET_INSET + STOP;
+  }
 
   function snap(v) { var s = state.snap; return Math.round(v / s) * s; }
   function fittedScale() {
     var W = svg.clientWidth || window.innerWidth;
     var H = svg.clientHeight || window.innerHeight;
-    var sheet = document.getElementById('hud');
-    var sheetLane = (sheet ? sheet.offsetWidth : 154) + SHEET_INSET + PAD;
-    var blankWithGutterW = state.blankW + 4;
-    var blankWithGutterH = state.blankH + 8;
-    return Math.min(Math.max(80, W - sheetLane - PAD) / blankWithGutterW, Math.max(80, H - HUD_BLANK_STOP - PAD) / blankWithGutterH);
+    var lane = sheetLanePx();
+    return Math.min(Math.max(80, W - lane - STOP) / Math.max(state.blankW, 0.001), Math.max(80, H - HUD_BLANK_STOP - STOP) / Math.max(state.blankH, 0.001));
   }
   function pxPerInch() { return (state.fitScale == null ? fittedScale() : state.fitScale) * state.zoom; }
   function labelStep() {
@@ -2735,21 +2749,23 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     /* Keep its closed bar centered; an open blank editor expands from this left edge. */
     var tw = pin.offsetWidth || 140;
     if (!pin.classList.contains('is-ticker-editing')) pin.style.left = Math.round((window.innerWidth - tw) / 2) + 'px';
-    pin.style.top = (HEADER_H + HUD_GAP) + 'px';
+    pin.style.top = (HEADER_H + STOP) + 'px';
   }
   function syncHudBlankFromBed() {
     if (typeof window.__hudSyncBlank === 'function') window.__hudSyncBlank(state.blankW, state.blankH);
   }
   function clampSubjectToStops() {
     var W = svg.clientWidth || window.innerWidth;
-    var sheet = document.getElementById('hud');
-    var sheetLane = (sheet ? sheet.offsetWidth : 154) + SHEET_INSET + PAD;
+    var H = svg.clientHeight || window.innerHeight;
+    var lane = sheetLanePx();
     var baseScale = state.fitScale == null ? fittedScale() : state.fitScale;
-    var maxZoom = Math.max(0.35, (W - sheetLane - PAD) / Math.max(state.blankW * baseScale, 1));
+    var maxZoom = Math.max(0.35, (W - lane - STOP) / Math.max(state.blankW * baseScale, 1));
     state.zoom = Math.min(state.zoom, maxZoom);
     var s = pxPerInch();
-    state.panX = Math.max(sheetLane, Math.min(W - PAD - state.blankW * s, state.panX));
-    state.panY = Math.max(state.blankH * s + HUD_BLANK_STOP, state.panY);
+    var minPanY = state.blankH * s + HUD_BLANK_STOP;
+    var maxPanY = H - STOP;
+    state.panX = Math.max(lane, Math.min(W - STOP - state.blankW * s, state.panX));
+    state.panY = Math.max(minPanY, Math.min(maxPanY, state.panY));
   }
 
   function render() {
@@ -2801,11 +2817,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     state.zoom = 1;
     state.fitScale = fittedScale();
     var s = state.fitScale;
-    var H = svg.clientHeight || window.innerHeight;
-    var sheet = document.getElementById('hud');
-    var sheetLane = (sheet ? sheet.offsetWidth : 154) + SHEET_INSET + PAD;
-    state.panX = sheetLane;
-    state.panY = Math.max(state.blankH * s + HUD_BLANK_STOP, (H + state.blankH * s) / 2);
+    state.panX = sheetLanePx();
+    state.panY = state.blankH * s + HUD_BLANK_STOP;
   }
 
   function onPointerDown(e) {
@@ -2824,10 +2837,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (!state.dragging || !state.start) return;
     var dx = e.clientX - state.start.cx, dy = e.clientY - state.start.cy, s = state.start.scale;
     if (state.dragging === 'pan') {
-      var sheet = document.getElementById('hud');
-      var sheetLane = (sheet ? sheet.offsetWidth : 154) + SHEET_INSET + PAD;
-      state.panX = Math.max(sheetLane, Math.min((svg.clientWidth || window.innerWidth) - PAD - state.blankW * s, state.start.panX + dx));
-      state.panY = Math.max(state.blankH * s + HUD_BLANK_STOP, Math.min((svg.clientHeight || window.innerHeight), state.start.panY + dy));
+      var W = svg.clientWidth || window.innerWidth;
+      var H = svg.clientHeight || window.innerHeight;
+      var lane = sheetLanePx();
+      state.panX = Math.max(lane, Math.min(W - STOP - state.blankW * s, state.start.panX + dx));
+      state.panY = Math.max(state.blankH * s + HUD_BLANK_STOP, Math.min(H - STOP, state.start.panY + dy));
     }
     else if (state.dragging === 'x') state.blankW = Math.max(state.snap, snap(state.start.w + dx / s));
     else if (state.dragging === 'y') state.blankH = Math.max(state.snap, snap(state.start.h - dy / s));
@@ -3610,7 +3624,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     return '<label class="chip-editor-field">' + cap + '<input type="text" inputmode="decimal" autocomplete="off" data-chip-field="' + axis + '" value="' + fmt3(value) + '" /></label>';
   }
   function sizeChipInput(input) {
-    input.style.width = Math.max(5, input.value.length + 0.75) + 'ch';
+    input.style.width = '6ch';
   }
   function bindSelectAllOnClick(input) {
     function selectAll() {

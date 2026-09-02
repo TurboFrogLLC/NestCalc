@@ -3,7 +3,7 @@
 Product: FLiPIT
 Host: `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`
 Stage: blank-in-space (127)
-Lock: Cut 13 / PR 131
+Lock: Cut 14 / PR 131
 
 This replaces the former ticker-picker blueprint. It is intentionally not a picker schematic.
 
@@ -15,14 +15,16 @@ The stage subject is the blank and left sheet; the ticker is an independent fixe
 header 64px
 15px
                  [ rotate | 12.000 × 8.000 | count ]   fixed, centered ticker
-15px hard stop   blank cannot cross this line
+15px             blank top cannot cross
 
-canvas pad 48px  PART SIZE
-                 [ 1.250 x 3.375 ]
+24px inset       PART SIZE   15px   [ blank ]
+                 [ 31.46 row ]
                  GAP
-                 [ 0.375 x 0.125 ]
+                 [ 31.46 row ]
                  MARGIN
-                 [ 0.250 all     ]
+                 [ 31.46 row ]
+
+                 15px to viewport bottom
 ```
 
 ## Left sheet
@@ -96,3 +98,10 @@ This supersedes the Cut 6 sheet side: the sheet is fixed at left 48px and top `6
 - Check and X are unboxed Lucide `check` and `x` only, 19.8px / 2px stroke in 30.8px hits, matching the rotate pair and header + / − / Fit. Header + / − / Fit are Lucide `plus`, `minus`, and `maximize` at that same size and stroke.
 - Every editor field select-alls on click, not only the first field on open. No X/Y labels; `×` is enough. MARGIN is an even L R / B T grid inside a tight pill: padded white cells, no empty slab, no plus signs, grows right only. GAP keeps Link between Y and Check.
 - No picker, calculator, chevron, popover, or bed.
+
+## Cut 14 editor math + 15px stops
+
+- Closed and open chips are one 31.46 row, radius 7.26, type 13.31 / 650 / mono, line-height 31.46, align-items center. Inputs do not drop. White cells pad left/right only. Values are three decimals in 6ch tabular fields with no wrap. Select-all on every field click.
+- MARGIN open is an even 2×2: L R then B T, equal column and row gap, one number per cell, shared column left edges. Check and X sit on the right of the grid and center to it. No empty slab. No second popover. The chip is the editor.
+- Check, X, and Link are 22px hits with 14px Lucide glyphs, stroke 2. Rotate pair is 24px hits with 16px glyphs, stroke 2. Header + / − / Fit stay as Cut 13.
+- One 15px stop: header-bottom → HUD-top, HUD-bottom → blank-top, stack-right → blank-left, viewport-bottom → blank-bottom. HUD stays fixed. Pills grow right only; the blank follows that delta and returns.

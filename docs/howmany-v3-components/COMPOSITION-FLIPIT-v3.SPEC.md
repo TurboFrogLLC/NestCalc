@@ -1,6 +1,6 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Cut 13 HUD seats + editor chrome
+**Status:** Living — Cut 14 editor math + 15px stops
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
@@ -80,6 +80,16 @@ Side-stack chips take the same +10% as the closed bar: **31.46px** high, **7.26p
 Check and X are unboxed Lucide `check` and `x` only — 30.8px hits, 19.8px glyphs, 2px round stroke — matching the rotate pair and header + / − / Fit. Those three header hits are Lucide `plus`, `minus`, and `maximize` at the same size and stroke; they are not circled or boxed. Every editor field select-alls on click, not only the first field on open. PART SIZE and GAP use `×` with no X/Y labels. GAP keeps Link between Y and Check.
 
 MARGIN is an even L R / B T grid inside a tight pill: padded white cells, no empty slab, no plus signs. The pill grows right only. No picker, calculator, chevron, popover, or bed is restored.
+
+## Cut 14 — editor math + 15px stops
+
+Closed and open chips sit on one **31.46px** row: radius **7.26px**, readout and inputs **13.31px / 650 / mono**, `line-height: 31.46`, `align-items: center`. Inputs do not drop. White cells pad left/right only. Every numeric value is three decimals in a **6ch** tabular field with no wrap. Select-all remains on every field click.
+
+MARGIN open is an even **2×2**: L R on row 1, B T on row 2, one number per cell, equal column and row gap, shared column left edges. Check and X sit on the right of that grid and are vertically centered to it. There is no empty slab and no second popover.
+
+Action hits: Check, X, and Link are **22px** with **14px** Lucide glyphs, stroke 2. The rotate pair is **24px** with **16px** glyphs, stroke 2. Header + / − / Fit stay as Cut 13.
+
+Stops are one token, **15px**: header-bottom → HUD-top, HUD-bottom → blank-top, stack-right → blank-left, and viewport-bottom → blank-bottom. The HUD stays fixed. Pills grow right only; the blank slides by that width delta and returns. No picker, calculator, chevron, popover, or bed is restored.
 
 ---
 
