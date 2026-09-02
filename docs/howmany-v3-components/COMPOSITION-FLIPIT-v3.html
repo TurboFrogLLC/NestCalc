@@ -3095,6 +3095,23 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (partG) {
       layout = layout || nestLayout();
       partG.replaceChildren();
+      function appendMarginBands(originX, originY, blankWidth, blankHeight) {
+        function band(x, y, width, height) {
+          var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+          rect.setAttribute('x', x);
+          rect.setAttribute('y', y);
+          rect.setAttribute('width', width);
+          rect.setAttribute('height', height);
+          rect.setAttribute('fill', 'rgba(220,48,48,0.22)');
+          rect.setAttribute('stroke', 'none');
+          partG.appendChild(rect);
+        }
+        /* Each band is an inside, live-inch L/R/T/B reserve for this blank. */
+        band(originX, originY, m.l, blankHeight);
+        band(originX + blankWidth - m.r, originY, m.r, blankHeight);
+        band(originX, originY, blankWidth, m.b);
+        band(originX, originY + blankHeight - m.t, blankWidth, m.t);
+      }
       function appendTile(x, y, width, height) {
         var tile = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
         tile.setAttribute('x', x);
@@ -3115,6 +3132,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
           var originY = layout.trimLine.orientation === 'horizontal' && groupIndex === 1 ? layout.trimLine.position : 0;
           var localLeft = Math.max(0, m.l);
           var localBottom = Math.max(0, m.b);
+          appendMarginBands(originX, originY, groupBlank.width, groupBlank.height);
           for (var groupRow = 0; groupRow < grid.rows; groupRow++) {
             for (var groupColumn = 0; groupColumn < grid.columns; groupColumn++) {
               appendTile(
@@ -3131,6 +3149,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
           : line(0, layout.trimLine.position, w, layout.trimLine.position, 1.15, '#111111');
         partG.appendChild(trim);
       } else {
+        appendMarginBands(0, 0, w, h);
         for (var row = 0; row < layout.rows; row++) {
           for (var column = 0; column < layout.columns; column++) {
             appendTile(nx + column * (layout.partW + state.gap.x), ny + row * (layout.partH + state.gap.y), layout.partW, layout.partH);

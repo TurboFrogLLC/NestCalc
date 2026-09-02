@@ -199,6 +199,10 @@ Each two-group blank packs from its own bottom-left just as the single blank doe
 
 The blank, uniform tiles, two-group tiles, gaps, margins, and trim all use one SVG-inch coordinate space under the existing `translate(panX, panY) scale(s, -s)` camera. The blank begins at local `(0, 0)`; every tile begins at its local L/B inch inset and advances by its part size plus the live X/Y gap, so each drawn-length-to-blank-length ratio equals the corresponding ticker-value ratio. The inherited fixed `48 × 48` bed clip no longer truncates a typed blank or its tiles. Two-group blanks retain their Cut 4 local bottom-left origins, right/top leftover, full trim-edge margins, and one trim line. No CSS padding, secondary scale, extra tile inset, or margin wash is added.
 
+## AutoNest Cut 6 — red margin band
+
+Every blank shows a quiet inside reserved-margin band in `rgba(220,48,48,0.22)`, with no added stroke. Its four fill-only sides use the live ticker dimensions exactly: L from the local left edge, R from the local right edge, B from the local bottom edge, and T from the local top edge. Uniform layout draws one four-sided band on the blank; two-group AutoNest draws a separate four-sided band inside each returned isolated blank at its Cut 4 bottom-left origin. Bands remain below the frost-blue tiles and the trim line. The Cut 5 SVG-inch camera, full trim-edge policy, and right/top leftover are otherwise unchanged.
+
 ---
 
 ## Seq 3 — blank-in-space canvas

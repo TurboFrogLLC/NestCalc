@@ -24,6 +24,7 @@ Seq  Label              Notes                                              Stamp
 5b   Cut                3 isolated blanks full margins                    33a252a622285bc859d57cd9b529e22af1799473
 5c   Cut                4 isolated blank bottom-left origin; bands later  81c731411e9bdb53e7592dff1d68be39438fc3bc
 5d   Cut                5 true-inch scale                                 872f46b87d496e1b3ba253918a40ebf3e318043b
+5e   Cut                6 red margin band                                 pending
 6    Look               Owner htmlpreview. No Codex.
 7    Send for review
 8    Inspection
