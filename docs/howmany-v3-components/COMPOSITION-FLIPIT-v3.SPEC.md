@@ -1,6 +1,6 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Seq 8 side-stack sheet + ticker lock
+**Status:** Living — Cut 10 side-stack sheet + ticker lock
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
@@ -45,7 +45,13 @@ This supersedes Cut 6's sheet side only. The transparent, borderless sheet is fi
 
 This supersedes the earlier ticker details. The outer ticker is one 28.6px `#E8E8E8` row with a 6.6px radius and `0 0.5px 1px rgba(0,0,0,.25)` shadow; its inner travel and size elements do not set a 28px height. The pair uses the stock host Lucide `rotate-ccw` / `rotate-cw` paths in 28px hits with 18px, 24px-viewBox, round, 2px strokes. Inset vertical rules divide the pair, size, and count without reaching the row's top or bottom stroke.
 
-The size and count both use 12.1px / 650 / mono; the live count is `#538BEC` and derives from blank, part, gap, margin, and rotation state. The buttons rotate −90/+90. MARGIN remains a complete 6.6px chip with a full 1.1px stroke and own shadow, and all sheet ancestors leave its overflow visible. There is still no picker, calculator, chevron, popover, or Cut 10 in-chip editor.
+The size and count both use 12.1px / 650 / mono; the live count is `#538BEC` and derives from blank, part, gap, margin, and rotation state. The buttons rotate −90/+90. MARGIN remains a complete 6.6px chip with a full 1.1px stroke and own shadow, and all sheet ancestors leave its overflow visible. Picker, calculator, chevron, and popover remain absent.
+
+## Cut 10 — in-chip editors
+
+Clicking a side chip turns that same chip into the editor: the first field receives focus and select-all. PART SIZE, BLANK, and GAP keep one chip row with X/Y fields and Check/X controls. Check commits the live values; X restores the values from open. There are no link or swap controls.
+
+MARGIN expands downward inside its own complete 6.6px, 1.1px-stroked, shadowed chip into L, R, B, and T fields plus Check/X. Its bottom corners stay visible through the sheet stack. The retained popover is never opened; no picker, calculator, chevron, dark secondary panel, or bed is restored.
 
 ---
 

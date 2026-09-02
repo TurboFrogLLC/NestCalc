@@ -3,7 +3,7 @@
 Product: FLiPIT
 Host: `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`
 Stage: blank-in-space (127)
-Lock: Seq 8 / PR 131
+Lock: Cut 10 / PR 131
 
 This replaces the former ticker-picker blueprint. It is intentionally not a picker schematic.
 
@@ -65,4 +65,10 @@ This supersedes the Cut 6 sheet side: the sheet is fixed at left 48px and top `6
 - It uses the host's stock Lucide `rotate-ccw` and `rotate-cw` paths, each in a 28px hit with an 18px glyph, `viewBox="0 0 24 24"`, 2px round stroke.
 - Inset vertical rules separate rotate pair, size, and count without touching the bar's top or bottom edge. Size and count share 12.1px / 650 / mono; the count is `#538BEC`.
 - Rotate controls apply −90/+90. The count is live from blank, part, gap, margin, and rotation state; it does not construct AutoNest.
-- MARGIN keeps its complete 6.6px radius, full 1.1px stroke, and own shadow, with visible overflow through the sheet stack. No picker, calculator, chevron, popover, or Cut 10 editor is introduced.
+- MARGIN keeps its complete 6.6px radius, full 1.1px stroke, and own shadow, with visible overflow through the sheet stack. No picker, calculator, chevron, or popover is introduced.
+
+## Cut 10 in-chip editors
+
+- Clicking PART SIZE, BLANK, or GAP replaces that chip's readout with one X/Y editor row. The first field select-alls on open; Check commits, X cancels, and there is no link or swap control.
+- Clicking MARGIN expands that same chip downward into L, R, B, T fields and Check/X. The outer chip keeps its complete 6.6px corners, full 1.1px stroke, own shadow, and visible bottom corners.
+- No popover or dark 286px panel participates in the interaction. There is no picker, calculator, chevron, or restored bed.

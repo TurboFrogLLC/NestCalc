@@ -2154,6 +2154,22 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     #hud .param-row[data-param="margin"] .param-ticker { border: 1.1px solid rgba(83,139,236,.35); border-radius: 6.6px; box-shadow: 0 0.5px 1px rgba(0,0,0,.25); }
     #hud .param-row[data-param="margin"] .param-ticker:has(.m-line) { min-height: 40px; }
     #hud .param-popover { display: none !important; }
+    #hud .param-ticker.is-chip-editing { cursor: text; padding: 3.3px; justify-content: center; overflow: visible; }
+    #hud .chip-editor-row { display: flex; align-items: center; width: 100%; min-width: 0; gap: 2.2px; }
+    #hud .chip-editor-field {
+      display: flex; align-items: center; min-width: 0; flex: 1 1 0; height: 20px; padding: 0 3.3px;
+      border: 1.1px solid rgba(26,20,40,.25); border-radius: 4.4px; background: rgba(255,255,255,.72);
+    }
+    #hud .chip-editor-field > span { flex: 0 0 auto; font-size: 9px; font-weight: 650; color: #5B5670; margin-right: 2px; }
+    #hud .chip-editor-field input { width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--ink); font: 650 11px/1 var(--font-mono); font-variant-numeric: tabular-nums; text-align: center; }
+    #hud .chip-editor-by { flex: 0 0 auto; color: #5B5670; font: 650 11px/1 var(--font-mono); }
+    #hud .chip-editor-action { flex: 0 0 18px; width: 18px; height: 18px; padding: 0; border: 0; background: transparent; color: var(--ink); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+    #hud .chip-editor-action svg { display: block; width: 11px; height: 11px; pointer-events: none; }
+    #hud .chip-editor-action:hover { color: var(--blue); }
+    #hud .chip-margin-editor { display: grid; grid-template-columns: 1fr 1fr; gap: 4.4px; width: 100%; }
+    #hud .chip-margin-editor .chip-editor-field { height: 22px; box-shadow: 0 0.5px 1px rgba(0,0,0,.25); }
+    #hud .chip-margin-actions { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 2.2px; min-height: 18px; }
+    #hud .param-row[data-param="margin"] .param-ticker.is-chip-editing { height: auto; min-height: 72px; border: 1.1px solid rgba(83,139,236,.35); border-radius: 6.6px; box-shadow: 0 0.5px 1px rgba(0,0,0,.25); overflow: visible; }
 </style>
 </head>
 <body>
@@ -2213,7 +2229,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       </div></div>
     </div>
   
-    <!-- Retained picker field editor; the calculator keypad is deliberately absent. -->
+    <!-- Field stack shell; Cut 10 opens editors inside its chips. -->
 <div class="keypad" id="hud" aria-label="Field stack">
     <div class="keypad-header" id="hud-header" title="Drag HUD">
       <button type="button" class="tool press" id="calc-toggle" title="Calculator mode" aria-label="Calculator mode" aria-pressed="false">
@@ -3060,11 +3076,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     const tGap = document.querySelector('[data-ticker="gap"]');
     const tMar = document.querySelector('[data-ticker="margin"]');
     const partText = fmt3(p.x) + ' × ' + fmt3(p.y);
-    if (tPart) tPart.textContent = partText;
+    if (tPart && !tPart.classList.contains('is-chip-editing')) tPart.textContent = partText;
     if (tPartCollapsed) tPartCollapsed.textContent = partText;
-    if (tBlank) tBlank.textContent = fmt3(b.x) + ' × ' + fmt3(b.y);
-    if (tGap) tGap.textContent = fmt3(g.x) + ' × ' + fmt3(g.y);
-    if (tMar) tMar.innerHTML = marginSummaryHTML(m);
+    if (tBlank && !tBlank.classList.contains('is-chip-editing')) tBlank.textContent = fmt3(b.x) + ' × ' + fmt3(b.y);
+    if (tGap && !tGap.classList.contains('is-chip-editing')) tGap.textContent = fmt3(g.x) + ' × ' + fmt3(g.y);
+    if (tMar && !tMar.classList.contains('is-chip-editing')) tMar.innerHTML = marginSummaryHTML(m);
     state.partX = p.x; state.partY = p.y; state.partLinked = !!p.linked;
     state.blankW = b.x; state.blankH = b.y;
     updateSaveDirty();
@@ -3575,15 +3591,96 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     });
   }
 
-  hud.addEventListener('click', function (e) {
-    const tick = e.target.closest && e.target.closest('.param-ticker[data-open]');
-    if (!tick || !hud.contains(tick)) return;
-    if (tick.classList.contains('header-part-ticker')) return;
-    e.preventDefault(); e.stopPropagation();
-    const key = tick.getAttribute('data-open');
+  /* Cut 10: the side chip is the editor. The retained popover markup is never opened. */
+  var chipEditor = { key: null, snapshot: null };
+  function chipSnapshot(key) {
+    return key === 'margin'
+      ? { l: paramState.margin.l, r: paramState.margin.r, t: paramState.margin.t, b: paramState.margin.b }
+      : { x: paramState[key].x, y: paramState[key].y };
+  }
+  function restoreChipSnapshot(key, snapshot) {
+    if (key === 'margin') {
+      paramState.margin.l = snapshot.l; paramState.margin.r = snapshot.r;
+      paramState.margin.t = snapshot.t; paramState.margin.b = snapshot.b;
+    } else {
+      paramState[key].x = snapshot.x; paramState[key].y = snapshot.y;
+    }
+  }
+  function chipAction(action, label, paths) {
+    return '<button type="button" class="chip-editor-action" data-chip-action="' + action + '" aria-label="' + label + '" title="' + label + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + paths + '</svg></button>';
+  }
+  function chipField(label, axis, value) {
+    return '<label class="chip-editor-field"><span>' + label + '</span><input type="text" inputmode="decimal" autocomplete="off" data-chip-field="' + axis + '" value="' + fmt3(value) + '" /></label>';
+  }
+  function bindChipInputs(ticker, key) {
+    ticker.querySelectorAll('[data-chip-field]').forEach(function (input) {
+      input.addEventListener('input', function () {
+        sanitizeNumericLive(input);
+        var raw = input.value;
+        var value = raw === '' || raw === '.' ? 0 : parseFloat(raw);
+        if (!Number.isFinite(value)) return;
+        var axis = input.getAttribute('data-chip-field');
+        if (key === 'margin') paramState.margin[axis] = value;
+        else paramState[key][axis] = value;
+        refreshTickers();
+      });
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); finishChipEditor(true); }
+        if (e.key === 'Escape') { e.preventDefault(); finishChipEditor(false); }
+      });
+    });
+  }
+  function finishChipEditor(commit) {
+    var key = chipEditor.key;
     if (!key) return;
-    if (paramState.open === key) closeAllParamPopovers();
-    else openParamPopover(key);
+    var ticker = document.querySelector('[data-ticker="' + key + '"]');
+    if (!commit) restoreChipSnapshot(key, chipEditor.snapshot);
+    chipEditor.key = null;
+    chipEditor.snapshot = null;
+    if (ticker) {
+      ticker.classList.remove('is-chip-editing');
+      ticker.innerHTML = '';
+      ticker.onclick = null;
+    }
+    refreshTickers();
+    if (ticker) ticker.focus();
+  }
+  function openChipEditor(key) {
+    if (chipEditor.key === key) return;
+    if (chipEditor.key) finishChipEditor(true);
+    var ticker = document.querySelector('[data-ticker="' + key + '"]');
+    if (!ticker) return;
+    chipEditor.key = key;
+    chipEditor.snapshot = chipSnapshot(key);
+    ticker.classList.add('is-chip-editing');
+    var check = chipAction('commit', 'Commit changes', '<path d="m5 12 4 4L19 6"/>');
+    var cancel = chipAction('cancel', 'Cancel changes', '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>');
+    if (key === 'margin') {
+      var m = paramState.margin;
+      ticker.innerHTML = '<div class="chip-margin-editor">' + chipField('L', 'l', m.l) + chipField('R', 'r', m.r) + chipField('B', 'b', m.b) + chipField('T', 't', m.t) + '<div class="chip-margin-actions">' + check + cancel + '</div></div>';
+    } else {
+      var bag = paramState[key];
+      ticker.innerHTML = '<div class="chip-editor-row">' + chipField('X', 'x', bag.x) + '<span class="chip-editor-by">×</span>' + chipField('Y', 'y', bag.y) + check + cancel + '</div>';
+    }
+    ticker.onclick = function (e) {
+      var action = e.target.closest && e.target.closest('[data-chip-action]');
+      if (!action) return;
+      e.preventDefault(); e.stopPropagation();
+      finishChipEditor(action.getAttribute('data-chip-action') === 'commit');
+    };
+    bindChipInputs(ticker, key);
+    requestAnimationFrame(function () {
+      var first = ticker.querySelector('[data-chip-field]');
+      if (first) { first.focus(); first.select(); }
+    });
+  }
+  hud.addEventListener('click', function (e) {
+    var tick = e.target.closest && e.target.closest('.param-ticker[data-open]');
+    if (!tick || !hud.contains(tick) || tick.classList.contains('header-part-ticker')) return;
+    if (tick.classList.contains('is-chip-editing')) return;
+    e.preventDefault(); e.stopPropagation();
+    var key = tick.getAttribute('data-open');
+    if (key) openChipEditor(key);
   });
 
   document.addEventListener('pointerdown', function (e) {
