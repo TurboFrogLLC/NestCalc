@@ -6,7 +6,7 @@ Part: Vercel git auto-deploy off
 Description: Stop Vercel builds on every Git push. Local `npx vercel --prod` stays the deploy.
 PR: 132
 Branch: docs/vercel-no-autodeploy
-Head: c79211ef20f89a7db538ede4cbd5760984f81042
+Head: a8f2da1f4fd6e157b359e61b525958104e770f0e
 Session: fresh
 job_id: NGJ-20260902-vercel-git
 flow_id:
@@ -15,7 +15,7 @@ goal_sha256:
 Seq  Label              Notes                                              Stamp
 1    Plan               one Cut. git.deploymentEnabled false. Local deploy  c79211ef20f89a7db538ede4cbd5760984f81042
 2    Start-branch       Owner local soft-sync
-3    Cut                vercel.json git.deploymentEnabled false
+3    Cut                vercel.json git.deploymentEnabled false             a8f2da1f4fd6e157b359e61b525958104e770f0e
 4    Send for review    Owner look. No Codex unless named
 5    Inspection
 6    Merge
