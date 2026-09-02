@@ -187,6 +187,10 @@ The hamburger stroke uses the shared travel-hit off color `#111111`, matching th
 
 While the hamburger is armed, the FLiPIT host consumes `calculateAutoNest` from `src/lib/autoNestEngine.ts` using the live blank, part, gap, and four margins. When its two-group result strictly exceeds the best-uniform total, the blue count is the two-group `totalParts`; the blank draws both returned frost-blue tile grids and exactly one `trimLine` at the engine’s vertical or horizontal split. Each group keeps its returned grid dimensions, gaps, and achieved margins. When two-group does not strictly improve the total, the existing Cut 1 best-uniform layout and rotation remain live. Disarming returns to the current `nestLayout` grid with the black hamburger. No picker, calculator, chevron, bed, React `AutoNestPreview`, or HowMany shell is introduced.
 
+## AutoNest Cut 3 — isolated blanks, full margins
+
+Armed two-group AutoNest uses `trimEdgePolicy: 'full'`. A vertical split creates independent left and right blanks; a horizontal split creates independent top and bottom blanks. Every resulting blank receives the current ticker L, R, T, and B margins in full, including its trim-facing edge. Tiles are positioned from that blank’s returned `achievedMargins`, so each group remains inset on all four of its own sides; the host still draws exactly one engine `trimLine`. The count, strict two-group improvement rule, Cut 1 best-uniform fallback, hamburger-off grid, and glyph states are unchanged.
+
 ---
 
 ## Seq 3 — blank-in-space canvas

@@ -3019,7 +3019,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
   function autoNestSettings() {
     var m = state.margin;
-    return { globalClampMargin: 0, trimEdgePolicy: 'open', sharedTrimClearance: 0, overrideGlobalMargins: true, marginOverrides: { left: m.l, right: m.r, top: m.t, bottom: m.b } };
+    return { globalClampMargin: 0, trimEdgePolicy: 'full', sharedTrimClearance: 0, overrideGlobalMargins: true, marginOverrides: { left: m.l, right: m.r, top: m.t, bottom: m.b } };
   }
   function nestLayoutForRotation(partRot) {
     var quarterTurn = Math.abs((partRot || 0) % 180) === 90;
