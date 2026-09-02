@@ -40,3 +40,7 @@ Implementation commit: 872f46b87d496e1b3ba253918a40ebf3e318043b
 ## Seq 5e Cut 6 — red margin band
 Worker: Codex App. Each blank now draws fill-only L/R/T/B reserved-margin bands in `rgba(220,48,48,0.22)` at the live ticker inch values. Uniform mode uses the parent blank; armed two-group mode uses each returned isolated blank at its own Cut 4 bottom-left origin. The bands are appended before the frost-blue tiles and the one trim line, with no extra stroke, no additional scale, and no change to the full trim-edge policy, hamburger, chips, presets, Fit, or stops.
 Implementation commit: c9180ba1328a09ade53f908df44eaebde7369383
+
+## Seq 5f Cut 7 — eye toggle, green arm, count-slot pin
+Worker: Codex App. The far right of the 154px MARGIN label row now has a 22px Lucide eye toggle with a 16px glyph and 2px stroke. Bands default on and show eye-off; toggling off removes every Cut 6 L/R/T/B band on both uniform and armed two-group blanks, then shows eye. The armed hamburger is green `#16A34A`, while off remains `#111111`. The named fixed center ticker pin preserves its three-digit count well and viewport left pin through blank-editor Check and X, so a two-digit count such as 66 remains unclipped and stationary. AutoNest math, SVG-inch space, origins, full trim-edge policy, trim, and the no picker / calculator / chevron / bed boundary are unchanged.
+Implementation commit: 5fc2ed7450ea3d431744fb19c42a04cef42e3e70

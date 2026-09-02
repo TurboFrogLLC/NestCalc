@@ -25,6 +25,7 @@ Seq  Label              Notes                                              Stamp
 5c   Cut                4 isolated blank bottom-left origin; bands later  81c731411e9bdb53e7592dff1d68be39438fc3bc
 5d   Cut                5 true-inch scale                                 872f46b87d496e1b3ba253918a40ebf3e318043b
 5e   Cut                6 red margin band                                 c9180ba1328a09ade53f908df44eaebde7369383
+5f   Cut                7 eye toggle, green arm, count-slot pin           5fc2ed7450ea3d431744fb19c42a04cef42e3e70
 6    Look               Owner htmlpreview. No Codex.
 7    Send for review
 8    Inspection
@@ -52,7 +53,7 @@ Do not invent a third nest formula.
 Center HUD order: rotate-ccw | rotate-cw | blank size | Lucide hamburger | count.
 Menu hit matches rotate hits: 24px hit, 16px glyph, stroke 2, 24 viewBox.
 Lucide `hamburger` paths only: M12 16H4a2 2 0 1 1 0-4h16a2 2 0 1 1 0 4h-4.25 / M5 12a2 2 0 0 1-2-2 9 7 0 0 1 18 0 2 2 0 0 1-2 2 / M5 16a2 2 0 0 0-2 2 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 2 2 0 0 0-2-2q0 0 0 0 / m6.67 12 6.13 4.6a2 2 0 0 0 2.8-.4l3.15-4.2.
-Hamburger stroke is #111111 off with the rotate pair and #FFCE1B only while armed; it remains fill-none.
+Hamburger stroke is #111111 off with the rotate pair and #16A34A only while armed; it remains fill-none.
 Menu off: nestLayout grid as on main.
 Hamburger on: call calculateBestUniformNest with live blank, part, gap, margin. If 90° wins, set partRot to match and redraw tiles + count.
 Idle size/rot edits while armed re-run best uniform.
