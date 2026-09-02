@@ -2236,7 +2236,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }
     #hud .param-row[data-param="margin"] .chip-editor-field,
     #hud .param-row[data-param="margin"] .chip-editor-field input { height: auto; line-height: 1; }
-    /* Cut 21: named presets stay in the sheet; their editor is a blocking card, never the old popover. */
+    /* Cut 23: named presets stay in the sheet; their editor is a blocking card, never the old popover. */
     #hud .margin-presets { display: flex; flex-direction: column; gap: 4.4px; width: 154px; }
     #hud .margin-presets__head { display: flex; align-items: center; justify-content: space-between; min-height: 11px; }
     #hud .margin-presets__label { font-size: 11px; font-weight: 650; letter-spacing: 0.04em; line-height: 1; }
@@ -2253,17 +2253,21 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       font: 650 13.31px/31.46px var(--font-mono); font-variant-numeric: tabular-nums; text-align: center; cursor: pointer;
     }
     #hud .margin-presets__slot:hover { background: #E8E8E8; }
-    #hud .margin-presets__slot.is-armed { background: rgba(255,206,27,.22); }
+    #hud .margin-presets__slot.is-armed { background: rgba(255,206,27,.55); border-color: rgba(201,140,0,.85); }
     .margin-preset-card-layer { position: fixed; inset: 0; z-index: 130; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,.18); }
     .margin-preset-card-layer[hidden] { display: none; }
-    .margin-preset-card { box-sizing: border-box; width: 171.6px; padding: 8.8px; border-radius: 7.26px; background: #E8E8E8; box-shadow: 0 2px 7px rgba(0,0,0,.24); color: var(--ink); }
-    .margin-preset-card input, .margin-preset-card__copy { box-sizing: border-box; height: 31.46px; border: 1.1px solid rgba(83,139,236,.35); border-radius: 7.26px; background: #fff; color: var(--ink); box-shadow: 0 0.5px 1px rgba(0,0,0,.25); font: 650 13.31px/1 var(--font-mono); font-variant-numeric: tabular-nums; }
-    .margin-preset-card__name { width: 154px; padding: 0 8.8px; margin: 0 0 8.8px; }
-    .margin-preset-card__fields { display: grid; grid-template-columns: 72.6px 72.6px; gap: 8.8px; }
-    .margin-preset-card__field { display: flex; flex-direction: column; gap: 3px; font: 650 9px/1 var(--font-mono); }
+    .margin-preset-card { box-sizing: border-box; width: 240px; padding: 8.8px; border-radius: 7.26px; background: #E8E8E8; box-shadow: 0 2px 7px rgba(0,0,0,.24); color: var(--ink); }
+    .margin-preset-card input { box-sizing: border-box; height: 31.46px; border: 1.1px solid rgba(83,139,236,.35); border-radius: 7.26px; background: #fff; color: var(--ink); box-shadow: 0 0.5px 1px rgba(0,0,0,.25); font: 650 13.31px/1 var(--font-mono); font-variant-numeric: tabular-nums; }
+    .margin-preset-card__name { width: 222.4px; padding: 0 8.8px; margin: 0 0 8.8px; }
+    .margin-preset-card__fields { display: flex; flex-direction: column; gap: 8.8px; }
+    .margin-preset-card__section { display: flex; flex-direction: column; gap: 4.4px; }
+    .margin-preset-card__section-label { font: 650 11px/1 var(--font-mono); }
+    .margin-preset-card__pair { display: grid; grid-template-columns: 72.6px 72.6px; gap: 8.8px; }
+    .margin-preset-card__field { display: block; font-size: 0; line-height: 0; }
     .margin-preset-card__field input { width: 72.6px; padding: 0 6px; }
-    .margin-preset-card__copy { width: 154px; margin-top: 8.8px; padding: 0; cursor: pointer; }
-    .margin-preset-card__actions { display: flex; justify-content: flex-end; gap: 4.4px; margin-top: 8.8px; }
+    .margin-preset-card__footer { display: flex; align-items: center; justify-content: space-between; margin-top: 8.8px; }
+    .margin-preset-card__copy { height: 22px; padding: 0; border: 0; background: transparent; color: var(--ink); font: 650 11px/1 var(--font-mono); cursor: pointer; }
+    .margin-preset-card__actions { display: flex; align-items: center; gap: 4.4px; }
     .margin-preset-card__action { width: 22px; height: 22px; padding: 0; border: 0; background: transparent; color: var(--ink); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
     .margin-preset-card__action svg { width: 14px; height: 14px; }
 </style>
@@ -2461,19 +2465,36 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
               <section class="margin-preset-card" role="dialog" aria-modal="true" aria-labelledby="margin-preset-card-title">
                 <input class="margin-preset-card__name" data-margin-preset-name id="margin-preset-card-title" type="text" autocomplete="off" aria-label="Preset name" placeholder="Preset" />
                 <div class="margin-preset-card__fields">
-                  <label class="margin-preset-card__field">Blank X<input data-margin-preset-field="blank.x" type="text" inputmode="decimal" autocomplete="off" /></label>
-                  <label class="margin-preset-card__field">Blank Y<input data-margin-preset-field="blank.y" type="text" inputmode="decimal" autocomplete="off" /></label>
-                  <label class="margin-preset-card__field">Gap X<input data-margin-preset-field="gap.x" type="text" inputmode="decimal" autocomplete="off" /></label>
-                  <label class="margin-preset-card__field">Gap Y<input data-margin-preset-field="gap.y" type="text" inputmode="decimal" autocomplete="off" /></label>
-                  <label class="margin-preset-card__field">Margin L<input data-margin-preset-field="margin.l" type="text" inputmode="decimal" autocomplete="off" /></label>
-                  <label class="margin-preset-card__field">Margin R<input data-margin-preset-field="margin.r" type="text" inputmode="decimal" autocomplete="off" /></label>
-                  <label class="margin-preset-card__field">Margin B<input data-margin-preset-field="margin.b" type="text" inputmode="decimal" autocomplete="off" /></label>
-                  <label class="margin-preset-card__field">Margin T<input data-margin-preset-field="margin.t" type="text" inputmode="decimal" autocomplete="off" /></label>
+                  <section class="margin-preset-card__section" aria-label="Blank">
+                    <span class="margin-preset-card__section-label">Blank</span>
+                    <div class="margin-preset-card__pair">
+                      <label class="margin-preset-card__field"><input data-margin-preset-field="blank.x" type="text" inputmode="decimal" autocomplete="off" aria-label="Blank width" /></label>
+                      <label class="margin-preset-card__field"><input data-margin-preset-field="blank.y" type="text" inputmode="decimal" autocomplete="off" aria-label="Blank height" /></label>
+                    </div>
+                  </section>
+                  <section class="margin-preset-card__section" aria-label="Gap">
+                    <span class="margin-preset-card__section-label">Gap</span>
+                    <div class="margin-preset-card__pair">
+                      <label class="margin-preset-card__field"><input data-margin-preset-field="gap.x" type="text" inputmode="decimal" autocomplete="off" aria-label="Gap horizontal" /></label>
+                      <label class="margin-preset-card__field"><input data-margin-preset-field="gap.y" type="text" inputmode="decimal" autocomplete="off" aria-label="Gap vertical" /></label>
+                    </div>
+                  </section>
+                  <section class="margin-preset-card__section" aria-label="Margin">
+                    <span class="margin-preset-card__section-label">Margin</span>
+                    <div class="margin-preset-card__pair">
+                      <label class="margin-preset-card__field"><input data-margin-preset-field="margin.l" type="text" inputmode="decimal" autocomplete="off" aria-label="Margin left" /></label>
+                      <label class="margin-preset-card__field"><input data-margin-preset-field="margin.r" type="text" inputmode="decimal" autocomplete="off" aria-label="Margin right" /></label>
+                      <label class="margin-preset-card__field"><input data-margin-preset-field="margin.b" type="text" inputmode="decimal" autocomplete="off" aria-label="Margin bottom" /></label>
+                      <label class="margin-preset-card__field"><input data-margin-preset-field="margin.t" type="text" inputmode="decimal" autocomplete="off" aria-label="Margin top" /></label>
+                    </div>
+                  </section>
                 </div>
-                <button type="button" class="margin-preset-card__copy" data-margin-preset-copy>Copy live</button>
-                <div class="margin-preset-card__actions">
-                  <button type="button" class="margin-preset-card__action" data-margin-preset-save title="Save preset" aria-label="Save preset"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button>
-                  <button type="button" class="margin-preset-card__action" data-margin-preset-cancel title="Cancel preset edit" aria-label="Cancel preset edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+                <div class="margin-preset-card__footer">
+                  <button type="button" class="margin-preset-card__copy" data-margin-preset-copy>Copy live</button>
+                  <div class="margin-preset-card__actions">
+                    <button type="button" class="margin-preset-card__action" data-margin-preset-save title="Save preset" aria-label="Save preset"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button>
+                    <button type="button" class="margin-preset-card__action" data-margin-preset-cancel title="Cancel preset edit" aria-label="Cancel preset edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+                  </div>
                 </div>
               </section>
             </div>

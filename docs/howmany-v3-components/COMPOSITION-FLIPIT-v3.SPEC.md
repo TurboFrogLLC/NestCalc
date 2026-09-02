@@ -1,6 +1,6 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Cut 21 preset card
+**Status:** Living — Cut 23 preset modal corrective
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
@@ -133,9 +133,9 @@ Only the live part tiles are visible inside the blank. Columns and rows use the 
 
 PRESETS sits directly below MARGIN in the left sheet. Its label uses the same type as PART SIZE, GAP, and MARGIN; Lucide plus and minus controls at the label's right add one slot or remove the last slot. Four slots are present at load. The slots form a two-column grid: each 154px row has exactly two frost-blue buttons and one shared gap, so both rows have the same measured length as the chips above. Each button uses the side-chip token — 31.46px height, 7.26px radius, 1.1px stroke, the established shadow, and 13.31px / 650 / mono type — and applies only its stored margin snapshot. Ghost editors, external Check/X actions, the centered ticker lock, live parts on the blank, Fit, hard stops, and the absence of picker, calculator, chevron, popover, and bed remain unchanged.
 
-## Cut 21 — preset card
+## Cut 23 — preset modal corrective
 
-PRESETS reads left-to-right as label, Lucide pencil, plus, and minus; no slot has an ordinal in its visible name. An idle slot tap immediately hydrates live Blank, Gap, and Margin. Pencil then slot tap arms that slot with `#FFCE1B` at 22% opacity and opens a blocking `#E8E8E8` card. The 171.6px card has 8.8px padding, a 154 × 31.46 named input, paired 72.6 × 31.46 Blank X/Y and Gap X/Y boxes, paired L/R then B/T Margin boxes, a Copy live control, and unboxed 22px Lucide Check/X at its bottom. Empty values hydrate from the live tickers; Check saves and X cancels; an empty name is `Preset`. Any live chip edit clears the arm without writing the slot. Preset buttons show their name only and retain GAP-chip tokens. No picker, calculator, chevron, old popover, or bed is restored; ghost editors, center-bar lock, parts on blank, Fit, hard stops, and boot sizes remain locked.
+PRESETS reads left-to-right as label, stock Lucide pencil, plus, and minus; no slot has an ordinal in its visible name. An idle slot tap immediately hydrates live Blank, Gap, and Margin. Pencil then slot tap arms that slot with `rgba(255,206,27,0.55)` fill and `rgba(201,140,0,0.85)` stroke and opens a blocking `#E8E8E8` card. The 240px card has 8.8px padding, a 222.4 × 31.46 named input, and only the section labels Blank, Gap, and Margin above their 72.6 × 31.46 paired boxes (8.8px gap). Its one-row footer is Copy live at left and unboxed 22px Lucide Check/X at right. Empty values hydrate from the live tickers; Check saves and X cancels; an empty name is `Preset`. Any live chip edit clears the arm without writing the slot. Preset buttons show their name only and retain GAP-chip tokens. No picker, calculator, chevron, old popover, or bed is restored; ghost editors, center-bar lock, parts on blank, Fit, hard stops, and boot sizes remain locked.
 
 ---
 
