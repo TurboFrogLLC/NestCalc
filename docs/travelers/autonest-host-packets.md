@@ -32,3 +32,7 @@ Implementation commit: 33a252a622285bc859d57cd9b529e22af1799473
 ## Seq 5c Cut 4 — isolated blank bottom-left origin
 Worker: Codex App. Each returned two-group blank now uses the same local L/B tile origin as the single blank: left/bottom at sheet L/B, right at trim + L / sheet B, and top at sheet L / trim + B. This preserves right/top leftover and the engine-backed R/T clearance on every isolated blank while retaining one trim line and the full trim-edge policy. The translucent red L/R/T/B margin band is explicitly deferred to a later operation and is not drawn in this cut.
 Implementation commit: 81c731411e9bdb53e7592dff1d68be39438fc3bc
+
+## Seq 5d Cut 5 — true-inch scale
+Worker: Codex App. Removed the inherited fixed 48 × 48 bed clip from the blank and tile group so any typed blank remains drawable at its full ticker dimensions. Blank, uniform tiles, two-group tiles, gaps, live L/R/T/B margins, and trim continue to use the single `translate(panX, panY) scale(s, -s)` SVG-inch camera. The existing bottom-left origins, right/top leftover, full trim-edge policy, one trim line, hamburger state, chips, presets, Fit, and stops are unchanged; no red margin wash was added.
+Implementation commit: pending

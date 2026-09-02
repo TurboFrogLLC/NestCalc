@@ -195,6 +195,10 @@ Armed two-group AutoNest uses `trimEdgePolicy: 'full'`. A vertical split creates
 
 Each two-group blank packs from its own bottom-left just as the single blank does. The live ticker L and B are the local tile origin insets: left and bottom groups start at sheet L/B; right groups start at trim + L / sheet B; top groups start at sheet L / trim + B. This leaves every blank’s unused space on its right and top while the full-policy engine result guarantees L/R/T/B containment. The trim remains one engine line. A translucent red per-blank L/R/T/B margin band is deferred for a later operation only and is not drawn here.
 
+## AutoNest Cut 5 — true-inch scale
+
+The blank, uniform tiles, two-group tiles, gaps, margins, and trim all use one SVG-inch coordinate space under the existing `translate(panX, panY) scale(s, -s)` camera. The blank begins at local `(0, 0)`; every tile begins at its local L/B inch inset and advances by its part size plus the live X/Y gap, so each drawn-length-to-blank-length ratio equals the corresponding ticker-value ratio. The inherited fixed `48 × 48` bed clip no longer truncates a typed blank or its tiles. Two-group blanks retain their Cut 4 local bottom-left origins, right/top leftover, full trim-edge margins, and one trim line. No CSS padding, secondary scale, extra tile inset, or margin wash is added.
+
 ---
 
 ## Seq 3 — blank-in-space canvas
