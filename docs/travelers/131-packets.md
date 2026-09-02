@@ -62,3 +62,11 @@ Seq 27 Cut 17 margin vertical inset — Codex App: browser-measured closed GAP t
 Stamp: c2e7acb39745340174ffa053b69b222b449adfb5
 
 NEXT: Owner direction after Cut 17.
+
+Seq 28 Cut 18 center-bar lock — Codex App: froze the centered travel box at its closed-state width and left pin. BLANK editor open, field selection, Check, and X leave the bar fixed; fields retain closed type, while Check/X remain outside right and never re-center the bar.
+Stamp: fe2a1b53018fe0d4651bf3520059946094f0c859
+
+Seq 29 Cut 19 parts on blank — Codex App: restored only live part tiles inside the blank. The shared blank/part/gap/margin/quarter-turn columns × rows calculation drives both the blue count and rendered tiles; LaserBed fill, grid, rim, rulers, nest-box chrome, picker, calc, and chevron remain absent.
+Stamp: fe2a1b53018fe0d4651bf3520059946094f0c859
+
+NEXT: Owner direction after Cut 19.
