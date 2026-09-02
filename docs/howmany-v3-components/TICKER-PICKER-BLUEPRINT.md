@@ -125,3 +125,13 @@ This supersedes the Cut 6 sheet side: the sheet is fixed at left 48px and top `6
 
 - Closed GAP's readout text box measures 7px from its inner top stroke and 7.45px from its inner bottom stroke in the browser's sub-pixel layout. MARGIN's two-line closed and open L R / B T grids use the shared **7px** vertical padding token.
 - Column gap = row gap. Width stays. Check/X remain outside right. Open MARGIN remains `#E8E8E8`; Ghost A, no picker, no calculator, no chevron, and no bed stay locked.
+
+## Cut 18 center-bar lock
+
+- Center the travel box from its closed width once. Its left and width stay fixed during BLANK-editor open, field click, Check, and X; editor fields retain closed 13.31px / 650 / mono type and cannot widen the box.
+- Check/X hang outside right and never participate in centering. First BLANK-field click select-alls.
+
+## Cut 19 parts on blank
+
+- Unhide only the live part tiles within the blank. Derive columns × rows from the existing blank, part, gap, margin, and quarter-turn count formula so the blue count equals the visible tile count.
+- Keep LaserBed fill, grid, rim, rulers, nest-box chrome, picker, calculator, chevron, and other bed surfaces absent.

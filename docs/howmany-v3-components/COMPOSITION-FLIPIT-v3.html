@@ -2161,7 +2161,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     .app-header__flipit:hover { background: rgba(26,20,40,0.92); }
     .bed-stage { inset: var(--app-header-h) 0 0; background: #f7f5fa; }
     /* Retain the blank's interaction layer, but remove every drawn bed primitive. */
-    #lb-bed-fill, #lb-major-grid, #lb-bed-rim, #lb-edge-x, #lb-edge-y, #lb-camera > circle, #lb-nest-box, #lb-part-g, #lb-bed-rulers { display: none; }
+    #lb-bed-fill, #lb-major-grid, #lb-bed-rim, #lb-edge-x, #lb-edge-y, #lb-camera > circle, #lb-nest-box, #lb-bed-rulers { display: none; }
+    /* Cut 19: parts are the only restored blank content; bed chrome remains absent. */
+    #lb-part-g { display: inline; }
     #lb-blank { fill: #fff; fill-opacity: 1; stroke: #1a1428; stroke-width: 1.5; clip-path: none; }
     .blank-ticker-cluster { z-index: 90; }
     /* The left sheet is invisible: it owns one lane, not a second canvas grid. */
@@ -2680,6 +2682,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   var HUD_BLANK_STOP = STOP + TICKER_H + STOP;
   var MIN_LABEL_PX = 36;
   var SHEET_INSET = 24;
+  var tickerClosedWidth = 0;
   function sheetLanePx() {
     var sheet = document.getElementById('hud');
     return (sheet ? sheet.offsetWidth : 154) + SHEET_INSET + STOP;
@@ -2699,6 +2702,21 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     return 12;
   }
   function tickStep(L) { if (L >= 12) return 12; if (L >= 6) return 6; return 1; }
+
+  /* One layout is the authority for both the blue count and the blank tiles. */
+  function nestLayout() {
+    var quarterTurn = Math.abs((state.partRot || 0) % 180) === 90;
+    var partW = quarterTurn ? state.partH : state.partW;
+    var partH = quarterTurn ? state.partW : state.partH;
+    var m = state.margin;
+    var gap = state.gap;
+    var usableW = Math.max(0, state.blankW - m.l - m.r);
+    var usableH = Math.max(0, state.blankH - m.t - m.b);
+    var validPart = partW > 0 && partH > 0;
+    var columns = validPart ? Math.max(0, Math.floor((usableW + gap.x) / Math.max(partW + gap.x, 0.001) + 1e-9)) : 0;
+    var rows = validPart ? Math.max(0, Math.floor((usableH + gap.y) / Math.max(partH + gap.y, 0.001) + 1e-9)) : 0;
+    return { columns: columns, rows: rows, count: columns * rows, partW: partW, partH: partH };
+  }
 
   function applyCamera() {
     var s = pxPerInch();
@@ -2734,11 +2752,23 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       nestBox.setAttribute('width', nw);
       nestBox.setAttribute('height', nh);
     }
-    if (partEl && partG) {
-      partEl.setAttribute('width', state.partW);
-      partEl.setAttribute('height', state.partH);
-      var cx = state.partW / 2, cy = state.partH / 2;
-      partG.setAttribute('transform', 'translate(' + nx + ',' + ny + ') rotate(' + (state.partRot || 0) + ' ' + cx + ' ' + cy + ')');
+    if (partG) {
+      var layout = nestLayout();
+      partG.replaceChildren();
+      for (var row = 0; row < layout.rows; row++) {
+        for (var column = 0; column < layout.columns; column++) {
+          var tile = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+          tile.setAttribute('x', nx + column * (layout.partW + state.gap.x));
+          tile.setAttribute('y', ny + row * (layout.partH + state.gap.y));
+          tile.setAttribute('width', layout.partW);
+          tile.setAttribute('height', layout.partH);
+          tile.setAttribute('fill', 'rgba(83,139,236,0.22)');
+          tile.setAttribute('stroke', '#538BEC');
+          tile.setAttribute('stroke-width', '1.15');
+          tile.setAttribute('vector-effect', 'non-scaling-stroke');
+          partG.appendChild(tile);
+        }
+      }
     }
   }
   function line(x1, y1, x2, y2, sw, color, opacity) {
@@ -2781,22 +2811,15 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var txt = state.blankW.toFixed(3) + ' × ' + state.blankH.toFixed(3);
     btReadout = document.getElementById('bt-readout');
     if (btReadout) btReadout.textContent = txt;
-    if (btParts) {
-      var quarterTurn = Math.abs((state.partRot || 0) % 180) === 90;
-      var partW = quarterTurn ? state.partH : state.partW;
-      var partH = quarterTurn ? state.partW : state.partH;
-      var m = state.margin;
-      var gap = state.gap;
-      var usableW = Math.max(0, state.blankW - m.l - m.r);
-      var usableH = Math.max(0, state.blankH - m.t - m.b);
-      var columns = Math.max(0, Math.floor((usableW + gap.x) / Math.max(partW + gap.x, 0.001) + 1e-9));
-      var rows = Math.max(0, Math.floor((usableH + gap.y) / Math.max(partH + gap.y, 0.001) + 1e-9));
-      btParts.textContent = String(columns * rows);
-    }
+    if (btParts) btParts.textContent = String(nestLayout().count);
 
-    /* Keep the closed travel bar centered. Check/X hang outside to the right. */
+    /* Cut 18: pin from the first closed measurement; editor actions hang right. */
     var box = document.getElementById('bt-travel-box') || pin;
-    var tw = box.offsetWidth || 140;
+    if (!tickerClosedWidth && !pin.classList.contains('is-ticker-editing')) {
+      tickerClosedWidth = box.offsetWidth || 140;
+      box.style.width = tickerClosedWidth + 'px';
+    }
+    var tw = tickerClosedWidth || box.offsetWidth || 140;
     pin.style.left = Math.round((window.innerWidth - tw) / 2) + 'px';
     pin.style.top = (HEADER_H + STOP) + 'px';
   }

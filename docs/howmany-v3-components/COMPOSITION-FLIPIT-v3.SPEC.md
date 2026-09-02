@@ -1,6 +1,6 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Cut 14 editor math + 15px stops
+**Status:** Living — Cut 19 parts on blank
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
@@ -118,6 +118,16 @@ Ghost A stays. Actions stay outside. The pill does not grow right. No picker, ca
 The closed GAP readout measures **7px** from its text box to each inner stroke (the rendered bottom resolves at 7.45px from sub-pixel layout). That measured 7px token is the vertical pad for MARGIN's two-line closed L/R then B/T grid and its open L/R then B/T editor. Column gap equals row gap; width is unchanged; Check and X remain outside right. Open MARGIN fill stays `#E8E8E8`.
 
 Ghost editors stay. No picker, calculator, chevron, popover, or bed is restored.
+
+---
+
+## Cut 18 — center-bar lock
+
+The centered travel box takes its left pin and width from the closed box only. Opening the BLANK editor, clicking either field, and committing or cancelling retain that same box width and left coordinate. The editor uses the closed 13.31px / 650 / mono type and does not grow the box. Check and X remain outside its right edge and do not cause a second centering pass. First field click select-alls.
+
+## Cut 19 — parts on blank
+
+Only the live part tiles are visible inside the blank. Columns and rows use the same blank, part, gap, margin, and quarter-turn count calculation that drives the blue bar count; the rendered tile count therefore matches the bar through size edits and −90/+90 rotation. Laser-bed fill, grid, rim, rulers, nest-box chrome, picker, calculator, chevron, and other bed surfaces remain hidden.
 
 ---
 
