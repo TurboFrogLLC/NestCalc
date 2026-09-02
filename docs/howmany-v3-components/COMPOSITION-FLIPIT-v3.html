@@ -19,7 +19,7 @@ Bridges in this host:
   · R17 FLiPIT waypoints ↔ toolPath (class is-hidden)
   · R27 toolPath boots hidden
   · Seq 3 blank-in-space canvas: no drawn LaserBed or Numeric HUD card
-  · ticker + picker are the blank HUD; calculator appears only on picker click
+  · ticker + picker are the blank HUD; field chips appear only on picker click
   · R1  Boot: HUD open · FLiPIT closed · HUD ↔ FLiPIT chrome
         HUD AUTO-SIZE + FLiPIT chips · calc-mode keeps chips
         LaserBed calc chip → HUD calculator · real local file open
@@ -426,8 +426,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       width: 100%;
       transition: height var(--motion-mode) var(--ease);
     }
-    #hud-mode,
-    .classic-calc {
+    #hud-mode {
       display: flex;
       flex-direction: column;
       box-sizing: border-box;
@@ -441,9 +440,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       transition: opacity var(--motion-mode) var(--ease);
     }
     #hud-mode { gap: 4.4px; opacity: 1; pointer-events: auto; }
-    .keypad.calc-mode #hud-mode { opacity: 0; pointer-events: none; }
-    .keypad.calc-mode .classic-calc { opacity: 1; pointer-events: auto; }
-    /* Calculator path: footer chips stay available while params hide */
 
     .param-rows { display: flex; flex-direction: column; gap: 8.8px; margin-top: 0; }
     .param-row {
@@ -765,23 +761,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       font-family: var(--font-mono); color: var(--ink); text-align: center;
       padding: 0; caret-color: var(--ink); overflow: hidden; white-space: nowrap;
     }
-
-    .classic-calc { gap: 6.6px; }
-    .classic-lcd {
-      height: 52.8px; border-radius: 11px; border: 1.65px solid var(--ink);
-      background: #fff; color: var(--ink); font-family: var(--font-mono);
-      font-size: 24.2px; font-weight: 600; font-variant-numeric: tabular-nums;
-      display: flex; align-items: center; justify-content: flex-end; padding: 0 13.2px;
-    }
-    .classic-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6.6px; }
-    .classic-grid .ckey {
-      height: 44px; border-radius: 11px; border: 1.65px solid var(--ink);
-      background: #fff; color: var(--ink); font-size: 17.6px; font-weight: 600;
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-    }
-    .classic-grid .ckey:active { transform: scale(0.94); background: #f0f0f0; }
-    .classic-grid .ckey.op { background: #f3f3f3; }
-    .classic-grid .ckey.zero { grid-column: span 2; }
 
 /* ── FLiPIT (FLIPIT-v3) ── */
 :root {
@@ -2179,13 +2158,15 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     #lb-bed-fill, #lb-major-grid, #lb-bed-rim, #lb-edge-x, #lb-edge-y, #lb-camera > circle, #lb-nest-box, #lb-part-g, #lb-bed-rulers { display: none; }
     #lb-blank { fill: #fff; fill-opacity: 1; stroke: #1a1428; stroke-width: 1.5; clip-path: none; }
     .blank-ticker-cluster { z-index: 90; }
-    /* The retained Numeric HUD markup becomes calculator-only chrome in this host. */
+    /* The retained field editor is picker-owned; it is not a Numeric HUD card. */
     #hud { display: none; z-index: 90; }
-    #hud.canvas-calculator { display: flex; }
+    #hud.canvas-calculator { display: flex; min-width: 0; width: max-content; padding: 0; border: 0; background: transparent; box-shadow: none; }
+    #hud.canvas-calculator::after { display: none; }
     #hud.canvas-calculator .keypad-header, #hud.canvas-calculator .hud-footer-sep, #hud.canvas-calculator .hud-controls { display: none !important; }
     #hud.canvas-calculator #hud-body { display: block; grid-template-rows: 1fr; }
+    #hud.canvas-calculator #hud-body-inner { padding: 0; background: transparent; }
     #hud.canvas-calculator .hud-stage { display: flex; flex-direction: column; gap: 8.8px; height: auto !important; }
-    #hud.canvas-calculator #hud-mode, #hud.canvas-calculator .classic-calc { position: static; display: flex; opacity: 1; pointer-events: auto; }
+    #hud.canvas-calculator #hud-mode { position: static; display: flex; opacity: 1; pointer-events: auto; }
     #hud.canvas-calculator [data-param="part"] { display: none; }
     #hud.canvas-calculator.ticker-part-open [data-param="part"] { display: flex; }
 </style>
@@ -2254,7 +2235,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       </div></div>
     </div>
   
-    <!-- Numeric HUD (lock: NUMERIC-HUD-v3) -->
+    <!-- Retained picker field editor; the calculator keypad is deliberately absent. -->
 <div class="keypad" id="hud" role="dialog" aria-label="Calculator">
     <div class="keypad-header" id="hud-header" title="Drag HUD">
       <button type="button" class="tool press" id="calc-toggle" title="Calculator mode" aria-label="Calculator mode" aria-pressed="false">
@@ -2401,30 +2382,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
         </div>
 
-        <div class="classic-calc" id="classic-calc">
-          <div class="classic-lcd" id="classic-lcd" aria-label="Calculator display">0</div>
-          <div class="classic-grid">
-            <button type="button" class="ckey press" data-k="C">C</button>
-            <button type="button" class="ckey press" data-k="±">±</button>
-            <button type="button" class="ckey press" data-k="%">%</button>
-            <button type="button" class="ckey op press" data-k="/">÷</button>
-            <button type="button" class="ckey press" data-k="7">7</button>
-            <button type="button" class="ckey press" data-k="8">8</button>
-            <button type="button" class="ckey press" data-k="9">9</button>
-            <button type="button" class="ckey op press" data-k="*">×</button>
-            <button type="button" class="ckey press" data-k="4">4</button>
-            <button type="button" class="ckey press" data-k="5">5</button>
-            <button type="button" class="ckey press" data-k="6">6</button>
-            <button type="button" class="ckey op press" data-k="-">−</button>
-            <button type="button" class="ckey press" data-k="1">1</button>
-            <button type="button" class="ckey press" data-k="2">2</button>
-            <button type="button" class="ckey press" data-k="3">3</button>
-            <button type="button" class="ckey op press" data-k="+">+</button>
-            <button type="button" class="ckey zero press" data-k="0">0</button>
-            <button type="button" class="ckey press" data-k=".">.</button>
-            <button type="button" class="ckey op press" data-k="=">=</button>
-          </div>
-        </div>
         </div>
 
         <div class="hud-footer-sep" aria-hidden="true"></div>
@@ -2895,8 +2852,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   const hud = document.getElementById('hud');
   const calcToggle = document.getElementById('calc-toggle');
   const btnChevron = document.getElementById('btn-chevron');
-  const classicLcd = document.getElementById('classic-lcd');
-  const classicEl = document.getElementById('classic-calc');
   const hudMode = document.getElementById('hud-mode');
   const hudBody = document.getElementById('hud-body');
   const hudStage = document.getElementById('hud-stage');
@@ -2904,8 +2859,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   const state = {
     calc: false, collapsed: false, drag: null,
     units: 'in', blankW: 12, blankH: 8,
-    partX: 1.250, partY: 3.375, partLinked: false,
-    lcd: '0', acc: null, op: null, fresh: true
+    partX: 1.250, partY: 3.375, partLinked: false
   };
 
   const paramState = {
@@ -3126,11 +3080,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
 
   function applyModeVisibility() {
-    /* Class-only: never toggle display. Stacked opacity handles the swap. */
-    const showCalc = !!(state.calc && !isHudCollapsed());
-    hud.classList.toggle('calc-mode', showCalc);
-    if (hudMode) hudMode.setAttribute('aria-hidden', showCalc ? 'true' : 'false');
-    if (classicEl) classicEl.setAttribute('aria-hidden', showCalc ? 'false' : 'true');
+    /* The picker surface never swaps to a numeric calculator mode. */
+    hud.classList.remove('calc-mode');
+    if (hudMode) hudMode.setAttribute('aria-hidden', 'false');
   }
 
   /* Initial placement only — collapse/expand never moves left/top (position hold) */
@@ -3191,13 +3143,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }
   }
 
-  function setCalc(on) {
+  function setCalc() {
     clearMotionTimer();
-    state.calc = on;
-    calcToggle.classList.toggle('active-calc', on);
-    calcToggle.setAttribute('aria-pressed', on ? 'true' : 'false');
-    if (on && state.collapsed) setCollapsed(false);
-    if (on) closeAllParamPopovers();
+    state.calc = false;
+    calcToggle.classList.remove('active-calc');
+    calcToggle.setAttribute('aria-pressed', 'false');
     applyModeVisibility();
     applyBodyHeight();
   }
@@ -3206,9 +3156,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (state.collapsed) { setCollapsed(false); setCalc(false); }
     else setCollapsed(true);
   });
-  calcToggle.addEventListener('click', function () {
-    if (state.calc) setCalc(false); else setCalc(true);
-  });
+  calcToggle.addEventListener('click', function () { setCalc(false); });
 
   /* Drag */
   const hudHeader = document.getElementById('hud-header');
@@ -3723,38 +3671,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     });
   });
 
-  /* Calculator */
-  function setLcd(v) { state.lcd = v; if (classicLcd) classicLcd.textContent = v; }
-  function calcInput(k) {
-    if (k === 'C' || k === 'bk') {
-      if (k === 'bk' && !state.fresh && state.lcd.length > 1) { setLcd(state.lcd.slice(0, -1)); return; }
-      state.acc = null; state.op = null; state.fresh = true; setLcd('0'); return;
-    }
-    if (k === '±') {
-      if (state.lcd === '0') return;
-      setLcd(state.lcd.startsWith('-') ? state.lcd.slice(1) : '-' + state.lcd); return;
-    }
-    if (k === '%') { setLcd(String(parseFloat(state.lcd) / 100)); state.fresh = true; return; }
-    if (k === '=' || k === 'enter') {
-      if (state.op == null || state.acc == null) return;
-      const b = parseFloat(state.lcd);
-      let r = state.acc;
-      if (state.op === '+') r += b;
-      if (state.op === '-') r -= b;
-      if (state.op === '*') r *= b;
-      if (state.op === '/') r = b === 0 ? NaN : r / b;
-      setLcd(Number.isFinite(r) ? String(parseFloat(r.toPrecision(10))) : 'Err');
-      state.acc = null; state.op = null; state.fresh = true; return;
-    }
-    if ('+-*/'.includes(k)) { state.acc = parseFloat(state.lcd); state.op = k; state.fresh = true; return; }
-    if (state.fresh) { setLcd(k === '.' ? '0.' : k); state.fresh = false; return; }
-    if (k === '.' && state.lcd.includes('.')) return;
-    if (state.lcd === '0' && k !== '.') setLcd(k); else setLcd(state.lcd + k);
-  }
-  document.querySelectorAll('.ckey').forEach(function (btn) {
-    btn.addEventListener('click', function () { calcInput(btn.dataset.k); });
-  });
-
   document.querySelectorAll('.pop-half, .pop-m-field').forEach(function (wrap) {
     const input = wrap.querySelector('input');
     const clear = wrap.querySelector('.pop-clear');
@@ -3845,7 +3761,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     clearMotionTimer();
     state.collapsed = false;
     hud.classList.remove('collapsed');
-    setCalc(true);
+    setCalc(false);
     if (typeof window.__hostArrange === 'function') window.__hostArrange('calculator');
   };
 
@@ -4824,6 +4740,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   function setTickerDoor(open) {
     if (!tickerCluster) return;
     tickerCluster.classList.toggle('is-door-open', open);
+    if (!open) {
+      tickerPicker.querySelectorAll('[data-ticker-door-chip]').forEach(function (item) { item.classList.remove('is-lit'); });
+      var hud = document.getElementById('hud');
+      if (hud) hud.classList.remove('ticker-part-open');
+      if (typeof window.__hudExitCalc === 'function') window.__hudExitCalc();
+    }
     if (tickerDoor) {
       tickerDoor.setAttribute('aria-expanded', open ? 'true' : 'false');
       tickerDoor.setAttribute('aria-label', open ? 'Close picker' : 'Open picker');
