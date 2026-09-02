@@ -30,3 +30,26 @@ Facts:
 - Allowed Cut files only: blueprint, composition host, living SPEC, traveler, and packet log.
 
 NEXT: Send for review
+
+### Seq 4 Send for review — completion
+
+Operator: Codex CLI
+Stamp: 73decbef7410313e4cfb5b7ae4bea4b85c15bcff
+
+Facts:
+- PR 130 was marked ready and exactly one `@codex review` request was posted.
+- The requested Codex review completed as review `5084424726` on `73decbef7410313e4cfb5b7ae4bea4b85c15bcff`; no second Codex request was posted.
+
+NEXT: Inspection
+
+### Seq 5 Inspection — completion
+
+Operator: Codex CLI
+Stamp: 73decbef7410313e4cfb5b7ae4bea4b85c15bcff
+
+Facts:
+- Read the one current-head review only: `5084424726` on `73decbe`. Its P1 on `697a484` is outdated.
+- Live P2 leftovers are recorded without a residual Cut: `lockBodyHeight()` still dereferences removed `classicEl`; picker close does not clear `paramState.open` / `.is-open`.
+- Owner capped this traveler at one review and directed Release despite those named P2 leftovers. Vercel's deployment-quota failure is not a host failure.
+
+NEXT: Merge
