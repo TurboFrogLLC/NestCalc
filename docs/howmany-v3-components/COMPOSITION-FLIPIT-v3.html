@@ -146,7 +146,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     display: inline-flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
   }
   .bt-hit svg { display: block; width: 16px; height: 16px; pointer-events: none; }
-  #bt-menu[aria-pressed="true"] { color: #FFCE1B; }
+  #bt-menu[aria-pressed="true"] { color: #16A34A; }
   .bt-hit + .bt-hit, .blank-ticker, .bt-parts { position: relative; }
   .bt-hit + .bt-hit::before, .blank-ticker::before, .bt-parts::before {
     content: ""; position: absolute; left: 0; top: var(--bt-rule-inset); bottom: var(--bt-rule-inset); width: 1px; background: rgba(26,20,40,.22);
@@ -188,6 +188,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     text-align: center;
     text-transform: none;
     white-space: nowrap;
+    overflow: visible;
   }
   .blank-ticker.is-chip-editing {
     align-self: stretch; justify-content: center; align-items: center;
@@ -2200,6 +2201,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     #hud .param-row { display: flex; flex-direction: column; align-items: stretch; gap: 4.4px; min-height: 0; overflow: visible; }
     #hud .param-row[data-param="margin"] { align-items: stretch; }
     #hud .param-label-row { display: flex; align-items: center; gap: 4.4px; min-height: 22px; }
+    #hud .margin-band-toggle {
+      width: 22px; height: 22px; min-width: 22px; min-height: 22px; margin-left: auto; padding: 0;
+      border: 0; border-radius: 0; background: transparent; color: var(--ink);
+      display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+    }
+    #hud .margin-band-toggle svg { display: block; width: 16px; height: 16px; pointer-events: none; }
     #hud .param-label { flex: 0 0 auto; font-size: 11px; font-weight: 650; letter-spacing: 0.04em; line-height: 1; }
     #hud .chip-seat { display: flex; flex-direction: row; align-items: center; gap: 4.4px; width: max-content; max-width: none; overflow: visible; }
     #hud .param-ticker {
@@ -2376,7 +2383,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     </svg>
     <!-- The blank size is the same in-place editor as the BLANK chip. -->
     <div class="blank-ticker-cluster" id="blank-ticker-cluster">
-      <div class="bt-travel-box" id="bt-travel-box"><div class="bt-travel">
+      <div class="bt-travel-box" id="blank-ticker-pin"><div class="bt-travel">
         <button type="button" class="bt-hit" id="bt-rot-ccw" title="−90" aria-label="−90"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></button>
         <button type="button" class="bt-hit" id="bt-rot-cw" title="+90" aria-label="+90"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg></button>
         <span class="blank-ticker" id="blank-ticker" aria-label="Blank size"><span class="bt-readout" id="bt-readout">12.000 × 8.000</span></span>
@@ -2472,7 +2479,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
             </div>
 
             <div class="param-row" data-param="margin">
-              <div class="param-label-row"><span class="param-label">Margin</span><div class="chip-editor-actions" hidden></div></div>
+              <div class="param-label-row"><span class="param-label">Margin</span><div class="chip-editor-actions" hidden></div><button type="button" class="margin-band-toggle" id="margin-band-toggle" aria-pressed="true" aria-label="Hide margin bands" title="Hide margin bands"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></svg></button></div>
               <div class="chip-seat">
               <div class="param-ticker" data-ticker="margin" data-open="margin" tabindex="0"><span class="m-grid"><span class="m-cell">L 0.250</span><span class="m-cell">R 0.250</span><span class="m-cell">B 0.500</span><span class="m-cell">T 0.250</span></span></div>
               </div>
@@ -2752,7 +2759,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     blankW: 12, blankH: 8, snap: 0.125, zoom: 1, fitScale: null, panX: 0, panY: 0, dragging: null, start: null,
     partW: 2.5, partH: 3.5, partRot: 0,
     margin: { l: 0.25, r: 0.25, t: 0.25, b: 0.5 },
-    gap: { x: 0.125, y: 0.125 }, autoNestArmed: false
+    gap: { x: 0.125, y: 0.125 }, autoNestArmed: false, marginBandsVisible: true
   };
 
   var svg = document.getElementById('lb-world');
@@ -2774,6 +2781,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   var btReadout = document.getElementById('bt-readout');
   var btMenu = document.getElementById('bt-menu');
   var btParts = document.getElementById('bt-parts');
+  var marginBandToggle = document.getElementById('margin-band-toggle');
   if (!svg || !camera || !blank) return;
 
   var STOP = 15;
@@ -3106,6 +3114,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
           rect.setAttribute('stroke', 'none');
           partG.appendChild(rect);
         }
+        if (!state.marginBandsVisible) return;
         /* Each band is an inside, live-inch L/R/T/B reserve for this blank. */
         band(originX, originY, m.l, blankHeight);
         band(originX + blankWidth - m.r, originY, m.r, blankHeight);
@@ -3201,7 +3210,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (btParts) btParts.textContent = String((layout || nestLayout()).count);
 
     /* Cut 18: pin from the first closed measurement; editor actions hang right. */
-    var box = document.getElementById('bt-travel-box') || pin;
+    var box = document.getElementById('blank-ticker-pin') || pin;
     if (!tickerClosedWidth && !pin.classList.contains('is-ticker-editing')) {
       tickerClosedWidth = box.offsetWidth || 140;
       box.style.width = tickerClosedWidth + 'px';
@@ -3273,6 +3282,24 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     btMenu.setAttribute('aria-pressed', String(state.autoNestArmed));
     render();
   });
+  function renderMarginBandToggle() {
+    if (!marginBandToggle) return;
+    var visible = state.marginBandsVisible;
+    marginBandToggle.setAttribute('aria-pressed', String(visible));
+    marginBandToggle.setAttribute('aria-label', visible ? 'Hide margin bands' : 'Show margin bands');
+    marginBandToggle.setAttribute('title', visible ? 'Hide margin bands' : 'Show margin bands');
+    marginBandToggle.innerHTML = visible
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></svg>'
+      : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>';
+  }
+  if (marginBandToggle) marginBandToggle.addEventListener('click', function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+    state.marginBandsVisible = !state.marginBandsVisible;
+    renderMarginBandToggle();
+    render();
+  });
+  renderMarginBandToggle();
   blankTicker.addEventListener('click', function (e) {
     if (blankTicker.classList.contains('is-chip-editing')) return;
     e.preventDefault(); e.stopPropagation();

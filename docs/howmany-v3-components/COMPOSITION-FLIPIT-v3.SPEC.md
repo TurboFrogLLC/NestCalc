@@ -181,7 +181,7 @@ The Owner supersedes the Cut 1b menu icon with the Lucide `hamburger` glyph. The
 
 ## AutoNest Cut 1d — hamburger armed color
 
-The hamburger stroke uses the shared travel-hit off color `#111111`, matching the rotate pair. While AutoNest is armed (`aria-pressed="true"`), only the hamburger’s `currentColor` stroke changes to IT amber `#FFCE1B`; its SVG remains fill-none and its hit, glyph, and paths remain unchanged.
+The hamburger stroke uses the shared travel-hit off color `#111111`, matching the rotate pair. While AutoNest is armed (`aria-pressed="true"`), only the hamburger’s `currentColor` stroke changes to green `#16A34A`; its SVG remains fill-none and its hit, glyph, and paths remain unchanged.
 
 ## AutoNest Cut 2 — two-group plus trim
 
@@ -202,6 +202,10 @@ The blank, uniform tiles, two-group tiles, gaps, margins, and trim all use one S
 ## AutoNest Cut 6 — red margin band
 
 Every blank shows a quiet inside reserved-margin band in `rgba(220,48,48,0.22)`, with no added stroke. Its four fill-only sides use the live ticker dimensions exactly: L from the local left edge, R from the local right edge, B from the local bottom edge, and T from the local top edge. Uniform layout draws one four-sided band on the blank; two-group AutoNest draws a separate four-sided band inside each returned isolated blank at its Cut 4 bottom-left origin. Bands remain below the frost-blue tiles and the trim line. The Cut 5 SVG-inch camera, full trim-edge policy, and right/top leftover are otherwise unchanged.
+
+## AutoNest Cut 7 — margin-band visibility + arm state
+
+The far right of the 154px MARGIN label row carries a 22 × 22 Lucide visibility hit with a 16px glyph, 2px stroke, and `viewBox="0 0 24 24"`. Margin bands default visible and the control shows `eye-off`; hiding every Cut 6 band on every blank shows `eye`. The control does not open the MARGIN editor. The centered HUD AutoNest hamburger remains `#111111` off and is `#16A34A` while armed. Its fixed `#blank-ticker-pin` retains the closed three-digit count slot width and left pin through blank-editor Check or X, so counts such as `66` neither clip nor shift. AutoNest math, SVG-inch space, origins, full trim-edge policy, trim, and the no picker / calculator / chevron / bed boundary are unchanged.
 
 ---
 
