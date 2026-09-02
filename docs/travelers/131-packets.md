@@ -102,3 +102,6 @@ Stamp: 4ac190a0417376e2b272b29b7c38e2ff757f85fa
 
 Seq 39 Cut 22 boot defaults — Codex App: changed every host and script boot path to PART SIZE 2.500 × 3.500, BLANK 12.000 × 8.000, GAP 0.125 × 0.125, and MARGIN L 0.250 / R 0.250 / B 0.500 / T 0.250. Closed MARGIN now starts as its two-line L R / B T readout because B differs. Preset modal, pencil hydrate, label-row Check/X, gold arm, blank-grow-past-stop, parts-on-blank, Fit, pan stops, picker, calculator, and bed remain unchanged.
 Stamp: de83a6c0101113fbd3d36ac59929daf70589dbaa
+
+Seq 40 Cut 30 HUD count three-digit slot — Codex App: made the centered HUD count a fixed slot of three tabular `ch` faces at 14.64px / 650 / mono plus the shared 5px vertical-rule inset on both sides. The blue count is centered between the size|count separator and inner right stroke, so 1, 14, and 144 neither clip nor shift the size field. The closed-width pin, chips, presets, boot defaults, Fit, and stops remain unchanged.
+Stamp: 6887d047502231798c54b1d265064068053d09ac
