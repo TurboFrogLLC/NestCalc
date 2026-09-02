@@ -148,3 +148,9 @@ This supersedes the Cut 6 sheet side: the sheet is fixed at left 48px and top `6
 - Idle tap hydrates the live Blank X/Y, Gap X/Y, and Margin L/R/B/T state. Pencil then any slot tap, including an already armed slot, calls `openMarginPresetCard(index)`, keeps the pencil visibly pressed, arms the slot with `rgba(255,206,27,0.55)` fill and `rgba(201,140,0,0.85)` stroke, and opens the 240px, 8.8px-padded, 7.26px-radius `#E8E8E8` card through its explicit flex-layer open state. The layer sits above chips, HUD, and blank without a native `hidden` attribute.
 - The card carries a 222.4 × 31.46 name field; only the section labels Blank, Gap, and Margin above their 72.6 × 31.46 paired fields (8.8px gap); and a single footer row with Copy live at left and unboxed 22px-hit / 14px Lucide Check and X at right. Empty fields hydrate from the live tickers. Check saves, X cancels, and a blank name becomes `Preset`.
 - Opening a live chip editor clears any preset arm and never writes that slot. The card is not the old picker or popover; center-bar lock, ghost editors, parts on blank, Fit, stops, and boot sizes stay unchanged.
+
+## Cut 25 preset card stack and footer
+
+- Promote the explicit flex-layer to a body-level fixed sibling at z-index 201 so the open overlay covers the header, centered HUD pin, sheet chips, and blank and blocks their pointer input.
+- Preserve the 240px `#E8E8E8`, 7.26px-radius card and 8.8px padding. Its 222.4px inner width contains a 222.4 × 31.46 name field; each Blank, Gap, and Margin axis box is 106.8 × 31.46 with a 7.26px radius and an 8.8px pair gap. Name, section blocks, and footer are separated by 8.8px.
+- Copy live is a 31.46px-high, 7.26px-radius chip-type button on the footer left; the unboxed 22px Check/X actions stay on its right. Hydration, pencil paths, gold arm, plus/minus, center-bar lock, ghost editors, parts on blank, Fit, and stops remain unchanged.
