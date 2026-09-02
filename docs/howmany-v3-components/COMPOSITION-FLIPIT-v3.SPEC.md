@@ -171,6 +171,10 @@ The centered HUD order is Lucide `rotate-ccw`, Lucide `rotate-cw`, blank size, L
 
 With the menu off, tiles and count use the current `nestLayout` rotation. With the menu on, the host evaluates the live blank, part, gap, and four margins through the best-uniform rule: compare 0° and 90°, keep 0° on a tie, and make the higher count the live tiles and blue count. A 90° win writes `partRot` before redraw. Idle blank, part, gap, margin, and rotation edits while armed re-run this rule. No picker, calculator, chevron, or bed is restored.
 
+## AutoNest Cut 1b — Lucide menu glyph
+
+The control between blank size and the blue count is the canonical Lucide `menu`: a 24px hit with a 16px glyph, 2px stroke, and `viewBox="0 0 24 24"`. Its SVG contains only `M4 5h16`, `M4 12h16`, and `M4 19h16`; it does not use equal, align-justify, grip, or panel paths.
+
 ---
 
 ## Seq 3 — blank-in-space canvas

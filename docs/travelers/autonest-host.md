@@ -16,6 +16,7 @@ Seq  Label              Notes                                              Stamp
 1    Plan               Cut 1 best-orientation; Cut 2 two-group + trim     0eb6d636ecc666ed18bd152a3279bf1bc37b628c
 2    Start-branch       Owner remote / Codex App
 3    Cut                1 HUD menu + calculateBestUniformNest             7effe2693b246cedaca8d32818d78967ce8322d3
+3b   Cut                1b Lucide menu glyph                              verified at 1f47aeb7aab8db331b4624c562ac2f5eb4ba3ab2
 4    Look               Owner htmlpreview. No Codex.
 5    Cut                2 calculateAutoNest two-group + trim line
 6    Look               Owner htmlpreview. No Codex.
