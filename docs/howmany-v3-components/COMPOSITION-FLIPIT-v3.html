@@ -135,16 +135,16 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   .bt-travel-box {
     display: inline-flex; align-items: stretch; gap: 0; padding: 0;
     box-sizing: border-box; border: 1.1px solid rgba(26, 20, 40, 0.22);
-    border-radius: 6.6px; background: #E8E8E8; color: #1A1428; pointer-events: auto;
-    flex-shrink: 0; height: 28.6px; min-height: 28.6px; box-shadow: 0 0.5px 1px rgba(0,0,0,.25);
+    border-radius: 7.26px; background: #E8E8E8; color: #1A1428; pointer-events: auto;
+    flex-shrink: 0; height: 31.46px; min-height: 31.46px; box-shadow: 0 0.5px 1px rgba(0,0,0,.25);
   }
   .bt-travel { display: inline-flex; align-items: center; gap: 0; }
   .bt-hit {
-    width: 28px; height: 28px; min-width: 28px; min-height: 28px; margin: 0; padding: 0;
-    border: 0; border-radius: 6.6px; background: transparent; color: #1A1428;
+    width: 30.8px; height: 30.8px; min-width: 30.8px; min-height: 30.8px; margin: 0; padding: 0;
+    border: 0; border-radius: 7.26px; background: transparent; color: #1A1428;
     display: inline-flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
   }
-  .bt-hit svg { display: block; width: 18px; height: 18px; pointer-events: none; }
+  .bt-hit svg { display: block; width: 19.8px; height: 19.8px; pointer-events: none; }
   .bt-hit + .bt-hit, .blank-ticker, .bt-parts { position: relative; }
   .bt-hit + .bt-hit::before, .blank-ticker::before, .bt-parts::before {
     content: ""; position: absolute; left: 0; top: 5px; bottom: 5px; width: 1px; background: rgba(26,20,40,.22);
@@ -153,14 +153,14 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0 8px;
+    padding: 0 8.8px;
     box-sizing: border-box;
     border: 0;
     border-radius: 0;
     background: transparent;
     color: #1A1428;
     font-family: var(--font-mono);
-    font-size: 12.1px;
+    font-size: 13.31px;
     font-weight: 650;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
@@ -171,7 +171,13 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     touch-action: none;
   }
   .blank-ticker .bt-readout { line-height: 1; letter-spacing: 0.01em; }
-  .bt-parts { display: inline-flex; align-items: center; padding: 0 8px; font: 650 12.1px/1 var(--font-mono); font-variant-numeric: tabular-nums; color: #538BEC; letter-spacing: 0; text-transform: none; white-space: nowrap; }
+  .bt-parts { display: inline-flex; align-items: center; padding: 0 8.8px; font: 650 13.31px/1 var(--font-mono); font-variant-numeric: tabular-nums; color: #538BEC; letter-spacing: 0; text-transform: none; white-space: nowrap; }
+  .blank-ticker.is-chip-editing { justify-content: flex-start; padding: 0 3.3px; }
+  .ticker-blank-editor { display: inline-flex; align-items: center; gap: 3.3px; width: max-content; }
+  .ticker-blank-editor input { width: 5ch; min-width: 5ch; height: 24px; box-sizing: border-box; padding: 0 6.6px; border: 0; border-radius: 3.3px; outline: 0; background: #fff; color: #1A1428; font: 650 13.31px/1 var(--font-mono); font-variant-numeric: tabular-nums; }
+  .ticker-blank-editor .chip-editor-by { font-size: 13.31px; }
+  .ticker-blank-editor .chip-editor-action { flex-basis: 20px; width: 20px; height: 20px; }
+  .ticker-blank-editor .chip-editor-action svg { width: 12px; height: 12px; }
 
 /* ── Numeric HUD (NUMERIC-HUD-v3) ── */
 :root {
@@ -2140,7 +2146,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     .blank-ticker-cluster { z-index: 90; }
     /* The left sheet is invisible: it owns one lane, not a second canvas grid. */
     #hud {
-      --sheet-inset: 48px;
+      --sheet-inset: 24px;
       position: fixed; z-index: 80; top: calc(var(--app-header-h) + var(--canvas-pad)); left: var(--sheet-inset);
       bottom: auto; right: auto; display: block; width: 154px; min-width: 0; padding: 0; border: 0; border-radius: 0;
       background: transparent; box-shadow: none; overflow: visible;
@@ -2157,7 +2163,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     #hud .param-row[data-param="margin"] .param-ticker { border: 1.1px solid rgba(83,139,236,.35); border-radius: 6.6px; box-shadow: 0 0.5px 1px rgba(0,0,0,.25); }
     #hud .param-row[data-param="margin"] .param-ticker:has(.m-line) { min-height: 40px; }
     #hud .param-popover { display: none !important; }
-    #hud .param-ticker.is-chip-editing { cursor: text; padding: 3.3px; justify-content: flex-start; overflow: visible; }
+    #hud .param-ticker.is-chip-editing { width: 100%; cursor: text; padding: 3.3px; justify-content: flex-start; overflow: visible; }
     #hud .chip-editor-row { display: flex; align-items: center; width: max-content; min-width: 0; gap: 2.2px; }
     #hud .chip-editor-field {
       display: flex; align-items: center; min-width: 0; flex: 0 0 auto; height: 20px; padding: 0;
@@ -2278,39 +2284,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
                   <div class="pop-half"><span>Y</span><input data-part="y" type="text" inputmode="decimal" value="3.375" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
                   <div class="pop-sep"></div>
                   <button type="button" class="pop-link" data-part-link title="Link X &amp; Y" aria-pressed="false"><svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>
-                </div>
-              </div>
-            </div>
-
-            <div class="param-row" data-param="blank">
-              <span class="param-label">Blank</span>
-              <div class="param-ticker" data-ticker="blank" data-open="blank" tabindex="0">12.000 × 8.000</div>
-              <div class="param-popover" data-pop="blank">
-                <div class="pop-head">
-                  <div class="pop-title">Blank size</div>
-                  <div class="pop-presets" data-presets="blank">
-                    <button type="button" class="pop-pre" data-pre="A" aria-pressed="false" title="Preset A">A</button>
-                    <button type="button" class="pop-pre" data-pre="B" aria-pressed="false" title="Preset B">B</button>
-                  </div>
-                  <div class="pop-actions">
-                    <button type="button" class="pop-edit" data-pre-edit title="Edit presets" aria-label="Edit presets" aria-pressed="false"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg></button>
-                    <button type="button" class="pop-save" data-pop-save title="Save" aria-label="Save changes"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg></button>
-                    <button type="button" class="pop-close" data-pop-close title="Close" aria-label="Close"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
-                  </div>
-                </div>
-                <div class="pop-pre-confirm">
-                  <button type="button" class="pop-pre-ok" data-pre-ok>Confirm</button>
-                  <button type="button" class="pop-pre-cancel" data-pre-cancel>Cancel</button>
-                </div>
-                <div class="pop-toast" aria-live="polite"></div>
-                <div class="pop-xy">
-                  <div class="pop-half"><span>X</span><input data-blank="x" type="text" inputmode="decimal" value="12.000" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
-                  <div class="pop-sep"></div>
-                  <button type="button" class="pop-swap press" data-blank-swap title="Swap X &amp; Y" aria-label="Swap X and Y"><svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg></button>
-                  <div class="pop-sep"></div>
-                  <div class="pop-half"><span>Y</span><input data-blank="y" type="text" inputmode="decimal" value="8.000" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
-                  <div class="pop-sep"></div>
-                  <button type="button" class="pop-link" data-blank-link title="Link X &amp; Y" aria-pressed="false"><svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>
                 </div>
               </div>
             </div>
@@ -2639,14 +2612,14 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   var PAD = 48;
   var HEADER_H = 64;
   var MIN_LABEL_PX = 36;
-  var GAP_RIGHT = 20; /* px inset from blank right edge */
+  var SHEET_INSET = 24;
 
   function snap(v) { var s = state.snap; return Math.round(v / s) * s; }
   function fittedScale() {
     var W = svg.clientWidth || window.innerWidth;
     var H = svg.clientHeight || window.innerHeight;
     var sheet = document.getElementById('hud');
-    var sheetLane = (sheet ? sheet.offsetWidth : 154) + PAD * 2;
+    var sheetLane = (sheet ? sheet.offsetWidth : 154) + SHEET_INSET + PAD;
     var blankWithGutterW = state.blankW + 4;
     var blankWithGutterH = state.blankH + 8;
     return Math.min(Math.max(80, W - sheetLane - PAD) / blankWithGutterW, Math.max(80, H - PAD * 2) / blankWithGutterH);
@@ -2731,15 +2704,14 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     bedRulers.innerHTML = '';
   }
 
-  /* Clamp the live ticker inside the viewport; it stays in front of the blank. */
+  /* The live ticker is a fixed, viewport-centered HUD rather than blank chrome. */
   function positionBlankTicker() {
     var pin = blankCluster || blankTicker;
     if (!pin) return;
-    var s = pxPerInch();
-    var screenRight = state.panX + state.blankW * s;
 
     pin.classList.add('is-on');
     var txt = state.blankW.toFixed(3) + ' × ' + state.blankH.toFixed(3);
+    btReadout = document.getElementById('bt-readout');
     if (btReadout) btReadout.textContent = txt;
     if (btParts) {
       var quarterTurn = Math.abs((state.partRot || 0) % 180) === 90;
@@ -2754,9 +2726,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       btParts.textContent = String(columns * rows);
     }
 
-    /* The header-to-ticker gutter is the same measured stack-to-blank gutter. */
+    /* Keep its closed bar centered; an open blank editor expands from this left edge. */
     var tw = pin.offsetWidth || 140;
-    pin.style.left = Math.round(Math.max(PAD, Math.min(window.innerWidth - tw - PAD, screenRight - tw - GAP_RIGHT))) + 'px';
+    if (!pin.classList.contains('is-ticker-editing')) pin.style.left = Math.round((window.innerWidth - tw) / 2) + 'px';
     pin.style.top = (HEADER_H + PAD) + 'px';
   }
   function syncHudBlankFromBed() {
@@ -2765,7 +2737,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   function clampSubjectToStops() {
     var W = svg.clientWidth || window.innerWidth;
     var sheet = document.getElementById('hud');
-    var sheetLane = (sheet ? sheet.offsetWidth : 154) + PAD * 2;
+    var sheetLane = (sheet ? sheet.offsetWidth : 154) + SHEET_INSET + PAD;
     var baseScale = state.fitScale == null ? fittedScale() : state.fitScale;
     var maxZoom = Math.max(0.35, (W - sheetLane - PAD) / Math.max(state.blankW * baseScale, 1));
     state.zoom = Math.min(state.zoom, maxZoom);
@@ -2815,6 +2787,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     render();
   });
   blankTicker.addEventListener('click', function (e) {
+    if (blankTicker.classList.contains('is-chip-editing')) return;
     e.preventDefault(); e.stopPropagation();
     if (typeof window.__hudOpenChipEditor === 'function') window.__hudOpenChipEditor('blank');
   });
@@ -2824,7 +2797,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var s = state.fitScale;
     var H = svg.clientHeight || window.innerHeight;
     var sheet = document.getElementById('hud');
-    var sheetLane = (sheet ? sheet.offsetWidth : 154) + PAD * 2;
+    var sheetLane = (sheet ? sheet.offsetWidth : 154) + SHEET_INSET + PAD;
     state.panX = sheetLane;
     state.panY = Math.max(state.blankH * s + PAD, (H + state.blankH * s) / 2);
   }
@@ -2846,7 +2819,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var dx = e.clientX - state.start.cx, dy = e.clientY - state.start.cy, s = state.start.scale;
     if (state.dragging === 'pan') {
       var sheet = document.getElementById('hud');
-      var sheetLane = (sheet ? sheet.offsetWidth : 154) + PAD * 2;
+      var sheetLane = (sheet ? sheet.offsetWidth : 154) + SHEET_INSET + PAD;
       state.panX = Math.max(sheetLane, Math.min((svg.clientWidth || window.innerWidth) - PAD - state.blankW * s, state.start.panX + dx));
       state.panY = Math.max(state.blankH * s + PAD, Math.min((svg.clientHeight || window.innerHeight), state.start.panY + dy));
     }
@@ -3657,34 +3630,64 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       });
     });
   }
+  function bindBlankTickerInputs(ticker) {
+    ticker.querySelectorAll('[data-ticker-blank-field]').forEach(function (input) {
+      sizeChipInput(input);
+      input.addEventListener('input', function () {
+        sanitizeNumericLive(input);
+        sizeChipInput(input);
+        var raw = input.value;
+        var value = raw === '' || raw === '.' ? 0 : parseFloat(raw);
+        if (!Number.isFinite(value)) return;
+        paramState.blank[input.getAttribute('data-ticker-blank-field')] = value;
+        refreshTickers();
+      });
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); finishChipEditor(true); }
+        if (e.key === 'Escape') { e.preventDefault(); finishChipEditor(false); }
+      });
+    });
+  }
   function finishChipEditor(commit) {
     var key = chipEditor.key;
     if (!key) return;
-    var ticker = document.querySelector('[data-ticker="' + key + '"]');
+    var isBlankTicker = key === 'blank';
+    var ticker = isBlankTicker ? document.getElementById('blank-ticker') : document.querySelector('[data-ticker="' + key + '"]');
     if (!commit) restoreChipSnapshot(key, chipEditor.snapshot);
     chipEditor.key = null;
     chipEditor.snapshot = null;
     if (ticker) {
       ticker.classList.remove('is-chip-editing');
-      ticker.innerHTML = '';
+      if (isBlankTicker) {
+        ticker.innerHTML = '<span class="bt-readout" id="bt-readout"></span>';
+        var cluster = document.getElementById('blank-ticker-cluster');
+        if (cluster) cluster.classList.remove('is-ticker-editing');
+      } else ticker.innerHTML = '';
       ticker.onclick = null;
     }
-    hud.classList.remove('has-chip-editor');
+    if (!isBlankTicker) hud.classList.remove('has-chip-editor');
     refreshTickers();
     if (ticker) ticker.focus();
   }
   function openChipEditor(key) {
     if (chipEditor.key === key) return;
     if (chipEditor.key) finishChipEditor(true);
-    var ticker = document.querySelector('[data-ticker="' + key + '"]');
+    var isBlankTicker = key === 'blank';
+    var ticker = isBlankTicker ? document.getElementById('blank-ticker') : document.querySelector('[data-ticker="' + key + '"]');
     if (!ticker) return;
     chipEditor.key = key;
     chipEditor.snapshot = chipSnapshot(key);
-    hud.classList.add('has-chip-editor');
+    if (isBlankTicker) {
+      var cluster = document.getElementById('blank-ticker-cluster');
+      if (cluster) cluster.classList.add('is-ticker-editing');
+    } else hud.classList.add('has-chip-editor');
     ticker.classList.add('is-chip-editing');
     var check = chipAction('commit', 'Commit changes', '<path d="m5 12 4 4L19 6"/>');
     var cancel = chipAction('cancel', 'Cancel changes', '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>');
-    if (key === 'margin') {
+    if (isBlankTicker) {
+      var blank = paramState.blank;
+      ticker.innerHTML = '<div class="ticker-blank-editor"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Blank width" data-ticker-blank-field="x" value="' + fmt3(blank.x) + '" /><span class="chip-editor-by">×</span><input type="text" inputmode="decimal" autocomplete="off" aria-label="Blank height" data-ticker-blank-field="y" value="' + fmt3(blank.y) + '" />' + check + cancel + '</div>';
+    } else if (key === 'margin') {
       var m = paramState.margin;
       ticker.innerHTML = '<div class="chip-margin-editor">' + chipField('L', 'l', m.l) + chipField('R', 'r', m.r) + chipField('B', 'b', m.b) + chipField('T', 't', m.t) + '<div class="chip-margin-actions">' + check + cancel + '</div></div>';
     } else {
@@ -3712,9 +3715,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       }
       finishChipEditor(actionName === 'commit');
     };
-    bindChipInputs(ticker, key);
+    if (isBlankTicker) bindBlankTickerInputs(ticker);
+    else bindChipInputs(ticker, key);
     requestAnimationFrame(function () {
-      var first = ticker.querySelector('[data-chip-field]');
+      var first = ticker.querySelector(isBlankTicker ? '[data-ticker-blank-field]' : '[data-chip-field]');
       if (first) { first.focus(); first.select(); }
     });
   }

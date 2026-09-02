@@ -3,21 +3,21 @@
 Product: FLiPIT
 Host: `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`
 Stage: blank-in-space (127)
-Lock: Cut 11 / PR 131
+Lock: Cut 12 / PR 131
 
 This replaces the former ticker-picker blueprint. It is intentionally not a picker schematic.
 
 ## Subject
 
-The stage subject is the blank, its front ticker, and the left sheet together.
+The stage subject is the blank and left sheet; the ticker is an independent fixed HUD.
 
 ```
 header 64px
 
+                 [ rotate | 12.000 × 8.000 | count ]   fixed, centered ticker
+
 canvas pad 48px  PART SIZE
                  [ 1.250 x 3.375 ]
-                 BLANK
-                 [12.000 x 8.000 ]     blank + front ticker
                  GAP
                  [ 0.375 x 0.125 ]
                  MARGIN
@@ -27,22 +27,22 @@ canvas pad 48px  PART SIZE
 ## Left sheet
 
 - Transparent and borderless; it occupies a left lane rather than drawing a panel.
-- Its top is `--app-header-h: 64px + --canvas-pad: 48px`; the sole measured inset is 48px.
-- Labels are above chips and share their left edge: PART SIZE, BLANK, GAP, MARGIN.
+- Its top is `--app-header-h: 64px + --canvas-pad: 48px`; its inset is 24px.
+- Labels are above chips and share their left edge: PART SIZE, GAP, MARGIN.
 - Label token: 11px / 650 / 0.04em / uppercase. Row gap: 8.8px.
 - Chip token: height 28.6px, radius 6.6px, narrower than 21ch. Two-line MARGIN has min-height 40px and keeps its own radius and shadow.
 
 ## Stops and camera
 
 - The blank stays within browser width and cannot collide with the sheet lane. It may sit below the stack in Y.
-- Fit/camera includes blank + ticker + sheet as one subject. The sheet lane is reserved in its width calculation; it is not fabricated with extra sheet padding.
-- Ticker is front of the blank and never sits behind or clips through the chips.
+- Fit/camera reserves the sheet lane for the blank. The ticker is not part of camera placement.
+- Ticker stays above the stage as a fixed HUD and never clips through the chips.
 
 ## Ticker
 
-- A single 28.6px-high readout, wider only as needed.
-- It presents live blank size `W.WWW × H.HHH` and the count number only.
-- The travel row includes Lucide rotate-ccw and rotate-cw controls: 28px hits with 18px glyphs. There is no picker bar, calculator, chevron door, or reset.
+- A single 31.46px-high readout centered in the viewport at 112px from the top, wider only when its blank editor opens.
+- It presents live blank size `W.WWW × H.HHH` and the count number only; the blank editor uses two padded white cells and `×`, without X/Y labels.
+- The travel row includes Lucide rotate-ccw and rotate-cw controls: 30.8px hits with 19.8px glyphs. There is no picker bar, calculator, chevron door, or reset.
 - The blank arc is grab-only.
 
 ## Not in this lock
@@ -79,3 +79,11 @@ This supersedes the Cut 6 sheet side: the sheet is fixed at left 48px and top `6
 - Clicking the ticker's blank size opens the BLANK chip editor contract, including select-all, Check, and X. The ticker remains one 28.6px row with its existing rotate pair and live count.
 - MARGIN's closed text has no plus separators. Its open L/R then B/T editor is an even two-column grid with a taller complete parent chip: 6.6px corners, 1.1px stroke, and own shadow.
 - The 48px header-to-ticker gap equals the 48px sheet-right-to-blank gap. During the existing sheet-width glide, the blank moves right by exactly the sheet's width delta and moves back on close; browser-width clamping remains in force.
+
+## Cut 12 centered ticker + side stack
+
+- The ticker is a fixed viewport HUD, horizontally centered at `top: 112px`. It is not positioned from the blank or camera and does not move on pan, zoom, Fit, or blank resize.
+- The complete bar is 10% above the 28.6px lock: 31.46px high, 7.26px radius, 30.8px rotate hits, 19.8px Lucide glyphs, and 13.31px / 650 / mono size and count. `#E8E8E8`, the existing shadow, inset rules, blue live count, and −90/+90 pair stay.
+- The bar's size readout is the BLANK editor. Its two padded white fields select-all, type, commit with Check, or cancel with X; `×` alone separates them. It grows right from a fixed left edge.
+- The left sheet inset is 24px and the stack is PART SIZE, GAP, MARGIN. BLANK has no sheet row or label. Fit, pan, and zoom reserve the remaining lane.
+- Opening a side chip grows that chip and the fixed-left sheet right; the blank follows the width delta and returns on close. The centered ticker stays fixed. GAP alone has Link between Y and Check. MARGIN remains an even, taller L/R then B/T chip with complete 6.6px corners and no pluses or axis labels.

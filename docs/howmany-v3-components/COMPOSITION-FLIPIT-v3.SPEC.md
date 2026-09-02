@@ -1,6 +1,6 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Cut 11 side-stack sheet + ticker lock
+**Status:** Living — Cut 12 centered ticker + side stack
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
@@ -60,6 +60,16 @@ Editors use the closed-chip readout type (12.1px / 650 / mono) directly on white
 MARGIN's closed readout has no plus signs. Its open L/R then B/T layout is an even two-column grid with shared column edges, more internal height, and the parent chip's complete 6.6px corners, 1.1px stroke, and shadow.
 
 The single 48px measure serves both gutters: header-bottom to ticker-top and sheet-right to blank-left. Sheet width glides right while any chip is open; the blank follows that width delta and returns on close. Fit, pan, and zoom still clamp the blank inside browser width. No picker, calculator, chevron, popover, or bed is restored.
+
+---
+
+## Cut 12 — centered ticker + side stack
+
+The blank ticker is a fixed viewport HUD: horizontally centered, 48px below the 64px header, and independent of blank placement, blank resize, pan, zoom, and Fit. Its entire locked bar is scaled 10% to 31.46px high with a 7.26px radius, 30.8px rotate hits, 19.8px Lucide glyphs, and 13.31px / 650 / mono size and count type. It remains `#E8E8E8` with the existing `0 0.5px 1px rgba(0,0,0,.25)` shadow, inset rules, live blue `#538BEC` count, and −90/+90 rotate pair.
+
+BLANK leaves the left sheet. The centered ticker itself is its blank-size editor: select-all on open, type, Check, and X, with two padded white cells separated only by `×` (no X/Y labels). Its pill grows right from a stable left edge; it has no hanging controls.
+
+The left sheet is moved to the smaller 24px inset and contains only **PART SIZE**, **GAP**, and **MARGIN**. Side chips grow right only; their width delta moves the blank right and closing moves it back. The fixed centered ticker does not move. Fit, pan, and zoom reserve this remaining left lane. GAP alone retains Link between Y and Check. MARGIN remains its taller, complete 6.6px L/R then B/T grid with no plus or axis labels. No picker, calculator, chevron, popover, or bed is restored.
 
 ---
 
