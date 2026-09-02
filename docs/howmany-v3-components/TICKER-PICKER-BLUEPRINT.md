@@ -1,78 +1,52 @@
-# Ticker + picker blueprint
+# Side-stack sheet + ticker lock
 
 Product: FLiPIT
 Host: `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`
-Stage: blank-in-space (127). Chrome: ticker-door (121–125) on that stage (129).
-job_id: NGJ-20260901-tickerbp
+Stage: blank-in-space (127)
+Lock: Seq 7 / PR 131
 
-This file is the schematic. The host follows it. Do not invent a second ticker.
+This replaces the former ticker-picker blueprint. It is intentionally not a picker schematic.
 
 ## Subject
 
-The HUD is the ticker + picker only.
+The stage subject is the blank, its front ticker, and the right sheet together.
 
 ```
-                         ┌ Part   Gap   Margin   Reset ┐   picker h 22
-                         │        inset 8px L/R         │   join 1.1px
-[−90][+90]  12.000 × 8.000  [calc] [▴/▾]                   travel
+header 64px
+
+canvas pad 48px                 PART SIZE
+                                [ 1.250 x 3.375 ]
+        blank + front ticker    BLANK
+                                [12.000 x 8.000 ]
+                                GAP
+                                [ 0.375 x 0.125 ]
+                                MARGIN
+                                [ 0.250 all     ]
 ```
 
-Closed: one stroke around the travel row. Picker hidden.
-Open: inverted-L. Picker sits on the travel top edge, right-aligned to the calc+chevron cluster. Join line under the picker, inset 8px L/R, does not touch picker L/R.
+## Right sheet
 
-## Travel row (left → right)
+- Transparent and borderless; it occupies a right lane rather than drawing a panel.
+- Its top is `--app-header-h: 64px + --canvas-pad: 48px`; the sole measured inset is 48px.
+- Labels are above chips and share their left edge: PART SIZE, BLANK, GAP, MARGIN.
+- Label token: 11px / 650 / 0.04em / uppercase. Row gap: 8.8px.
+- Chip token: height 28.6px, radius 6.6px, narrower than 21ch. Two-line MARGIN has min-height 40px and keeps its own radius and shadow.
 
-| Piece | Size | Gap |
-| --- | --- | --- |
-| −90 | hit 28 × 28 | pair gap 0 |
-| +90 | hit 28 × 28 | travel gap 2 after pair |
-| size field | live blank W × H, 3 dp, input radius 6 | travel gap 2 |
-| calc | hit 28 × 28 | travel gap 2 |
-| chevron | hit 28 × 28 | — |
+## Stops and camera
 
-Travel pad: 6 T/B · 8 L/R.
-Travel outer radius: 8.
-Idle hits stay idle. Tap highlight transparent. Click blurs.
+- The blank stays within browser width and cannot collide with the sheet lane. It may sit below the stack in Y.
+- Fit/camera includes blank + ticker + sheet as one subject. The sheet lane is reserved in its width calculation; it is not fabricated with extra sheet padding.
+- Ticker is front of the blank and never sits behind or clips through the chips.
 
-## Picker menu (open only)
+## Ticker
 
-| Piece | Size |
-| --- | --- |
-| height | 22 |
-| words | Part · Gap · Margin · Reset |
-| word gap | 8 |
-| pad L/R | 8 |
-| pad T/B | 0 |
-| radius | 6 |
+- A single 28.6px-high readout, wider only as needed.
+- It presents live blank size `W.WWW × H.HHH` and **HOW MANY PARTS**.
+- No picker bar, calculator, chevron door, rotate pair, reset, or control hit remains. The 18px glyph / 28px hit rule is inapplicable because no ticker control remains.
+- The blank arc is grab-only.
 
-Part / Gap / Margin open that field’s retained controls on the picker field *surface* (chips + fields only).
-Reset is a later leftover (129 packslip). Do not fake it in this job unless the Cut can do it without growing scope.
-−90 / +90 are later leftovers (129 packslip). Chrome stays; wiring is not this job.
+## Not in this lock
 
-## Picker field surface (picker-opened)
-
-Allowed on that surface:
-- Blank / Gap / Margin (and Part when selected) field chips
-- preset chips that already live on those fields
-
-Forbidden on that surface:
-- the numeric keypad / calc pad (`C ± % ÷` grid)
-- AUTO-SIZE / HEXNEST / FLiPIT chips
-- Numeric HUD card chrome from pre-127
-
-The pad is not the presets. The host renders no pad markup or pad/card chrome on this surface.
-
-## Pin
-
-Ticker cluster pins to the blank in viewport coordinates.
-Gap from blank top edge to cluster bottom = 10px.
-Use live cluster height, not a hardcoded 34.
-Stay below the app header.
-
-## Not this job
-
-- AutoNest
-- laser bed / grid / rulers / nest box
-- rotate wiring
-- Reset behavior (unless free)
-- React port
+- Numeric calculator or picker surface
+- Laser bed, grid, rulers, nest box, or part rendering
+- AutoNest, calculation behavior, or product rename

@@ -1,10 +1,10 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Seq 3 blank-in-space canvas passed host validation
+**Status:** Living — Seq 7 side-stack sheet + ticker lock
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
-**Branch:** `docs/blank-in-space-canvas`
+**Branch:** `docs/side-stack-sheet`
 **Trace:** `NGJ-20260901-blankspace`
 **Host tip blob:** `55a1688ec9720fdb34409435fa56b46f3a5783ec` (Seq 3 composition commit)
 **Class:** Exploratory composition host only · not product GOAL · not a shared import  
@@ -13,6 +13,19 @@
 This file is the **host only**. The four individual HTML tips stay standalone lock files. Do not overwrite them from this assembly. Do not add `flipit-v3-align.js` or `@import` into the tips.
 
 Prior composition/lock archives (`COMPOSITION-HUD-DECODER-v3.*`, `DE-CODER-v3-LOCKED.*`) stay on disk. They are not this host.
+
+---
+
+## Seq 7 — side-stack sheet + ticker lock
+
+This section supersedes the ticker-door R1 / R2 / R3 contracts below. Seq 3's blank-in-space stage remains in force.
+
+- The right field stack occupies an invisible, transparent sheet lane. It has no border and starts at the hard stop `--app-header-h: 64px` + `--canvas-pad: 48px`; its single measured inset is 48px.
+- The stack is right-side, top-to-bottom **PART SIZE**, **BLANK**, **GAP**, **MARGIN**. Labels sit above their chips, share the same left edge, and use 11px / 650 / 0.04em / uppercase. Rows use an 8.8px gap.
+- Chips are 28.6px high, 6.6px radius, narrower than the previous 21ch pills. MARGIN retains a 40px minimum when its value becomes two lines; its chip owns its radius and shadow.
+- The sheet reserves its lane during Fit. Fit and camera frame the blank, its ticker, and the sheet as one subject. The blank is clamped within browser width and cannot collide with the sheet; it may sit lower in Y. The ticker paints in front and never clips through the chips.
+- The ticker is a readout only: it is 28.6px high, wider rather than taller, and shows live `W.WWW × H.HHH` plus **HOW MANY PARTS**. FLiPIT remains the product name.
+- There is no picker bar, calculator button, chevron door, rotate pair, reset action, or numeric calculator surface. The blank arc remains the only grab affordance. The hidden bed, grid, nest, and part surfaces remain absent from this host.
 
 ---
 
