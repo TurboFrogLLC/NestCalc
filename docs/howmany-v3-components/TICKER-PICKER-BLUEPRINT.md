@@ -9,24 +9,24 @@ This replaces the former ticker-picker blueprint. It is intentionally not a pick
 
 ## Subject
 
-The stage subject is the blank, its front ticker, and the right sheet together.
+The stage subject is the blank, its front ticker, and the left sheet together.
 
 ```
 header 64px
 
-canvas pad 48px                 PART SIZE
-                                [ 1.250 x 3.375 ]
-        blank + front ticker    BLANK
-                                [12.000 x 8.000 ]
-                                GAP
-                                [ 0.375 x 0.125 ]
-                                MARGIN
-                                [ 0.250 all     ]
+canvas pad 48px  PART SIZE
+                 [ 1.250 x 3.375 ]
+                 BLANK
+                 [12.000 x 8.000 ]     blank + front ticker
+                 GAP
+                 [ 0.375 x 0.125 ]
+                 MARGIN
+                 [ 0.250 all     ]
 ```
 
-## Right sheet
+## Left sheet
 
-- Transparent and borderless; it occupies a right lane rather than drawing a panel.
+- Transparent and borderless; it occupies a left lane rather than drawing a panel.
 - Its top is `--app-header-h: 64px + --canvas-pad: 48px`; the sole measured inset is 48px.
 - Labels are above chips and share their left edge: PART SIZE, BLANK, GAP, MARGIN.
 - Label token: 11px / 650 / 0.04em / uppercase. Row gap: 8.8px.
@@ -54,3 +54,7 @@ canvas pad 48px                 PART SIZE
 ## Cut 6 correction
 
 The sheet is fixed at right 48px and top `64px + 48px`; no runtime placement may supply an inline left value. Fit, pan, and zoom reserve its lane, while the blank retains a visible 48px gap below the header. MARGIN remains a complete 6.6px box with its own shadow.
+
+## Cut 7 left sheet
+
+This supersedes the Cut 6 sheet side: the sheet is fixed at left 48px and top `64px + 48px`. Fit, pan, and zoom reserve the left lane so the blank cannot enter it; the right lane stays open. Ticker chrome and editor-chip state are unchanged.

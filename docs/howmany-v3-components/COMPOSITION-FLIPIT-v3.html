@@ -2135,11 +2135,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     #lb-bed-fill, #lb-major-grid, #lb-bed-rim, #lb-edge-x, #lb-edge-y, #lb-camera > circle, #lb-nest-box, #lb-part-g, #lb-bed-rulers { display: none; }
     #lb-blank { fill: #fff; fill-opacity: 1; stroke: #1a1428; stroke-width: 1.5; clip-path: none; }
     .blank-ticker-cluster { z-index: 90; }
-    /* The right sheet is invisible: it owns one lane, not a second canvas grid. */
+    /* The left sheet is invisible: it owns one lane, not a second canvas grid. */
     #hud {
       --sheet-inset: 48px;
-      position: fixed; z-index: 80; top: calc(var(--app-header-h) + var(--canvas-pad)); right: var(--sheet-inset);
-      bottom: auto; left: auto; display: block; width: 154px; min-width: 0; padding: 0; border: 0; border-radius: 0;
+      position: fixed; z-index: 80; top: calc(var(--app-header-h) + var(--canvas-pad)); left: var(--sheet-inset);
+      bottom: auto; right: auto; display: block; width: 154px; min-width: 0; padding: 0; border: 0; border-radius: 0;
       background: transparent; box-shadow: none; overflow: visible;
     }
     #hud::after, #hud .keypad-header, #hud .hud-footer-sep, #hud .hud-controls { display: none !important; }
@@ -2627,7 +2627,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var sheetLane = (sheet ? sheet.offsetWidth : 154) + PAD * 2;
     var blankWithGutterW = state.blankW + 4;
     var blankWithGutterH = state.blankH + 8;
-    return Math.min(Math.max(80, W - sheetLane) / blankWithGutterW, Math.max(80, H - PAD * 2) / blankWithGutterH);
+    return Math.min(Math.max(80, W - sheetLane - PAD) / blankWithGutterW, Math.max(80, H - PAD * 2) / blankWithGutterH);
   }
   function pxPerInch() { return (state.fitScale == null ? fittedScale() : state.fitScale) * state.zoom; }
   function labelStep() {
@@ -2739,7 +2739,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var maxZoom = Math.max(0.35, (W - sheetLane - PAD) / Math.max(state.blankW * baseScale, 1));
     state.zoom = Math.min(state.zoom, maxZoom);
     var s = pxPerInch();
-    state.panX = Math.max(PAD, Math.min(W - sheetLane - state.blankW * s, state.panX));
+    state.panX = Math.max(sheetLane, Math.min(W - PAD - state.blankW * s, state.panX));
     state.panY = Math.max(state.blankH * s + PAD, state.panY);
   }
 
@@ -2778,7 +2778,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var H = svg.clientHeight || window.innerHeight;
     var sheet = document.getElementById('hud');
     var sheetLane = (sheet ? sheet.offsetWidth : 154) + PAD * 2;
-    state.panX = Math.max(PAD, Math.min(W - sheetLane - state.blankW * s, (W - sheetLane - state.blankW * s) / 2));
+    state.panX = Math.max(sheetLane, Math.min(W - PAD - state.blankW * s, sheetLane + (W - sheetLane - PAD - state.blankW * s) / 2));
     state.panY = Math.max(state.blankH * s + PAD, (H + state.blankH * s) / 2);
   }
 
@@ -2800,7 +2800,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (state.dragging === 'pan') {
       var sheet = document.getElementById('hud');
       var sheetLane = (sheet ? sheet.offsetWidth : 154) + PAD * 2;
-      state.panX = Math.max(PAD, Math.min((svg.clientWidth || window.innerWidth) - sheetLane - state.blankW * s, state.start.panX + dx));
+      state.panX = Math.max(sheetLane, Math.min((svg.clientWidth || window.innerWidth) - PAD - state.blankW * s, state.start.panX + dx));
       state.panY = Math.max(state.blankH * s + PAD, Math.min((svg.clientHeight || window.innerHeight), state.start.panY + dy));
     }
     else if (state.dragging === 'x') state.blankW = Math.max(state.snap, snap(state.start.w + dx / s));
