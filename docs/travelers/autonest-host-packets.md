@@ -14,3 +14,6 @@ Implementation commit: 7effe2693b246cedaca8d32818d78967ce8322d3
 
 ## Seq 3b Cut 1b — Lucide menu glyph
 Worker: Codex App. Verified the HUD control between blank size and count uses only the canonical Lucide menu paths `M4 5h16`, `M4 12h16`, and `M4 19h16` in the existing 24px hit / 16px glyph / 2px stroke token. Best-uniform math, nestLayout-off, count slot, chips, presets, and Fit were unchanged.
+
+## Seq 3c Cut 1c — Lucide hamburger glyph
+Worker: Codex App. Replaced the prior three-bar menu paths with the Owner-specified Lucide hamburger paths while retaining the 24px hit / 16px glyph / 2px stroke / 24px viewBox token. Best-uniform math, nestLayout-off, count slot, chips, presets, and Fit were unchanged.

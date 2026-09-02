@@ -17,6 +17,7 @@ Seq  Label              Notes                                              Stamp
 2    Start-branch       Owner remote / Codex App
 3    Cut                1 HUD menu + calculateBestUniformNest             7effe2693b246cedaca8d32818d78967ce8322d3
 3b   Cut                1b Lucide menu glyph                              verified at 1f47aeb7aab8db331b4624c562ac2f5eb4ba3ab2
+3c   Cut                1c Lucide hamburger glyph                         applied from efd416e27148f969c0c3cea31ba333cfaf3248a0
 4    Look               Owner htmlpreview. No Codex.
 5    Cut                2 calculateAutoNest two-group + trim line
 6    Look               Owner htmlpreview. No Codex.
@@ -42,14 +43,14 @@ Do not invent a third nest formula.
 
 ## Cut lock
 
-### Cut 1 — HUD menu + best uniform
-Center HUD order: rotate-ccw | rotate-cw | blank size | Lucide menu | count.
+### Cut 1 — HUD hamburger + best uniform
+Center HUD order: rotate-ccw | rotate-cw | blank size | Lucide hamburger | count.
 Menu hit matches rotate hits: 24px hit, 16px glyph, stroke 2, 24 viewBox.
-Lucide `menu` paths only: M4 5h16 / M4 12h16 / M4 19h16.
+Lucide `hamburger` paths only: M12 16H4a2 2 0 1 1 0-4h16a2 2 0 1 1 0 4h-4.25 / M5 12a2 2 0 0 1-2-2 9 7 0 0 1 18 0 2 2 0 0 1-2 2 / M5 16a2 2 0 0 0-2 2 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 2 2 0 0 0-2-2q0 0 0 0 / m6.67 12 6.13 4.6a2 2 0 0 0 2.8-.4l3.15-4.2.
 Menu off: nestLayout grid as on main.
-Menu on: call calculateBestUniformNest with live blank, part, gap, margin. If 90° wins, set partRot to match and redraw tiles + count.
+Hamburger on: call calculateBestUniformNest with live blank, part, gap, margin. If 90° wins, set partRot to match and redraw tiles + count.
 Idle size/rot edits while armed re-run best uniform.
-Menu off returns to the current rotate state and nestLayout.
+Hamburger off returns to the current rotate state and nestLayout.
 
 ### Cut 2 — two-group + trim
 While menu is on, call calculateAutoNest. If two-group totalParts beats uniform, count is that total. Draw both groups as tiles and one trim line on the blank.
