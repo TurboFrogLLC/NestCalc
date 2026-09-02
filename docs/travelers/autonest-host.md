@@ -22,6 +22,7 @@ Seq  Label              Notes                                              Stamp
 4    Look               Owner htmlpreview. No Codex.
 5    Cut                2 calculateAutoNest two-group + trim line          d034a1ee4f9edf4d3f41c43633f2e1e1e79e22dc
 5b   Cut                3 isolated blanks full margins                    33a252a622285bc859d57cd9b529e22af1799473
+5c   Cut                4 isolated blank bottom-left origin; bands later  81c731411e9bdb53e7592dff1d68be39438fc3bc
 6    Look               Owner htmlpreview. No Codex.
 7    Send for review
 8    Inspection

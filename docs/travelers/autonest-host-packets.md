@@ -28,3 +28,7 @@ Implementation commit: d034a1ee4f9edf4d3f41c43633f2e1e1e79e22dc
 ## Seq 5b Cut 3 — isolated blanks, full margins
 Worker: Codex App. The armed host now supplies `trimEdgePolicy: 'full'` to the unchanged AutoNest engine. Each vertical or horizontal trim side is therefore an independent blank that receives the current ticker L/R/T/B margins, including the trim-facing edge; the existing achieved-margin renderer insets both frost-blue groups accordingly and keeps one trim line. Hamburger-off grid, amber armed glyph, best-uniform fallback, chips, presets, Fit, and stops are unchanged.
 Implementation commit: 33a252a622285bc859d57cd9b529e22af1799473
+
+## Seq 5c Cut 4 — isolated blank bottom-left origin
+Worker: Codex App. Each returned two-group blank now uses the same local L/B tile origin as the single blank: left/bottom at sheet L/B, right at trim + L / sheet B, and top at sheet L / trim + B. This preserves right/top leftover and the engine-backed R/T clearance on every isolated blank while retaining one trim line and the full trim-edge policy. The translucent red L/R/T/B margin band is explicitly deferred to a later operation and is not drawn in this cut.
+Implementation commit: 81c731411e9bdb53e7592dff1d68be39438fc3bc
