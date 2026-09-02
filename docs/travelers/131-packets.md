@@ -43,4 +43,7 @@ Stamp: c7b8a9dcee64edf728483c26837d4250592049b2
 Seq 21 Cut 11 editor + gutter tweak — Codex CLI: direct white 12.1px mono inputs grow with text; GAP alone has Link; ticker blank size opens BLANK's editor; MARGIN is an even L/R/B/T grid without plus signs; and the blank tracks the sheet glide. Browser measurement: both gutters are 48px closed and expanded.
 Stamp: c7b8a9dcee64edf728483c26837d4250592049b2
 
-NEXT: Owner direction after Cut 11.
+Seq 22 Cut 12 centered ticker + stack — Codex CLI: detached the blank ticker from blank and camera into a fixed, viewport-centered 31.46px HUD at the 64px header + 48px gap; retained the inset rules, Lucide −90/+90 pair, and live blue count; and made its size readout the padded-white-cell BLANK editor. Removed BLANK from the 24px-inset left stack, which now contains PART SIZE, GAP, and MARGIN only. Side-chip width growth moves the blank while the centered ticker remains fixed; GAP alone retains Link and MARGIN remains the complete L/R/B/T chip. No picker, calc, chevron, popover, bed, or GOAL.md.
+Stamp: aae5299a836078d52fcbcd7c558cc1dfd9ae9f03
+
+NEXT: Owner direction after Cut 12.
