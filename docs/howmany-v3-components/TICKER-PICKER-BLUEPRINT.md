@@ -182,3 +182,9 @@ This supersedes the Cut 6 sheet side: the sheet is fixed at left 48px and top `6
 
 - Pencil with an armed slot still opens that slot's card. With no armed slot, pencil opens the card hydrated from the live Blank, Gap, and Margin values without assigning an arm or writing a slot. Check writes the first empty slot or appends one when all are filled; X closes without a write; a blank name becomes `Preset`. The footer contains Check and X only—Copy live is absent.
 - Blank-handle resize may lower camera scale beneath the ordinary zoom floor after the drawn blank reaches a 15px viewport stop. The stops continue to constrain the drawn blank, while the numeric `blankW` and `blankH` and live nest keep growing. Label-row Check/X, gold arm, card pad, parts on blank, Fit, and stops-as-pan remain locked.
+
+## Cut 30 HUD count three-digit slot
+
+- The blue `#538BEC` count has a locked slot of three tabular `ch` faces at 14.64px / 650 / mono plus the same 5px inset on each side used by the vertical rules.
+- Center `1`, `14`, and `144` within that slot between the size|count separator and the inner right stroke. The size field does not shift or clip as the count changes.
+- The closed-width ticker pin remains locked; chips, presets, boot defaults, Fit, and stops do not change.
