@@ -17,3 +17,16 @@ Facts:
 - Owner's host-side branch creation was retained; no branch was recreated and no `/goal` operation was run.
 
 NEXT: Cut
+
+### Seq 3 Cut — completion
+
+Operator: Codex CLI
+Stamp: e4cb94928718b4ef85d2ce09f3c83a0bca9e1479
+
+Facts:
+- The exact ticker + picker blueprint now names the picker field surface and prohibits its numeric pad and legacy card chrome.
+- The composition host follows it: the `C ± % ÷` keypad markup, styles, and handlers are removed; picker selection reveals only retained field chips and presets.
+- Closing the picker dismisses the field surface and its active selection. Field chips remain; AutoNest, rotate wiring, Reset behavior, the bed, and the HUD card were not restored or changed.
+- Allowed Cut files only: blueprint, composition host, living SPEC, traveler, and packet log.
+
+NEXT: Send for review
