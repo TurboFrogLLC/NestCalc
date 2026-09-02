@@ -165,6 +165,12 @@ Pencil with an armed slot still opens that slot's card. With no armed slot, penc
 
 The centered HUD count is a fixed-width slot: three tabular `ch` faces at 14.64px / 650 / mono plus the same 5px inset on each side that inset vertical rules use. It centers `1`, `14`, and `144` between the size|count separator and the bar’s inner right stroke, retains `#538BEC`, and does not alter the closed ticker width or its fixed-left pin.
 
+## AutoNest Cut 1 — HUD menu + best uniform
+
+The centered HUD order is Lucide `rotate-ccw`, Lucide `rotate-cw`, blank size, Lucide `menu`, then the blue count. Every travel hit is 24px with a 16px glyph, 24px viewBox, and 2px stroke. The menu consists only of `M4 5h16`, `M4 12h16`, and `M4 19h16`.
+
+With the menu off, tiles and count use the current `nestLayout` rotation. With the menu on, the host evaluates the live blank, part, gap, and four margins through the best-uniform rule: compare 0° and 90°, keep 0° on a tie, and make the higher count the live tiles and blue count. A 90° win writes `partRot` before redraw. Idle blank, part, gap, margin, and rotation edits while armed re-run this rule. No picker, calculator, chevron, or bed is restored.
+
 ---
 
 ## Seq 3 — blank-in-space canvas

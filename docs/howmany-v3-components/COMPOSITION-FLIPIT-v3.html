@@ -2379,6 +2379,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         <button type="button" class="bt-hit" id="bt-rot-ccw" title="−90" aria-label="−90"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></button>
         <button type="button" class="bt-hit" id="bt-rot-cw" title="+90" aria-label="+90"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg></button>
         <span class="blank-ticker" id="blank-ticker" aria-label="Blank size"><span class="bt-readout" id="bt-readout">12.000 × 8.000</span></span>
+        <button type="button" class="bt-hit" id="bt-menu" title="AutoNest" aria-label="AutoNest" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg></button>
         <span class="bt-parts" id="bt-parts" aria-label="Part count">14</span>
       </div></div>
       <div class="chip-editor-actions" id="bt-chip-actions" hidden></div>
@@ -2750,7 +2751,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     blankW: 12, blankH: 8, snap: 0.125, zoom: 1, fitScale: null, panX: 0, panY: 0, dragging: null, start: null,
     partW: 2.5, partH: 3.5, partRot: 0,
     margin: { l: 0.25, r: 0.25, t: 0.25, b: 0.5 },
-    gap: { x: 0.125, y: 0.125 }
+    gap: { x: 0.125, y: 0.125 }, autoNestArmed: false
   };
 
   var svg = document.getElementById('lb-world');
@@ -2770,6 +2771,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   var blankTicker = document.getElementById('blank-ticker');
   var blankCluster = document.getElementById('blank-ticker-cluster');
   var btReadout = document.getElementById('bt-readout');
+  var btMenu = document.getElementById('bt-menu');
   var btParts = document.getElementById('bt-parts');
   if (!svg || !camera || !blank) return;
 
@@ -2801,8 +2803,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   function tickStep(L) { if (L >= 12) return 12; if (L >= 6) return 6; return 1; }
 
   /* One layout is the authority for both the blue count and the blank tiles. */
-  function nestLayout() {
-    var quarterTurn = Math.abs((state.partRot || 0) % 180) === 90;
+  function nestLayoutForRotation(partRot) {
+    var quarterTurn = Math.abs((partRot || 0) % 180) === 90;
     var partW = quarterTurn ? state.partH : state.partW;
     var partH = quarterTurn ? state.partW : state.partH;
     var m = state.margin;
@@ -2815,13 +2817,26 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     return { columns: columns, rows: rows, count: columns * rows, partW: partW, partH: partH };
   }
 
+  function nestLayout() {
+    return nestLayoutForRotation(state.partRot);
+  }
+
+  /* Mirrors autoNestEngine's strict 90°-beats-0° uniform selection. */
+  function calculateBestUniformNest() {
+    var zeroDegree = nestLayoutForRotation(0);
+    var ninetyDegree = nestLayoutForRotation(90);
+    var best = ninetyDegree.count > zeroDegree.count ? ninetyDegree : zeroDegree;
+    state.partRot = best === ninetyDegree ? 90 : 0;
+    return best;
+  }
+
   function applyCamera() {
     var s = pxPerInch();
     var t = 'translate(' + state.panX + ', ' + state.panY + ') scale(' + s + ', ' + (-s) + ')';
     camera.setAttribute('transform', t);
     if (blankCam) blankCam.setAttribute('transform', t);
   }
-  function layoutBlank() {
+  function layoutBlank(layout) {
     var w = state.blankW, h = state.blankH;
     blank.setAttribute('width', w); blank.setAttribute('height', h);
     hitRight.setAttribute('x', w - 0.35); hitRight.setAttribute('y', 0);
@@ -2850,7 +2865,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       nestBox.setAttribute('height', nh);
     }
     if (partG) {
-      var layout = nestLayout();
+      layout = layout || nestLayout();
       partG.replaceChildren();
       for (var row = 0; row < layout.rows; row++) {
         for (var column = 0; column < layout.columns; column++) {
@@ -2900,7 +2915,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
 
   /* The live ticker is a fixed, viewport-centered HUD rather than blank chrome. */
-  function positionBlankTicker() {
+  function positionBlankTicker(layout) {
     var pin = blankCluster || blankTicker;
     if (!pin) return;
 
@@ -2908,7 +2923,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var txt = state.blankW.toFixed(3) + ' × ' + state.blankH.toFixed(3);
     btReadout = document.getElementById('bt-readout');
     if (btReadout) btReadout.textContent = txt;
-    if (btParts) btParts.textContent = String(nestLayout().count);
+    if (btParts) btParts.textContent = String((layout || nestLayout()).count);
 
     /* Cut 18: pin from the first closed measurement; editor actions hang right. */
     var box = document.getElementById('bt-travel-box') || pin;
@@ -2938,7 +2953,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
 
   function render() {
-    clampSubjectToStops(); layoutBlank(); applyCamera(); drawBedRulers(); positionBlankTicker(); syncHudBlankFromBed();
+    var layout = state.autoNestArmed ? calculateBestUniformNest() : nestLayout();
+    clampSubjectToStops(); layoutBlank(layout); applyCamera(); drawBedRulers(); positionBlankTicker(layout); syncHudBlankFromBed();
   }
   window.__bedSetBlank = function (w, h) {
     var nw = Number.isFinite(w) ? w : state.blankW;
@@ -2975,6 +2991,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   });
   document.getElementById('bt-rot-cw').addEventListener('click', function () {
     state.partRot = (state.partRot + 90) % 360;
+    render();
+  });
+  if (btMenu) btMenu.addEventListener('click', function () {
+    state.autoNestArmed = !state.autoNestArmed;
+    btMenu.setAttribute('aria-pressed', String(state.autoNestArmed));
     render();
   });
   blankTicker.addEventListener('click', function (e) {
