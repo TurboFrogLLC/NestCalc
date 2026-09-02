@@ -17,3 +17,6 @@ Worker: Codex App. Verified the HUD control between blank size and count uses on
 
 ## Seq 3c Cut 1c — Lucide hamburger glyph
 Worker: Codex App. Replaced the prior three-bar menu paths with the Owner-specified Lucide hamburger paths while retaining the 24px hit / 16px glyph / 2px stroke / 24px viewBox token. Best-uniform math, nestLayout-off, count slot, chips, presets, and Fit were unchanged.
+
+## Seq 3d Cut 1d — hamburger amber when armed
+Worker: Codex App. The shared travel-hit off color is #111111 for the hamburger and rotate pair. The hamburger alone becomes IT amber #FFCE1B through its armed `aria-pressed` state; the SVG remains fill-none and all AutoNest math and HUD geometry are unchanged.

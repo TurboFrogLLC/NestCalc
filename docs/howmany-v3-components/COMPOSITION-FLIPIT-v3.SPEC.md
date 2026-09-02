@@ -179,6 +179,10 @@ The control between blank size and the blue count is the canonical Lucide `menu`
 
 The Owner supersedes the Cut 1b menu icon with the Lucide `hamburger` glyph. The control retains its 24px hit, 16px glyph, 2px stroke, and `viewBox="0 0 24 24"`; its paths are only `M12 16H4a2 2 0 1 1 0-4h16a2 2 0 1 1 0 4h-4.25`, `M5 12a2 2 0 0 1-2-2 9 7 0 0 1 18 0 2 2 0 0 1-2 2`, `M5 16a2 2 0 0 0-2 2 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 2 2 0 0 0-2-2q0 0 0 0`, and `m6.67 12 6.13 4.6a2 2 0 0 0 2.8-.4l3.15-4.2`. The best-uniform math and every other Cut 1 behavior remain unchanged.
 
+## AutoNest Cut 1d — hamburger armed color
+
+The hamburger stroke uses the shared travel-hit off color `#111111`, matching the rotate pair. While AutoNest is armed (`aria-pressed="true"`), only the hamburger’s `currentColor` stroke changes to IT amber `#FFCE1B`; its SVG remains fill-none and its hit, glyph, and paths remain unchanged.
+
 ---
 
 ## Seq 3 — blank-in-space canvas
