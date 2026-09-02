@@ -142,9 +142,9 @@ This supersedes the Cut 6 sheet side: the sheet is fixed at left 48px and top `6
 - The slots are a 2×2 grid: two 31.46px frost-blue chips per 154px row with one shared 8.8px gap. Both rows therefore measure exactly 154px, matching the PART SIZE, GAP, and MARGIN chips.
 - Slot chips retain 7.26px radius, 1.1px stroke, `0 0.5px 1px rgba(0,0,0,.25)` shadow, and 13.31px / 650 / mono type. They apply a stored margin value only; no picker, popover, calculator, chevron, or bed is reintroduced.
 
-## Cut 23 preset modal corrective
+## Cut 24 preset modal wire
 
-- PRESETS reads `PRESETS`, stock Lucide pencil, plus, minus. Slot buttons show a name only—never an ordinal—and retain the GAP-chip 72.6 × 31.46 token in the 154px two-column grid.
-- Idle tap hydrates the live Blank X/Y, Gap X/Y, and Margin L/R/B/T state. Pencil then slot tap arms that slot with `rgba(255,206,27,0.55)` fill and `rgba(201,140,0,0.85)` stroke and opens a blocking 240px, 8.8px-padded, 7.26px-radius `#E8E8E8` card.
+- PRESETS reads `PRESETS`, Lucide pencil paths `M21.174 6.812…` and `m15 5 4 4`, plus, minus. Slot buttons show a name only—never an ordinal—and retain the GAP-chip 72.6 × 31.46 token in the 154px two-column grid.
+- Idle tap hydrates the live Blank X/Y, Gap X/Y, and Margin L/R/B/T state. Pencil then any slot tap, including an already armed slot, calls `openMarginPresetCard(index)`, keeps the pencil visibly pressed, arms the slot with `rgba(255,206,27,0.55)` fill and `rgba(201,140,0,0.85)` stroke, and opens the 240px, 8.8px-padded, 7.26px-radius `#E8E8E8` card through its explicit flex-layer open state. The layer sits above chips, HUD, and blank without a native `hidden` attribute.
 - The card carries a 222.4 × 31.46 name field; only the section labels Blank, Gap, and Margin above their 72.6 × 31.46 paired fields (8.8px gap); and a single footer row with Copy live at left and unboxed 22px-hit / 14px Lucide Check and X at right. Empty fields hydrate from the live tickers. Check saves, X cancels, and a blank name becomes `Preset`.
 - Opening a live chip editor clears any preset arm and never writes that slot. The card is not the old picker or popover; center-bar lock, ghost editors, parts on blank, Fit, stops, and boot sizes stay unchanged.
