@@ -1,0 +1,107 @@
+# Packets log — 131
+
+Repo: NestCalc
+job_id: NGJ-20260901-sidestack
+Branch: docs/side-stack-sheet
+Operator: Codex CLI
+PR: 131
+
+Seq 1 Plan — Owner: five Cuts straight through; Codex after Cut 5. Start-branch is Owner local.
+Stamp: 9c172c22d58b455eaba667e13ae7a3fffd60427f
+Draft PR: https://github.com/TurboFrogLLC/NestCalc/pull/131
+
+Seq 3–7 Cuts 1–5 — Codex CLI one pass.
+Stamp: dddad5a35de5ff8d8d58882ea275bd92fa78f0cf
+
+Seq 8 Send for review — one @codex review on 65337db.
+Review: https://github.com/TurboFrogLLC/NestCalc/pull/131#issuecomment-5503131858
+Stamp: 65337db3c23ac484c1a8647e9c3cc626ded6d197
+
+Seq 9 Cut 6 corrective — right sheet, stops, rotate pair chrome.
+Stamp: cffe0d323f83bfc2f8467fa87110b57c9f6d8e80
+
+Seq 10+ Owner: stack returns left. Cut then Look. Do not stack 7–10.
+
+Seq 10 Cut 7 left sheet — Codex CLI: fixed the transparent sheet at left 48px and `64px + 48px`; Fit, pan, and zoom reserve the left lane and keep the blank clear. Ticker chrome and closed editor chips are unchanged.
+Stamp: e3316a5e348776bd6711db3ca819edcc2a1ef238
+
+Seq 11 Look 8091 — failed: rotate hooks were not the host Lucide paths, count was 0, size type was undersized, and MARGIN bottom corners clipped.
+Stamp: b2caddf92cfacd92791802e500de1e62a7d0d56e
+
+Seq 12 Cut 8 blank ticker corrective — Codex CLI: one 28.6px ticker row with stock Lucide paths, inset rules, live size/count type, −90/+90 wiring, and visible MARGIN overflow with its complete stroke/shadow. No picker, calc, chevron, popover, or Cut 10 editor.
+Stamp: 43357ca20ff39e3d14e9b835c105b4b5227a0719
+
+Seq 13 Look 8091 — passed: ticker chrome lock.
+Stamp: 4cd1d48c02bfb44ac5ce782a2909e5939226d278
+
+Seq 16 Cut 10 in-chip editors — Codex CLI: side chips edit in place with select-all, Check/X, paired X/Y rows, and downward L/R/B/T MARGIN fields. Popover remains unreachable; no link, swap, picker, calc, chevron, or bed.
+Stamp: 4a060dc15e59131267d8a6b102a5be6b45a7ddb4
+
+Seq 17 Look 8091 — tweaks requested: remove inset editor boxes and truncation; give GAP its only link; make ticker size editable; remove MARGIN pluses; square its L/R/B/T grid; and equalize the header/ticker and sheet/blank gutters.
+Stamp: c7b8a9dcee64edf728483c26837d4250592049b2
+
+Seq 21 Cut 11 editor + gutter tweak — Codex CLI: direct white 12.1px mono inputs grow with text; GAP alone has Link; ticker blank size opens BLANK's editor; MARGIN is an even L/R/B/T grid without plus signs; and the blank tracks the sheet glide. Browser measurement: both gutters are 48px closed and expanded.
+Stamp: c7b8a9dcee64edf728483c26837d4250592049b2
+
+Seq 22 Cut 12 centered ticker + stack — Codex CLI: detached the blank ticker from blank and camera into a fixed, viewport-centered 31.46px HUD at the 64px header + 48px gap; retained the inset rules, Lucide −90/+90 pair, and live blue count; and made its size readout the padded-white-cell BLANK editor. Removed BLANK from the 24px-inset left stack, which now contains PART SIZE, GAP, and MARGIN only. Side-chip width growth moves the blank while the centered ticker remains fixed; GAP alone retains Link and MARGIN remains the complete L/R/B/T chip. No picker, calc, chevron, popover, bed, or GOAL.md.
+Stamp: aae5299a836078d52fcbcd7c558cc1dfd9ae9f03
+
+Seq 23 Cut 13 HUD seats + editor chrome — Grok Build: header→HUD is 15px and HUD→blank is a 15px hard stop; the centered HUD stays fixed. Side chips take the same +10% as the closed bar (31.46 / 7.26 / 13.31). Blue count is 14.64. Check and X are unboxed Lucide matching the rotate pair and header + / − / Fit. Every field select-alls on click. MARGIN is a tight padded L R / B T pill; GAP keeps Link. No picker, calc, chevron, popover, bed, or GOAL.md.
+Stamp: abdd627c402a8a21cc3b56d30441144ce1c1aba6
+
+Seq 24 Cut 14 editor math + 15px stops — Grok Build: chips sit on one 31.46 row with 6ch three-decimal inputs; MARGIN is an even 2×2 with Check/X centered to the grid; Check/X/Link are 22/14 and rotate is 24/16; one 15px stop on HUD, stack-right, HUD-bottom, and viewport-bottom. HUD stays fixed. No picker, calc, chevron, popover, bed, or GOAL.md.
+Stamp: 0d9c648b5d2402f7c27c7f6a91966a5cecd89661
+
+Seq 25 Cut 15 ghost A — Grok Build: PART SIZE, GAP, and the center bar keep closed-chip chrome while numbers edit in place; Check/X sit outside right; GAP Link sits between the chip and Check; MARGIN is a two-line in-place editor (`0.250 all` when equal) with Check/X outside right; smashed `0 R 0.250B` readout is gone. No picker, calc, chevron, popover, bed, or GOAL.md.
+Stamp: 06e5345c0ffae9dc2118c95615dca1e625f1f945
+
+Seq 26 Cut 16 ghost highlight + margin center — Grok Build: selected-number blue has 3px air top and bottom to the inner stroke on PART SIZE, GAP, MARGIN, and the center size slot; open side chips paint #E8E8E8 so the select shows; closed chips stay frost-blue; center bar stays #E8E8E8; MARGIN two-line L R / B T is vertically centered with equal padding and equal column/row gap; width stays; Check/X stay outside right. No picker, calc, chevron, popover, bed, or GOAL.md.
+Stamp: a720e90a51f2baf590d6b794fd7ec40661a4d57a
+
+Seq 27 Cut 17 margin vertical inset — Codex App: browser-measured closed GAP text-to-inner-stroke inset at 7px top and 7.45px bottom from sub-pixel layout, then applied the 7px token to both closed and open two-line MARGIN grids. Column/row gaps remain equal; width stays; Check/X remain outside right; open fill stays #E8E8E8. No picker, calc, chevron, popover, bed, or GOAL.md.
+Stamp: c2e7acb39745340174ffa053b69b222b449adfb5
+
+NEXT: Owner direction after Cut 17.
+
+Seq 28 Cut 18 center-bar lock — Codex App: froze the centered travel box at its closed-state width and left pin. BLANK editor open, field selection, Check, and X leave the bar fixed; fields retain closed type, while Check/X remain outside right and never re-center the bar.
+Stamp: fe2a1b53018fe0d4651bf3520059946094f0c859
+
+Seq 29 Cut 19 parts on blank — Codex App: restored only live part tiles inside the blank. The shared blank/part/gap/margin/quarter-turn columns × rows calculation drives both the blue count and rendered tiles; LaserBed fill, grid, rim, rulers, nest-box chrome, picker, calc, and chevron remain absent.
+Stamp: fe2a1b53018fe0d4651bf3520059946094f0c859
+
+NEXT: Owner direction after Cut 19.
+
+Seq 30 Cut 20 presets block under margin — Codex App: added PRESETS immediately below MARGIN with Lucide + / − slot controls and four initial margin-snapshot buttons in a 2×2, 154px-wide frost-blue grid. The side ghost editors, external Check/X, centered ticker, Fit and stops, live blank parts, and the absence of picker, calculator, chevron, popover, and bed remain locked.
+Stamp: 0fcc181bc35893bf751829621d49ecd90056a243
+
+NEXT: Owner direction after Cut 20.
+
+Seq 31 Cut 21 preset modal — Codex App: PRESETS now carries Lucide pencil, +, and − after its label. Idle named-slot tap hydrates Blank, GAP, and MARGIN together. Pencil then slot tap arms it gold at 22% opacity and opens a blocking 171.6px `#E8E8E8` card with the named 154px field, paired 72.6px Blank/Gap/Margin fields, Copy live, and unboxed Check/X. Empty values hydrate live; Check saves; X cancels; empty names read Preset. Live chip editing clears the arm without writing it. Browser proof on 8091 saved `Small` with blank 15, gap X .5, margin L 1.25, then idle hydration updated the shared ticker and count (14 → 16). No picker, calculator, chevron, old popover, or bed returned.
+Stamp: 8e7a8418a60afbf42508bec63c97fe8c2c336653
+
+Seq 32 Cut 23 preset modal corrective — Codex App: retained the stock Lucide pencil paths; widened the blocking `#E8E8E8` card to 240px with 7.26px radius and 8.8px padding; reduced visible field labels to Blank, Gap, and Margin above the existing paired 72.6 × 31.46 boxes; moved Copy live, Check, and X into one footer row; and strengthened the armed frost-blue slot to `rgba(255,206,27,0.55)` with `rgba(201,140,0,0.85)` stroke. Hydrate, pencil-then-tap edit, live-edit disarm, names, plus/minus, center-bar lock, ghost editors, parts-on-blank, Fit, stops, and boot sizes remain locked.
+Stamp: f33b7886e1afe17d4cd48bb91923d8d1c3fee9f4
+
+Seq 33 Cut 24 preset modal wire — Codex App: replaced PRESETS with the Lucide pencil paths `M21.174 6.812…` and `m15 5 4 4`; converted the modal layer from native `hidden` state to a flex-layer `.is-open` state at z-index 200; kept the pencil visibly pressed through card close; and made the amber armed fill/stroke override frost-blue and hover chrome. Pencil-on slot taps, including an already armed slot, call `openMarginPresetCard(index)`; idle taps still hydrate and live chip editing still clears the arm without writing it. Locked surfaces remain unchanged.
+Stamp: 69710f271a60f92f93577461faef43b4d802a92b
+
+Seq 34 Cut 25 preset card stack and footer — Codex App: moved the blocking modal layer out of the HUD stacking context to a body-level z-index 201 sibling above the header and HUD pin; retained its pointer-blocking overlay; widened every Blank, Gap, and Margin axis box to 106.8 × 31.46 with 8.8px pair gaps; and made Copy live a 31.46px-high, 7.26px-radius chip-type footer button left of Check/X. Browser proof on 8091 opened the dialog with its name, all axis fields, Copy live, Save, and Cancel exposed while locked hydrate, pencil paths, gold arm, plus/minus, center-bar lock, ghost editors, parts-on-blank, Fit, and stops remained unchanged.
+Stamp: 01ef84fc4ad58d58afe93984c16c8e6a4bd56542
+
+Seq 35 Cut 26 preset arm, card pad, HUD lock — Codex App: idle preset hydration now arms the selected live slot with the locked gold fill/stroke, and card close retains that arm; live chip editing still clears it without writing. The blocking card is 252.4px wide with 15px padding, preserves the 222.4px name and 106.8px paired cells, and adds an inset 1.1px rule above its one-row footer. The centered ticker's closed left pin and width remain unchanged through card open, hydration, and close; pencil paths, layer z-index, ghost editors, parts on blank, Fit, and stops remain locked.
+Stamp: 3fe6e2ea414107de75768ffa14fcbf11e983e454
+
+Seq 36 Cut 27 pencil-on-selected and inline actions — Codex App: pressing pencil with an already armed live slot now opens that slot’s card directly; with no armed slot, pencil only enables edit mode and opens no card. The retained 252.4px / 15px card adds a second inset 1.1px name-to-Blank rule. External 22px Check/X stay inline after PART SIZE, GAP, MARGIN, and center-bar numbers; GAP Link remains between number and Check, and MARGIN aligns to its first number row. Pencil paths, gold tokens, layer z-index, parts on blank, Fit, and stops remain unchanged.
+Stamp: 0bb0188343659f64c59020322f4086fd0837a608
+
+Seq 37 Cut 28 Check X on label row — Codex App: open PART SIZE, GAP, and MARGIN now render their 22px Lucide Check/X actions directly after the 11px label, above rather than beside each number chip. GAP retains Link between its label and Check; closed labels have no actions. The centered blank-size editor retains its Check/X on the number row because it has no label. Pencil-on-selected, gold arm, card pad, footer, parts on blank, Fit, and stops remain unchanged.
+Stamp: 79ec337c7be4768ec961648f943ab2003d6d888d
+
+Seq 38 Cut 29 pencil hydrate and blank grow — Codex App: pencil with no armed slot now opens the blocking card hydrated from the live Blank, Gap, and Margin values; pencil with an armed slot still edits that slot. Copy live is removed, leaving Check/X only; Check writes the first empty slot or appends a slot when all are filled; X closes without a write; an empty name becomes Preset. Browser proof on 8091 dragged the blank corner beyond the viewport edge: the live size grew 12.000 × 8.000 → 23.750 × 15.750 while the drawn blank stayed right-clamped at 1185px in a 1200px viewport. Label-row Check/X, gold arm, card pad, parts on blank, Fit, and stops-as-pan remain locked.
+Stamp: 4ac190a0417376e2b272b29b7c38e2ff757f85fa
+
+Seq 39 Cut 22 boot defaults — Codex App: changed every host and script boot path to PART SIZE 2.500 × 3.500, BLANK 12.000 × 8.000, GAP 0.125 × 0.125, and MARGIN L 0.250 / R 0.250 / B 0.500 / T 0.250. Closed MARGIN now starts as its two-line L R / B T readout because B differs. Preset modal, pencil hydrate, label-row Check/X, gold arm, blank-grow-past-stop, parts-on-blank, Fit, pan stops, picker, calculator, and bed remain unchanged.
+Stamp: de83a6c0101113fbd3d36ac59929daf70589dbaa
+
+Seq 40 Cut 30 HUD count three-digit slot — Codex App: made the centered HUD count a fixed slot of three tabular `ch` faces at 14.64px / 650 / mono plus the shared 5px vertical-rule inset on both sides. The blue count is centered between the size|count separator and inner right stroke, so 1, 14, and 144 neither clip nor shift the size field. The closed-width pin, chips, presets, boot defaults, Fit, and stops remain unchanged.
+Stamp: 6887d047502231798c54b1d265064068053d09ac

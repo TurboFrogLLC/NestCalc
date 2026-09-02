@@ -1,10 +1,10 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Seq 3 blank-in-space canvas passed host validation
+**Status:** Living — Cut 29 pencil hydrate and blank grow
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
-**Branch:** `docs/blank-in-space-canvas`
+**Branch:** `docs/side-stack-sheet`
 **Trace:** `NGJ-20260901-blankspace`
 **Host tip blob:** `55a1688ec9720fdb34409435fa56b46f3a5783ec` (Seq 3 composition commit)
 **Class:** Exploratory composition host only · not product GOAL · not a shared import  
@@ -13,6 +13,157 @@
 This file is the **host only**. The four individual HTML tips stay standalone lock files. Do not overwrite them from this assembly. Do not add `flipit-v3-align.js` or `@import` into the tips.
 
 Prior composition/lock archives (`COMPOSITION-HUD-DECODER-v3.*`, `DE-CODER-v3-LOCKED.*`) stay on disk. They are not this host.
+
+---
+
+## Seq 7 — side-stack sheet + ticker lock
+
+This section supersedes the ticker-door R1 / R2 / R3 contracts below. Seq 3's blank-in-space stage remains in force.
+
+- The left field stack occupies an invisible, transparent sheet lane. It has no border and starts at the hard stop `--app-header-h: 64px` + `--canvas-pad: 48px`; its single measured inset is 48px.
+- The stack is left-side, top-to-bottom **PART SIZE**, **BLANK**, **GAP**, **MARGIN**. Labels sit above their chips, share the same left edge, and use 11px / 650 / 0.04em / uppercase. Rows use an 8.8px gap.
+- Chips are 28.6px high, 6.6px radius, narrower than the previous 21ch pills. MARGIN retains a 40px minimum when its value becomes two lines; its chip owns its radius and shadow.
+- The sheet reserves its lane during Fit. Fit and camera frame the blank, its ticker, and the sheet as one subject. The blank is clamped within browser width and cannot collide with the sheet; it may sit lower in Y. The ticker paints in front and never clips through the chips.
+- The ticker is 28.6px high, wider rather than taller, and shows live `W.WWW × H.HHH` plus the count number only. FLiPIT remains the product name.
+- There is no picker bar, calculator button, chevron door, reset action, or numeric calculator surface. The Lucide rotate pair rotates the part; the blank arc remains the only stage-grab affordance. The hidden bed, grid, nest, and part surfaces remain absent from this host.
+
+---
+
+## Cut 6 — corrective sheet stops
+
+- The sheet is fixed at `right: 48px` and `top: calc(64px + 48px)`. It has no runtime left-pin placement or drag placement.
+- Fit, pan, and zoom clamp the blank clear of the reserved sheet lane; the blank also retains a visible 48px stage gap below the header. The ticker remains below the header and in front of the blank.
+
+- MARGIN is a complete 6.6px-radius chip with its own shadow, including in two-line mode.
+- The ticker reads live blank size plus the count number only. The 28px travel row restores Lucide `rotate-ccw` and `rotate-cw` hits with 18px glyphs. It does not restore a picker, calculator, or chevron.
+
+## Cut 7 — left sheet
+
+This supersedes Cut 6's sheet side only. The transparent, borderless sheet is fixed at `left: 48px` and `top: calc(64px + 48px)`. PART SIZE, BLANK, GAP, and MARGIN remain left-aligned above their chips with shared left edges. Fit, pan, and zoom reserve the left lane and keep the blank out of it; the right lane remains open. Ticker chrome and closed editor chips are unchanged.
+
+## Cut 8 — blank ticker corrective
+
+This supersedes the earlier ticker details. The outer ticker is one 28.6px `#E8E8E8` row with a 6.6px radius and `0 0.5px 1px rgba(0,0,0,.25)` shadow; its inner travel and size elements do not set a 28px height. The pair uses the stock host Lucide `rotate-ccw` / `rotate-cw` paths in 28px hits with 18px, 24px-viewBox, round, 2px strokes. Inset vertical rules divide the pair, size, and count without reaching the row's top or bottom stroke.
+
+The size and count both use 12.1px / 650 / mono; the live count is `#538BEC` and derives from blank, part, gap, margin, and rotation state. The buttons rotate −90/+90. MARGIN remains a complete 6.6px chip with a full 1.1px stroke and own shadow, and all sheet ancestors leave its overflow visible. Picker, calculator, chevron, and popover remain absent.
+
+## Cut 10 — in-chip editors
+
+Clicking a side chip turns that same chip into the editor: the first field receives focus and select-all. PART SIZE, BLANK, and GAP keep one chip row with X/Y fields and Check/X controls. Check commits the live values; X restores the values from open. There are no link or swap controls.
+
+MARGIN expands downward inside its own complete 6.6px, 1.1px-stroked, shadowed chip into L, R, B, and T fields plus Check/X. Its bottom corners stay visible through the sheet stack. The retained popover is never opened; no picker, calculator, chevron, dark secondary panel, or bed is restored.
+
+## Cut 11 — editor + gutter tweak
+
+Editors use the closed-chip readout type (12.1px / 650 / mono) directly on white fill: no inner field border or padding. An active input grows right to retain every character. GAP alone carries a link control between Y and Check; PART SIZE, BLANK, and MARGIN have neither link nor swap. The ticker's live blank-size field opens that same BLANK editor with the same Check/X contract.
+
+MARGIN's closed readout has no plus signs. Its open L/R then B/T layout is an even two-column grid with shared column edges, more internal height, and the parent chip's complete 6.6px corners, 1.1px stroke, and shadow.
+
+The single 48px measure serves both gutters: header-bottom to ticker-top and sheet-right to blank-left. Sheet width glides right while any chip is open; the blank follows that width delta and returns on close. Fit, pan, and zoom still clamp the blank inside browser width. No picker, calculator, chevron, popover, or bed is restored.
+
+---
+
+## Cut 12 — centered ticker + side stack
+
+The blank ticker is a fixed viewport HUD: horizontally centered, 48px below the 64px header, and independent of blank placement, blank resize, pan, zoom, and Fit. Its entire locked bar is scaled 10% to 31.46px high with a 7.26px radius, 30.8px rotate hits, 19.8px Lucide glyphs, and 13.31px / 650 / mono size and count type. It remains `#E8E8E8` with the existing `0 0.5px 1px rgba(0,0,0,.25)` shadow, inset rules, live blue `#538BEC` count, and −90/+90 rotate pair.
+
+BLANK leaves the left sheet. The centered ticker itself is its blank-size editor: select-all on open, type, Check, and X, with two padded white cells separated only by `×` (no X/Y labels). Its pill grows right from a stable left edge; it has no hanging controls.
+
+The left sheet is moved to the smaller 24px inset and contains only **PART SIZE**, **GAP**, and **MARGIN**. Side chips grow right only; their width delta moves the blank right and closing moves it back. The fixed centered ticker does not move. Fit, pan, and zoom reserve this remaining left lane. GAP alone retains Link between Y and Check. MARGIN remains its taller, complete 6.6px L/R then B/T grid with no plus or axis labels. No picker, calculator, chevron, popover, or bed is restored.
+
+## Cut 13 — HUD seats + editor chrome
+
+Header-bottom to centered-HUD-top is **15px**, not 48. HUD-bottom to blank-top is a **15px hard stop**; Fit, pan, and zoom cannot move the blank across that line. The centered HUD stays fixed and does not pan, zoom, or Fit.
+
+Side-stack chips take the same +10% as the closed bar: **31.46px** high, **7.26px** radius, **13.31px / 650 / mono**. Closed bar chrome is unchanged. The live blue count on the centered bar is one step larger: **14.64px / 650 / mono**.
+
+Check and X are unboxed Lucide `check` and `x` only — 30.8px hits, 19.8px glyphs, 2px round stroke — matching the rotate pair and header + / − / Fit. Those three header hits are Lucide `plus`, `minus`, and `maximize` at the same size and stroke; they are not circled or boxed. Every editor field select-alls on click, not only the first field on open. PART SIZE and GAP use `×` with no X/Y labels. GAP keeps Link between Y and Check.
+
+MARGIN is an even L R / B T grid inside a tight pill: padded white cells, no empty slab, no plus signs. The pill grows right only. No picker, calculator, chevron, popover, or bed is restored.
+
+## Cut 14 — editor math + 15px stops
+
+Closed and open chips sit on one **31.46px** row: radius **7.26px**, readout and inputs **13.31px / 650 / mono**, `line-height: 31.46`, `align-items: center`. Inputs do not drop. White cells pad left/right only. Every numeric value is three decimals in a **6ch** tabular field with no wrap. Select-all remains on every field click.
+
+MARGIN open is an even **2×2**: L R on row 1, B T on row 2, one number per cell, equal column and row gap, shared column left edges. Check and X sit on the right of that grid and are vertically centered to it. There is no empty slab and no second popover.
+
+Action hits: Check, X, and Link are **22px** with **14px** Lucide glyphs, stroke 2. The rotate pair is **24px** with **16px** glyphs, stroke 2. Header + / − / Fit stay as Cut 13.
+
+Stops are one token, **15px**: header-bottom → HUD-top, HUD-bottom → blank-top, stack-right → blank-left, and viewport-bottom → blank-bottom. The HUD stays fixed. Pills grow right only; the blank slides by that width delta and returns. No picker, calculator, chevron, popover, or bed is restored.
+
+## Cut 15 — ghost A
+
+PART SIZE, GAP, and the centered bar keep the same closed chip while editing: same size, fill, radius, and stroke. Numbers edit in place at three decimals in **6ch** tabular fields. Select-all on every field click. No X/Y labels. `×` stays between the pair. The pointer stays over the whole chip until a number is clicked; then the I-beam is in that field only.
+
+Check and X sit **outside** the pill, to the right, vertically centered to that chip. They are not inside the stroke. The pill does not grow right to make room for them. GAP's Link sits outside right, between the chip and Check.
+
+MARGIN closed is `0.250 all` when all four sides are equal; otherwise two even lines `L 0.250  R 0.250` / `B 0.250  T 0.250`. It never smashes into `0 R 0.250B 0.250 T`. Open stays that two-line grid in the same chip width. Height grows down only enough for two rows. Check/X stay outside right. GAP is not shoved sideways.
+
+Fit clamp and the 15px stops are unchanged. No picker, calculator, chevron, popover, or bed is restored.
+
+## Cut 16 — ghost highlight + margin center
+
+The selected number has **3px** air above and below the blue field to the inner stroke. Same math on PART SIZE, GAP, and MARGIN fields, and on the centered HUD size slot.
+
+While a side chip is open, its fill is the center HUD color **`#E8E8E8`** so the blue select shows. Closed chips stay frost-blue. The center bar stays **`#E8E8E8`** closed and open.
+
+MARGIN's two-line L R / B T grid is vertically centered in the chip: equal padding top and bottom, column gap = row gap, width unchanged. Check and X stay outside right.
+
+Ghost A stays. Actions stay outside. The pill does not grow right. No picker, calculator, chevron, popover, or bed is restored.
+
+---
+
+## Cut 17 — margin vertical inset
+
+The closed GAP readout measures **7px** from its text box to each inner stroke (the rendered bottom resolves at 7.45px from sub-pixel layout). That measured 7px token is the vertical pad for MARGIN's two-line closed L/R then B/T grid and its open L/R then B/T editor. Column gap equals row gap; width is unchanged; Check and X remain outside right. Open MARGIN fill stays `#E8E8E8`.
+
+Ghost editors stay. No picker, calculator, chevron, popover, or bed is restored.
+
+---
+
+## Cut 18 — center-bar lock
+
+The centered travel box takes its left pin and width from the closed box only. Opening the BLANK editor, clicking either field, and committing or cancelling retain that same box width and left coordinate. The editor uses the closed 13.31px / 650 / mono type and does not grow the box. Check and X remain outside its right edge and do not cause a second centering pass. First field click select-alls.
+
+## Cut 19 — parts on blank
+
+Only the live part tiles are visible inside the blank. Columns and rows use the same blank, part, gap, margin, and quarter-turn count calculation that drives the blue bar count; the rendered tile count therefore matches the bar through size edits and −90/+90 rotation. Laser-bed fill, grid, rim, rulers, nest-box chrome, picker, calculator, chevron, and other bed surfaces remain hidden.
+
+## Cut 20 — presets block under margin
+
+PRESETS sits directly below MARGIN in the left sheet. Its label uses the same type as PART SIZE, GAP, and MARGIN; Lucide plus and minus controls at the label's right add one slot or remove the last slot. Four slots are present at load. The slots form a two-column grid: each 154px row has exactly two frost-blue buttons and one shared gap, so both rows have the same measured length as the chips above. Each button uses the side-chip token — 31.46px height, 7.26px radius, 1.1px stroke, the established shadow, and 13.31px / 650 / mono type — and applies only its stored margin snapshot. Ghost editors, external Check/X actions, the centered ticker lock, live parts on the blank, Fit, hard stops, and the absence of picker, calculator, chevron, popover, and bed remain unchanged.
+
+## Cut 22 — boot defaults
+
+Boot and empty state use PART SIZE `2.500 × 3.500`, BLANK `12.000 × 8.000`, GAP `0.125 × 0.125`, and MARGIN `L 0.250  R 0.250` / `B 0.500  T 0.250`. Because B is `0.500`, closed MARGIN uses its two-line readout rather than `0.250 all`. Preset modal, pencil hydration, label-row Check/X, gold arm, blank growth beyond the drawn stop, parts on blank, Fit, pan stops, and the absence of picker, calculator, and bed remain locked.
+
+## Cut 24 — preset modal wire
+
+PRESETS reads left-to-right as label, Lucide pencil paths `M21.174 6.812…` and `m15 5 4 4`, plus, and minus; no slot has an ordinal in its visible name. An idle slot tap immediately hydrates live Blank, Gap, and Margin. With the pencil on, every slot tap—including a currently armed slot—calls `openMarginPresetCard(index)`, keeps the pencil visibly pressed, arms that slot with `rgba(255,206,27,0.55)` fill and `rgba(201,140,0,0.85)` stroke, and displays the blocking card through its explicit open class. The layer uses flex layout above the chips, HUD, and blank; it no longer relies on the native `hidden` attribute. The 240px `#E8E8E8` card has 8.8px padding, a 222.4 × 31.46 named input, and only the section labels Blank, Gap, and Margin above their 72.6 × 31.46 paired boxes (8.8px gap). Its one-row footer is Copy live at left and unboxed 22px Lucide Check/X at right. Empty values hydrate from the live tickers; Check saves and X cancels; an empty name is `Preset`. Any live chip edit clears the arm without writing the slot. Preset buttons show their name only and retain GAP-chip tokens. No picker, calculator, chevron, old popover, or bed is restored; ghost editors, center-bar lock, parts on blank, Fit, hard stops, and boot sizes remain locked.
+
+## Cut 25 — preset card stack and footer
+
+The blocking card layer is a body-level fixed sibling at z-index 201, above the 100-level header and the HUD pin, and its open overlay consumes pointer input before HUD, chip, or blank controls can receive it. The card remains 240px wide with `#E8E8E8`, 7.26px radius, and 8.8px padding. Its 222.4px inner width contains the 222.4 × 31.46 name field, then Blank, Gap, Margin, and footer with an even 8.8px between each block. Every inner axis box is 106.8 × 31.46 with 7.26px radius and an 8.8px paired gap. Copy live is a 31.46px-high, 7.26px-radius button using the side-chip type, held at footer left of the unchanged unboxed Check/X pair. Hydration, pencil paths, gold arm, plus/minus, center-bar lock, ghost editors, parts on blank, Fit, and stops remain locked.
+
+## Cut 26 — preset arm, card pad, HUD lock
+
+An idle preset tap hydrates live Blank, Gap, and Margin and arms that selected live slot with `rgba(255,206,27,0.55)` fill and `rgba(201,140,0,0.85)` stroke. Closing its card retains the arm; opening a live chip editor still clears it without writing the slot. The `#E8E8E8` card is **252.4px** wide with **15px** padding on every edge, preserving its 222.4px inner width: the name stays 222.4 × 31.46 and each paired axis field stays 106.8 × 31.46 with an 8.8px gap. A 1.1px rule, inset by the card padding, separates Margin from the one-row Copy live / Check / X footer. Opening, hydrating, or closing the card does not change the centered ticker pin's closed left coordinate or width.
+
+## Cut 27 — pencil-on-selected and inline actions
+
+With a live preset already armed, pressing the pencil opens that selected slot’s card immediately; a pencil press with no armed slot enters edit mode but opens no card. Idle slot hydration still keeps the gold arm, and a live chip edit still clears it without writing. The retained 252.4px card adds a second 1.1px inset rule between its name field and the Blank section; its 15px pad, 222.4px content width, fields, footer rule, and Copy live row stay unchanged. PART SIZE, GAP, MARGIN, and the centered blank-size editor keep their 22 × 22 Lucide Check/X hits inline immediately after the readout; GAP Link stays between its numbers and Check, and MARGIN’s actions align to its first numeric row rather than the middle of its two-row grid.
+
+## Cut 28 — Check X on label row
+
+When PART SIZE, GAP, or MARGIN is open, its 22 × 22 Lucide Check and X hits sit on the 11px label row immediately after the label, vertically centered to that row rather than beside the number chip. GAP keeps Link between its label and Check. Closed chips expose no label-row actions. The centered blank-size slot has no separate label and keeps Check/X on its number row. Pencil-on-selected, gold arm, card pad, footer, parts-on-blank, Fit, and stops stay unchanged.
+
+## Cut 29 — pencil hydrate and blank grow
+
+Pencil with an armed slot still opens that slot's card. With no armed slot, pencil opens the same card populated from the live Blank, Gap, and Margin tickers, without arming or writing a slot. The footer contains only unboxed Check and X: Check writes the first empty slot, or appends a slot when all are filled; X closes without a write; an empty name becomes `Preset`. Copy live is removed. During blank-handle resize, camera scale may shrink below the ordinary zoom floor so the 15px viewport stops retain the drawn blank while `blankW` and `blankH` continue to grow; the numeric blank size is never capped by the visible box. Label-row Check/X, gold arm, card pad, parts on blank, Fit, and stops-as-pan remain locked.
+
+## Cut 30 — HUD count three-digit slot
+
+The centered HUD count is a fixed-width slot: three tabular `ch` faces at 14.64px / 650 / mono plus the same 5px inset on each side that inset vertical rules use. It centers `1`, `14`, and `144` between the size|count separator and the bar’s inner right stroke, retains `#538BEC`, and does not alter the closed ticker width or its fixed-left pin.
 
 ---
 
