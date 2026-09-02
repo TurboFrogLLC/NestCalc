@@ -20,7 +20,7 @@ Seq  Label              Notes                                              Stamp
 3c   Cut                1c Lucide hamburger glyph                         applied from efd416e27148f969c0c3cea31ba333cfaf3248a0
 3d   Cut                1d hamburger amber when armed                     applied from 59855c8e5c8a919291f7d01836c3902c114e3513
 4    Look               Owner htmlpreview. No Codex.
-5    Cut                2 calculateAutoNest two-group + trim line
+5    Cut                2 calculateAutoNest two-group + trim line          d034a1ee4f9edf4d3f41c43633f2e1e1e79e22dc
 6    Look               Owner htmlpreview. No Codex.
 7    Send for review
 8    Inspection

@@ -20,3 +20,7 @@ Worker: Codex App. Replaced the prior three-bar menu paths with the Owner-specif
 
 ## Seq 3d Cut 1d — hamburger amber when armed
 Worker: Codex App. The shared travel-hit off color is #111111 for the hamburger and rotate pair. The hamburger alone becomes IT amber #FFCE1B through its armed `aria-pressed` state; the SVG remains fill-none and all AutoNest math and HUD geometry are unchanged.
+
+## Seq 5 Cut 2 — two-group plus trim
+Worker: Codex App. While armed, the FLiPIT host consumes the existing `calculateAutoNest` result with live blank, part, gap, and four margins. A strictly better two-group result draws both returned frost-blue grids, displays its total in the blue count, and appends one engine-specified vertical or horizontal trim line; otherwise Cut 1 best-uniform remains live. The standalone host preserves hamburger-off `nestLayout`, black/off glyph state, and the no picker / calculator / chevron / bed boundary. Engine unchanged.
+Implementation commit: d034a1ee4f9edf4d3f41c43633f2e1e1e79e22dc
