@@ -172,15 +172,18 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
   .blank-ticker .bt-readout { line-height: 31.46px; letter-spacing: 0.01em; }
   .bt-parts { display: inline-flex; align-items: center; padding: 0 8.8px; font: 650 14.64px/31.46px var(--font-mono); font-variant-numeric: tabular-nums; color: #538BEC; letter-spacing: 0; text-transform: none; white-space: nowrap; }
-  .blank-ticker.is-chip-editing { justify-content: center; padding: 0 8.8px; height: 31.46px; line-height: 31.46px; cursor: pointer; }
-  .ticker-blank-editor { display: inline-flex; align-items: center; gap: 0; height: 31.46px; }
+  .blank-ticker.is-chip-editing {
+    align-self: stretch; justify-content: center; align-items: center;
+    height: auto; padding: 3px 8.8px; line-height: 1; cursor: pointer;
+  }
+  .ticker-blank-editor { display: inline-flex; align-items: center; gap: 0; height: 100%; }
   .ticker-blank-editor input {
-    width: 6ch; min-width: 6ch; max-width: 6ch; height: auto; box-sizing: content-box;
+    width: 6ch; min-width: 6ch; max-width: 6ch; height: 100%; box-sizing: border-box;
     padding: 0; border: 0; border-radius: 0; outline: 0; background: transparent; color: inherit;
-    font: 650 13.31px/31.46px var(--font-mono); font-variant-numeric: tabular-nums;
+    font: 650 13.31px/1 var(--font-mono); font-variant-numeric: tabular-nums;
     text-align: center; white-space: nowrap; overflow: hidden; cursor: text;
   }
-  .ticker-blank-editor .chip-editor-by { font: 650 13.31px/31.46px var(--font-mono); color: inherit; padding: 0 0.35em; }
+  .ticker-blank-editor .chip-editor-by { display: inline-flex; align-items: center; height: 100%; font: 650 13.31px/1 var(--font-mono); color: inherit; padding: 0 0.35em; }
   .chip-editor-actions {
     display: none; flex-direction: row; align-items: center; gap: 2.2px; flex-shrink: 0;
     pointer-events: auto; height: 22px;
@@ -2188,41 +2191,47 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }
     #hud .param-row[data-param="margin"] .param-ticker { border: 1.1px solid rgba(83,139,236,.35); border-radius: 7.26px; box-shadow: 0 0.5px 1px rgba(0,0,0,.25); }
     #hud .param-ticker .m-grid {
-      display: grid; grid-template-columns: 1fr 1fr; align-items: center; justify-items: start;
-      column-gap: 8.8px; row-gap: 2.2px; width: 100%;
+      display: grid; grid-template-columns: 1fr 1fr; align-items: center; justify-items: start; align-content: center;
+      column-gap: 8.8px; row-gap: 8.8px; width: 100%;
     }
     #hud .param-ticker .m-cell,
     #hud .param-ticker .m-grid .chip-editor-field {
-      display: inline-flex; align-items: center; gap: 0.4em; min-width: 0; width: 100%;
-      font: 650 13.31px/1.2 var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap;
+      display: inline-flex; align-items: center; gap: 0.4em; min-width: 0; width: 100%; height: auto;
+      font: 650 13.31px/1 var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap;
     }
     #hud .param-row[data-param="margin"] .param-ticker:has(.m-grid) {
       height: auto; min-height: 31.46px; max-height: none; flex-direction: column;
-      white-space: normal; line-height: 1.2; overflow: visible; padding: 4.4px 8.8px;
+      justify-content: center; align-items: stretch;
+      white-space: normal; line-height: 1; overflow: visible; padding: 3px 8.8px;
     }
     #hud .param-popover { display: none !important; }
     #hud .param-ticker.is-chip-editing {
       width: 154px; min-width: 154px; max-width: 154px; max-height: 31.46px; height: 31.46px;
-      cursor: pointer; padding: 0 8.8px; justify-content: center; align-items: center; overflow: hidden;
+      cursor: pointer; padding: 3px 8.8px; justify-content: center; align-items: center; overflow: hidden;
+      background: #E8E8E8;
     }
+    #hud .param-ticker.is-chip-editing:hover { background: #E8E8E8; }
     #hud .chip-editor-field {
-      display: inline-flex; align-items: center; min-width: 0; flex: 0 0 auto; height: auto; padding: 0;
-      border: 0; border-radius: 0; background: transparent; line-height: inherit; cursor: pointer; gap: 0.4em;
+      display: inline-flex; align-items: center; min-width: 0; flex: 0 0 auto; height: 100%; padding: 0;
+      border: 0; border-radius: 0; background: transparent; line-height: 1; cursor: pointer; gap: 0.4em;
     }
     #hud .chip-editor-field > span { flex: 0 0 auto; font: inherit; color: inherit; margin: 0; line-height: inherit; }
     #hud .chip-editor-field input {
-      width: 6ch; min-width: 6ch; max-width: 6ch; padding: 0; border: 0; outline: 0;
+      width: 6ch; min-width: 6ch; max-width: 6ch; height: 100%; padding: 0; border: 0; outline: 0;
       background: transparent; color: inherit; font: 650 13.31px/1 var(--font-mono);
       font-variant-numeric: tabular-nums; text-align: left; white-space: nowrap; overflow: hidden; cursor: text;
     }
-    #hud .chip-editor-by { flex: 0 0 auto; color: inherit; font: 650 13.31px/31.46px var(--font-mono); padding: 0 0.35em; }
+    #hud .chip-editor-by { flex: 0 0 auto; color: inherit; font: 650 13.31px/1 var(--font-mono); padding: 0 0.35em; display: inline-flex; align-items: center; height: 100%; }
     #hud .param-row[data-param="margin"] .param-ticker.is-chip-editing {
       height: auto; min-height: 31.46px; max-height: none; flex-direction: column;
-      white-space: normal; line-height: 1.2; overflow: visible; padding: 4.4px 8.8px;
+      justify-content: center; align-items: stretch;
+      white-space: normal; line-height: 1; overflow: visible; padding: 3px 8.8px;
       border: 1.1px solid rgba(83,139,236,.35); border-radius: 7.26px;
       box-shadow: 0 0.5px 1px rgba(0,0,0,.25);
+      background: #E8E8E8;
     }
-    #hud .param-row[data-param="margin"] .chip-editor-field input { line-height: 1.2; }
+    #hud .param-row[data-param="margin"] .chip-editor-field,
+    #hud .param-row[data-param="margin"] .chip-editor-field input { height: auto; line-height: 1; }
 </style>
 </head>
 <body>

@@ -101,6 +101,16 @@ MARGIN closed is `0.250 all` when all four sides are equal; otherwise two even l
 
 Fit clamp and the 15px stops are unchanged. No picker, calculator, chevron, popover, or bed is restored.
 
+## Cut 16 — ghost highlight + margin center
+
+The selected number has **3px** air above and below the blue field to the inner stroke. Same math on PART SIZE, GAP, and MARGIN fields, and on the centered HUD size slot.
+
+While a side chip is open, its fill is the center HUD color **`#E8E8E8`** so the blue select shows. Closed chips stay frost-blue. The center bar stays **`#E8E8E8`** closed and open.
+
+MARGIN's two-line L R / B T grid is vertically centered in the chip: equal padding top and bottom, column gap = row gap, width unchanged. Check and X stay outside right.
+
+Ghost A stays. Actions stay outside. The pill does not grow right. No picker, calculator, chevron, popover, or bed is restored.
+
 ---
 
 ## Seq 3 — blank-in-space canvas

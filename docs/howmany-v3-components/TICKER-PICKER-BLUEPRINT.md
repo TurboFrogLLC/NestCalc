@@ -3,7 +3,7 @@
 Product: FLiPIT
 Host: `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`
 Stage: blank-in-space (127)
-Lock: Cut 15 / PR 131
+Lock: Cut 16 / PR 131
 
 This replaces the former ticker-picker blueprint. It is intentionally not a picker schematic.
 
@@ -113,3 +113,10 @@ This supersedes the Cut 6 sheet side: the sheet is fixed at left 48px and top `6
 - Pointer over the whole chip until a number is clicked; I-beam in that field only. Same on the center bar size slot.
 - MARGIN closed is `0.250 all` when equal, else two even lines `L 0.250  R 0.250` / `B 0.250  T 0.250`. Never `0 R 0.250B 0.250 T`. Open is that two-line grid in the same width; height grows down only enough for two rows. Check/X outside right. GAP is not shoved sideways.
 - Fit clamp and 15px stops stay. No picker, calculator, chevron, popover, or bed.
+
+## Cut 16 ghost highlight + margin center
+
+- Selected number highlight has **3px** air above and below the blue field to the inner stroke. Same math on PART SIZE, GAP, MARGIN fields, and the center HUD size slot.
+- While a side chip is open, its fill is **`#E8E8E8`** so the blue select shows. Closed chips stay frost-blue. Center bar fill stays **`#E8E8E8`** closed and open.
+- MARGIN two-line L R / B T is vertically centered in its chip: equal padding top and bottom, column gap = row gap, width unchanged. Check/X stay outside right.
+- Ghost A stays. Actions stay outside. No pill grow-right. No picker, calculator, chevron, popover, or bed.
