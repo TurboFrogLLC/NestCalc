@@ -45,7 +45,7 @@ Bridges in this host:
         Y rail outside numbers · preset Confirm/Cancel · 3-card re-apply
   · R11 Preset edit mode (load vs write) · rails origin-to-end filled
   · R12 Compact HUD height · 4-side bed frame · card glide
-        Token-aware NC highlight · default part 1.250×3.375 + Flip visual
+        Token-aware NC highlight · default part 2.500×3.500 + Flip visual
   · R13 Preset write-mode + OK applies live fields to HUD/bed
         Single frost-blue bed rail · XYZR 4dp black · front surface
 
@@ -2344,7 +2344,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         <rect id="lb-blank" x="0" y="0" width="12" height="8" fill="#ffffff" fill-opacity="0.80" stroke="#000000" stroke-width="1.25" vector-effect="non-scaling-stroke" clip-path="url(#lb-bed-clip)" style="pointer-events:none"/>
         <rect id="lb-nest-box" x="0.25" y="0.25" width="11.5" height="7.5" fill="none" stroke="#538BEC" stroke-opacity="0.50" stroke-width="1" stroke-dasharray="3 2.4" vector-effect="non-scaling-stroke" clip-path="url(#lb-bed-clip)" style="pointer-events:none"/>
         <g id="lb-part-g" clip-path="url(#lb-bed-clip)" style="pointer-events:none">
-          <rect id="lb-part" x="0" y="0" width="1.250" height="3.375" fill="rgba(83,139,236,0.22)" stroke="#538BEC" stroke-width="1.15" vector-effect="non-scaling-stroke"/>
+          <rect id="lb-part" x="0" y="0" width="2.500" height="3.500" fill="rgba(83,139,236,0.22)" stroke="#538BEC" stroke-width="1.15" vector-effect="non-scaling-stroke"/>
         </g>
         <g id="lb-bed-rulers"></g>
       </g>
@@ -2381,7 +2381,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         </svg>
       </button>
       <div class="header-spacer" id="drag-handle" aria-hidden="true">
-        <div class="param-ticker header-part-ticker" data-ticker="part-collapsed">1.250 × 3.375</div>
+        <div class="param-ticker header-part-ticker" data-ticker="part-collapsed">2.500 × 3.500</div>
       </div>
       <button type="button" class="tool press chevron-btn" id="btn-chevron" title="Collapse" aria-label="Collapse HUD" aria-expanded="true">
         <svg width="16.5" height="16.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round">
@@ -2398,7 +2398,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
             <div class="param-row" data-param="part">
               <div class="param-label-row"><span class="param-label">Part size</span><div class="chip-editor-actions" hidden></div></div>
               <div class="chip-seat">
-              <div class="param-ticker" data-ticker="part" data-open="part" tabindex="0">1.250 × 3.375</div>
+              <div class="param-ticker" data-ticker="part" data-open="part" tabindex="0">2.500 × 3.500</div>
               </div>
               <div class="param-popover" data-pop="part">
                 <div class="pop-head">
@@ -2409,11 +2409,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
                   </div>
                 </div>
                 <div class="pop-xy">
-                  <div class="pop-half"><span>X</span><input data-part="x" type="text" inputmode="decimal" value="1.250" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+                  <div class="pop-half"><span>X</span><input data-part="x" type="text" inputmode="decimal" value="2.500" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
                   <div class="pop-sep"></div>
                   <button type="button" class="pop-swap press" data-part-swap title="Swap X &amp; Y" aria-label="Swap X and Y"><svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg></button>
                   <div class="pop-sep"></div>
-                  <div class="pop-half"><span>Y</span><input data-part="y" type="text" inputmode="decimal" value="3.375" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+                  <div class="pop-half"><span>Y</span><input data-part="y" type="text" inputmode="decimal" value="3.500" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
                   <div class="pop-sep"></div>
                   <button type="button" class="pop-link" data-part-link title="Link X &amp; Y" aria-pressed="false"><svg width="13.2" height="13.2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>
                 </div>
@@ -2423,7 +2423,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
             <div class="param-row" data-param="gap">
               <div class="param-label-row"><span class="param-label">Gap</span><div class="chip-editor-actions" hidden></div></div>
               <div class="chip-seat">
-              <div class="param-ticker" data-ticker="gap" data-open="gap" tabindex="0">0.375 × 0.125</div>
+              <div class="param-ticker" data-ticker="gap" data-open="gap" tabindex="0">0.125 × 0.125</div>
               </div>
               <div class="param-popover" data-pop="gap">
                 <div class="pop-head">
@@ -2444,7 +2444,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
                 </div>
                 <div class="pop-toast" aria-live="polite"></div>
                 <div class="pop-xy">
-                  <div class="pop-half"><span>X</span><input data-gap="x" type="text" inputmode="decimal" value="0.375" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+                  <div class="pop-half"><span>X</span><input data-gap="x" type="text" inputmode="decimal" value="0.125" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
                   <div class="pop-sep"></div>
                   <div class="pop-half"><span>Y</span><input data-gap="y" type="text" inputmode="decimal" value="0.125" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
                   <div class="pop-sep"></div>
@@ -2456,7 +2456,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
             <div class="param-row" data-param="margin">
               <div class="param-label-row"><span class="param-label">Margin</span><div class="chip-editor-actions" hidden></div></div>
               <div class="chip-seat">
-              <div class="param-ticker" data-ticker="margin" data-open="margin" tabindex="0">0.250 all</div>
+              <div class="param-ticker" data-ticker="margin" data-open="margin" tabindex="0"><span class="m-grid"><span class="m-cell">L 0.250</span><span class="m-cell">R 0.250</span><span class="m-cell">B 0.500</span><span class="m-cell">T 0.250</span></span></div>
               </div>
               <div class="param-popover" data-pop="margin">
                 <div class="pop-head">
@@ -2479,7 +2479,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
                 <div class="pop-margins">
                   <label class="pop-m-field"><span>L</span><input data-m="l" type="text" inputmode="decimal" value="0.250" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></label>
                   <label class="pop-m-field"><span>R</span><input data-m="r" type="text" inputmode="decimal" value="0.250" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></label>
-                  <label class="pop-m-field"><span>B</span><input data-m="b" type="text" inputmode="decimal" value="0.250" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></label>
+                  <label class="pop-m-field"><span>B</span><input data-m="b" type="text" inputmode="decimal" value="0.500" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></label>
                   <label class="pop-m-field"><span>T</span><input data-m="t" type="text" inputmode="decimal" value="0.250" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></label>
                 </div>
               </div>
@@ -2732,9 +2732,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   /* The blank, not a machine envelope, is this composition's canvas subject. */
   var state = {
     blankW: 12, blankH: 8, snap: 0.125, zoom: 1, fitScale: null, panX: 0, panY: 0, dragging: null, start: null,
-    partW: 1.250, partH: 3.375, partRot: 0,
-    margin: { l: 0.25, r: 0.25, t: 0.25, b: 0.25 },
-    gap: { x: 0.375, y: 0.125 }
+    partW: 2.5, partH: 3.5, partRot: 0,
+    margin: { l: 0.25, r: 0.25, t: 0.25, b: 0.5 },
+    gap: { x: 0.125, y: 0.125 }
   };
 
   var svg = document.getElementById('lb-world');
@@ -2822,7 +2822,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       hitCorner.setAttribute('cy', h + mid);
       hitCorner.setAttribute('r', 11 / Math.max(s, 0.001));
     }
-    var m = state.margin || { l: 0.25, r: 0.25, t: 0.25, b: 0.25 };
+    var m = state.margin || { l: 0.25, r: 0.25, t: 0.25, b: 0.5 };
     var nx = Math.max(0, m.l);
     var ny = Math.max(0, m.b);
     var nw = Math.max(0.05, w - m.l - m.r);
@@ -3060,14 +3060,14 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   const state = {
     calc: false, collapsed: false, drag: null,
     units: 'in', blankW: 12, blankH: 8,
-    partX: 1.250, partY: 3.375, partLinked: false
+    partX: 2.5, partY: 3.5, partLinked: false
   };
 
   const paramState = {
-    part: { x: 1.250, y: 3.375, linked: false },
+    part: { x: 2.5, y: 3.5, linked: false },
     blank: { x: 12, y: 8, linked: false },
-    gap: { x: 0.375, y: 0.125, linked: true },
-    margin: { l: 0.25, r: 0.25, t: 0.25, b: 0.25 },
+    gap: { x: 0.125, y: 0.125, linked: true },
+    margin: { l: 0.25, r: 0.25, t: 0.25, b: 0.5 },
     open: null, snapshot: null
   };
 

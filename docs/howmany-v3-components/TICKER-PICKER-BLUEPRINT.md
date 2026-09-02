@@ -142,6 +142,12 @@ This supersedes the Cut 6 sheet side: the sheet is fixed at left 48px and top `6
 - The slots are a 2×2 grid: two 31.46px frost-blue chips per 154px row with one shared 8.8px gap. Both rows therefore measure exactly 154px, matching the PART SIZE, GAP, and MARGIN chips.
 - Slot chips retain 7.26px radius, 1.1px stroke, `0 0.5px 1px rgba(0,0,0,.25)` shadow, and 13.31px / 650 / mono type. They apply a stored margin value only; no picker, popover, calculator, chevron, or bed is reintroduced.
 
+## Cut 22 boot defaults
+
+- Boot and empty state: PART SIZE `2.500 × 3.500`; BLANK `12.000 × 8.000`; GAP `0.125 × 0.125`.
+- MARGIN is `L 0.250  R 0.250` / `B 0.500  T 0.250` on two closed lines because B is `0.500`.
+- Defaults change only; preserve the preset modal, pencil hydrate, label-row Check/X, gold arm, blank-grow-past-stop, parts-on-blank, Fit, pan stops, and no picker, calculator, or bed.
+
 ## Cut 24 preset modal wire
 
 - PRESETS reads `PRESETS`, Lucide pencil paths `M21.174 6.812…` and `m15 5 4 4`, plus, minus. Slot buttons show a name only—never an ordinal—and retain the GAP-chip 72.6 × 31.46 token in the 154px two-column grid.
