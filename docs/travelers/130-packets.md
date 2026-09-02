@@ -53,3 +53,56 @@ Facts:
 - Owner capped this traveler at one review and directed Release despite those named P2 leftovers. Vercel's deployment-quota failure is not a host failure.
 
 NEXT: Merge
+
+### Seq 6 Merge — completion
+
+Operator: Codex CLI
+Stamp: 68f2bd08814fb3baad7944e3dfa7869151438365
+
+Facts:
+- PR 130 was squash-merged into `main` as `68f2bd08814fb3baad7944e3dfa7869151438365`.
+- Release used the Owner-authorized path: Vercel's deployment quota failure was not treated as a host failure; the two named P2 leftovers remain recorded without a residual Cut.
+
+NEXT: Close
+
+### Seq 7 Close — completion
+
+Operator: Codex CLI
+Stamp: 68f2bd08814fb3baad7944e3dfa7869151438365
+
+Facts:
+- Local `main` was synchronized by fast-forward to merge SHA `68f2bd08814fb3baad7944e3dfa7869151438365`.
+- Retained `feat/ticker-picker-blueprint`; no branch prune was run.
+- Posted the packslip below on PR 130. Named leftovers: `classicEl` in `lockBodyHeight()` and picker close not clearing the open field.
+
+NEXT: none
+
+### Packslip
+
+```text
+Repo: NestCalc
+Owner: wReckless
+Part: ticker-picker blueprint + drop calc pad
+Description: Exact ticker+picker schematic. Presets surface has no numeric pad.
+PR: 130
+Branch: feat/ticker-picker-blueprint
+Head: 68f2bd08814fb3baad7944e3dfa7869151438365
+Session: continuous
+job_id: NGJ-20260901-tickerbp
+flow_id:
+goal_sha256:
+Date: 2026-09-01
+
+Seq  Label              Notes                                                                    Stamp
+1    Plan               Owner: exact blueprint; pad off presets
+2    Start-branch       branch confirmed                                                        697a48432011efc7504fea82b3217fb6a97c4a81
+3    Cut                blueprint + host locked; numeric pad removed                             e4cb94928718b4ef85d2ce09f3c83a0bca9e1479
+4    Send for review    one Codex review completed on current Cut head                            73decbef7410313e4cfb5b7ae4bea4b85c15bcff
+5    Inspection         Owner accepted two named P2 leftovers; Release directed                  73decbef7410313e4cfb5b7ae4bea4b85c15bcff
+6    Merge              PR 130 squash-merged into main                                           68f2bd08814fb3baad7944e3dfa7869151438365
+7    Close              main synchronized; feature branch retained                               68f2bd08814fb3baad7944e3dfa7869151438365
+
+Closed Corrective Action: none
+Still open: P2 leftovers — `classicEl` in `lockBodyHeight()`; picker close does not clear the open field.
+Next: none
+```
