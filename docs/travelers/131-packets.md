@@ -37,4 +37,10 @@ Stamp: 4cd1d48c02bfb44ac5ce782a2909e5939226d278
 Seq 16 Cut 10 in-chip editors — Codex CLI: side chips edit in place with select-all, Check/X, paired X/Y rows, and downward L/R/B/T MARGIN fields. Popover remains unreachable; no link, swap, picker, calc, chevron, or bed.
 Stamp: 4a060dc15e59131267d8a6b102a5be6b45a7ddb4
 
-NEXT: Look 8091 only. Stop. No Codex. No next Cut.
+Seq 17 Look 8091 — tweaks requested: remove inset editor boxes and truncation; give GAP its only link; make ticker size editable; remove MARGIN pluses; square its L/R/B/T grid; and equalize the header/ticker and sheet/blank gutters.
+Stamp: c7b8a9dcee64edf728483c26837d4250592049b2
+
+Seq 21 Cut 11 editor + gutter tweak — Codex CLI: direct white 12.1px mono inputs grow with text; GAP alone has Link; ticker blank size opens BLANK's editor; MARGIN is an even L/R/B/T grid without plus signs; and the blank tracks the sheet glide. Browser measurement: both gutters are 48px closed and expanded.
+Stamp: c7b8a9dcee64edf728483c26837d4250592049b2
+
+NEXT: Owner direction after Cut 11.
