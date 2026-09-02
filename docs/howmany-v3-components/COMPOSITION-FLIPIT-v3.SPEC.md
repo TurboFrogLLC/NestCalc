@@ -207,6 +207,10 @@ Every blank shows a quiet inside reserved-margin band in `rgba(220,48,48,0.22)`,
 
 The far right of the 154px MARGIN label row carries a 22 × 22 Lucide visibility hit with a 16px glyph, 2px stroke, and `viewBox="0 0 24 24"`. Margin bands default visible and the control shows `eye-off`; hiding every Cut 6 band on every blank shows `eye`. The control does not open the MARGIN editor. The centered HUD AutoNest hamburger remains `#111111` off and is `#16A34A` while armed. Its fixed `#blank-ticker-pin` retains the closed three-digit count slot width and left pin through blank-editor Check or X, so counts such as `66` neither clip nor shift. AutoNest math, SVG-inch space, origins, full trim-edge policy, trim, and the no picker / calculator / chevron / bed boundary are unchanged.
 
+## AutoNest Cut 8 — side inset + count well
+
+Fit, pan, and zoom add a 25px viewport inset on both horizontal sides of the blank subject: the left inset is outside the reserved sheet lane and the right inset is outside the existing 15px blank stop. The resize arc therefore remains visible at either side without changing the 15px header/HUD/blank vertical stops. The centered count is a rigid clipped well sized to the 14.64px / 650 / mono tabular `999` face (three `ch`) plus its existing 5px side insets; it centers `1`, `95`, `150`, and `196` without changing the closed bar width. Blank-editor Check/X remain outside the bar. Cut 7 eye toggle, green arm, AutoNest math, SVG-inch space, margin bands, origins, full trim-edge policy, and trim remain unchanged.
+
 ---
 
 ## Seq 3 — blank-in-space canvas

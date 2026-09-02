@@ -174,12 +174,16 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
   .blank-ticker .bt-readout { line-height: 31.46px; letter-spacing: 0.01em; }
   .bt-parts {
+    /* In the tabular count face, 999 is the fixed three-character well. */
+    --bt-count-well: 3ch;
     box-sizing: border-box;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    flex: 0 0 calc(3ch + var(--bt-rule-inset) + var(--bt-rule-inset));
-    width: calc(3ch + var(--bt-rule-inset) + var(--bt-rule-inset));
+    flex: 0 0 calc(var(--bt-count-well) + var(--bt-rule-inset) + var(--bt-rule-inset));
+    width: calc(var(--bt-count-well) + var(--bt-rule-inset) + var(--bt-rule-inset));
+    min-width: calc(var(--bt-count-well) + var(--bt-rule-inset) + var(--bt-rule-inset));
+    max-width: calc(var(--bt-count-well) + var(--bt-rule-inset) + var(--bt-rule-inset));
     padding: 0 var(--bt-rule-inset);
     font: 650 14.64px/31.46px var(--font-mono);
     font-variant-numeric: tabular-nums;
@@ -188,7 +192,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     text-align: center;
     text-transform: none;
     white-space: nowrap;
-    overflow: visible;
+    overflow: hidden;
   }
   .blank-ticker.is-chip-editing {
     align-self: stretch; justify-content: center; align-items: center;
@@ -2785,6 +2789,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   if (!svg || !camera || !blank) return;
 
   var STOP = 15;
+  var SIDE_INSET = 25;
   var HEADER_H = 64;
   var TICKER_H = 31.46;
   var HUD_BLANK_STOP = STOP + TICKER_H + STOP;
@@ -2795,13 +2800,15 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var sheet = document.getElementById('hud');
     return (sheet ? sheet.offsetWidth : 154) + SHEET_INSET + STOP;
   }
+  function subjectLeftPx() { return sheetLanePx() + SIDE_INSET; }
+  function subjectRightPx() { return STOP + SIDE_INSET; }
 
   function snap(v) { var s = state.snap; return Math.round(v / s) * s; }
   function fittedScale() {
     var W = svg.clientWidth || window.innerWidth;
     var H = svg.clientHeight || window.innerHeight;
-    var lane = sheetLanePx();
-    return Math.min(Math.max(80, W - lane - STOP) / Math.max(state.blankW, 0.001), Math.max(80, H - HUD_BLANK_STOP - STOP) / Math.max(state.blankH, 0.001));
+    var left = subjectLeftPx(), right = subjectRightPx();
+    return Math.min(Math.max(80, W - left - right) / Math.max(state.blankW, 0.001), Math.max(80, H - HUD_BLANK_STOP - STOP) / Math.max(state.blankH, 0.001));
   }
   function pxPerInch() { return (state.fitScale == null ? fittedScale() : state.fitScale) * state.zoom; }
   function labelStep() {
@@ -3225,14 +3232,14 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   function clampSubjectToStops() {
     var W = svg.clientWidth || window.innerWidth;
     var H = svg.clientHeight || window.innerHeight;
-    var lane = sheetLanePx();
+    var left = subjectLeftPx(), right = subjectRightPx();
     var baseScale = state.fitScale == null ? fittedScale() : state.fitScale;
-    var maxZoom = Math.max(0.001, (W - lane - STOP) / Math.max(state.blankW * baseScale, 1));
+    var maxZoom = Math.max(0.001, (W - left - right) / Math.max(state.blankW * baseScale, 1));
     state.zoom = Math.min(state.zoom, maxZoom);
     var s = pxPerInch();
     var minPanY = state.blankH * s + HUD_BLANK_STOP;
     var maxPanY = H - STOP;
-    state.panX = Math.max(lane, Math.min(W - STOP - state.blankW * s, state.panX));
+    state.panX = Math.max(left, Math.min(W - right - state.blankW * s, state.panX));
     state.panY = Math.max(minPanY, Math.min(maxPanY, state.panY));
   }
 
@@ -3309,7 +3316,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     state.zoom = 1;
     state.fitScale = fittedScale();
     var s = state.fitScale;
-    state.panX = sheetLanePx();
+    state.panX = subjectLeftPx();
     state.panY = state.blankH * s + HUD_BLANK_STOP;
   }
 
@@ -3331,8 +3338,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (state.dragging === 'pan') {
       var W = svg.clientWidth || window.innerWidth;
       var H = svg.clientHeight || window.innerHeight;
-      var lane = sheetLanePx();
-      state.panX = Math.max(lane, Math.min(W - STOP - state.blankW * s, state.start.panX + dx));
+      var left = subjectLeftPx(), right = subjectRightPx();
+      state.panX = Math.max(left, Math.min(W - right - state.blankW * s, state.start.panX + dx));
       state.panY = Math.max(state.blankH * s + HUD_BLANK_STOP, Math.min(H - STOP, state.start.panY + dy));
     }
     else if (state.dragging === 'x') state.blankW = Math.max(state.snap, snap(state.start.w + dx / s));
