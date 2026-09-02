@@ -120,3 +120,8 @@ This supersedes the Cut 6 sheet side: the sheet is fixed at left 48px and top `6
 - While a side chip is open, its fill is **`#E8E8E8`** so the blue select shows. Closed chips stay frost-blue. Center bar fill stays **`#E8E8E8`** closed and open.
 - MARGIN two-line L R / B T is vertically centered in its chip: equal padding top and bottom, column gap = row gap, width unchanged. Check/X stay outside right.
 - Ghost A stays. Actions stay outside. No pill grow-right. No picker, calculator, chevron, popover, or bed.
+
+## Cut 17 margin vertical inset
+
+- Closed GAP's readout text box measures 7px from its inner top stroke and 7.45px from its inner bottom stroke in the browser's sub-pixel layout. MARGIN's two-line closed and open L R / B T grids use the shared **7px** vertical padding token.
+- Column gap = row gap. Width stays. Check/X remain outside right. Open MARGIN remains `#E8E8E8`; Ghost A, no picker, no calculator, no chevron, and no bed stay locked.

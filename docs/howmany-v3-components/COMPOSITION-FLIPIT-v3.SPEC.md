@@ -113,6 +113,14 @@ Ghost A stays. Actions stay outside. The pill does not grow right. No picker, ca
 
 ---
 
+## Cut 17 — margin vertical inset
+
+The closed GAP readout measures **7px** from its text box to each inner stroke (the rendered bottom resolves at 7.45px from sub-pixel layout). That measured 7px token is the vertical pad for MARGIN's two-line closed L/R then B/T grid and its open L/R then B/T editor. Column gap equals row gap; width is unchanged; Check and X remain outside right. Open MARGIN fill stays `#E8E8E8`.
+
+Ghost editors stay. No picker, calculator, chevron, popover, or bed is restored.
+
+---
+
 ## Seq 3 — blank-in-space canvas
 
 This section supersedes older R1–R13 statements where they name LaserBed or the Numeric HUD as a mounted composition surface.
