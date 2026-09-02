@@ -1,6 +1,6 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Cut 28 Check X on label row
+**Status:** Living — Cut 29 pencil hydrate and blank grow
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
@@ -152,6 +152,10 @@ With a live preset already armed, pressing the pencil opens that selected slot�
 ## Cut 28 — Check X on label row
 
 When PART SIZE, GAP, or MARGIN is open, its 22 × 22 Lucide Check and X hits sit on the 11px label row immediately after the label, vertically centered to that row rather than beside the number chip. GAP keeps Link between its label and Check. Closed chips expose no label-row actions. The centered blank-size slot has no separate label and keeps Check/X on its number row. Pencil-on-selected, gold arm, card pad, footer, parts-on-blank, Fit, and stops stay unchanged.
+
+## Cut 29 — pencil hydrate and blank grow
+
+Pencil with an armed slot still opens that slot's card. With no armed slot, pencil opens the same card populated from the live Blank, Gap, and Margin tickers, without arming or writing a slot. The footer contains only unboxed Check and X: Check writes the first empty slot, or appends a slot when all are filled; X closes without a write; an empty name becomes `Preset`. Copy live is removed. During blank-handle resize, camera scale may shrink below the ordinary zoom floor so the 15px viewport stops retain the drawn blank while `blankW` and `blankH` continue to grow; the numeric blank size is never capped by the visible box. Label-row Check/X, gold arm, card pad, parts on blank, Fit, and stops-as-pan remain locked.
 
 ---
 
