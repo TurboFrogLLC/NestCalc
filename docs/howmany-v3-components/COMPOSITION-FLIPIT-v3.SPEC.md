@@ -25,11 +25,11 @@ This section supersedes older R1–R13 statements where they name LaserBed or th
 - Fit frames the blank plus open gutter only. The open gutter is interaction space, not a machine envelope or drawn plate; blank-edge drags retain their starting Fit scale until the next Fit.
 - The blank retains current bottom-left growth. The owner notes do not confirm a bottom-right flip, so Seq 3 does not change origin behavior.
 - The blank ticker is the only always-visible HUD. Its attached menu-bar picker opens above the ticker and contains Part, Gap, Margin, and Reset words.
-- The travel row contains the −90/+90 pair, blank-size field, calculator, and chevron. The Numeric HUD parameter card is hidden at load and appears only after a picker field is selected.
-- Calculator presets remain on that calculator surface. This operation does not add an AutoNest trigger or alter calculator / AutoNest math.
-- `LASER-BED-v3.*` and `NUMERIC-HUD-v3.*` remain individual lock files on disk; this host simply stops presenting their bed and parameter-card surfaces.
+- The travel row contains the −90/+90 pair, blank-size field, calculator, and chevron. The picker-owned field surface is hidden at load and appears only after a picker field is selected.
+- That surface retains Blank, Gap, Margin, and selected-Part field chips plus their presets. It contains no numeric keypad, AUTO-SIZE / FLiPIT chips, or legacy Numeric HUD card chrome. This operation does not add an AutoNest trigger or alter calculator / AutoNest math.
+- `LASER-BED-v3.*` and `NUMERIC-HUD-v3.*` remain individual lock files on disk; this host does not present their bed or parameter-card surfaces.
 
-Host validation: initial browser snapshot showed header + blank ticker/picker with no numeric card; clicking the picker revealed calculator controls only.
+Host validation: initial browser snapshot shows header + blank ticker/picker with no numeric card; selecting a picker field reveals only that field’s retained controls.
 
 ---
 
@@ -44,9 +44,9 @@ Host validation: initial browser snapshot showed header + blank ticker/picker wi
 | toolPath | `#backplot.toolpath` | `TOOLPATH-v3.SPEC.md` · tip `2e9e2ace` | 20 |
 | FLiPIT | `#gcode` · class `.gcode` | `FLIPIT-v3.SPEC.md` · tip `37d628e9` | 30 |
 | FLiPIT toast | `#gcode-toast` | host override of standalone 40 | **35** |
-| Calculator surface | `#hud.canvas-calculator` | host — hidden at load; picker toggles it below header | **90** |
+| Picker field surface | `#hud.canvas-calculator` | host — hidden at load; picker toggles retained field chips below header, without keypad or HUD card chrome | **90** |
 | Blank ticker + picker | `#blank-ticker-cluster` | host — pinned to blank in viewport coordinates | **90** |
-| Calculator preset popover | `.param-popover` | Blank / Gap / Margin controls on calculator surface | 50 |
+| Field preset popover | `.param-popover` | Blank / Gap / Margin controls on the picker field surface | 50 |
 
 The fixed header occupies its own front band. Fixed overlays convert stage-local canvas coordinates to viewport coordinates before pinning.
 
@@ -91,7 +91,7 @@ Hide primitives stay surface-owned (`ALIGNMENT-v3` §4). Host does not invent a 
 | FLiPIT Auto-Size (`#btn-detect`) | Existing in-panel detect. Expand/collapse chrome unchanged. Arms after a real file load. |
 | FLiPIT close (`#btn-close`) | `closeGcode()` + R11 `lastGcodePos`. |
 | Ticker door (`#bt-door`) | Reveals or closes the attached menu-bar picker above the travel row. The row is −90, +90, blank size, calculator, chevron; picker words are Part, Gap, Margin, Reset. |
-| Ticker picker field | Reveals the calculator surface and its retained parameter/preset controls. The calculator button does not reveal the card until the picker door is open. |
+| Ticker picker field | Reveals the picker field surface and its retained parameter/preset controls. The calculator button does not reveal that surface until the picker door is open. The surface has no numeric pad. |
 | FLiPIT Open (`#btn-open`) | Native local file picker. Accept `.txt`, `.nc`, `.cnc`, and `text/plain`. Load into Source. **No sample / BRACKET_PLATE fallback.** |
 | Source **Clear** (`#btn-clear`) and program-name **X** (`#prog-clear`) | Full unload: empty source + output, no bounds, status none, detect unarmed, process idle, program name cleared. Not name-only. |
 | Output tab (`#tab-output`) | Gated (`is-gated`, `aria-disabled`) until Output has content after Flip IT. No hover, click does nothing, lighter gray than Source. Live after process. |
@@ -147,11 +147,11 @@ Do not require `file://`.
 
 1. Open the composition URL above.
 2. Verify header hard-stops blank canvas well; only blank is drawn (no grid, rim, rulers, nest box, or part). Fit frames blank + gutter without changing BL origin or size.
-3. Verify ticker + picker are visible at blank, while calculator, FLiPIT, and toolPath are hidden.
-4. Click picker: calculator keys plus Blank, Gap, and Margin preset controls appear below header. Click again: calculator and popovers dismiss, leaving ticker + picker.
+3. Verify ticker + picker are visible at blank, while the picker field surface, FLiPIT, and toolPath are hidden.
+4. Click picker, then Part, Gap, or Margin: only the selected field chip and retained preset controls appear below the header. No numeric keypad or legacy HUD-card chrome appears. Click again: the surface and popovers dismiss, leaving ticker + picker.
 5. Resize or Fit blank and verify ticker remains 10px above blank in viewport coordinates, below header.
 6. FLiPIT Open still picks real local `.txt` / `.nc` / `.cnc` file and loads Source. No sample program.
-7. Blank, Gap, and Margin tickers on revealed calculator open preset popovers and clamp off open cards and active blank.
+7. Blank, Gap, and Margin chips on the revealed picker field surface open preset popovers and clamp off open cards and active blank.
 8. FLiPIT waypoints still toggle toolPath (R17 / R27). Opened cards clear fixed header; user drag wins until next rearrange.
 9. Any residual that changes a **surface** belongs in that surface’s individual package first; then re-assemble.
 

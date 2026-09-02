@@ -45,11 +45,11 @@ Idle hits stay idle. Tap highlight transparent. Click blurs.
 | pad T/B | 0 |
 | radius | 6 |
 
-Part / Gap / Margin open that field’s retained controls on the calculator *surface* (chips + fields only).
+Part / Gap / Margin open that field’s retained controls on the picker field *surface* (chips + fields only).
 Reset is a later leftover (129 packslip). Do not fake it in this job unless the Cut can do it without growing scope.
 −90 / +90 are later leftovers (129 packslip). Chrome stays; wiring is not this job.
 
-## Calculator surface (picker-opened)
+## Picker field surface (picker-opened)
 
 Allowed on that surface:
 - Blank / Gap / Margin (and Part when selected) field chips
@@ -60,7 +60,7 @@ Forbidden on that surface:
 - AUTO-SIZE / HEXNEST / FLiPIT chips
 - Numeric HUD card chrome from pre-127
 
-The pad is not the presets. Remove the pad from this host surface.
+The pad is not the presets. The host renders no pad markup or pad/card chrome on this surface.
 
 ## Pin
 
