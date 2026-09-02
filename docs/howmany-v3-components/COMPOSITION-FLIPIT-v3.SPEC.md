@@ -91,6 +91,16 @@ Action hits: Check, X, and Link are **22px** with **14px** Lucide glyphs, stroke
 
 Stops are one token, **15px**: header-bottom → HUD-top, HUD-bottom → blank-top, stack-right → blank-left, and viewport-bottom → blank-bottom. The HUD stays fixed. Pills grow right only; the blank slides by that width delta and returns. No picker, calculator, chevron, popover, or bed is restored.
 
+## Cut 15 — ghost A
+
+PART SIZE, GAP, and the centered bar keep the same closed chip while editing: same size, fill, radius, and stroke. Numbers edit in place at three decimals in **6ch** tabular fields. Select-all on every field click. No X/Y labels. `×` stays between the pair. The pointer stays over the whole chip until a number is clicked; then the I-beam is in that field only.
+
+Check and X sit **outside** the pill, to the right, vertically centered to that chip. They are not inside the stroke. The pill does not grow right to make room for them. GAP's Link sits outside right, between the chip and Check.
+
+MARGIN closed is `0.250 all` when all four sides are equal; otherwise two even lines `L 0.250  R 0.250` / `B 0.250  T 0.250`. It never smashes into `0 R 0.250B 0.250 T`. Open stays that two-line grid in the same chip width. Height grows down only enough for two rows. Check/X stay outside right. GAP is not shoved sideways.
+
+Fit clamp and the 15px stops are unchanged. No picker, calculator, chevron, popover, or bed is restored.
+
 ---
 
 ## Seq 3 — blank-in-space canvas

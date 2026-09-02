@@ -3,7 +3,7 @@
 Product: FLiPIT
 Host: `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`
 Stage: blank-in-space (127)
-Lock: Cut 14 / PR 131
+Lock: Cut 15 / PR 131
 
 This replaces the former ticker-picker blueprint. It is intentionally not a picker schematic.
 
@@ -105,3 +105,11 @@ This supersedes the Cut 6 sheet side: the sheet is fixed at left 48px and top `6
 - MARGIN open is an even 2×2: L R then B T, equal column and row gap, one number per cell, shared column left edges. Check and X sit on the right of the grid and center to it. No empty slab. No second popover. The chip is the editor.
 - Check, X, and Link are 22px hits with 14px Lucide glyphs, stroke 2. Rotate pair is 24px hits with 16px glyphs, stroke 2. Header + / − / Fit stay as Cut 13.
 - One 15px stop: header-bottom → HUD-top, HUD-bottom → blank-top, stack-right → blank-left, viewport-bottom → blank-bottom. HUD stays fixed. Pills grow right only; the blank follows that delta and returns.
+
+## Cut 15 ghost A
+
+- PART SIZE, GAP, and the center bar keep closed-chip chrome while editing. Numbers ghost in place (3 dp, 6ch tabular). Select-all on every field click. No X/Y labels. `×` stays between the pair.
+- Check and X sit outside the pill to the right, vertically centered to that chip, not inside the stroke. Do not grow the pill right for actions. GAP Link sits outside right, between the chip and Check.
+- Pointer over the whole chip until a number is clicked; I-beam in that field only. Same on the center bar size slot.
+- MARGIN closed is `0.250 all` when equal, else two even lines `L 0.250  R 0.250` / `B 0.250  T 0.250`. Never `0 R 0.250B 0.250 T`. Open is that two-line grid in the same width; height grows down only enough for two rows. Check/X outside right. GAP is not shoved sideways.
+- Fit clamp and 15px stops stay. No picker, calculator, chevron, popover, or bed.

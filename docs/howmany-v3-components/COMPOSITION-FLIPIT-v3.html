@@ -125,7 +125,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     z-index: 82;
     display: none;
     align-items: center;
-    gap: 0;
+    gap: 4.4px;
     pointer-events: none;
     isolation: isolate;
     overflow: visible;
@@ -166,16 +166,26 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     white-space: nowrap;
     box-shadow: none;
     pointer-events: auto;
-    cursor: text;
+    cursor: pointer;
     user-select: none;
     touch-action: none;
   }
   .blank-ticker .bt-readout { line-height: 31.46px; letter-spacing: 0.01em; }
   .bt-parts { display: inline-flex; align-items: center; padding: 0 8.8px; font: 650 14.64px/31.46px var(--font-mono); font-variant-numeric: tabular-nums; color: #538BEC; letter-spacing: 0; text-transform: none; white-space: nowrap; }
-  .blank-ticker.is-chip-editing { justify-content: flex-start; padding: 0 3.3px; height: 31.46px; line-height: 31.46px; }
-  .ticker-blank-editor { display: inline-flex; align-items: center; gap: 3.3px; width: max-content; height: 31.46px; }
-  .ticker-blank-editor input { width: 6ch; min-width: 6ch; max-width: 6ch; height: auto; box-sizing: content-box; padding: 0 6.6px; border: 0; border-radius: 3.3px; outline: 0; background: #fff; color: #1A1428; font: 650 13.31px/1 var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; }
-  .ticker-blank-editor .chip-editor-by { font-size: 13.31px; line-height: 1; }
+  .blank-ticker.is-chip-editing { justify-content: center; padding: 0 8.8px; height: 31.46px; line-height: 31.46px; cursor: pointer; }
+  .ticker-blank-editor { display: inline-flex; align-items: center; gap: 0; height: 31.46px; }
+  .ticker-blank-editor input {
+    width: 6ch; min-width: 6ch; max-width: 6ch; height: auto; box-sizing: content-box;
+    padding: 0; border: 0; border-radius: 0; outline: 0; background: transparent; color: inherit;
+    font: 650 13.31px/31.46px var(--font-mono); font-variant-numeric: tabular-nums;
+    text-align: center; white-space: nowrap; overflow: hidden; cursor: text;
+  }
+  .ticker-blank-editor .chip-editor-by { font: 650 13.31px/31.46px var(--font-mono); color: inherit; padding: 0 0.35em; }
+  .chip-editor-actions {
+    display: none; flex-direction: row; align-items: center; gap: 2.2px; flex-shrink: 0;
+    pointer-events: auto; height: 22px;
+  }
+  .chip-editor-actions:not([hidden]) { display: inline-flex; }
   .chip-editor-action {
     flex: 0 0 22px; width: 22px; height: 22px; min-width: 22px; min-height: 22px;
     margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; color: #1A1428;
@@ -2166,36 +2176,53 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     #hud .param-row { display: flex; flex-direction: column; align-items: stretch; gap: 4.4px; min-height: 0; overflow: visible; }
     #hud .param-row[data-param="margin"] { align-items: stretch; }
     #hud .param-label { flex: 0 0 auto; font-size: 11px; font-weight: 650; letter-spacing: 0.04em; line-height: 1; }
+    #hud .chip-seat { display: flex; flex-direction: row; align-items: center; gap: 4.4px; width: max-content; max-width: none; overflow: visible; }
     #hud .param-ticker {
       display: flex; flex-direction: row; align-items: center; justify-content: center;
-      width: 154px; height: 31.46px; min-height: 31.46px; max-height: 31.46px;
+      flex: 0 0 154px; width: 154px; min-width: 154px; max-width: 154px;
+      height: 31.46px; min-height: 31.46px; max-height: 31.46px;
       border-radius: 7.26px; padding: 0 8.8px;
       font: 650 13.31px/31.46px var(--font-mono); font-variant-numeric: tabular-nums;
       white-space: nowrap; box-shadow: 0 0.5px 1px rgba(0,0,0,.25); overflow: hidden;
+      cursor: pointer;
     }
     #hud .param-row[data-param="margin"] .param-ticker { border: 1.1px solid rgba(83,139,236,.35); border-radius: 7.26px; box-shadow: 0 0.5px 1px rgba(0,0,0,.25); }
-    #hud .param-row[data-param="margin"] .param-ticker:has(.m-line) { height: 31.46px; min-height: 31.46px; max-height: 31.46px; }
+    #hud .param-ticker .m-grid {
+      display: grid; grid-template-columns: 1fr 1fr; align-items: center; justify-items: start;
+      column-gap: 8.8px; row-gap: 2.2px; width: 100%;
+    }
+    #hud .param-ticker .m-cell,
+    #hud .param-ticker .m-grid .chip-editor-field {
+      display: inline-flex; align-items: center; gap: 0.4em; min-width: 0; width: 100%;
+      font: 650 13.31px/1.2 var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap;
+    }
+    #hud .param-row[data-param="margin"] .param-ticker:has(.m-grid) {
+      height: auto; min-height: 31.46px; max-height: none; flex-direction: column;
+      white-space: normal; line-height: 1.2; overflow: visible; padding: 4.4px 8.8px;
+    }
     #hud .param-popover { display: none !important; }
     #hud .param-ticker.is-chip-editing {
-      width: max-content; min-width: 154px; max-height: 31.46px; height: 31.46px;
-      cursor: text; padding: 0 3.3px; justify-content: flex-start; align-items: center; overflow: visible;
+      width: 154px; min-width: 154px; max-width: 154px; max-height: 31.46px; height: 31.46px;
+      cursor: pointer; padding: 0 8.8px; justify-content: center; align-items: center; overflow: hidden;
     }
-    #hud .chip-editor-row { display: flex; align-items: center; width: max-content; min-width: 0; height: 31.46px; gap: 2.2px; }
     #hud .chip-editor-field {
-      display: flex; align-items: center; min-width: 0; flex: 0 0 auto; height: auto; padding: 0 6.6px;
-      border: 0; border-radius: 3.3px; background: #fff; line-height: 1;
+      display: inline-flex; align-items: center; min-width: 0; flex: 0 0 auto; height: auto; padding: 0;
+      border: 0; border-radius: 0; background: transparent; line-height: inherit; cursor: pointer; gap: 0.4em;
     }
-    #hud .chip-editor-field > span { flex: 0 0 auto; font-size: 9px; font-weight: 650; color: #5B5670; margin-right: 4px; line-height: 1; }
-    #hud .chip-editor-field input { width: 6ch; min-width: 6ch; max-width: 6ch; padding: 0; border: 0; outline: 0; background: transparent; color: var(--ink); font: 650 13.31px/1 var(--font-mono); font-variant-numeric: tabular-nums; text-align: left; white-space: nowrap; overflow: hidden; }
-    #hud .chip-editor-by { flex: 0 0 auto; color: #5B5670; font: 650 13.31px/1 var(--font-mono); }
-    #hud .chip-margin-editor { display: grid; grid-template-columns: max-content max-content; justify-content: start; align-items: center; column-gap: 3.3px; row-gap: 3.3px; width: max-content; }
-    #hud .chip-margin-editor .chip-editor-field { height: auto; }
+    #hud .chip-editor-field > span { flex: 0 0 auto; font: inherit; color: inherit; margin: 0; line-height: inherit; }
+    #hud .chip-editor-field input {
+      width: 6ch; min-width: 6ch; max-width: 6ch; padding: 0; border: 0; outline: 0;
+      background: transparent; color: inherit; font: 650 13.31px/1 var(--font-mono);
+      font-variant-numeric: tabular-nums; text-align: left; white-space: nowrap; overflow: hidden; cursor: text;
+    }
+    #hud .chip-editor-by { flex: 0 0 auto; color: inherit; font: 650 13.31px/31.46px var(--font-mono); padding: 0 0.35em; }
     #hud .param-row[data-param="margin"] .param-ticker.is-chip-editing {
-      height: auto; min-height: 0; max-height: none; align-items: center;
+      height: auto; min-height: 31.46px; max-height: none; flex-direction: column;
+      white-space: normal; line-height: 1.2; overflow: visible; padding: 4.4px 8.8px;
       border: 1.1px solid rgba(83,139,236,.35); border-radius: 7.26px;
-      box-shadow: 0 0.5px 1px rgba(0,0,0,.25); overflow: visible; padding: 3.3px;
+      box-shadow: 0 0.5px 1px rgba(0,0,0,.25);
     }
-    #hud .param-row[data-param="margin"] .chip-editor-row { height: auto; align-items: center; }
+    #hud .param-row[data-param="margin"] .chip-editor-field input { line-height: 1.2; }
 </style>
 </head>
 <body>
@@ -2253,6 +2280,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         <span class="blank-ticker" id="blank-ticker" aria-label="Blank size"><span class="bt-readout" id="bt-readout">12.000 × 8.000</span></span>
         <span class="bt-parts" id="bt-parts" aria-label="Part count">14</span>
       </div></div>
+      <div class="chip-editor-actions" id="bt-chip-actions" hidden></div>
     </div>
   
     <!-- Field stack shell; Cut 10 opens editors inside its chips. -->
@@ -2284,7 +2312,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
           <div class="param-rows">
             <div class="param-row" data-param="part">
               <span class="param-label">Part size</span>
+              <div class="chip-seat">
               <div class="param-ticker" data-ticker="part" data-open="part" tabindex="0">1.250 × 3.375</div>
+              <div class="chip-editor-actions" hidden></div>
+              </div>
               <div class="param-popover" data-pop="part">
                 <div class="pop-head">
                   <div class="pop-title">Part size</div>
@@ -2307,7 +2338,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
             <div class="param-row" data-param="gap">
               <span class="param-label">Gap</span>
+              <div class="chip-seat">
               <div class="param-ticker" data-ticker="gap" data-open="gap" tabindex="0">0.375 × 0.125</div>
+              <div class="chip-editor-actions" hidden></div>
+              </div>
               <div class="param-popover" data-pop="gap">
                 <div class="pop-head">
                   <div class="pop-title">Gap</div>
@@ -2338,7 +2372,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
             <div class="param-row" data-param="margin">
               <span class="param-label">Margin</span>
+              <div class="chip-seat">
               <div class="param-ticker" data-ticker="margin" data-open="margin" tabindex="0">0.250 all</div>
+              <div class="chip-editor-actions" hidden></div>
+              </div>
               <div class="param-popover" data-pop="margin">
                 <div class="pop-head">
                   <div class="pop-title">Margin</div>
@@ -2746,9 +2783,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       btParts.textContent = String(columns * rows);
     }
 
-    /* Keep its closed bar centered; an open blank editor expands from this left edge. */
-    var tw = pin.offsetWidth || 140;
-    if (!pin.classList.contains('is-ticker-editing')) pin.style.left = Math.round((window.innerWidth - tw) / 2) + 'px';
+    /* Keep the closed travel bar centered. Check/X hang outside to the right. */
+    var box = document.getElementById('bt-travel-box') || pin;
+    var tw = box.offsetWidth || 140;
+    pin.style.left = Math.round((window.innerWidth - tw) / 2) + 'px';
     pin.style.top = (HEADER_H + STOP) + 'px';
   }
   function syncHudBlankFromBed() {
@@ -3069,9 +3107,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   function marginSummaryHTML(m) {
     const parts = marginSummaryParts(m);
     if (parts.length === 1) return parts[0];
-    if (parts.length === 2) return parts.join(' ');
-    if (parts.length === 3) return '<span class="m-line">' + parts[0] + ' ' + parts[1] + '</span><span class="m-line">' + parts[2] + '</span>';
-    return '<span class="m-line">' + parts[0] + ' ' + parts[1] + '</span><span class="m-line">' + parts[2] + ' ' + parts[3] + '</span>';
+    return '<span class="m-grid">' +
+      '<span class="m-cell">' + parts[0] + '</span>' +
+      '<span class="m-cell">' + parts[1] + '</span>' +
+      '<span class="m-cell">' + parts[2] + '</span>' +
+      '<span class="m-cell">' + parts[3] + '</span>' +
+      '</span>';
   }
 
   function refreshTickers() {
@@ -3623,6 +3664,17 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var cap = label ? '<span>' + label + '</span>' : '';
     return '<label class="chip-editor-field">' + cap + '<input type="text" inputmode="decimal" autocomplete="off" data-chip-field="' + axis + '" value="' + fmt3(value) + '" /></label>';
   }
+  function actionsHostFor(ticker, isBlankTicker) {
+    if (isBlankTicker) return document.getElementById('bt-chip-actions');
+    var seat = ticker && ticker.closest && ticker.closest('.chip-seat');
+    return seat ? seat.querySelector('.chip-editor-actions') : null;
+  }
+  function fillChipActions(host, html) {
+    if (!host) return;
+    host.innerHTML = html || '';
+    if (html) host.removeAttribute('hidden');
+    else host.setAttribute('hidden', '');
+  }
   function sizeChipInput(input) {
     input.style.width = '6ch';
   }
@@ -3689,16 +3741,38 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     chipEditor.snapshot = null;
     if (ticker) {
       ticker.classList.remove('is-chip-editing');
+      fillChipActions(actionsHostFor(ticker, isBlankTicker), '');
       if (isBlankTicker) {
         ticker.innerHTML = '<span class="bt-readout" id="bt-readout"></span>';
         var cluster = document.getElementById('blank-ticker-cluster');
         if (cluster) cluster.classList.remove('is-ticker-editing');
       } else ticker.innerHTML = '';
-      ticker.onclick = null;
     }
     if (!isBlankTicker) hud.classList.remove('has-chip-editor');
     refreshTickers();
     if (ticker) ticker.focus();
+  }
+  function onChipAction(e) {
+    var action = e.target.closest && e.target.closest('[data-chip-action]');
+    if (!action || !chipEditor.key) return;
+    e.preventDefault(); e.stopPropagation();
+    var actionName = action.getAttribute('data-chip-action');
+    var isBlankTicker = chipEditor.key === 'blank';
+    var ticker = isBlankTicker ? document.getElementById('blank-ticker') : document.querySelector('[data-ticker="' + chipEditor.key + '"]');
+    if (actionName === 'link' && chipEditor.key === 'gap') {
+      paramState.gap.linked = !paramState.gap.linked;
+      if (paramState.gap.linked) {
+        paramState.gap.y = paramState.gap.x;
+        var yInput = ticker && ticker.querySelector('[data-chip-field="y"]');
+        if (yInput) { yInput.value = fmt3(paramState.gap.y); sizeChipInput(yInput); }
+        refreshTickers();
+      }
+      action.setAttribute('aria-pressed', String(paramState.gap.linked));
+      action.setAttribute('aria-label', paramState.gap.linked ? 'Unlink gap axes' : 'Link gap axes');
+      action.setAttribute('title', paramState.gap.linked ? 'Unlink gap axes' : 'Link gap axes');
+      return;
+    }
+    finishChipEditor(actionName === 'commit');
   }
   function openChipEditor(key) {
     if (chipEditor.key === key) return;
@@ -3715,45 +3789,25 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     ticker.classList.add('is-chip-editing');
     var check = chipAction('commit', 'Commit changes', '<path d="M20 6 9 17l-5-5"/>');
     var cancel = chipAction('cancel', 'Cancel changes', '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>');
+    var gapLink = key === 'gap' ? gapLinkAction(!!paramState.gap.linked) : '';
     if (isBlankTicker) {
       var blank = paramState.blank;
-      ticker.innerHTML = '<div class="ticker-blank-editor"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Blank width" data-ticker-blank-field="x" value="' + fmt3(blank.x) + '" /><span class="chip-editor-by">×</span><input type="text" inputmode="decimal" autocomplete="off" aria-label="Blank height" data-ticker-blank-field="y" value="' + fmt3(blank.y) + '" />' + check + cancel + '</div>';
+      ticker.innerHTML = '<div class="ticker-blank-editor"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Blank width" data-ticker-blank-field="x" value="' + fmt3(blank.x) + '" /><span class="chip-editor-by">×</span><input type="text" inputmode="decimal" autocomplete="off" aria-label="Blank height" data-ticker-blank-field="y" value="' + fmt3(blank.y) + '" /></div>';
     } else if (key === 'margin') {
       var m = paramState.margin;
-      ticker.innerHTML = '<div class="chip-editor-row">' + '<div class="chip-margin-editor">' + chipField('L', 'l', m.l) + chipField('R', 'r', m.r) + chipField('B', 'b', m.b) + chipField('T', 't', m.t) + '</div>' + check + cancel + '</div>';
+      ticker.innerHTML = '<span class="m-grid">' + chipField('L', 'l', m.l) + chipField('R', 'r', m.r) + chipField('B', 'b', m.b) + chipField('T', 't', m.t) + '</span>';
     } else {
       var bag = paramState[key];
-      var gapLink = key === 'gap' ? gapLinkAction(!!paramState.gap.linked) : '';
-      ticker.innerHTML = '<div class="chip-editor-row">' + chipField('', 'x', bag.x) + '<span class="chip-editor-by">×</span>' + chipField('', 'y', bag.y) + gapLink + check + cancel + '</div>';
+      ticker.innerHTML = chipField('', 'x', bag.x) + '<span class="chip-editor-by">×</span>' + chipField('', 'y', bag.y);
     }
-    ticker.onclick = function (e) {
-      var action = e.target.closest && e.target.closest('[data-chip-action]');
-      if (!action) return;
-      e.preventDefault(); e.stopPropagation();
-      var actionName = action.getAttribute('data-chip-action');
-      if (actionName === 'link' && chipEditor.key === 'gap') {
-        paramState.gap.linked = !paramState.gap.linked;
-        if (paramState.gap.linked) {
-          paramState.gap.y = paramState.gap.x;
-          var yInput = ticker.querySelector('[data-chip-field="y"]');
-          if (yInput) { yInput.value = fmt3(paramState.gap.y); sizeChipInput(yInput); }
-          refreshTickers();
-        }
-        action.setAttribute('aria-pressed', String(paramState.gap.linked));
-        action.setAttribute('aria-label', paramState.gap.linked ? 'Unlink gap axes' : 'Link gap axes');
-        action.setAttribute('title', paramState.gap.linked ? 'Unlink gap axes' : 'Link gap axes');
-        return;
-      }
-      finishChipEditor(actionName === 'commit');
-    };
+    fillChipActions(actionsHostFor(ticker, isBlankTicker), gapLink + check + cancel);
     if (isBlankTicker) bindBlankTickerInputs(ticker);
     else bindChipInputs(ticker, key);
-    requestAnimationFrame(function () {
-      var first = ticker.querySelector(isBlankTicker ? '[data-ticker-blank-field]' : '[data-chip-field]');
-      if (first) { first.focus(); first.select(); }
-    });
   }
   window.__hudOpenChipEditor = openChipEditor;
+  hud.addEventListener('click', onChipAction);
+  var blankClusterEl = document.getElementById('blank-ticker-cluster');
+  if (blankClusterEl) blankClusterEl.addEventListener('click', onChipAction);
   hud.addEventListener('click', function (e) {
     var tick = e.target.closest && e.target.closest('.param-ticker[data-open]');
     if (!tick || !hud.contains(tick) || tick.classList.contains('header-part-ticker')) return;

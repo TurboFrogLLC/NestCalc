@@ -52,4 +52,7 @@ Stamp: abdd627c402a8a21cc3b56d30441144ce1c1aba6
 Seq 24 Cut 14 editor math + 15px stops — Grok Build: chips sit on one 31.46 row with 6ch three-decimal inputs; MARGIN is an even 2×2 with Check/X centered to the grid; Check/X/Link are 22/14 and rotate is 24/16; one 15px stop on HUD, stack-right, HUD-bottom, and viewport-bottom. HUD stays fixed. No picker, calc, chevron, popover, bed, or GOAL.md.
 Stamp: 0d9c648b5d2402f7c27c7f6a91966a5cecd89661
 
-NEXT: Owner direction after Cut 14.
+Seq 25 Cut 15 ghost A — Grok Build: PART SIZE, GAP, and the center bar keep closed-chip chrome while numbers edit in place; Check/X sit outside right; GAP Link sits between the chip and Check; MARGIN is a two-line in-place editor (`0.250 all` when equal) with Check/X outside right; smashed `0 R 0.250B` readout is gone. No picker, calc, chevron, popover, bed, or GOAL.md.
+Stamp: pending
+
+NEXT: Owner direction after Cut 15.
