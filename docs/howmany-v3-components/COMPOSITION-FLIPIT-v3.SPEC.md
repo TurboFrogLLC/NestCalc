@@ -1,6 +1,6 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Cut 25 preset card stack and footer
+**Status:** Living — Cut 26 preset arm, card pad, HUD lock
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
@@ -140,6 +140,10 @@ PRESETS reads left-to-right as label, Lucide pencil paths `M21.174 6.812…` and
 ## Cut 25 — preset card stack and footer
 
 The blocking card layer is a body-level fixed sibling at z-index 201, above the 100-level header and the HUD pin, and its open overlay consumes pointer input before HUD, chip, or blank controls can receive it. The card remains 240px wide with `#E8E8E8`, 7.26px radius, and 8.8px padding. Its 222.4px inner width contains the 222.4 × 31.46 name field, then Blank, Gap, Margin, and footer with an even 8.8px between each block. Every inner axis box is 106.8 × 31.46 with 7.26px radius and an 8.8px paired gap. Copy live is a 31.46px-high, 7.26px-radius button using the side-chip type, held at footer left of the unchanged unboxed Check/X pair. Hydration, pencil paths, gold arm, plus/minus, center-bar lock, ghost editors, parts on blank, Fit, and stops remain locked.
+
+## Cut 26 — preset arm, card pad, HUD lock
+
+An idle preset tap hydrates live Blank, Gap, and Margin and arms that selected live slot with `rgba(255,206,27,0.55)` fill and `rgba(201,140,0,0.85)` stroke. Closing its card retains the arm; opening a live chip editor still clears it without writing the slot. The `#E8E8E8` card is **252.4px** wide with **15px** padding on every edge, preserving its 222.4px inner width: the name stays 222.4 × 31.46 and each paired axis field stays 106.8 × 31.46 with an 8.8px gap. A 1.1px rule, inset by the card padding, separates Margin from the one-row Copy live / Check / X footer. Opening, hydrating, or closing the card does not change the centered ticker pin's closed left coordinate or width.
 
 ---
 

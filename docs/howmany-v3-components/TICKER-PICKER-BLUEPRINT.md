@@ -3,7 +3,7 @@
 Product: FLiPIT
 Host: `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`
 Stage: blank-in-space (127)
-Lock: Cut 16 / PR 131
+Lock: Cut 26 / PR 131
 
 This replaces the former ticker-picker blueprint. It is intentionally not a picker schematic.
 
@@ -154,3 +154,9 @@ This supersedes the Cut 6 sheet side: the sheet is fixed at left 48px and top `6
 - Promote the explicit flex-layer to a body-level fixed sibling at z-index 201 so the open overlay covers the header, centered HUD pin, sheet chips, and blank and blocks their pointer input.
 - Preserve the 240px `#E8E8E8`, 7.26px-radius card and 8.8px padding. Its 222.4px inner width contains a 222.4 × 31.46 name field; each Blank, Gap, and Margin axis box is 106.8 × 31.46 with a 7.26px radius and an 8.8px pair gap. Name, section blocks, and footer are separated by 8.8px.
 - Copy live is a 31.46px-high, 7.26px-radius chip-type button on the footer left; the unboxed 22px Check/X actions stay on its right. Hydration, pencil paths, gold arm, plus/minus, center-bar lock, ghost editors, parts on blank, Fit, and stops remain unchanged.
+
+## Cut 26 preset arm, card pad, HUD lock
+
+- Idle slot tap hydrates live Blank, Gap, and Margin and arms that selected live slot with `rgba(255,206,27,0.55)` fill and `rgba(201,140,0,0.85)` stroke. Card close retains the arm; a live chip editor remains the only path here that clears it and never writes the slot.
+- The blocking `#E8E8E8` card is 252.4px wide with 15px padding on all four edges. Its 222.4px content width keeps the name field at 222.4 × 31.46 and each paired axis field at 106.8 × 31.46 with the 8.8px gap. A 1.1px rule inset by that pad separates Margin from the one-row Copy live / Check / X footer.
+- Opening, hydrating, or closing the card does not change the closed centered ticker pin's left coordinate or width. Pencil paths, layer z-index, ghost editors, parts-on-blank, Fit, and stops remain locked.
