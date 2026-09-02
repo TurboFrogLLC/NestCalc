@@ -55,4 +55,7 @@ Stamp: 0d9c648b5d2402f7c27c7f6a91966a5cecd89661
 Seq 25 Cut 15 ghost A — Grok Build: PART SIZE, GAP, and the center bar keep closed-chip chrome while numbers edit in place; Check/X sit outside right; GAP Link sits between the chip and Check; MARGIN is a two-line in-place editor (`0.250 all` when equal) with Check/X outside right; smashed `0 R 0.250B` readout is gone. No picker, calc, chevron, popover, bed, or GOAL.md.
 Stamp: 06e5345c0ffae9dc2118c95615dca1e625f1f945
 
-NEXT: Owner direction after Cut 15.
+Seq 26 Cut 16 ghost highlight + margin center — Grok Build: selected-number blue has 3px air top and bottom to the inner stroke on PART SIZE, GAP, MARGIN, and the center size slot; open side chips paint #E8E8E8 so the select shows; closed chips stay frost-blue; center bar stays #E8E8E8; MARGIN two-line L R / B T is vertically centered with equal padding and equal column/row gap; width stays; Check/X stay outside right. No picker, calc, chevron, popover, bed, or GOAL.md.
+Stamp: a720e90a51f2baf590d6b794fd7ec40661a4d57a
+
+NEXT: Owner direction after Cut 16.
