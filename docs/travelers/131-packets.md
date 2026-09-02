@@ -26,3 +26,7 @@ Stamp: dddad5a35de5ff8d8d58882ea275bd92fa78f0cf
 
 Seq 7 Cut 5 — Codex CLI: ticker-door and calculator chrome removed; 28.6px ticker carries live blank size and how-many-parts.
 Stamp: dddad5a35de5ff8d8d58882ea275bd92fa78f0cf
+
+Seq 8 Send for review — PR 131 marked ready and exactly one `@codex review` requested on Cut 5 head `65337db3c23ac484c1a8647e9c3cc626ded6d197`.
+Review: https://github.com/TurboFrogLLC/NestCalc/pull/131#issuecomment-5503131858
+Stamp: 65337db3c23ac484c1a8647e9c3cc626ded6d197
