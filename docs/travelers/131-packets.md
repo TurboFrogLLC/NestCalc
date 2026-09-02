@@ -25,4 +25,10 @@ Seq 10+ Owner: stack returns left. Cut then Look. Do not stack 7–10.
 Seq 10 Cut 7 left sheet — Codex CLI: fixed the transparent sheet at left 48px and `64px + 48px`; Fit, pan, and zoom reserve the left lane and keep the blank clear. Ticker chrome and closed editor chips are unchanged.
 Stamp: e3316a5e348776bd6711db3ca819edcc2a1ef238
 
+Seq 11 Look 8091 — failed: rotate hooks were not the host Lucide paths, count was 0, size type was undersized, and MARGIN bottom corners clipped.
+Stamp: b2caddf92cfacd92791802e500de1e62a7d0d56e
+
+Seq 12 Cut 8 blank ticker corrective — Codex CLI: one 28.6px ticker row with stock Lucide paths, inset rules, live size/count type, −90/+90 wiring, and visible MARGIN overflow with its complete stroke/shadow. No picker, calc, chevron, popover, or Cut 10 editor.
+Stamp: 43357ca20ff39e3d14e9b835c105b4b5227a0719
+
 NEXT: Look 8091 only. Stop. No Codex. No next Cut.
