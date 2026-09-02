@@ -4,16 +4,16 @@ Repo: NestCalc
 Owner: wReckless
 Part: AutoNest on FLiPIT host
 Description: Port V2 autoNestEngine onto COMPOSITION-FLIPIT-v3. Menu hit on the center HUD arms AutoNest. Cut 1 is best uniform orientation. Cut 2 is two-group plus trim. No picker. No calc. No bed.
-PR: pending
+PR: 133
 Branch: docs/autonest-host
-Head: 1e2a551f5817a3b8c0263751bc9a5d68532dda0d
+Head: 0eb6d636ecc666ed18bd152a3279bf1bc37b628c
 Session: fresh
 job_id: NGJ-20260902-autonest
 flow_id:
 goal_sha256:
 
 Seq  Label              Notes                                              Stamp
-1    Plan               Cut 1 best-orientation; Cut 2 two-group + trim
+1    Plan               Cut 1 best-orientation; Cut 2 two-group + trim     0eb6d636ecc666ed18bd152a3279bf1bc37b628c
 2    Start-branch       Owner remote / Codex App
 3    Cut                1 HUD menu + calculateBestUniformNest
 4    Look               Owner htmlpreview. No Codex.
