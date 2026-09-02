@@ -26,6 +26,7 @@ Seq  Label              Notes                                              Stamp
 5d   Cut                5 true-inch scale                                 872f46b87d496e1b3ba253918a40ebf3e318043b
 5e   Cut                6 red margin band                                 c9180ba1328a09ade53f908df44eaebde7369383
 5f   Cut                7 eye toggle, green arm, count-slot pin           5fc2ed7450ea3d431744fb19c42a04cef42e3e70
+5g   Cut                8 side inset + fixed 999 count well               3e2ea36d9f448f2d1976d05fef072ba917205d7f
 6    Look               Owner htmlpreview. No Codex.
 7    Send for review
 8    Inspection
