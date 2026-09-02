@@ -30,3 +30,6 @@ Stamp: dddad5a35de5ff8d8d58882ea275bd92fa78f0cf
 Seq 8 Send for review — PR 131 marked ready and exactly one `@codex review` requested on Cut 5 head `65337db3c23ac484c1a8647e9c3cc626ded6d197`.
 Review: https://github.com/TurboFrogLLC/NestCalc/pull/131#issuecomment-5503131858
 Stamp: 65337db3c23ac484c1a8647e9c3cc626ded6d197
+
+Seq 9 Cut 6 corrective — Codex CLI: removed the 25px left-pin initializer; sheet is fixed right 48px at 64px + 48px, MARGIN completes its own 6.6px box, and the size-plus-count ticker restores 28px Lucide rotate hits.
+Stamp: cffe0d323f83bfc2f8467fa87110b57c9f6d8e80
