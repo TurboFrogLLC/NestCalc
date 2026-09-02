@@ -90,3 +90,6 @@ Stamp: 01ef84fc4ad58d58afe93984c16c8e6a4bd56542
 
 Seq 35 Cut 26 preset arm, card pad, HUD lock — Codex App: idle preset hydration now arms the selected live slot with the locked gold fill/stroke, and card close retains that arm; live chip editing still clears it without writing. The blocking card is 252.4px wide with 15px padding, preserves the 222.4px name and 106.8px paired cells, and adds an inset 1.1px rule above its one-row footer. The centered ticker's closed left pin and width remain unchanged through card open, hydration, and close; pencil paths, layer z-index, ghost editors, parts on blank, Fit, and stops remain locked.
 Stamp: 3fe6e2ea414107de75768ffa14fcbf11e983e454
+
+Seq 36 Cut 27 pencil-on-selected and inline actions — Codex App: pressing pencil with an already armed live slot now opens that slot’s card directly; with no armed slot, pencil only enables edit mode and opens no card. The retained 252.4px / 15px card adds a second inset 1.1px name-to-Blank rule. External 22px Check/X stay inline after PART SIZE, GAP, MARGIN, and center-bar numbers; GAP Link remains between number and Check, and MARGIN aligns to its first number row. Pencil paths, gold tokens, layer z-index, parts on blank, Fit, and stops remain unchanged.
+Stamp: 0bb0188343659f64c59020322f4086fd0837a608
