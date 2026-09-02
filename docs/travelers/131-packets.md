@@ -75,3 +75,6 @@ Seq 30 Cut 20 presets block under margin — Codex App: added PRESETS immediatel
 Stamp: 0fcc181bc35893bf751829621d49ecd90056a243
 
 NEXT: Owner direction after Cut 20.
+
+Seq 31 Cut 21 preset modal — Codex App: PRESETS now carries Lucide pencil, +, and − after its label. Idle named-slot tap hydrates Blank, GAP, and MARGIN together. Pencil then slot tap arms it gold at 22% opacity and opens a blocking 171.6px `#E8E8E8` card with the named 154px field, paired 72.6px Blank/Gap/Margin fields, Copy live, and unboxed Check/X. Empty values hydrate live; Check saves; X cancels; empty names read Preset. Live chip editing clears the arm without writing it. Browser proof on 8091 saved `Small` with blank 15, gap X .5, margin L 1.25, then idle hydration updated the shared ticker and count (14 → 16). No picker, calculator, chevron, old popover, or bed returned.
+Stamp: 8e7a8418a60afbf42508bec63c97fe8c2c336653
