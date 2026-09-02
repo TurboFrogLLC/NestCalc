@@ -84,3 +84,6 @@ Stamp: f33b7886e1afe17d4cd48bb91923d8d1c3fee9f4
 
 Seq 33 Cut 24 preset modal wire — Codex App: replaced PRESETS with the Lucide pencil paths `M21.174 6.812…` and `m15 5 4 4`; converted the modal layer from native `hidden` state to a flex-layer `.is-open` state at z-index 200; kept the pencil visibly pressed through card close; and made the amber armed fill/stroke override frost-blue and hover chrome. Pencil-on slot taps, including an already armed slot, call `openMarginPresetCard(index)`; idle taps still hydrate and live chip editing still clears the arm without writing it. Locked surfaces remain unchanged.
 Stamp: 69710f271a60f92f93577461faef43b4d802a92b
+
+Seq 34 Cut 25 preset card stack and footer — Codex App: moved the blocking modal layer out of the HUD stacking context to a body-level z-index 201 sibling above the header and HUD pin; retained its pointer-blocking overlay; widened every Blank, Gap, and Margin axis box to 106.8 × 31.46 with 8.8px pair gaps; and made Copy live a 31.46px-high, 7.26px-radius chip-type footer button left of Check/X. Browser proof on 8091 opened the dialog with its name, all axis fields, Copy live, Save, and Cancel exposed while locked hydrate, pencil paths, gold arm, plus/minus, center-bar lock, ghost editors, parts-on-blank, Fit, and stops remained unchanged.
+Stamp: 01ef84fc4ad58d58afe93984c16c8e6a4bd56542
