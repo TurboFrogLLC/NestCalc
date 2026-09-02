@@ -183,6 +183,10 @@ The Owner supersedes the Cut 1b menu icon with the Lucide `hamburger` glyph. The
 
 The hamburger stroke uses the shared travel-hit off color `#111111`, matching the rotate pair. While AutoNest is armed (`aria-pressed="true"`), only the hamburger’s `currentColor` stroke changes to IT amber `#FFCE1B`; its SVG remains fill-none and its hit, glyph, and paths remain unchanged.
 
+## AutoNest Cut 2 — two-group plus trim
+
+While the hamburger is armed, the FLiPIT host consumes `calculateAutoNest` from `src/lib/autoNestEngine.ts` using the live blank, part, gap, and four margins. When its two-group result strictly exceeds the best-uniform total, the blue count is the two-group `totalParts`; the blank draws both returned frost-blue tile grids and exactly one `trimLine` at the engine’s vertical or horizontal split. Each group keeps its returned grid dimensions, gaps, and achieved margins. When two-group does not strictly improve the total, the existing Cut 1 best-uniform layout and rotation remain live. Disarming returns to the current `nestLayout` grid with the black hamburger. No picker, calculator, chevron, bed, React `AutoNestPreview`, or HowMany shell is introduced.
+
 ---
 
 ## Seq 3 — blank-in-space canvas
