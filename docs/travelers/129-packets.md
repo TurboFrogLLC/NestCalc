@@ -32,6 +32,12 @@ Seq 1 Plan — Owner: ticker-door chrome on 127 blank canvas. ops-multi-codex.
 - The prior two P2 threads are resolved. PR checks are successful and merge state is `CLEAN`, but the named review is still a required unresolved gate.
 - Inspection is pending; no Merge or Close was performed.
 
+## Seq 11 Inspection — disposition
+
+- Read the final Codex review `5084291857` on `0491e06`, completed 23:57Z: **COMMENTED**.
+- Owner closed the review loop and accepts the named P2 leftovers: ticker travel-row −90/+90 controls are unwired; picker Reset is a no-op.
+- No residual Cut and no further `@codex` review. Owner clearance continues to Merge.
+
 ## Seq 4 Send for review — return
 
 - PR 129 marked ready for review and named review requested with `@codex review`.
