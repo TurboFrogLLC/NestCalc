@@ -35,4 +35,4 @@ Implementation commit: 81c731411e9bdb53e7592dff1d68be39438fc3bc
 
 ## Seq 5d Cut 5 — true-inch scale
 Worker: Codex App. Removed the inherited fixed 48 × 48 bed clip from the blank and tile group so any typed blank remains drawable at its full ticker dimensions. Blank, uniform tiles, two-group tiles, gaps, live L/R/T/B margins, and trim continue to use the single `translate(panX, panY) scale(s, -s)` SVG-inch camera. The existing bottom-left origins, right/top leftover, full trim-edge policy, one trim line, hamburger state, chips, presets, Fit, and stops are unchanged; no red margin wash was added.
-Implementation commit: pending
+Implementation commit: 872f46b87d496e1b3ba253918a40ebf3e318043b
