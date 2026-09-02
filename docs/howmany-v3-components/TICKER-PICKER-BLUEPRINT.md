@@ -41,8 +41,8 @@ canvas pad 48px                 PART SIZE
 ## Ticker
 
 - A single 28.6px-high readout, wider only as needed.
-- It presents live blank size `W.WWW × H.HHH` and **HOW MANY PARTS**.
-- No picker bar, calculator, chevron door, rotate pair, reset, or control hit remains. The 18px glyph / 28px hit rule is inapplicable because no ticker control remains.
+- It presents live blank size `W.WWW × H.HHH` and the count number only.
+- The travel row includes Lucide rotate-ccw and rotate-cw controls: 28px hits with 18px glyphs. There is no picker bar, calculator, chevron door, or reset.
 - The blank arc is grab-only.
 
 ## Not in this lock
@@ -50,3 +50,7 @@ canvas pad 48px                 PART SIZE
 - Numeric calculator or picker surface
 - Laser bed, grid, rulers, nest box, or part rendering
 - AutoNest, calculation behavior, or product rename
+
+## Cut 6 correction
+
+The sheet is fixed at right 48px and top `64px + 48px`; no runtime placement may supply an inline left value. Fit, pan, and zoom reserve its lane, while the blank retains a visible 48px gap below the header. MARGIN remains a complete 6.6px box with its own shadow.

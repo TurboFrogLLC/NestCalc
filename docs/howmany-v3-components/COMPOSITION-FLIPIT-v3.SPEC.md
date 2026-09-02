@@ -29,6 +29,15 @@ This section supersedes the ticker-door R1 / R2 / R3 contracts below. Seq 3's bl
 
 ---
 
+## Cut 6 — corrective sheet stops
+
+- The sheet is fixed at `right: 48px` and `top: calc(64px + 48px)`. It has no runtime left-pin placement or drag placement.
+- Fit, pan, and zoom clamp the blank clear of the reserved sheet lane; the blank also retains a visible 48px stage gap below the header. The ticker remains below the header and in front of the blank.
+- MARGIN is a complete 6.6px-radius chip with its own shadow, including in two-line mode.
+- The ticker reads live blank size plus the count number only. The 28px travel row restores Lucide `rotate-ccw` and `rotate-cw` hits with 18px glyphs. It does not restore a picker, calculator, or chevron.
+
+---
+
 ## Seq 3 — blank-in-space canvas
 
 This section supersedes older R1–R13 statements where they name LaserBed or the Numeric HUD as a mounted composition surface.

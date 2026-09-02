@@ -25,18 +25,16 @@ Bridges in this host:
         LaserBed calc chip → HUD calculator · real local file open
         Popover clamp avoids open FLiPIT + active bed blank
   · R2  AUTO-SIZE opens FLiPIT collapsed only · 2nd click detects
-        #bt-calc: collapsed → expand params · expanded → toggle calc
         HUD height follows active mode · tighter popover edge clamp
-  · R3  #bt-calc collapsed → params only (no stale calc display)
-        FLiPIT chip: closed→expand · collapsed-open→expand · expanded→close
+  · R3  FLiPIT chip: closed→expand · collapsed-open→expand · expanded→close
         Source Clear + program-name X fully unload the program
   · R4  AUTO-SIZE 2nd click closes collapsed FlipIt (no re-detect)
         Output tab gated until Flip IT · READY/DONE inset status chrome
   · R5  HUD motion matches FlipIt 240ms grid ease (no minHeight snap)
-        Bed blank → HUD Blank ticker live · #bt-calc floats outside ticker pill
+        Bed blank → HUD Blank ticker live
   · R6  HUD param↔calc stacked crossfade + header radius synced to 0fr end
   · R7  Collapsed ticker fades after settle · FlipIt surface fade
-        Blank+ticker above HUD · square #bt-calc · outside-arc corner grab
+        Blank+ticker above HUD · outside-arc corner grab
   · R8  Bigger free-corner arc · ticker fade as collapse ends
         toolPath open-space + multi-card arrange · blank body behind cards
         Resize glow on blank · lock + HUD-sized calc · unit align · popover presets
@@ -141,6 +139,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     flex-shrink: 0; height: 28.6px; min-height: 28.6px;
   }
   .bt-travel { display: inline-flex; align-items: center; gap: 2px; height: 28px; }
+  .bt-hit {
+    width: 28px; height: 28px; min-width: 28px; min-height: 28px; margin: 0; padding: 0;
+    border: 0; border-radius: 6.6px; background: transparent; color: #1A1428;
+    display: inline-flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+  }
+  .bt-hit svg { display: block; width: 18px; height: 18px; pointer-events: none; }
   .blank-ticker {
     height: 28px;
     min-height: 28px;
@@ -2135,13 +2139,14 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     #hud {
       --sheet-inset: 48px;
       position: fixed; z-index: 80; top: calc(var(--app-header-h) + var(--canvas-pad)); right: var(--sheet-inset);
-      display: block; width: 154px; padding: 0; border: 0; border-radius: 0;
-      background: transparent; box-shadow: none;
+      bottom: auto; left: auto; display: block; width: 154px; min-width: 0; padding: 0; border: 0; border-radius: 0;
+      background: transparent; box-shadow: none; overflow: visible;
     }
     #hud::after, #hud .keypad-header, #hud .hud-footer-sep, #hud .hud-controls { display: none !important; }
     #hud-body, #hud-body-inner { display: block; padding: 0; background: transparent; min-height: 0 !important; }
     #hud .hud-stage, #hud #hud-mode, #hud .param-rows { position: static; display: flex; flex-direction: column; gap: 8.8px; height: auto !important; opacity: 1; pointer-events: auto; }
     #hud .param-row { display: flex; flex-direction: column; align-items: stretch; gap: 4.4px; min-height: 0; }
+    #hud .param-row[data-param="margin"] { align-items: stretch; }
     #hud .param-label { flex: 0 0 auto; font-size: 11px; font-weight: 650; letter-spacing: 0.04em; line-height: 1; }
     #hud .param-ticker { width: 154px; height: 28.6px; min-height: 28.6px; border-radius: 6.6px; box-shadow: 0 0.5px 1px rgba(0,0,0,.25); }
     #hud .param-row[data-param="margin"] .param-ticker:has(.m-line) { min-height: 40px; }
@@ -2198,8 +2203,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     <!-- Ticker is a readout only; the field stack owns editing. -->
     <div class="blank-ticker-cluster" id="blank-ticker-cluster">
       <div class="bt-travel-box" id="bt-travel-box"><div class="bt-travel">
+        <button type="button" class="bt-hit" id="bt-rot-ccw" title="−90" aria-label="−90"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v6h6"/></svg></button>
+        <button type="button" class="bt-hit" id="bt-rot-cw" title="+90" aria-label="+90"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v6h-6"/></svg></button>
         <span class="blank-ticker" id="blank-ticker" aria-label="Blank size"><span class="bt-readout" id="bt-readout">12.000 × 8.000</span></span>
-        <span class="bt-parts" id="bt-parts">How many parts · 0</span>
+        <span class="bt-parts" id="bt-parts" aria-label="Part count">0</span>
       </div></div>
     </div>
   
@@ -2724,9 +2731,20 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   function syncHudBlankFromBed() {
     if (typeof window.__hudSyncBlank === 'function') window.__hudSyncBlank(state.blankW, state.blankH);
   }
+  function clampSubjectToStops() {
+    var W = svg.clientWidth || window.innerWidth;
+    var sheet = document.getElementById('hud');
+    var sheetLane = (sheet ? sheet.offsetWidth : 154) + PAD * 2;
+    var baseScale = state.fitScale == null ? fittedScale() : state.fitScale;
+    var maxZoom = Math.max(0.35, (W - sheetLane - PAD) / Math.max(state.blankW * baseScale, 1));
+    state.zoom = Math.min(state.zoom, maxZoom);
+    var s = pxPerInch();
+    state.panX = Math.max(PAD, Math.min(W - sheetLane - state.blankW * s, state.panX));
+    state.panY = Math.max(state.blankH * s + PAD, state.panY);
+  }
 
   function render() {
-    layoutBlank(); applyCamera(); drawBedRulers(); positionBlankTicker(); syncHudBlankFromBed();
+    clampSubjectToStops(); layoutBlank(); applyCamera(); drawBedRulers(); positionBlankTicker(); syncHudBlankFromBed();
   }
   window.__bedSetBlank = function (w, h) {
     var nw = Number.isFinite(w) ? w : state.blankW;
@@ -2760,8 +2778,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var H = svg.clientHeight || window.innerHeight;
     var sheet = document.getElementById('hud');
     var sheetLane = (sheet ? sheet.offsetWidth : 154) + PAD * 2;
-    state.panX = Math.max(PAD, (W - sheetLane - state.blankW * s) / 2);
-    state.panY = (H + state.blankH * s) / 2;
+    state.panX = Math.max(PAD, Math.min(W - sheetLane - state.blankW * s, (W - sheetLane - state.blankW * s) / 2));
+    state.panY = Math.max(state.blankH * s + PAD, (H + state.blankH * s) / 2);
   }
 
   function onPointerDown(e) {
@@ -2780,8 +2798,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (!state.dragging || !state.start) return;
     var dx = e.clientX - state.start.cx, dy = e.clientY - state.start.cy, s = state.start.scale;
     if (state.dragging === 'pan') {
-      state.panX = Math.max(0, Math.min((svg.clientWidth || window.innerWidth) - state.blankW * s, state.start.panX + dx));
-      state.panY = Math.max(state.blankH * s, Math.min((svg.clientHeight || window.innerHeight), state.start.panY + dy));
+      var sheet = document.getElementById('hud');
+      var sheetLane = (sheet ? sheet.offsetWidth : 154) + PAD * 2;
+      state.panX = Math.max(PAD, Math.min((svg.clientWidth || window.innerWidth) - sheetLane - state.blankW * s, state.start.panX + dx));
+      state.panY = Math.max(state.blankH * s + PAD, Math.min((svg.clientHeight || window.innerHeight), state.start.panY + dy));
     }
     else if (state.dragging === 'x') state.blankW = Math.max(state.snap, snap(state.start.w + dx / s));
     else if (state.dragging === 'y') state.blankH = Math.max(state.snap, snap(state.start.h - dy / s));
@@ -3060,15 +3080,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     hud.classList.remove('calc-mode');
     if (hudMode) hudMode.setAttribute('aria-hidden', 'false');
   }
-
-  /* Initial placement only — collapse/expand never moves left/top (position hold) */
-  (function placeInitial() {
-    hud.style.transform = 'none';
-    hud.style.right = 'auto';
-    hud.style.bottom = 'auto';
-    hud.style.left = '25px';
-    hud.style.top = Math.round(document.getElementById('laser-bed-host').getBoundingClientRect().top + 20) + 'px';
-  })();
 
   function hudMotion() {
     return 'grid-template-rows var(--motion-collapse) var(--ease)';
@@ -4731,7 +4742,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var tp = document.getElementById('backplot');
     var flags = window.__cardUserDrag;
     var flipitOpen = !!(gcode && gcode.classList.contains('is-open') && gcode.style.display !== 'none');
-    var hudVisible = !!(hud && hud.offsetWidth > 0);
+    /* The side sheet is fixed in its reserved lane, never a draggable card. */
+    var hudVisible = false;
     var tpOpen = !!(tp && !tp.classList.contains('is-hidden'));
     var vw = window.innerWidth;
     var top = stageTopBand();
