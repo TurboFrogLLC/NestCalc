@@ -49,4 +49,7 @@ Stamp: aae5299a836078d52fcbcd7c558cc1dfd9ae9f03
 Seq 23 Cut 13 HUD seats + editor chrome — Grok Build: header→HUD is 15px and HUD→blank is a 15px hard stop; the centered HUD stays fixed. Side chips take the same +10% as the closed bar (31.46 / 7.26 / 13.31). Blue count is 14.64. Check and X are unboxed Lucide matching the rotate pair and header + / − / Fit. Every field select-alls on click. MARGIN is a tight padded L R / B T pill; GAP keeps Link. No picker, calc, chevron, popover, bed, or GOAL.md.
 Stamp: abdd627c402a8a21cc3b56d30441144ce1c1aba6
 
-NEXT: Owner direction after Cut 13.
+Seq 24 Cut 14 editor math + 15px stops — Grok Build: chips sit on one 31.46 row with 6ch three-decimal inputs; MARGIN is an even 2×2 with Check/X centered to the grid; Check/X/Link are 22/14 and rotate is 24/16; one 15px stop on HUD, stack-right, HUD-bottom, and viewport-bottom. HUD stays fixed. No picker, calc, chevron, popover, bed, or GOAL.md.
+Stamp: 0d9c648b5d2402f7c27c7f6a91966a5cecd89661
+
+NEXT: Owner direction after Cut 14.
