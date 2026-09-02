@@ -3,7 +3,7 @@
 Product: FLiPIT
 Host: `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`
 Stage: blank-in-space (127)
-Lock: Cut 12 / PR 131
+Lock: Cut 13 / PR 131
 
 This replaces the former ticker-picker blueprint. It is intentionally not a picker schematic.
 
@@ -13,8 +13,9 @@ The stage subject is the blank and left sheet; the ticker is an independent fixe
 
 ```
 header 64px
-
+15px
                  [ rotate | 12.000 × 8.000 | count ]   fixed, centered ticker
+15px hard stop   blank cannot cross this line
 
 canvas pad 48px  PART SIZE
                  [ 1.250 x 3.375 ]
@@ -87,3 +88,11 @@ This supersedes the Cut 6 sheet side: the sheet is fixed at left 48px and top `6
 - The bar's size readout is the BLANK editor. Its two padded white fields select-all, type, commit with Check, or cancel with X; `×` alone separates them. It grows right from a fixed left edge.
 - The left sheet inset is 24px and the stack is PART SIZE, GAP, MARGIN. BLANK has no sheet row or label. Fit, pan, and zoom reserve the remaining lane.
 - Opening a side chip grows that chip and the fixed-left sheet right; the blank follows the width delta and returns on close. The centered ticker stays fixed. GAP alone has Link between Y and Check. MARGIN remains an even, taller L/R then B/T chip with complete 6.6px corners and no pluses or axis labels.
+
+## Cut 13 HUD seats + editor chrome
+
+- Header-bottom to centered-HUD-top is 15px. HUD-bottom to blank-top is a 15px hard stop. The blank cannot cross that line. The centered HUD stays fixed: no pan, zoom, or Fit motion.
+- Side chips scale +10% from the 28.6 lock: height 31.46, radius 7.26, type 13.31 / 650 / mono — the same 10% already on the closed bar. Blue count on the centered bar is one step larger: 14.64 / 650 / mono. Closed bar chrome stays.
+- Check and X are unboxed Lucide `check` and `x` only, 19.8px / 2px stroke in 30.8px hits, matching the rotate pair and header + / − / Fit. Header + / − / Fit are Lucide `plus`, `minus`, and `maximize` at that same size and stroke.
+- Every editor field select-alls on click, not only the first field on open. No X/Y labels; `×` is enough. MARGIN is an even L R / B T grid inside a tight pill: padded white cells, no empty slab, no plus signs, grows right only. GAP keeps Link between Y and Check.
+- No picker, calculator, chevron, popover, or bed.

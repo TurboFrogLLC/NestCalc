@@ -1,6 +1,6 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Cut 12 centered ticker + side stack
+**Status:** Living — Cut 13 HUD seats + editor chrome
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
@@ -70,6 +70,16 @@ The blank ticker is a fixed viewport HUD: horizontally centered, 48px below the 
 BLANK leaves the left sheet. The centered ticker itself is its blank-size editor: select-all on open, type, Check, and X, with two padded white cells separated only by `×` (no X/Y labels). Its pill grows right from a stable left edge; it has no hanging controls.
 
 The left sheet is moved to the smaller 24px inset and contains only **PART SIZE**, **GAP**, and **MARGIN**. Side chips grow right only; their width delta moves the blank right and closing moves it back. The fixed centered ticker does not move. Fit, pan, and zoom reserve this remaining left lane. GAP alone retains Link between Y and Check. MARGIN remains its taller, complete 6.6px L/R then B/T grid with no plus or axis labels. No picker, calculator, chevron, popover, or bed is restored.
+
+## Cut 13 — HUD seats + editor chrome
+
+Header-bottom to centered-HUD-top is **15px**, not 48. HUD-bottom to blank-top is a **15px hard stop**; Fit, pan, and zoom cannot move the blank across that line. The centered HUD stays fixed and does not pan, zoom, or Fit.
+
+Side-stack chips take the same +10% as the closed bar: **31.46px** high, **7.26px** radius, **13.31px / 650 / mono**. Closed bar chrome is unchanged. The live blue count on the centered bar is one step larger: **14.64px / 650 / mono**.
+
+Check and X are unboxed Lucide `check` and `x` only — 30.8px hits, 19.8px glyphs, 2px round stroke — matching the rotate pair and header + / − / Fit. Those three header hits are Lucide `plus`, `minus`, and `maximize` at the same size and stroke; they are not circled or boxed. Every editor field select-alls on click, not only the first field on open. PART SIZE and GAP use `×` with no X/Y labels. GAP keeps Link between Y and Check.
+
+MARGIN is an even L R / B T grid inside a tight pill: padded white cells, no empty slab, no plus signs. The pill grows right only. No picker, calculator, chevron, popover, or bed is restored.
 
 ---
 
