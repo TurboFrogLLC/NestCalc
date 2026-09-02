@@ -21,4 +21,8 @@ Seq 9 Cut 6 corrective — right sheet, stops, rotate pair chrome.
 Stamp: cffe0d323f83bfc2f8467fa87110b57c9f6d8e80
 
 Seq 10+ Owner: stack returns left. Cut then Look. Do not stack 7–10.
-NEXT: Cut 7 only
+
+Seq 10 Cut 7 left sheet — Codex CLI: fixed the transparent sheet at left 48px and `64px + 48px`; Fit, pan, and zoom reserve the left lane and keep the blank clear. Ticker chrome and closed editor chips are unchanged.
+Stamp: e3316a5e348776bd6711db3ca819edcc2a1ef238
+
+NEXT: Look 8091 only. Stop. No Codex. No next Cut.
