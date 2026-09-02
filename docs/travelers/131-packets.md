@@ -31,4 +31,10 @@ Stamp: b2caddf92cfacd92791802e500de1e62a7d0d56e
 Seq 12 Cut 8 blank ticker corrective — Codex CLI: one 28.6px ticker row with stock Lucide paths, inset rules, live size/count type, −90/+90 wiring, and visible MARGIN overflow with its complete stroke/shadow. No picker, calc, chevron, popover, or Cut 10 editor.
 Stamp: 43357ca20ff39e3d14e9b835c105b4b5227a0719
 
+Seq 13 Look 8091 — passed: ticker chrome lock.
+Stamp: 4cd1d48c02bfb44ac5ce782a2909e5939226d278
+
+Seq 16 Cut 10 in-chip editors — Codex CLI: side chips edit in place with select-all, Check/X, paired X/Y rows, and downward L/R/B/T MARGIN fields. Popover remains unreachable; no link, swap, picker, calc, chevron, or bed.
+Stamp: 4a060dc15e59131267d8a6b102a5be6b45a7ddb4
+
 NEXT: Look 8091 only. Stop. No Codex. No next Cut.
