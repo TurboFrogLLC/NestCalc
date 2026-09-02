@@ -139,7 +139,30 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     border-radius: 7.26px; background: #E8E8E8; color: #1A1428; pointer-events: auto;
     flex-shrink: 0; height: 31.46px; min-height: 31.46px; box-shadow: 0 0.5px 1px rgba(0,0,0,.25);
   }
-  .bt-travel { display: inline-flex; align-items: center; gap: 0; }
+  #bt-travel-box {
+    --bt-seat-ccw: 24px;
+    --bt-seat-gap-ccw-cw: 0px;
+    --bt-seat-cw: 24px;
+    --bt-seat-gap-cw-size: 0px;
+    --bt-seat-size: auto;
+    --bt-seat-gap-size-menu: 0px;
+    --bt-seat-menu: 24px;
+    --bt-seat-gap-menu-count: 0px;
+    --bt-seat-count: auto;
+    display: grid;
+    grid-template-columns: var(--bt-seat-ccw) var(--bt-seat-gap-ccw-cw) var(--bt-seat-cw) var(--bt-seat-gap-cw-size) var(--bt-seat-size) var(--bt-seat-gap-size-menu) var(--bt-seat-menu) var(--bt-seat-gap-menu-count) var(--bt-seat-count);
+    align-items: center;
+    width: max-content;
+    height: 100%;
+    flex: 0 0 auto;
+  }
+  #bt-travel-box.is-seat-locked { width: var(--bt-seat-map-width); }
+  #bt-travel-box.is-seat-locked > #blank-ticker { width: 100%; }
+  #bt-travel-box > #bt-rot-ccw { grid-column: 1; }
+  #bt-travel-box > #bt-rot-cw { grid-column: 3; }
+  #bt-travel-box > #blank-ticker { grid-column: 5; min-width: 0; }
+  #bt-travel-box > #bt-menu { grid-column: 7; }
+  #bt-travel-box > #bt-parts { grid-column: 9; }
   .bt-hit {
     width: 24px; height: 24px; min-width: 24px; min-height: 24px; margin: 0; padding: 0;
     border: 0; border-radius: 0; background: transparent; color: #111111;
@@ -2386,7 +2409,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     </svg>
     <!-- The blank size is the same in-place editor as the BLANK chip. -->
     <div class="blank-ticker-cluster" id="blank-ticker-cluster">
-      <div class="bt-travel-box" id="blank-ticker-pin"><div class="bt-travel">
+      <div class="bt-travel-box" id="blank-ticker-pin"><div class="bt-travel" id="bt-travel-box">
         <button type="button" class="bt-hit" id="bt-rot-ccw" title="−90" aria-label="−90"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></button>
         <button type="button" class="bt-hit" id="bt-rot-cw" title="+90" aria-label="+90"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg></button>
         <span class="blank-ticker" id="blank-ticker" aria-label="Blank size"><span class="bt-readout" id="bt-readout">12.000 × 8.000</span></span>
@@ -2812,6 +2835,31 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     probe.remove();
     btParts.style.setProperty('--bt-count-well', width + 'px');
   }
+  function lockOpenTickerSeats() {
+    var row = document.getElementById('bt-travel-box');
+    var pin = document.getElementById('blank-ticker-pin');
+    if (!row || !pin || !blankCluster || !blankCluster.classList.contains('is-ticker-editing')) return;
+    var seats = [
+      document.getElementById('bt-rot-ccw'),
+      document.getElementById('bt-rot-cw'),
+      document.getElementById('blank-ticker'),
+      document.getElementById('bt-menu'),
+      document.getElementById('bt-parts')
+    ];
+    var rects = seats.map(function (seat) { return seat && seat.getBoundingClientRect(); });
+    var rowRect = row.getBoundingClientRect();
+    if (!rowRect.width || rects.some(function (rect) { return !rect || !rect.width; })) return;
+    function px(value) { return (Math.round(value * 1000) / 1000) + 'px'; }
+    var names = ['ccw', 'cw', 'size', 'menu', 'count'];
+    names.forEach(function (name, index) { row.style.setProperty('--bt-seat-' + name, px(rects[index].width)); });
+    row.style.setProperty('--bt-seat-gap-ccw-cw', px(rects[1].left - rects[0].right));
+    row.style.setProperty('--bt-seat-gap-cw-size', px(rects[2].left - rects[1].right));
+    row.style.setProperty('--bt-seat-gap-size-menu', px(rects[3].left - rects[2].right));
+    row.style.setProperty('--bt-seat-gap-menu-count', px(rects[4].left - rects[3].right));
+    row.style.setProperty('--bt-seat-map-width', px(rowRect.width));
+    row.classList.add('is-seat-locked');
+  }
+  window.__bedLockTickerSeats = function () { window.requestAnimationFrame(lockOpenTickerSeats); };
 
   function snap(v) { var s = state.snap; return Math.round(v / s) * s; }
   function fittedScale() {
@@ -4380,8 +4428,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       ticker.innerHTML = chipField('', 'x', bag.x) + '<span class="chip-editor-by">×</span>' + chipField('', 'y', bag.y);
     }
     fillChipActions(actionsHostFor(ticker, isBlankTicker), gapLink + check + cancel);
-    if (isBlankTicker) bindBlankTickerInputs(ticker);
-    else bindChipInputs(ticker, key);
+    if (isBlankTicker) {
+      bindBlankTickerInputs(ticker);
+      if (typeof window.__bedLockTickerSeats === 'function') window.__bedLockTickerSeats();
+    } else bindChipInputs(ticker, key);
   }
   window.__hudOpenChipEditor = openChipEditor;
   hud.addEventListener('click', onChipAction);

@@ -215,6 +215,10 @@ Fit, pan, and zoom add a 25px viewport inset on both horizontal sides of the bla
 
 At boot, the host measures the rendered tabular `999` face in the count font and fixes the blue well to that pixel width plus its existing 5px rule inset on both sides. The value is centered and clipped inside that immutable well; changing it cannot resize the closed `#blank-ticker-pin`, and Check/X remain outside. Every render reads the resize arc with `getBoundingClientRect()` after applying the camera and corrects its pan position if either arc edge would fall inside the 25px viewport inset. Fit, pan, and zoom use the matching right allowance for the arc’s 19px drawn extent. The 15px header/HUD/blank stops, sheet lane, eye toggle, green arm, AutoNest math, SVG-inch space, bands, origins, full trim-edge policy, and trim remain unchanged.
 
+## AutoNest Cut 8c — HUD inner seats
+
+`#blank-ticker-pin` is the unchanging outer 31.46px-high, 7.26px-radius `#E8E8E8` pin. While the blank editor is open, the host measures `#bt-travel-box` and records its five inner seat widths and four inter-seat gaps: rotate-ccw, rotate-cw, 13.31px / 650 / mono three-decimal size pair with `×`, 24px hamburger, and the fixed tabular-`999` count well with its 5px inset on each side. The closed row reuses that measured CSS grid exactly. Its inset rules therefore retain their open gaps, and closing with Check or X neither reflows the inner row nor changes the outer pin’s left coordinate or width. Check/X remain sibling actions outside the pin. Rotate and hamburger retain 24px hits, 16px glyphs, and 2px strokes; all Cut 8b camera, arc, eye, green arm, bands, AutoNest, SVG-inch, origin, trim-edge-policy, and no picker / calculator / chevron / bed locks remain unchanged.
+
 ---
 
 ## Seq 3 — blank-in-space canvas
