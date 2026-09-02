@@ -4,16 +4,16 @@ Repo: NestCalc
 Owner: wReckless
 Part: Vercel git auto-deploy off
 Description: Stop Vercel builds on every Git push. Local `npx vercel --prod` stays the deploy.
-PR:
+PR: 132
 Branch: docs/vercel-no-autodeploy
-Head: 01e5359f1eb7c1de495b3a871173df7799401747
+Head: c79211ef20f89a7db538ede4cbd5760984f81042
 Session: fresh
 job_id: NGJ-20260902-vercel-git
 flow_id:
 goal_sha256:
 
 Seq  Label              Notes                                              Stamp
-1    Plan               one Cut. git.deploymentEnabled false. Local deploy
+1    Plan               one Cut. git.deploymentEnabled false. Local deploy  c79211ef20f89a7db538ede4cbd5760984f81042
 2    Start-branch       Owner local soft-sync
 3    Cut                vercel.json git.deploymentEnabled false
 4    Send for review    Owner look. No Codex unless named
