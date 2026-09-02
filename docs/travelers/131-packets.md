@@ -105,3 +105,6 @@ Stamp: de83a6c0101113fbd3d36ac59929daf70589dbaa
 
 Seq 40 Cut 30 HUD count three-digit slot — Codex App: made the centered HUD count a fixed slot of three tabular `ch` faces at 14.64px / 650 / mono plus the shared 5px vertical-rule inset on both sides. The blue count is centered between the size|count separator and inner right stroke, so 1, 14, and 144 neither clip nor shift the size field. The closed-width pin, chips, presets, boot defaults, Fit, and stops remain unchanged.
 Stamp: 6887d047502231798c54b1d265064068053d09ac
+
+Seq 43 Close — Codex App: PR 131 was marked ready without a new Codex review request, then merged to main under wReckless B8 authorization at `c5f822a3684e19b282ce532e8c779c1180f9b73d`. Cut 30's three-digit HUD count slot, the locked side-stack surfaces, and all prior protections are included in the merge. No product law, Production, or MODE changed. `NGJ-20260901-sidestack` is complete.
+Stamp: c5f822a3684e19b282ce532e8c779c1180f9b73d
