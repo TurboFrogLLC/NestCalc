@@ -211,6 +211,10 @@ The far right of the 154px MARGIN label row carries a 22 × 22 Lucide visibility
 
 Fit, pan, and zoom add a 25px viewport inset on both horizontal sides of the blank subject: the left inset is outside the reserved sheet lane and the right inset is outside the existing 15px blank stop. The resize arc therefore remains visible at either side without changing the 15px header/HUD/blank vertical stops. The centered count is a rigid clipped well sized to the 14.64px / 650 / mono tabular `999` face (three `ch`) plus its existing 5px side insets; it centers `1`, `95`, `150`, and `196` without changing the closed bar width. Blank-editor Check/X remain outside the bar. Cut 7 eye toggle, green arm, AutoNest math, SVG-inch space, margin bands, origins, full trim-edge policy, and trim remain unchanged.
 
+## AutoNest Cut 8b — measured count well + drawn arc inset
+
+At boot, the host measures the rendered tabular `999` face in the count font and fixes the blue well to that pixel width plus its existing 5px rule inset on both sides. The value is centered and clipped inside that immutable well; changing it cannot resize the closed `#blank-ticker-pin`, and Check/X remain outside. Every render reads the resize arc with `getBoundingClientRect()` after applying the camera and corrects its pan position if either arc edge would fall inside the 25px viewport inset. Fit, pan, and zoom use the matching right allowance for the arc’s 19px drawn extent. The 15px header/HUD/blank stops, sheet lane, eye toggle, green arm, AutoNest math, SVG-inch space, bands, origins, full trim-edge policy, and trim remain unchanged.
+
 ---
 
 ## Seq 3 — blank-in-space canvas

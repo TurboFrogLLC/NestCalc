@@ -174,7 +174,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
   .blank-ticker .bt-readout { line-height: 31.46px; letter-spacing: 0.01em; }
   .bt-parts {
-    /* In the tabular count face, 999 is the fixed three-character well. */
     --bt-count-well: 3ch;
     box-sizing: border-box;
     display: inline-flex;
@@ -2790,6 +2789,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
   var STOP = 15;
   var SIDE_INSET = 25;
+  var ARC_OUTSET = 19;
   var HEADER_H = 64;
   var TICKER_H = 31.46;
   var HUD_BLANK_STOP = STOP + TICKER_H + STOP;
@@ -2801,7 +2801,17 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     return (sheet ? sheet.offsetWidth : 154) + SHEET_INSET + STOP;
   }
   function subjectLeftPx() { return sheetLanePx() + SIDE_INSET; }
-  function subjectRightPx() { return STOP + SIDE_INSET; }
+  function subjectRightPx() { return SIDE_INSET + ARC_OUTSET; }
+  function lockCountWell() {
+    if (!btParts) return;
+    var probe = document.createElement('span');
+    probe.textContent = '999';
+    probe.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;font:650 14.64px/31.46px var(--font-mono);font-variant-numeric:tabular-nums;letter-spacing:0';
+    document.body.appendChild(probe);
+    var width = Math.ceil(probe.getBoundingClientRect().width);
+    probe.remove();
+    btParts.style.setProperty('--bt-count-well', width + 'px');
+  }
 
   function snap(v) { var s = state.snap; return Math.round(v / s) * s; }
   function fittedScale() {
@@ -3242,10 +3252,19 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     state.panX = Math.max(left, Math.min(W - right - state.blankW * s, state.panX));
     state.panY = Math.max(minPanY, Math.min(maxPanY, state.panY));
   }
+  function keepResizeArcInViewport() {
+    if (!cornerArc) return;
+    var rect = cornerArc.getBoundingClientRect();
+    var min = SIDE_INSET, max = window.innerWidth - SIDE_INSET;
+    var correction = rect.left < min ? min - rect.left : rect.right > max ? max - rect.right : 0;
+    if (!correction) return;
+    state.panX += correction;
+    applyCamera();
+  }
 
   function render() {
     var layout = state.autoNestArmed ? autoNestLayout() : nestLayout();
-    clampSubjectToStops(); layoutBlank(layout); applyCamera(); drawBedRulers(); positionBlankTicker(layout); syncHudBlankFromBed();
+    clampSubjectToStops(); layoutBlank(layout); applyCamera(); keepResizeArcInViewport(); drawBedRulers(); positionBlankTicker(layout); syncHudBlankFromBed();
   }
   window.__bedSetBlank = function (w, h) {
     var nw = Number.isFinite(w) ? w : state.blankW;
@@ -3377,6 +3396,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   document.getElementById('lb-fit').onclick = function () { fitBed(); render(); };
   window.addEventListener('resize', function () { fitBed(); render(); });
 
+  lockCountWell();
   fitBed(); render();
   var sheet = document.getElementById('hud');
   if (sheet && typeof ResizeObserver !== 'undefined') {
