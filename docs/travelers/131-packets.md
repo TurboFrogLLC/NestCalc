@@ -99,3 +99,6 @@ Stamp: 79ec337c7be4768ec961648f943ab2003d6d888d
 
 Seq 38 Cut 29 pencil hydrate and blank grow — Codex App: pencil with no armed slot now opens the blocking card hydrated from the live Blank, Gap, and Margin values; pencil with an armed slot still edits that slot. Copy live is removed, leaving Check/X only; Check writes the first empty slot or appends a slot when all are filled; X closes without a write; an empty name becomes Preset. Browser proof on 8091 dragged the blank corner beyond the viewport edge: the live size grew 12.000 × 8.000 → 23.750 × 15.750 while the drawn blank stayed right-clamped at 1185px in a 1200px viewport. Label-row Check/X, gold arm, card pad, parts on blank, Fit, and stops-as-pan remain locked.
 Stamp: 4ac190a0417376e2b272b29b7c38e2ff757f85fa
+
+Seq 39 Cut 22 boot defaults — Codex App: changed every host and script boot path to PART SIZE 2.500 × 3.500, BLANK 12.000 × 8.000, GAP 0.125 × 0.125, and MARGIN L 0.250 / R 0.250 / B 0.500 / T 0.250. Closed MARGIN now starts as its two-line L R / B T readout because B differs. Preset modal, pencil hydrate, label-row Check/X, gold arm, blank-grow-past-stop, parts-on-blank, Fit, pan stops, picker, calculator, and bed remain unchanged.
+Stamp: de83a6c0101113fbd3d36ac59929daf70589dbaa
