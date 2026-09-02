@@ -3,7 +3,7 @@
 Product: FLiPIT
 Host: `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`
 Stage: blank-in-space (127)
-Lock: Cut 27 / PR 131
+Lock: Cut 28 / PR 131
 
 This replaces the former ticker-picker blueprint. It is intentionally not a picker schematic.
 
@@ -166,3 +166,8 @@ This supersedes the Cut 6 sheet side: the sheet is fixed at left 48px and top `6
 - When a live slot is armed, pencil-on opens that selected slot’s card immediately; pencil-on without an arm opens no card. Idle hydration retains its gold arm, while a live chip editor still clears the arm without writing the slot.
 - Retain the 252.4px card, 15px pad, 222.4px content width, 106.8 × 31.46 axis cells, and one-row Copy live footer. A second 1.1px rule, inset by the card pad, sits between the name field and Blank without adding a label.
 - Check and X remain 22 × 22 Lucide hits immediately after the PART SIZE, GAP, MARGIN, and center-bar size readout. GAP Link stays between its numbers and Check. MARGIN’s actions align with the first number row, not the two-row grid’s vertical center. Pencil paths, gold tokens, layer z-index, parts-on-blank, Fit, and stops remain locked.
+
+## Cut 28 Check X on label row
+
+- Open PART SIZE, GAP, and MARGIN move their 22 × 22 Lucide Check/X hits to the respective 11px label row, immediately after PART SIZE, GAP, or MARGIN and vertically centered to that label row. GAP Link remains between GAP and Check. Closed labels expose no actions.
+- The centered blank-size slot has no separate label, so its Check/X remain on its number row. Pencil-on-selected, gold arm, card pad, footer, parts-on-blank, Fit, and stops remain locked.

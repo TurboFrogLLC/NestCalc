@@ -2182,6 +2182,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     #hud .hud-stage, #hud #hud-mode, #hud .param-rows { position: static; display: flex; flex-direction: column; gap: 8.8px; height: auto !important; opacity: 1; pointer-events: auto; overflow: visible; }
     #hud .param-row { display: flex; flex-direction: column; align-items: stretch; gap: 4.4px; min-height: 0; overflow: visible; }
     #hud .param-row[data-param="margin"] { align-items: stretch; }
+    #hud .param-label-row { display: flex; align-items: center; gap: 4.4px; min-height: 22px; }
     #hud .param-label { flex: 0 0 auto; font-size: 11px; font-weight: 650; letter-spacing: 0.04em; line-height: 1; }
     #hud .chip-seat { display: flex; flex-direction: row; align-items: center; gap: 4.4px; width: max-content; max-width: none; overflow: visible; }
     #hud .param-ticker {
@@ -2236,8 +2237,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }
     #hud .param-row[data-param="margin"] .chip-editor-field,
     #hud .param-row[data-param="margin"] .chip-editor-field input { height: auto; line-height: 1; }
-    #hud .param-row[data-param="margin"] .chip-seat { align-items: flex-start; }
-    #hud .param-row[data-param="margin"] .chip-editor-actions:not([hidden]) { align-self: flex-start; margin-top: 2.65px; }
     /* Cut 23: named presets stay in the sheet; their editor is a blocking card, never the old popover. */
     #hud .margin-presets { display: flex; flex-direction: column; gap: 4.4px; width: 154px; }
     #hud .margin-presets__head { display: flex; align-items: center; justify-content: space-between; min-height: 11px; }
@@ -2399,10 +2398,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         <div id="hud-mode">
           <div class="param-rows">
             <div class="param-row" data-param="part">
-              <span class="param-label">Part size</span>
+              <div class="param-label-row"><span class="param-label">Part size</span><div class="chip-editor-actions" hidden></div></div>
               <div class="chip-seat">
               <div class="param-ticker" data-ticker="part" data-open="part" tabindex="0">1.250 × 3.375</div>
-              <div class="chip-editor-actions" hidden></div>
               </div>
               <div class="param-popover" data-pop="part">
                 <div class="pop-head">
@@ -2425,10 +2423,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
             </div>
 
             <div class="param-row" data-param="gap">
-              <span class="param-label">Gap</span>
+              <div class="param-label-row"><span class="param-label">Gap</span><div class="chip-editor-actions" hidden></div></div>
               <div class="chip-seat">
               <div class="param-ticker" data-ticker="gap" data-open="gap" tabindex="0">0.375 × 0.125</div>
-              <div class="chip-editor-actions" hidden></div>
               </div>
               <div class="param-popover" data-pop="gap">
                 <div class="pop-head">
@@ -2459,10 +2456,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
             </div>
 
             <div class="param-row" data-param="margin">
-              <span class="param-label">Margin</span>
+              <div class="param-label-row"><span class="param-label">Margin</span><div class="chip-editor-actions" hidden></div></div>
               <div class="chip-seat">
               <div class="param-ticker" data-ticker="margin" data-open="margin" tabindex="0">0.250 all</div>
-              <div class="chip-editor-actions" hidden></div>
               </div>
               <div class="param-popover" data-pop="margin">
                 <div class="pop-head">
@@ -3871,8 +3867,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
   function actionsHostFor(ticker, isBlankTicker) {
     if (isBlankTicker) return document.getElementById('bt-chip-actions');
-    var seat = ticker && ticker.closest && ticker.closest('.chip-seat');
-    return seat ? seat.querySelector('.chip-editor-actions') : null;
+    var row = ticker && ticker.closest && ticker.closest('.param-row');
+    return row ? row.querySelector('.param-label-row .chip-editor-actions') : null;
   }
   function fillChipActions(host, html) {
     if (!host) return;

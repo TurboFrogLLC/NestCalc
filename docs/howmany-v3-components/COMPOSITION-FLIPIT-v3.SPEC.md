@@ -1,6 +1,6 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Cut 27 pencil-on-selected and inline actions
+**Status:** Living — Cut 28 Check X on label row
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
@@ -148,6 +148,10 @@ An idle preset tap hydrates live Blank, Gap, and Margin and arms that selected l
 ## Cut 27 — pencil-on-selected and inline actions
 
 With a live preset already armed, pressing the pencil opens that selected slot’s card immediately; a pencil press with no armed slot enters edit mode but opens no card. Idle slot hydration still keeps the gold arm, and a live chip edit still clears it without writing. The retained 252.4px card adds a second 1.1px inset rule between its name field and the Blank section; its 15px pad, 222.4px content width, fields, footer rule, and Copy live row stay unchanged. PART SIZE, GAP, MARGIN, and the centered blank-size editor keep their 22 × 22 Lucide Check/X hits inline immediately after the readout; GAP Link stays between its numbers and Check, and MARGIN’s actions align to its first numeric row rather than the middle of its two-row grid.
+
+## Cut 28 — Check X on label row
+
+When PART SIZE, GAP, or MARGIN is open, its 22 × 22 Lucide Check and X hits sit on the 11px label row immediately after the label, vertically centered to that row rather than beside the number chip. GAP keeps Link between its label and Check. Closed chips expose no label-row actions. The centered blank-size slot has no separate label and keeps Check/X on its number row. Pencil-on-selected, gold arm, card pad, footer, parts-on-blank, Fit, and stops stay unchanged.
 
 ---
 
