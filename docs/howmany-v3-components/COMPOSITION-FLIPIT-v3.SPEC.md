@@ -191,6 +191,10 @@ While the hamburger is armed, the FLiPIT host consumes `calculateAutoNest` from 
 
 Armed two-group AutoNest uses `trimEdgePolicy: 'full'`. A vertical split creates independent left and right blanks; a horizontal split creates independent top and bottom blanks. Every resulting blank receives the current ticker L, R, T, and B margins in full, including its trim-facing edge. Tiles are positioned from that blank’s returned `achievedMargins`, so each group remains inset on all four of its own sides; the host still draws exactly one engine `trimLine`. The count, strict two-group improvement rule, Cut 1 best-uniform fallback, hamburger-off grid, and glyph states are unchanged.
 
+## AutoNest Cut 4 — isolated blank origin
+
+Each two-group blank packs from its own bottom-left just as the single blank does. The live ticker L and B are the local tile origin insets: left and bottom groups start at sheet L/B; right groups start at trim + L / sheet B; top groups start at sheet L / trim + B. This leaves every blank’s unused space on its right and top while the full-policy engine result guarantees L/R/T/B containment. The trim remains one engine line. A translucent red per-blank L/R/T/B margin band is deferred for a later operation only and is not drawn here.
+
 ---
 
 ## Seq 3 — blank-in-space canvas

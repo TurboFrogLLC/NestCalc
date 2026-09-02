@@ -3112,11 +3112,13 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
           var group = groupBlank.group, grid = group.grid;
           var originX = layout.trimLine.orientation === 'vertical' && groupIndex === 1 ? layout.trimLine.position : 0;
           var originY = layout.trimLine.orientation === 'horizontal' && groupIndex === 1 ? layout.trimLine.position : 0;
+          var localLeft = Math.max(0, m.l);
+          var localBottom = Math.max(0, m.b);
           for (var groupRow = 0; groupRow < grid.rows; groupRow++) {
             for (var groupColumn = 0; groupColumn < grid.columns; groupColumn++) {
               appendTile(
-                originX + groupBlank.achievedMargins.left + groupColumn * (grid.partWidth + grid.gapX),
-                originY + groupBlank.achievedMargins.bottom + groupRow * (grid.partHeight + grid.gapY),
+                originX + localLeft + groupColumn * (grid.partWidth + grid.gapX),
+                originY + localBottom + groupRow * (grid.partHeight + grid.gapY),
                 grid.partWidth,
                 grid.partHeight
               );
