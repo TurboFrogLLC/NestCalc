@@ -93,3 +93,6 @@ Stamp: 3fe6e2ea414107de75768ffa14fcbf11e983e454
 
 Seq 36 Cut 27 pencil-on-selected and inline actions — Codex App: pressing pencil with an already armed live slot now opens that slot’s card directly; with no armed slot, pencil only enables edit mode and opens no card. The retained 252.4px / 15px card adds a second inset 1.1px name-to-Blank rule. External 22px Check/X stay inline after PART SIZE, GAP, MARGIN, and center-bar numbers; GAP Link remains between number and Check, and MARGIN aligns to its first number row. Pencil paths, gold tokens, layer z-index, parts on blank, Fit, and stops remain unchanged.
 Stamp: 0bb0188343659f64c59020322f4086fd0837a608
+
+Seq 37 Cut 28 Check X on label row — Codex App: open PART SIZE, GAP, and MARGIN now render their 22px Lucide Check/X actions directly after the 11px label, above rather than beside each number chip. GAP retains Link between its label and Check; closed labels have no actions. The centered blank-size editor retains its Check/X on the number row because it has no label. Pencil-on-selected, gold arm, card pad, footer, parts on blank, Fit, and stops remain unchanged.
+Stamp: 79ec337c7be4768ec961648f943ab2003d6d888d
