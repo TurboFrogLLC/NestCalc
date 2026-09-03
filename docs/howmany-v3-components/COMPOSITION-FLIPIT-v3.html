@@ -2288,26 +2288,28 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }
     #hud .param-row[data-param="margin"] .chip-editor-field,
     #hud .param-row[data-param="margin"] .chip-editor-field input { height: auto; line-height: 1; }
-    #hud .margin-presets { display: flex; flex-direction: column; gap: 4.4px; width: 154px; }
-    #hud .margin-presets__head { display: flex; align-items: center; justify-content: space-between; min-height: 11px; }
-    #hud .margin-presets__label { font-size: 11px; font-weight: 650; letter-spacing: 0.04em; line-height: 1; }
-    #hud .margin-presets__controls { display: inline-flex; align-items: center; gap: 2.2px; }
-    #hud .margin-presets__control {
+    .margin-presets { display: flex; flex-direction: column; gap: 4.4px; width: 154px; }
+    .margin-presets__head { display: flex; align-items: center; justify-content: space-between; min-height: 11px; }
+    .margin-presets__label { font-size: 11px; font-weight: 650; letter-spacing: 0.04em; line-height: 1; }
+    .margin-presets__controls { display: inline-flex; align-items: center; gap: 2.2px; }
+    .margin-presets__control {
       width: 22px; height: 22px; padding: 0; border: 0; border-radius: 0; background: transparent; color: var(--ink);
       display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
     }
-    #hud .margin-presets__control[data-margin-preset-edit][aria-pressed="true"] { color: #538BEC; }
-    #hud .margin-presets__control svg { display: block; width: 14px; height: 14px; }
-    #hud .margin-presets__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8.8px; width: 154px; }
-    #hud .margin-presets__slot {
+    .margin-presets__control[data-margin-preset-edit][aria-pressed="true"] { color: #538BEC; }
+    .margin-presets__control svg { display: block; width: 14px; height: 14px; }
+    .margin-presets__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8.8px; width: 154px; }
+    .margin-presets__slot {
       height: 31.46px; min-height: 31.46px; padding: 0 8.8px; border: 1.1px solid rgba(83,139,236,.35); border-radius: 7.26px;
       background: var(--frost-blue); color: var(--ink); box-shadow: 0 0.5px 1px rgba(0,0,0,.25);
       font: 650 13.31px/31.46px var(--font-mono); font-variant-numeric: tabular-nums; text-align: center; cursor: pointer;
     }
-    #hud .margin-presets__slot:hover { background: #E8E8E8; }
-    #hud .margin-presets__slot.is-armed { background: rgba(255,206,27,.55) !important; border-color: rgba(201,140,0,.85) !important; }
-    .margin-preset-card-layer { position: fixed; inset: 0; z-index: 201; display: flex; align-items: center; justify-content: center; visibility: hidden; pointer-events: none; background: rgba(0,0,0,.18); }
+    .margin-presets__slot:hover { background: #E8E8E8; }
+    .margin-presets__slot.is-armed { background: rgba(255,206,27,.55) !important; border-color: rgba(201,140,0,.85) !important; }
+    .margin-presets-sheet-hole { visibility: hidden; flex: 0 0 auto; }
+    .margin-preset-card-layer { position: fixed; inset: 0; z-index: 201; display: grid; place-items: center; visibility: hidden; pointer-events: none; background: rgba(17,17,17,.28); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
     .margin-preset-card-layer.is-open { visibility: visible; pointer-events: auto; }
+    .margin-preset-modal-row { display: flex; align-items: center; gap: 15px; width: 421.4px; }
     .margin-preset-card { box-sizing: border-box; width: 252.4px; padding: 15px; border-radius: 7.26px; background: #E8E8E8; box-shadow: 0 2px 7px rgba(0,0,0,.24); color: var(--ink); }
     .margin-preset-card input { box-sizing: border-box; height: 31.46px; border: 1.1px solid rgba(83,139,236,.35); border-radius: 7.26px; background: #fff; color: var(--ink); box-shadow: 0 0.5px 1px rgba(0,0,0,.25); font: 650 13.31px/1 var(--font-mono); font-variant-numeric: tabular-nums; }
     .margin-preset-card__name { width: 222.4px; padding: 0 8.8px; margin: 0; }
@@ -2338,6 +2340,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   </header>
 
   <div class="margin-preset-card-layer" data-margin-preset-card-layer aria-hidden="true">
+    <div class="margin-preset-modal-row" data-margin-preset-modal-row>
     <section class="margin-preset-card" role="dialog" aria-modal="true" aria-labelledby="margin-preset-card-title">
       <input class="margin-preset-card__name" data-margin-preset-name id="margin-preset-card-title" type="text" autocomplete="off" aria-label="Preset name" placeholder="Preset" />
       <div class="margin-preset-card__fields">
@@ -2372,6 +2375,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         </div>
       </div>
     </section>
+    </div>
   </div>
 
   <div class="bed-stage" id="laser-bed-host">
@@ -3666,6 +3670,23 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   var marginPresetSlots = Array.from({ length: 4 }, copyLivePreset);
   var marginPresetEditing = false, marginPresetArmed = null, marginPresetCardSlot = null;
   var marginPresetCardLayer = document.querySelector('[data-margin-preset-card-layer]');
+  var marginPresetModalRow = document.querySelector('[data-margin-preset-modal-row]');
+  var marginPresets = document.querySelector('.margin-presets');
+  var marginPresetsSheetHole = document.createElement('div');
+  marginPresetsSheetHole.className = 'margin-presets-sheet-hole';
+  function moveMarginPresetsToModal() {
+    if (!marginPresets || !marginPresetModalRow) return;
+    if (!marginPresetsSheetHole.isConnected) {
+      var box = marginPresets.getBoundingClientRect();
+      marginPresetsSheetHole.style.width = box.width + 'px';
+      marginPresetsSheetHole.style.height = box.height + 'px';
+      marginPresets.before(marginPresetsSheetHole);
+    }
+    marginPresetModalRow.insertBefore(marginPresets, marginPresetModalRow.firstElementChild);
+  }
+  function restoreMarginPresetsToSheet() {
+    if (marginPresetsSheetHole.isConnected) marginPresetsSheetHole.replaceWith(marginPresets);
+  }
   function clearMarginPresetArm() { if (marginPresetArmed === null) return; marginPresetArmed = null; renderMarginPresetSlots(); }
   function renderMarginPresetSlots() {
     var grid = document.querySelector('[data-margin-preset-grid]'); if (!grid) return;
@@ -3693,10 +3714,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     marginPresetEditing = true;
     if (index !== null) marginPresetArmed = index;
     marginPresetCardSlot = index;
-    renderMarginPresetSlots(); writeMarginPresetCard(preset); marginPresetCardLayer.classList.add('is-open'); marginPresetCardLayer.setAttribute('aria-hidden', 'false');
+    renderMarginPresetSlots(); writeMarginPresetCard(preset); moveMarginPresetsToModal(); marginPresetCardLayer.classList.add('is-open'); marginPresetCardLayer.setAttribute('aria-hidden', 'false');
     var name = document.querySelector('[data-margin-preset-name]'); if (name) name.focus();
   }
-  function closeMarginPresetCard() { if (marginPresetCardLayer) { marginPresetCardLayer.classList.remove('is-open'); marginPresetCardLayer.setAttribute('aria-hidden', 'true'); } marginPresetCardSlot = null; renderMarginPresetSlots(); }
+  function closeMarginPresetCard() { if (marginPresetCardLayer) { marginPresetCardLayer.classList.remove('is-open'); marginPresetCardLayer.setAttribute('aria-hidden', 'true'); } restoreMarginPresetsToSheet(); marginPresetEditing = false; marginPresetCardSlot = null; renderMarginPresetSlots(); }
   function readMarginPresetCard() {
     var prior = marginPresetCardSlot === null ? emptyMarginPreset() : marginPresetSlots[marginPresetCardSlot], next = { name: '', blank: {}, gap: {}, margin: {} }, name = document.querySelector('[data-margin-preset-name]');
     next.name = (name && name.value.trim()) || 'Preset';
@@ -3724,10 +3745,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
   var editMarginPreset = document.querySelector('[data-margin-preset-edit]');
   if (editMarginPreset) editMarginPreset.addEventListener('click', function () {
-    marginPresetEditing = !marginPresetEditing;
-    if (marginPresetEditing && marginPresetArmed !== null) openMarginPresetCard(marginPresetArmed);
-    else if (marginPresetEditing) openMarginPresetCard(null);
-    else renderMarginPresetSlots();
+    if (marginPresetCardLayer && marginPresetCardLayer.classList.contains('is-open')) { closeMarginPresetCard(); return; }
+    openMarginPresetCard(marginPresetArmed);
   });
   var addMarginPreset = document.querySelector('[data-margin-preset-add]');
   if (addMarginPreset) addMarginPreset.addEventListener('click', function () {

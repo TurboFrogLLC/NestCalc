@@ -1,6 +1,6 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Cut 2b preset card chrome restoration
+**Status:** Living — Cut 2d preset-card modal pair
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
@@ -168,6 +168,10 @@ The centered HUD count is a fixed-width slot: three tabular `ch` faces at 14.64p
 ## Cut 2b — preset card chrome restoration
 
 The 154px sheet keeps its PRESETS row as label, stock Lucide pencil, plus, and minus only; it contains no name input, Check, X, or paint-bucket, and its slot buttons retain their existing side-chip tokens. The pencil is momentary: it opens the independent non-modal editor from the armed slot or, with no arm, from live Part, Blank, Gap, and Margin values; closing leaves its idle stroke `#111111`. The `252.4px` `#E8E8E8`, 7.26px-radius `.margin-preset-card` does not consume the PRESETS row or block sheet interaction. Its only header row is Presets, the locked 22 / 14 / 2 paint-bucket with title `Load canvas`, the shorter `Name this preset` field, and 22 / 14 / 2 Check/X, followed by exactly one rule. The bucket refreshes enabled sections from live canvas values and does not rename a sheet slot. Part, Blank, Gap, and Margin remain in that order; their accessibility hits retain the locked paths and off color `#538BEC`, while enabled hits use `#111111`. Axis fields stay 106.8 × 31.46 with 8.8px gaps and the 13.31px / 650 / mono token. There is no footer rule or Copy live control; slots remain clickable while the card is open, and Fit parking, count well, and AutoNest math remain unchanged.
+
+## Cut 2d — preset-card modal pair
+
+The pencil opens a blocking modal layer above the header, HUD, blank, and all sheet chips. Its backdrop is `backdrop-filter: blur(8px)` over `rgba(17,17,17,0.28)`, and consumes background pointer input. The focused, vertically centered row is exactly the live 154px `.margin-presets`, a 15px gap, and the unchanged 252.4px `.margin-preset-card`: its 421.4px group is viewport-centered, placing the card center 84.5px to the viewport’s right of center. Opening moves the existing `.margin-presets` node into this row—slots and pencil/plus/minus are never cloned—and leaves a visibility-hidden sheet hole with its measured dimensions, so PART SIZE, GAP, and MARGIN do not move. Closing returns that same node to its sheet location and restores the pencil’s idle state. Card geometry and its Blank, Gap, and Margin-only contract remain Cut 2c; no Part, paint-bucket, accessibility control, header rewrite, Fit-park change, count-well change, or AutoNest math change is introduced.
 
 ## AutoNest Cut 1 — HUD menu + best uniform
 
