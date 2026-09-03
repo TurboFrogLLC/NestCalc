@@ -115,3 +115,12 @@ Operator: Codex App · Worker · Terra / Medium
 - The 252.4px card now uses 12px padding, 2px label-to-field gaps, 4px section gaps, and keeps its 8.8px field-pair gap. PART SIZE, BLANK, and GAP have Link then conditional section Check/X on their label rows; accessibility remains at far right and MARGIN remains Link-free.
 - Section Check/X commits or restores only that section. Header Check/X remains the whole-card pair. Sheet minus now preserves the modal-closed state and opens the existing z-220 delete alert only for an armed slot.
 - Verification: `npm run lint`, host-script syntax check, and `git diff --check` passed.
+
+## Seq 7 Send for review
+
+Operator: Codex App · Worker · Terra / Medium
+
+- PR 134 is ready for review at `3e1c7e63345f5b8c458599de929ac2140f257a95`.
+- Named review requested exactly once: [`@codex review`](https://github.com/TurboFrogLLC/NestCalc/pull/134#issuecomment-5526150146).
+- No merge and no host change.
+- Still open / Next: Inspection.
