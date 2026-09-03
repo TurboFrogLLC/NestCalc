@@ -34,20 +34,23 @@ Operator: Codex App · Worker · Terra / Medium
 Operator: Codex App · Worker · Terra / Medium
 
 - Commit: `cbf37f0d7524adfb5ac317b9160b8cfd9067ff44`
-- The ticker now measures its rendered tabular `999` face after the bar renders, fixes the count well plus 5px side insets, reserves that minimum through the open seat lock, and derives the closed `#blank-ticker-pin` width from that complete row.
-- Replaced the blocking preset surface with an inline, non-modal card: interactive slots, the specified paint-bucket and accessibility paths, Part/Blank/Gap/Margin sections, disabled-section storage, live canvas load, green/gold target states, and an in-sheet overwrite confirmation.
-- Fit parking and AutoNest math were not changed. Verification: `git diff --check` and inline JavaScript parse check passed before the Cut commit.
+- VOID implement. Count well measure landed. Sheet and card rewrite is dead. Do not follow this lock.
 
 ## Seq 5b Cut 2b — preset card chrome restoration
 
 Operator: Codex App · Worker · Terra / Medium
 
 - Commit: `99b5a8d993230387a827b5e46ea4d4b1aa306ada`
-- Restored the 154px PRESETS sheet row to label, stock Lucide pencil, plus, and minus. The row no longer carries the card’s name field, Check/X, or paint-bucket, and its slot button tokens are unchanged.
-- Moved the `#E8E8E8`, 7.26px-radius editor out of that sheet section. Its sole header row is Presets, Load canvas paint-bucket, name field, Check, and X, with one rule below it; its accessible Part, Blank, Gap, and Margin sections remain unchanged.
-- The pencil opens the card momentarily from the armed slot or live values; the card’s bucket refreshes enabled live values. Fit parking, count well, and AutoNest math were not changed. Verification: `git diff --check` and inline JavaScript parse check passed before the Cut commit.
+- VOID implement. Patched the rewrite. Do not follow this lock.
 
-## Seq 5c Cut 2c — restore 78391d0 card
+## Seq 5c Cut 2c — lock rewrite (management)
+
+Operator: SuperGrok · Operations Manager
+
+- Traveler Cut lock replaced. Cut 2 / 2b void. Next implement is restore host card + sheet from `78391d095a416cfe156dc79d8533e042e182a603` only.
+- No host change in this row.
+
+## Seq 5c Cut 2c — restore implementation
 
 Operator: Codex App · Worker · Terra / Medium
 
