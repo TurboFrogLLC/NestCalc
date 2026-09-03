@@ -134,3 +134,36 @@ Operator: Codex App · Worker · Terra / Medium
 - Deleting an armed slot with a card target closes the card and clears that target before any successor can be saved through Header Check.
 - No paint-bucket, green target, Fit parking, HUD pin lock, or AutoNest math changed.
 - Verification: `git diff --check` and `npm run lint` passed.
+
+## Seq 9 Merge / Seq 10 Close
+
+Operator: Codex App · Worker · Terra / Medium
+
+- PR 134 merged on its unchanged `docs/autonest-host` base at `621bed081428f70cc80886b9398ec36069323d5c`.
+- The local merge-base branch fast-forwarded to that merge commit before the docs-only traveler and closeout stamp.
+- Still open / Next: none. The feature branch is retained; no prune was named.
+
+### Packslip
+
+```text
+Repo: NestCalc
+Owner: wReckless
+Part: FLiPIT refine — Fit top + preset card
+Description: Fit top-align and preset-card refinements, including disabled-section preservation and open-card deletion closure.
+PR: 134
+Branch: docs/flipit-refine
+Head: 621bed081428f70cc80886b9398ec36069323d5c
+Session: continuous
+job_id: NGJ-20260902-flipit-refine
+flow_id:
+goal_sha256:
+Date: 2026-09-03
+
+Seq  Label              Notes                                      Stamp
+9    Merge              PR 134 into docs/autonest-host            621bed081428f70cc80886b9398ec36069323d5c
+10   Close              traveler and packet closeout              621bed081428f70cc80886b9398ec36069323d5c
+
+Closed Corrective Action: none
+Still open: none
+Next: none
+```

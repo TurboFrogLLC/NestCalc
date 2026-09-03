@@ -23,8 +23,8 @@ Seq  Label              Notes                                              Stamp
 7    Send for review    one @codex at 3e1c7e6                  c34a67b5c36b3fa59549c274aecf22efc9e49140
 8    Inspection         Codex P2 threads open
 5j   Cut                2j keep disable across slot; close card on delete  f0bd202984a1876a46509d4214d9e3c2c880f7d8
-9    Merge
-10   Close
+9    Merge              PR 134 into docs/autonest-host              621bed081428f70cc80886b9398ec36069323d5c
+10   Close              packslip on PR 134                          621bed081428f70cc80886b9398ec36069323d5c
 
 When a term → docs/GLOSSARY.md
 When this visit → docs/templates/packet.md
