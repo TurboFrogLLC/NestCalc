@@ -246,17 +246,18 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   .chip-editor-action svg { display: block; width: 14px; height: 14px; pointer-events: none; }
   .chip-editor-action:hover { color: var(--blue); }
 
-  /* Hex Cut 1: this ticket is viewport UI, never an SVG machine-origin mark. */
+  /* Cut 1c: the hex ticket is a read-only member of the left field stack. */
   .hex-array-ticket {
-    position: fixed;
-    z-index: 81;
     display: grid;
-    grid-template-columns: repeat(2, minmax(76px, auto));
-    gap: 4px;
-    padding: 6px;
-    border: 1.1px solid rgba(26, 20, 40, 0.22);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4.4px;
+    width: 154px;
+    min-width: 154px;
+    max-width: 154px;
+    padding: 7px 8.8px;
+    border: 1.1px solid rgba(83, 139, 236, 0.35);
     border-radius: 7.26px;
-    background: #E8E8E8;
+    background: rgba(83, 139, 236, 0.22);
     box-shadow: 0 0.5px 1px rgba(0,0,0,.25);
     color: #1A1428;
     font-family: var(--font-mono);
@@ -266,8 +267,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   .hex-array-face {
     display: grid;
     gap: 1px;
-    min-width: 76px;
-    padding: 3px 5px;
+    min-width: 0;
+    padding: 3px 4px;
     border-radius: 4px;
     background: rgba(255,255,255,.76);
   }
@@ -2500,13 +2501,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       </div></div>
       <div class="chip-editor-actions" id="bt-chip-actions" hidden></div>
     </div>
-    <div class="hex-array-ticket" id="hex-array-ticket" aria-label="Hex array ticket" hidden>
-      <div class="hex-array-face"><b>COLUMNS</b><span data-hex-ticket="columns">0</span></div>
-      <div class="hex-array-face"><b>ROWS</b><span data-hex-ticket="rows">0</span></div>
-      <div class="hex-array-face"><b>X GAP</b><span data-hex-ticket="x-gap">0.000 in</span></div>
-      <div class="hex-array-face"><b>Y GAP</b><span data-hex-ticket="y-gap">0.000 in</span></div>
-    </div>
-  
     <!-- Field stack shell; Cut 10 opens editors inside its chips. -->
 <div class="keypad" id="hud" aria-label="Field stack">
     <div class="keypad-header" id="hud-header" title="Drag HUD">
@@ -2622,6 +2616,13 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
                   <label class="pop-m-field"><span>T</span><input data-m="t" type="text" inputmode="decimal" value="0.250" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></label>
                 </div>
               </div>
+            </div>
+
+            <div class="hex-array-ticket" id="hex-array-ticket" aria-label="Hex array ticket" hidden>
+              <div class="hex-array-face"><b>COLUMNS</b><span data-hex-ticket="columns">0</span></div>
+              <div class="hex-array-face"><b>ROWS</b><span data-hex-ticket="rows">0</span></div>
+              <div class="hex-array-face"><b>X GAP</b><span data-hex-ticket="x-gap">0.000 in</span></div>
+              <div class="hex-array-face"><b>Y GAP</b><span data-hex-ticket="y-gap">0.000 in</span></div>
             </div>
 
             <section class="margin-presets" aria-label="Margin presets">
@@ -3463,15 +3464,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     face('rows', String(layout.rows));
     face('x-gap', layout.xGap.toFixed(3) + ' in');
     face('y-gap', layout.yGap.toFixed(3) + ' in');
-    var rect = blank.getBoundingClientRect();
-    var ticketWidth = hexArrayTicket.offsetWidth || 170;
-    /* Cut 1b: park the read-only ticket beside the blank's west stroke, low enough
-       to leave the NE resize arc and its hit target completely unobstructed. */
-    var ticketHeight = hexArrayTicket.offsetHeight || 78;
-    var left = Math.max(STOP, rect.left - ticketWidth - STOP);
-    var top = Math.min(window.innerHeight - ticketHeight - STOP, Math.max(HEADER_H + STOP, rect.bottom - ticketHeight));
-    hexArrayTicket.style.left = Math.round(left) + 'px';
-    hexArrayTicket.style.top = Math.round(top) + 'px';
   }
   function syncHudBlankFromBed() {
     if (typeof window.__hudSyncBlank === 'function') window.__hudSyncBlank(state.blankW, state.blankH);

@@ -35,3 +35,11 @@ Operator: Codex App · GPT-5.6 Terra · Medium
 - Parked the armed hex array ticket against the blank's lower-west stroke with the required 15px gap, leaving the blank NE corner unoccupied.
 - Browser proof: the ticket ended at x=203 while the blank began at x=218; the NE resize hit target remained at x=1077, y=110 and completed a resize drag with the ticket open.
 - Packer math, hex arm, circles, dotted AABBs, HUD pin, AutoNest, and ticket values were not changed.
+
+## Seq 3c Cut 1c — ticket in the left stack
+
+Operator: Codex App · GPT-5.6 Terra · Medium
+
+- Moved the array ticket into the left floating stack between MARGIN and PRESETS; it is a 154px read-only stack card using the MARGIN radius and shadow family.
+- Browser proof: hex armed shows the ticket in that stack order with COLUMNS 4, ROWS 3, X GAP 0.125 in, and Y GAP -0.227 in; disarming hex removes the ticket.
+- Removed the ticket's canvas positioning, leaving the NE resize arc clear; packer math, arm, circles, dotted AABBs, HUD pin, and AutoNest were unchanged.
