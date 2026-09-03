@@ -6,7 +6,7 @@ Part: FLiPIT hex nest
 Description: Hex arm + circle tiles + auto inset packer + array ticket faces.
 PR: 135
 Branch: docs/hex-nest
-Head: e6eef974bd77e1a758eb3847d2c691f5fb1c984c
+Head: 731fc69468ec1430fc6aa137256d154393869c9f
 Session: fresh
 job_id: NGJ-20260903-hex-nest
 flow_id:
@@ -35,7 +35,10 @@ When the living contract → docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.SP
 When PR → https://github.com/TurboFrogLLC/NestCalc/pull/135
 
 Shop: Grok Build, Grok 4.6, high
-Proof: Owner local 8091.
+Grok Build worktree is not Owner Look.
+Owner Look clone: /Users/computer/wrecklesstoddler/vibe/projects/nestcalc
+Worker must push origin/docs/hex-nest. Unpushed GB commits are not Look.
+Proof: Owner local 8091 after ff from origin.
 
 ## Cut lock
 
@@ -55,3 +58,4 @@ Row 3 copies row 1. Row 4 copies row 2. Same h and half-stagger.
 Ticket: COLUMNS, ROWS=N, X GAP=p−D, Y GAP=h−D signed, X OFFSET=L+p/2. No unit suffix.
 Do not change hex arm, hamburger exclusive, ticket stack seat, dotted AABB, or HUD pin.
 Done when lifting the blank adds a squeezed row as soon as width allows, instead of leaving empty height.
+Done only after origin/docs/hex-nest has the implement commit.
