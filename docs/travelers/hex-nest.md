@@ -19,7 +19,7 @@ Seq  Label              Notes                                              Stamp
 3b   Cut                1b ticket off NE arc                    5a4db80
 3c   Cut                1c ticket in left stack                 665aaa8
 3d   Cut                1d exclusive arms, X OFFSET             e6eef97
-5    Cut                2 max-squeezed rows, GAP held
+5    Cut                2 max-squeezed rows, GAP held           3b11920
 4    Look               Owner. No Codex.
 7    Send for review
 8    Inspection
