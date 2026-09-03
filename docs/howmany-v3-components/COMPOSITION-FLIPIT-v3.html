@@ -3398,6 +3398,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     state.panX = subjectLeftPx();
     state.panY = state.blankH * s + topStop;
   }
+  window.__bedParkFit = function () { fitBed(); render(); };
 
   function onPointerDown(e) {
     var t = e.target;
@@ -3429,9 +3430,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }
     render();
   }
-  function onPointerUp() {
+  function onPointerUp(e) {
+    var wasResize = state.dragging === 'x' || state.dragging === 'y' || state.dragging === 'xy';
     state.dragging = null; state.start = null;
     document.body.classList.remove('lb-dragging-x','lb-dragging-y','lb-dragging-xy','lb-panning','lb-dragging');
+    if (wasResize && e && e.type === 'pointerup') window.__bedParkFit();
   }
 
   svg.addEventListener('pointerdown', onPointerDown);
@@ -4388,6 +4391,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }
     if (!isBlankTicker) hud.classList.remove('has-chip-editor');
     refreshTickers();
+    if (commit && isBlankTicker && typeof window.__bedParkFit === 'function') window.__bedParkFit();
     if (ticker) ticker.focus();
   }
   function onChipAction(e) {
