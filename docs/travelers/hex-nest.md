@@ -17,7 +17,7 @@ Seq  Label              Notes                                              Stamp
 2    Start-branch       Owner remote / Codex App
 3    Cut                1 hex arm, circles, packer, array faces  61c7157
 3b   Cut                1b ticket off NE arc                    5a4db80
-3c   Cut                1c ticket in left stack between MARGIN and PRESETS
+3c   Cut                1c ticket in left stack between MARGIN and PRESETS  f88a113
 4    Look               Owner. No Codex.
 7    Send for review
 8    Inspection
