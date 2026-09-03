@@ -6,7 +6,7 @@ Part: FLiPIT refine — Fit top + preset card
 Description: Fit parks blank top at the HUD stop. Preset card restore from 78391d0, then surgical adds. No picker. No calc. No bed. Q2 HUD-to-blank X is out.
 PR: 134
 Branch: docs/flipit-refine
-Head: 734e3472b48d110d330ae92d69569637031ac25d
+Head: d412b6ddbaf69a9b768ce0ff3115c47174eb884a
 Session: fresh
 job_id: NGJ-20260902-flipit-refine
 flow_id:
@@ -24,7 +24,7 @@ Seq  Label              Notes                                              Stamp
 5c   Cut                2c restore card from 78391d0          16f7c066d7bf1eb560fac778d38978a559a1dd6c
 6    Look               Owner. No Codex.
 5d   Cut                2d modal pair — presets left, card right         2224b4af8a28310edcfdae9418e995f19c61d813
-5e   Cut                2e reserved — card-header adds
+5e   Cut                2e card header, blur, selected minus
 7    Send for review
 8    Inspection
 9    Merge
@@ -90,5 +90,13 @@ Move the live `.margin-presets` node into that row while open. Do not clone the 
 
 Card geometry stays Cut 2c. Slots, pencil, plus, minus stay live on the left block. No paint-bucket. No Part. No accessibility. No header rewrite.
 
-### Cut 2e — reserved
-Card-header adds only. Not this visit.
+### Cut 2e — card header, blur, selected minus
+Backdrop blur becomes `blur(4px)`. Dim stays `rgba(17,17,17,0.28)`. Pair geometry stays Cut 2d.
+
+Card header row, 31.46px high: label `Presets` at left, unboxed Lucide Check and X at right, 22 / 14 / 2. Remove the footer Check/X and the footer rule. One rule under the header. Name field stays 222.4 × 31.46 under that rule. No paint-bucket.
+
+Every card number input and the name field use `border-radius: 6px`. Card shell stays 7.26px.
+
+Minus deletes the armed gold slot only. No arm → minus does nothing. Minus does not remove the last slot by index.
+
+First delete: a second `#E8E8E8` card, 7.26px radius, 8.8px from the editor, text `Are you sure you want to delete this?`, Check confirms, X cancels. Under the text, a checkbox labeled `Don't show this again`. Checked + Check writes that skip to `localStorage` key `howmany.flipit.v3.presetDeleteSkip`. Later minus on an armed slot deletes immediately when that key is set. No Part. No accessibility.
