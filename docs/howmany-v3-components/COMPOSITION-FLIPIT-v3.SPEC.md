@@ -1,6 +1,6 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Cut 2f preset-card header type, placeholder, alert-dialog
+**Status:** Living — Cut 2g card hits, dirty alert, arc clear
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
@@ -182,6 +182,10 @@ Minus only acts on the armed gold slot; without an arm it does nothing. On the f
 ## Cut 2f — preset-card header type, placeholder, alert-dialog
 
 The editor header label uses the sheet PRESETS token: `11px / 650 / 0.04em / uppercase / #111111`. An empty name field shows `Name this preset`; `Preset` remains only the stored fallback name. The delete confirmation is a centered viewport alert-dialog at z-index 220 in front of the unchanged Cut 2d modal pair, with an overlay, content, header, title, description, checkbox, and Cancel/Delete footer. It reads `Are you sure you want to delete this?` and `This cannot be undone.`; Cancel closes it and destructive Delete removes the armed slot. Checked Delete stores `howmany.flipit.v3.presetDeleteSkip`. No Part, accessibility, paint-bucket, Fit-park, count-well, or AutoNest changes are introduced.
+
+## Cut 2g — card hits, dirty alert, arc clear
+
+Every card name and number field selects all on click. Blank, Gap, and Margin labels use the sheet label token (`11px / 650 / 0.04em / uppercase / #111111`) and carry the locked 28px Lucide accessibility hit with its 18px, 2px-stroke glyph. Each hit is black while included and `#538BEC` while off; an off section neither hydrates nor writes. Header Check/X use the same 28 / 18 / 2 token, and the open-modal pencil remains `#111111`. The shared z-index-220 alert shell caps content at 280px with a 12px radius and a black checkbox accent. It also confirms a dirty armed-slot edit: Cancel restores its field; Change writes the card values to that selected slot. The blank top stop gains 8px of arc clearance below the fixed HUD; count-well and AutoNest behavior stay unchanged. No Part row or paint-bucket is present.
 
 ## AutoNest Cut 1 — HUD menu + best uniform
 

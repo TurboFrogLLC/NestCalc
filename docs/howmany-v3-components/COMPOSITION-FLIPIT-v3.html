@@ -2296,7 +2296,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       width: 22px; height: 22px; padding: 0; border: 0; border-radius: 0; background: transparent; color: var(--ink);
       display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
     }
-    .margin-presets__control[data-margin-preset-edit][aria-pressed="true"] { color: #538BEC; }
+    .margin-presets__control[data-margin-preset-edit][aria-pressed="true"] { color: #111111; }
     .margin-presets__control svg { display: block; width: 14px; height: 14px; }
     .margin-presets__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8.8px; width: 154px; }
     .margin-presets__slot {
@@ -2317,21 +2317,27 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     .margin-preset-card__name { width: 222.4px; padding: 0 8.8px; margin: 8.8px 0 0; }
     .margin-preset-card__fields { display: flex; flex-direction: column; gap: 8.8px; margin-top: 8.8px; }
     .margin-preset-card__section { display: flex; flex-direction: column; gap: 4.4px; }
-    .margin-preset-card__section-label { font: 650 11px/1 var(--font-mono); }
+    .margin-preset-card__section-head { display: flex; align-items: center; justify-content: space-between; min-height: 28px; }
+    .margin-preset-card__section-label { color: #111111; font: 650 11px/1 var(--font-mono); letter-spacing: .04em; text-transform: uppercase; }
+    .margin-preset-card__section-toggle { width: 28px; height: 28px; padding: 0; border: 0; background: transparent; color: #111111; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+    .margin-preset-card__section-toggle[aria-pressed="false"] { color: #538BEC; }
+    .margin-preset-card__section-toggle svg { display: block; width: 18px; height: 18px; }
     .margin-preset-card__pair { display: grid; grid-template-columns: 106.8px 106.8px; gap: 8.8px; }
     .margin-preset-card__field { display: block; font-size: 0; line-height: 0; }
     .margin-preset-card__field input { width: 106.8px; padding: 0 8.8px; }
     .margin-preset-card__actions { display: flex; align-items: center; gap: 4.4px; }
-    .margin-preset-card__action { width: 22px; height: 22px; padding: 0; border: 0; background: transparent; color: var(--ink); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
-    .margin-preset-card__action svg { width: 14px; height: 14px; }
+    .margin-preset-card__action { width: 28px; height: 28px; padding: 0; border: 0; background: transparent; color: var(--ink); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+    .margin-preset-card__action svg { width: 18px; height: 18px; }
     .margin-preset-delete-alert { position: fixed; inset: 0; z-index: 220; display: grid; place-items: center; visibility: hidden; pointer-events: none; }
     .margin-preset-delete-alert.is-open { visibility: visible; pointer-events: auto; }
     .margin-preset-delete-alert__overlay { position: absolute; inset: 0; background: rgba(17,17,17,.28); }
-    .margin-preset-delete-alert__content { position: relative; box-sizing: border-box; width: 320px; padding: 20px; border-radius: 7.26px; background: #E8E8E8; box-shadow: 0 2px 7px rgba(0,0,0,.24); color: var(--ink); }
+    .margin-preset-delete-alert__content { position: relative; box-sizing: border-box; width: min(280px, calc(100vw - 32px)); max-width: 280px; padding: 20px; border-radius: 12px; background: #E8E8E8; box-shadow: 0 2px 7px rgba(0,0,0,.24); color: var(--ink); }
     .margin-preset-delete-alert__header { display: flex; flex-direction: column; gap: 8.8px; }
     .margin-preset-delete-alert__title { margin: 0; font: 650 13.31px/1.2 var(--font-mono); }
     .margin-preset-delete-alert__description { margin: 0; color: rgba(17,17,17,.72); font: 13.31px/1.35 var(--font); }
     .margin-preset-delete-alert__option { display: flex; align-items: center; gap: 4.4px; margin-top: 15px; font: 650 11px/1 var(--font-mono); }
+    .margin-preset-delete-alert__option[hidden] { display: none; }
+    .margin-preset-delete-alert__option input { accent-color: #111111; }
     .margin-preset-delete-alert__footer { display: flex; justify-content: flex-end; gap: 8.8px; margin-top: 20px; }
     .margin-preset-delete-alert__button { height: 31.46px; padding: 0 12px; border: 1.1px solid rgba(17,17,17,.2); border-radius: 6px; background: #fff; color: var(--ink); font: 650 13.31px/1 var(--font); cursor: pointer; }
     .margin-preset-delete-alert__button--destructive { border-color: #B42318; background: #B42318; color: #fff; }
@@ -2363,22 +2369,22 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       </div>
       <input class="margin-preset-card__name" data-margin-preset-name type="text" autocomplete="off" aria-label="Preset name" placeholder="Name this preset" />
       <div class="margin-preset-card__fields">
-        <section class="margin-preset-card__section" aria-label="Blank">
-          <span class="margin-preset-card__section-label">Blank</span>
+        <section class="margin-preset-card__section" data-margin-preset-section="blank" aria-label="Blank">
+          <div class="margin-preset-card__section-head"><span class="margin-preset-card__section-label">Blank</span><button type="button" class="margin-preset-card__section-toggle" data-margin-preset-section-toggle="blank" title="Include Blank" aria-label="Include Blank" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="4" r="1"/><path d="m18 19 1-7-6 1"/><path d="m5 8 3-3 5.5 3-2.36 3.5"/><path d="M4.24 14.5a5 5 0 0 0 6.88 6"/><path d="M13.76 17.5a5 5 0 0 0-6.88-6"/></svg></button></div>
           <div class="margin-preset-card__pair">
             <label class="margin-preset-card__field"><input data-margin-preset-field="blank.x" type="text" inputmode="decimal" autocomplete="off" aria-label="Blank width" /></label>
             <label class="margin-preset-card__field"><input data-margin-preset-field="blank.y" type="text" inputmode="decimal" autocomplete="off" aria-label="Blank height" /></label>
           </div>
         </section>
-        <section class="margin-preset-card__section" aria-label="Gap">
-          <span class="margin-preset-card__section-label">Gap</span>
+        <section class="margin-preset-card__section" data-margin-preset-section="gap" aria-label="Gap">
+          <div class="margin-preset-card__section-head"><span class="margin-preset-card__section-label">Gap</span><button type="button" class="margin-preset-card__section-toggle" data-margin-preset-section-toggle="gap" title="Include Gap" aria-label="Include Gap" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="4" r="1"/><path d="m18 19 1-7-6 1"/><path d="m5 8 3-3 5.5 3-2.36 3.5"/><path d="M4.24 14.5a5 5 0 0 0 6.88 6"/><path d="M13.76 17.5a5 5 0 0 0-6.88-6"/></svg></button></div>
           <div class="margin-preset-card__pair">
             <label class="margin-preset-card__field"><input data-margin-preset-field="gap.x" type="text" inputmode="decimal" autocomplete="off" aria-label="Gap horizontal" /></label>
             <label class="margin-preset-card__field"><input data-margin-preset-field="gap.y" type="text" inputmode="decimal" autocomplete="off" aria-label="Gap vertical" /></label>
           </div>
         </section>
-        <section class="margin-preset-card__section" aria-label="Margin">
-          <span class="margin-preset-card__section-label">Margin</span>
+        <section class="margin-preset-card__section" data-margin-preset-section="margin" aria-label="Margin">
+          <div class="margin-preset-card__section-head"><span class="margin-preset-card__section-label">Margin</span><button type="button" class="margin-preset-card__section-toggle" data-margin-preset-section-toggle="margin" title="Include Margin" aria-label="Include Margin" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="4" r="1"/><path d="m18 19 1-7-6 1"/><path d="m5 8 3-3 5.5 3-2.36 3.5"/><path d="M4.24 14.5a5 5 0 0 0 6.88 6"/><path d="M13.76 17.5a5 5 0 0 0-6.88-6"/></svg></button></div>
           <div class="margin-preset-card__pair">
             <label class="margin-preset-card__field"><input data-margin-preset-field="margin.l" type="text" inputmode="decimal" autocomplete="off" aria-label="Margin left" /></label>
             <label class="margin-preset-card__field"><input data-margin-preset-field="margin.r" type="text" inputmode="decimal" autocomplete="off" aria-label="Margin right" /></label>
@@ -2394,8 +2400,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     <div class="margin-preset-delete-alert__overlay"></div>
     <section class="margin-preset-delete-alert__content">
       <div class="margin-preset-delete-alert__header">
-        <h2 class="margin-preset-delete-alert__title">Are you sure you want to delete this?</h2>
-        <p class="margin-preset-delete-alert__description">This cannot be undone.</p>
+        <h2 class="margin-preset-delete-alert__title" data-margin-preset-alert-title>Are you sure you want to delete this?</h2>
+        <p class="margin-preset-delete-alert__description" data-margin-preset-alert-description>This cannot be undone.</p>
       </div>
       <label class="margin-preset-delete-alert__option"><input type="checkbox" data-margin-preset-delete-skip /> <span>Don't show this again</span></label>
       <div class="margin-preset-delete-alert__footer">
@@ -2846,7 +2852,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   var ARC_OUTSET = 19;
   var HEADER_H = 64;
   var TICKER_H = 31.46;
-  var HUD_BLANK_STOP = STOP + TICKER_H + STOP;
+  var ARC_HUD_CLEARANCE = 8;
+  var HUD_BLANK_STOP = STOP + TICKER_H + STOP + ARC_HUD_CLEARANCE;
   var MIN_LABEL_PX = 36;
   var SHEET_INSET = 24;
   var tickerClosedWidth = 0;
@@ -3695,7 +3702,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     return !!preset && !preset.name && !Object.keys(preset.blank || {}).length && !Object.keys(preset.gap || {}).length && !Object.keys(preset.margin || {}).length;
   }
   var marginPresetSlots = Array.from({ length: 4 }, copyLivePreset);
-  var marginPresetEditing = false, marginPresetArmed = null, marginPresetCardSlot = null;
+  var marginPresetEditing = false, marginPresetArmed = null, marginPresetCardSlot = null, marginPresetAlertMode = null;
+  var marginPresetSections = { blank: true, gap: true, margin: true };
   var marginPresetCardLayer = document.querySelector('[data-margin-preset-card-layer]');
   var marginPresetModalRow = document.querySelector('[data-margin-preset-modal-row]');
   var marginPresets = document.querySelector('.margin-presets');
@@ -3716,6 +3724,17 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (marginPresetsSheetHole.isConnected) marginPresetsSheetHole.replaceWith(marginPresets);
   }
   function clearMarginPresetArm() { if (marginPresetArmed === null) return; marginPresetArmed = null; renderMarginPresetSlots(); }
+  function setMarginPresetSectionEnabled(section, enabled) {
+    marginPresetSections[section] = enabled;
+    var toggle = document.querySelector('[data-margin-preset-section-toggle="' + section + '"]');
+    if (toggle) {
+      toggle.setAttribute('aria-pressed', String(enabled));
+      toggle.title = (enabled ? 'Exclude ' : 'Include ') + section.charAt(0).toUpperCase() + section.slice(1);
+      toggle.setAttribute('aria-label', toggle.title);
+    }
+  }
+  function resetMarginPresetSections() { ['blank', 'gap', 'margin'].forEach(function (section) { setMarginPresetSectionEnabled(section, true); }); }
+  function marginPresetSectionForPath(path) { return path.split('.')[0]; }
   function renderMarginPresetSlots() {
     var grid = document.querySelector('[data-margin-preset-grid]'); if (!grid) return;
     grid.replaceChildren();
@@ -3733,6 +3752,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var live = copyLivePreset(), name = document.querySelector('[data-margin-preset-name]'); if (name) name.value = preset.name || '';
     document.querySelectorAll('[data-margin-preset-field]').forEach(function (input) {
       var path = input.getAttribute('data-margin-preset-field');
+      if (!marginPresetSections[marginPresetSectionForPath(path)]) return;
       var liveValue = path === 'blank.x' ? live.blank.x : path === 'blank.y' ? live.blank.y : path === 'gap.x' ? live.gap.x : path === 'gap.y' ? live.gap.y : live.margin[path.slice(-1)];
       input.value = fmt3(presetNumber(preset, path, liveValue));
     });
@@ -3742,10 +3762,22 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     marginPresetEditing = true;
     if (index !== null) marginPresetArmed = index;
     marginPresetCardSlot = index;
-    renderMarginPresetSlots(); writeMarginPresetCard(preset); moveMarginPresetsToModal(); marginPresetCardLayer.classList.add('is-open'); marginPresetCardLayer.setAttribute('aria-hidden', 'false');
+    resetMarginPresetSections(); renderMarginPresetSlots(); writeMarginPresetCard(preset); moveMarginPresetsToModal(); marginPresetCardLayer.classList.add('is-open'); marginPresetCardLayer.setAttribute('aria-hidden', 'false');
     var name = document.querySelector('[data-margin-preset-name]'); if (name) name.focus();
   }
-  function closeMarginPresetDeleteAlert() { if (marginPresetDeleteAlert) marginPresetDeleteAlert.classList.remove('is-open'); }
+  function closeMarginPresetDeleteAlert() { if (marginPresetDeleteAlert) marginPresetDeleteAlert.classList.remove('is-open'); marginPresetAlertMode = null; }
+  function openMarginPresetAlert(mode) {
+    if (!marginPresetDeleteAlert) return;
+    marginPresetAlertMode = mode;
+    var title = document.querySelector('[data-margin-preset-alert-title]'), description = document.querySelector('[data-margin-preset-alert-description]');
+    var option = document.querySelector('.margin-preset-delete-alert__option'), confirm = document.querySelector('[data-margin-preset-delete-confirm]');
+    var isDelete = mode === 'delete';
+    if (title) title.textContent = isDelete ? 'Are you sure you want to delete this?' : 'Are you sure you want to change that?';
+    if (description) description.textContent = isDelete ? 'This cannot be undone.' : 'This will update the selected preset.';
+    if (option) option.hidden = !isDelete;
+    if (confirm) { confirm.textContent = isDelete ? 'Delete' : 'Change'; confirm.classList.toggle('margin-preset-delete-alert__button--destructive', isDelete); }
+    marginPresetDeleteAlert.classList.add('is-open');
+  }
   function closeMarginPresetCard() { closeMarginPresetDeleteAlert(); if (marginPresetCardLayer) { marginPresetCardLayer.classList.remove('is-open'); marginPresetCardLayer.setAttribute('aria-hidden', 'true'); } restoreMarginPresetsToSheet(); marginPresetEditing = false; marginPresetCardSlot = null; renderMarginPresetSlots(); }
   function readMarginPresetCard() {
     var prior = marginPresetCardSlot === null ? emptyMarginPreset() : marginPresetSlots[marginPresetCardSlot], next = { name: '', blank: {}, gap: {}, margin: {} }, name = document.querySelector('[data-margin-preset-name]');
@@ -3753,10 +3785,20 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     document.querySelectorAll('[data-margin-preset-field]').forEach(function (input) {
       var path = input.getAttribute('data-margin-preset-field'), value = parseLiveNumber(input);
       var live = path === 'blank.x' ? paramState.blank.x : path === 'blank.y' ? paramState.blank.y : path === 'gap.x' ? paramState.gap.x : path === 'gap.y' ? paramState.gap.y : paramState.margin[path.slice(-1)];
-      var parts = path.split('.'); next[parts[0]][parts[1]] = value === null ? presetNumber(prior, path, live) : value;
+      var parts = path.split('.'); next[parts[0]][parts[1]] = !marginPresetSections[parts[0]] ? presetNumber(prior, path, live) : value === null ? presetNumber(prior, path, live) : value;
     });
     return next;
   }
+  function marginPresetMatches(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
+  document.querySelectorAll('[data-margin-preset-name], [data-margin-preset-field]').forEach(function (input) {
+    input.addEventListener('click', function () { input.select(); });
+  });
+  document.querySelectorAll('[data-margin-preset-section-toggle]').forEach(function (toggle) {
+    toggle.addEventListener('click', function () {
+      var section = toggle.getAttribute('data-margin-preset-section-toggle');
+      setMarginPresetSectionEnabled(section, !marginPresetSections[section]);
+    });
+  });
   function applyMarginPreset(index) {
     var preset = marginPresetSlots[index]; if (!preset) return; var live = copyLivePreset();
     paramState.blank.x = presetNumber(preset, 'blank.x', live.blank.x); paramState.blank.y = presetNumber(preset, 'blank.y', live.blank.y);
@@ -3787,7 +3829,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (marginPresetArmed === null) return;
     if (localStorage.getItem('howmany.flipit.v3.presetDeleteSkip') === 'true') { deleteArmedMarginPreset(); return; }
     openMarginPresetCard(marginPresetArmed);
-    if (marginPresetDeleteAlert) marginPresetDeleteAlert.classList.add('is-open');
+    openMarginPresetAlert('delete');
   });
   function deleteArmedMarginPreset() {
     if (marginPresetArmed === null) return;
@@ -3798,14 +3840,24 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
   var confirmMarginPresetDelete = document.querySelector('[data-margin-preset-delete-confirm]');
   if (confirmMarginPresetDelete) confirmMarginPresetDelete.addEventListener('click', function () {
+    if (marginPresetAlertMode === 'dirty') {
+      var target = marginPresetCardSlot, next = readMarginPresetCard();
+      if (target !== null && next) { marginPresetSlots[target] = next; marginPresetArmed = target; }
+      closeMarginPresetCard();
+      return;
+    }
     var skip = document.querySelector('[data-margin-preset-delete-skip]');
     if (skip && skip.checked) localStorage.setItem('howmany.flipit.v3.presetDeleteSkip', 'true');
     deleteArmedMarginPreset();
   });
   var cancelMarginPresetDelete = document.querySelector('[data-margin-preset-delete-cancel]');
-  if (cancelMarginPresetDelete) cancelMarginPresetDelete.addEventListener('click', closeMarginPresetDeleteAlert);
+  if (cancelMarginPresetDelete) cancelMarginPresetDelete.addEventListener('click', function () {
+    if (marginPresetAlertMode === 'dirty' && marginPresetCardSlot !== null) writeMarginPresetCard(marginPresetSlots[marginPresetCardSlot]);
+    closeMarginPresetDeleteAlert();
+  });
   var saveMarginPreset = document.querySelector('[data-margin-preset-save]'); if (saveMarginPreset) saveMarginPreset.addEventListener('click', function () {
     var next = readMarginPresetCard(), target = marginPresetCardSlot;
+    if (target !== null && next && !marginPresetMatches(next, marginPresetSlots[target])) { openMarginPresetAlert('dirty'); return; }
     if (next) {
       if (target === null) target = marginPresetSlots.findIndex(isEmptyMarginPreset);
       if (target === -1) { target = marginPresetSlots.length; marginPresetSlots.push(next); }
