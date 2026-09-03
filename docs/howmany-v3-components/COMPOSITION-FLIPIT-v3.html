@@ -145,12 +145,14 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     --bt-seat-cw: 24px;
     --bt-seat-gap-cw-size: 0px;
     --bt-seat-size: auto;
-    --bt-seat-gap-size-menu: 0px;
+    --bt-seat-gap-size-hex: 0px;
+    --bt-seat-hex: 24px;
+    --bt-seat-gap-hex-menu: 0px;
     --bt-seat-menu: 24px;
     --bt-seat-gap-menu-count: 0px;
     --bt-seat-count: auto;
     display: grid;
-    grid-template-columns: var(--bt-seat-ccw) var(--bt-seat-gap-ccw-cw) var(--bt-seat-cw) var(--bt-seat-gap-cw-size) var(--bt-seat-size) var(--bt-seat-gap-size-menu) var(--bt-seat-menu) var(--bt-seat-gap-menu-count) minmax(var(--bt-count-min, 0px), var(--bt-seat-count));
+    grid-template-columns: var(--bt-seat-ccw) var(--bt-seat-gap-ccw-cw) var(--bt-seat-cw) var(--bt-seat-gap-cw-size) var(--bt-seat-size) var(--bt-seat-gap-size-hex) var(--bt-seat-hex) var(--bt-seat-gap-hex-menu) var(--bt-seat-menu) var(--bt-seat-gap-menu-count) minmax(var(--bt-count-min, 0px), var(--bt-seat-count));
     align-items: center;
     width: max-content;
     height: 100%;
@@ -161,8 +163,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   #bt-travel-box > #bt-rot-ccw { grid-column: 1; }
   #bt-travel-box > #bt-rot-cw { grid-column: 3; }
   #bt-travel-box > #blank-ticker { grid-column: 5; min-width: 0; }
-  #bt-travel-box > #bt-menu { grid-column: 7; }
-  #bt-travel-box > #bt-parts { grid-column: 9; }
+  #bt-travel-box > #bt-hex { grid-column: 7; }
+  #bt-travel-box > #bt-menu { grid-column: 9; }
+  #bt-travel-box > #bt-parts { grid-column: 11; }
   .bt-hit {
     width: 24px; height: 24px; min-width: 24px; min-height: 24px; margin: 0; padding: 0;
     border: 0; border-radius: 0; background: transparent; color: #111111;
@@ -170,6 +173,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
   .bt-hit svg { display: block; width: 16px; height: 16px; pointer-events: none; }
   #bt-menu[aria-pressed="true"] { color: #16A34A; }
+  #bt-hex[aria-pressed="true"] { color: #16A34A; }
   .bt-hit + .bt-hit, .blank-ticker, .bt-parts { position: relative; }
   .bt-hit + .bt-hit::before, .blank-ticker::before, .bt-parts::before {
     content: ""; position: absolute; left: 0; top: var(--bt-rule-inset); bottom: var(--bt-rule-inset); width: 1px; background: rgba(26,20,40,.22);
@@ -241,6 +245,35 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
   .chip-editor-action svg { display: block; width: 14px; height: 14px; pointer-events: none; }
   .chip-editor-action:hover { color: var(--blue); }
+
+  /* Cut 1c: the hex ticket is a read-only member of the left field stack. */
+  .hex-array-ticket {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4.4px;
+    width: 154px;
+    min-width: 154px;
+    max-width: 154px;
+    padding: 7px 8.8px;
+    border: 1.1px solid rgba(83, 139, 236, 0.35);
+    border-radius: 7.26px;
+    background: rgba(83, 139, 236, 0.22);
+    box-shadow: 0 0.5px 1px rgba(0,0,0,.25);
+    color: #1A1428;
+    font-family: var(--font-mono);
+    pointer-events: none;
+  }
+  .hex-array-ticket[hidden] { display: none; }
+  .hex-array-face {
+    display: grid;
+    gap: 1px;
+    min-width: 0;
+    padding: 3px 4px;
+    border-radius: 4px;
+    background: rgba(255,255,255,.76);
+  }
+  .hex-array-face b { font: 650 9px/1 var(--font); letter-spacing: .04em; }
+  .hex-array-face span { font: 650 11px/1.2 var(--font-mono); font-variant-numeric: tabular-nums; }
 
 /* ── Numeric HUD (NUMERIC-HUD-v3) ── */
 :root {
@@ -2462,12 +2495,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         <button type="button" class="bt-hit" id="bt-rot-ccw" title="−90" aria-label="−90"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></button>
         <button type="button" class="bt-hit" id="bt-rot-cw" title="+90" aria-label="+90"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg></button>
         <span class="blank-ticker" id="blank-ticker" aria-label="Blank size"><span class="bt-readout" id="bt-readout">12.000 × 8.000</span></span>
+        <button type="button" class="bt-hit" id="bt-hex" title="Hex nest" aria-label="Hex nest" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></button>
         <button type="button" class="bt-hit" id="bt-menu" title="AutoNest" aria-label="AutoNest" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16H4a2 2 0 1 1 0-4h16a2 2 0 1 1 0 4h-4.25"/><path d="M5 12a2 2 0 0 1-2-2 9 7 0 0 1 18 0 2 2 0 0 1-2 2"/><path d="M5 16a2 2 0 0 0-2 2 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 2 2 0 0 0-2-2q0 0 0 0"/><path d="m6.67 12 6.13 4.6a2 2 0 0 0 2.8-.4l3.15-4.2"/></svg></button>
         <span class="bt-parts" id="bt-parts" aria-label="Part count"></span>
       </div></div>
       <div class="chip-editor-actions" id="bt-chip-actions" hidden></div>
     </div>
-  
     <!-- Field stack shell; Cut 10 opens editors inside its chips. -->
 <div class="keypad" id="hud" aria-label="Field stack">
     <div class="keypad-header" id="hud-header" title="Drag HUD">
@@ -2583,6 +2616,14 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
                   <label class="pop-m-field"><span>T</span><input data-m="t" type="text" inputmode="decimal" value="0.250" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></label>
                 </div>
               </div>
+            </div>
+
+            <div class="hex-array-ticket" id="hex-array-ticket" aria-label="Hex array ticket" hidden>
+              <div class="hex-array-face"><b>COLUMNS</b><span data-hex-ticket="columns">0</span></div>
+              <div class="hex-array-face"><b>ROWS</b><span data-hex-ticket="rows">0</span></div>
+              <div class="hex-array-face"><b>X GAP</b><span data-hex-ticket="x-gap">0.000</span></div>
+              <div class="hex-array-face"><b>Y GAP</b><span data-hex-ticket="y-gap">0.000</span></div>
+              <div class="hex-array-face"><b>X OFFSET</b><span data-hex-ticket="x-offset">0.000</span></div>
             </div>
 
             <section class="margin-presets" aria-label="Margin presets">
@@ -2834,7 +2875,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     blankW: 12, blankH: 8, snap: 0.125, zoom: 1, fitScale: null, panX: 0, panY: 0, dragging: null, start: null,
     partW: 2.5, partH: 3.5, partRot: 0,
     margin: { l: 0.25, r: 0.25, t: 0.25, b: 0.5 },
-    gap: { x: 0.125, y: 0.125 }, autoNestArmed: false, marginBandsVisible: true
+    gap: { x: 0.125, y: 0.125 }, autoNestArmed: false, hexArmed: false, marginBandsVisible: true
   };
 
   var svg = document.getElementById('lb-world');
@@ -2854,8 +2895,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   var blankTicker = document.getElementById('blank-ticker');
   var blankCluster = document.getElementById('blank-ticker-cluster');
   var btReadout = document.getElementById('bt-readout');
+  var btHex = document.getElementById('bt-hex');
   var btMenu = document.getElementById('bt-menu');
   var btParts = document.getElementById('bt-parts');
+  var hexArrayTicket = document.getElementById('hex-array-ticket');
   var marginBandToggle = document.getElementById('margin-band-toggle');
   if (!svg || !camera || !blank) return;
 
@@ -2914,7 +2957,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     function px(value) { return (Math.round(value * 1000) / 1000) + 'px'; }
     row.style.setProperty('--bt-seat-size', px(sizeSeatWidth));
     row.style.setProperty('--bt-seat-count', px(countWellWidth + 10));
-    row.style.setProperty('--bt-seat-map-width', px(24 + 24 + sizeSeatWidth + 24 + countWellWidth + 10));
+    row.style.setProperty('--bt-seat-map-width', px(24 + 24 + sizeSeatWidth + 24 + 24 + countWellWidth + 10));
     row.classList.add('is-seat-locked');
     lockClosedTickerPin();
   }
@@ -3171,6 +3214,46 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     return nestLayoutForRotation(state.partRot);
   }
 
+  /* Cut 2: largest N at the D+g pair. Leftover height buys a squeezed row; it does not open the nest. */
+  function hexLayout() {
+    var diameter = state.partW;
+    var radius = diameter / 2;
+    var m = state.margin;
+    var clearance = state.gap.x;
+    var empty = { hex: true, columns: 0, rows: 0, count: 0, centers: [], failedRows: [], p: 0, h: 0, xGap: 0, yGap: 0, xOffset: 0 };
+    if (!finitePositive(diameter) || !finiteNonNegative(clearance)) return empty;
+    var pair = diameter + clearance;
+    var hcp = pair * Math.sqrt(3) / 2;
+    var availableRise = state.blankH - m.t - m.b - diameter;
+    var minX = m.l + radius, maxX = state.blankW - m.r - radius;
+    var minY = m.b + radius, maxY = state.blankH - m.t - radius;
+    if (minX > maxX + FIT_EPSILON || minY > maxY + FIT_EPSILON) return empty;
+    var n = 1, h = 0, p = pair;
+    if (availableRise > FIT_EPSILON) {
+      var maxN = Math.max(2, 1 + Math.floor(2 * availableRise / pair + FIT_EPSILON));
+      for (var candidate = maxN; candidate >= 2; candidate--) {
+        var rise = Math.min(hcp, availableRise / (candidate - 1));
+        if (candidate >= 3 && rise + FIT_EPSILON < pair / 2) continue;
+        var pitch = 2 * Math.sqrt(Math.max(0, pair * pair - rise * rise));
+        if (minX + pitch / 2 > maxX + FIT_EPSILON) continue;
+        n = candidate;
+        h = rise;
+        p = pitch;
+        break;
+      }
+    }
+    var centers = [], rows = n, columns = 0, failedRows = [];
+    for (var row = 0; row < rows; row++) {
+      var y = minY + row * h;
+      var startX = minX + (row % 2 ? p / 2 : 0);
+      var rowColumns = startX <= maxX + FIT_EPSILON && p > FIT_EPSILON ? Math.floor((maxX - startX) / p + FIT_EPSILON) + 1 : 0;
+      if (!rowColumns) failedRows.push(y);
+      columns = Math.max(columns, rowColumns);
+      for (var column = 0; column < rowColumns; column++) centers.push({ x: startX + column * p, y: y });
+    }
+    return { hex: true, diameter: diameter, radius: radius, p: p, h: h, columns: columns, rows: rows, count: centers.length, centers: centers, failedRows: failedRows, xGap: p - diameter, yGap: h - diameter, xOffset: m.l + p / 2 };
+  }
+
   /* The Cut 1 uniform result remains the fallback and preserves its 90° state write. */
   function bestUniformLayout() {
     var inputs = autoNestInputs(), settings = autoNestSettings();
@@ -3219,6 +3302,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var nw = Math.max(0.05, w - m.l - m.r);
     var nh = Math.max(0.05, h - m.b - m.t);
     if (nestBox) {
+      nestBox.setAttribute('visibility', state.hexArmed ? 'hidden' : 'visible');
       nestBox.setAttribute('x', nx);
       nestBox.setAttribute('y', ny);
       nestBox.setAttribute('width', nw);
@@ -3266,7 +3350,41 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         tile.setAttribute('vector-effect', 'non-scaling-stroke');
         partG.appendChild(tile);
       }
-      if (layout.groups) {
+      function appendHexTile(center) {
+        var aabb = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        aabb.setAttribute('x', center.x - layout.radius);
+        aabb.setAttribute('y', center.y - layout.radius);
+        aabb.setAttribute('width', layout.diameter);
+        aabb.setAttribute('height', layout.diameter);
+        aabb.setAttribute('fill', 'none');
+        aabb.setAttribute('stroke', '#538BEC');
+        aabb.setAttribute('stroke-width', '1');
+        aabb.setAttribute('stroke-dasharray', '2 2');
+        aabb.setAttribute('vector-effect', 'non-scaling-stroke');
+        var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', center.x);
+        circle.setAttribute('cy', center.y);
+        circle.setAttribute('r', layout.radius);
+        circle.setAttribute('fill', 'rgba(83,139,236,0.22)');
+        circle.setAttribute('stroke', '#538BEC');
+        circle.setAttribute('stroke-width', '1.15');
+        circle.setAttribute('vector-effect', 'non-scaling-stroke');
+        partG.appendChild(aabb);
+        partG.appendChild(circle);
+      }
+      if (layout.hex) {
+        layout.failedRows.forEach(function (y) {
+          var wash = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+          wash.setAttribute('x', Math.max(0, m.l));
+          wash.setAttribute('y', Math.max(0, y - layout.radius));
+          wash.setAttribute('width', Math.max(0, w - m.l - m.r));
+          wash.setAttribute('height', Math.min(layout.diameter, h));
+          wash.setAttribute('fill', 'rgba(220,48,48,0.22)');
+          wash.setAttribute('stroke', 'none');
+          partG.appendChild(wash);
+        });
+        layout.centers.forEach(appendHexTile);
+      } else if (layout.groups) {
         for (var groupIndex = 0; groupIndex < layout.groups.length; groupIndex++) {
           var groupBlank = layout.groups[groupIndex];
           var group = groupBlank.group, grid = group.grid;
@@ -3348,6 +3466,21 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var tw = tickerClosedWidth || box.offsetWidth || 140;
     pin.style.left = Math.round((window.innerWidth - tw) / 2) + 'px';
     pin.style.top = (HEADER_H + STOP) + 'px';
+    positionHexArrayTicket(layout);
+  }
+  function positionHexArrayTicket(layout) {
+    if (!hexArrayTicket) return;
+    if (!layout || !layout.hex) { hexArrayTicket.hidden = true; return; }
+    hexArrayTicket.hidden = false;
+    function face(name, value) {
+      var el = hexArrayTicket.querySelector('[data-hex-ticket="' + name + '"]');
+      if (el) el.textContent = value;
+    }
+    face('columns', String(layout.columns));
+    face('rows', String(layout.rows));
+    face('x-gap', layout.xGap.toFixed(3));
+    face('y-gap', layout.yGap.toFixed(3));
+    face('x-offset', layout.xOffset.toFixed(3));
   }
   function syncHudBlankFromBed() {
     if (typeof window.__hudSyncBlank === 'function') window.__hudSyncBlank(state.blankW, state.blankH);
@@ -3376,7 +3509,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
 
   function render() {
-    var layout = state.autoNestArmed ? autoNestLayout() : nestLayout();
+    var layout = state.hexArmed ? hexLayout() : (state.autoNestArmed ? autoNestLayout() : nestLayout());
     clampSubjectToStops(); layoutBlank(layout); applyCamera(); keepResizeArcInViewport(); drawBedRulers(); positionBlankTicker(layout); syncHudBlankFromBed();
   }
   window.__bedSetBlank = function (w, h) {
@@ -3418,7 +3551,24 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   });
   if (btMenu) btMenu.addEventListener('click', function () {
     state.autoNestArmed = !state.autoNestArmed;
+    if (state.autoNestArmed) {
+      state.hexArmed = false;
+      window.__flipitHexArmed = false;
+      if (btHex) btHex.setAttribute('aria-pressed', 'false');
+      if (typeof window.__hudSetHexArmed === 'function') window.__hudSetHexArmed(false);
+    }
     btMenu.setAttribute('aria-pressed', String(state.autoNestArmed));
+    render();
+  });
+  if (btHex) btHex.addEventListener('click', function () {
+    state.hexArmed = !state.hexArmed;
+    if (state.hexArmed) {
+      state.autoNestArmed = false;
+      if (btMenu) btMenu.setAttribute('aria-pressed', 'false');
+    }
+    window.__flipitHexArmed = state.hexArmed;
+    btHex.setAttribute('aria-pressed', String(state.hexArmed));
+    if (typeof window.__hudSetHexArmed === 'function') window.__hudSetHexArmed(state.hexArmed);
     render();
   });
   function renderMarginBandToggle() {
@@ -3968,6 +4118,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
   function refreshTickers() {
     const p = paramState.part, b = paramState.blank, g = paramState.gap, m = paramState.margin;
+    if (window.__flipitHexArmed) { p.linked = true; p.y = p.x; }
     const tPart = document.querySelector('[data-ticker="part"]');
     const tPartCollapsed = document.querySelector('[data-ticker="part-collapsed"]');
     const tBlank = document.querySelector('[data-ticker="blank"]');
@@ -4554,6 +4705,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
           var peerAxis = axis === 'x' ? 'y' : 'x';
           var peer = ticker.querySelector('[data-chip-field="' + peerAxis + '"]');
           if (peer && peer !== input) { peer.value = input.value; sizeChipInput(peer); }
+        } else if (key === 'part' && window.__flipitHexArmed) {
+          paramState.part.x = value; paramState.part.y = value;
+          var partPeerAxis = axis === 'x' ? 'y' : 'x';
+          var partPeer = ticker.querySelector('[data-chip-field="' + partPeerAxis + '"]');
+          if (partPeer && partPeer !== input) { partPeer.value = input.value; sizeChipInput(partPeer); }
         } else paramState[key][axis] = value;
         refreshTickers();
       });
@@ -4661,6 +4817,16 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     } else bindChipInputs(ticker, key);
   }
   window.__hudOpenChipEditor = openChipEditor;
+  window.__hudSetHexArmed = function (armed) {
+    if (armed) {
+      paramState.part.linked = true;
+      paramState.part.y = paramState.part.x;
+      var x = document.querySelector('[data-part="x"]'), y = document.querySelector('[data-part="y"]');
+      if (x) x.value = fmt3(paramState.part.x);
+      if (y) y.value = fmt3(paramState.part.y);
+    }
+    refreshTickers();
+  };
   hud.addEventListener('click', onChipAction);
   var blankClusterEl = document.getElementById('blank-ticker-cluster');
   if (blankClusterEl) blankClusterEl.addEventListener('click', onChipAction);
