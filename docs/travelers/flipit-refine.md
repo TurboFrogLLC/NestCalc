@@ -3,10 +3,10 @@
 Repo: NestCalc
 Owner: wReckless
 Part: FLiPIT refine — Fit top + preset card
-Description: Fit parks blank top at the HUD stop. Preset editor is a non-modal card with Part, section disable, live load, and overwrite confirm. No picker. No calc. No bed. Q2 HUD-to-blank X is out.
+Description: Fit parks blank top at the HUD stop. Preset editor is the restored centered card for Blank, Gap, and Margin only. No picker. No calc. No bed. Q2 HUD-to-blank X is out.
 PR: 134
 Branch: docs/flipit-refine
-Head: c16e89ddf7690a4752f5d6f9b52a7967a2abeebb
+Head: d7cd7be775d50dd8d083a114113a8b9650461bd1
 Session: fresh
 job_id: NGJ-20260902-flipit-refine
 flow_id:
@@ -21,6 +21,7 @@ Seq  Label              Notes                                              Stamp
 4    Look               Owner. No Codex.
 5    Cut                2 preset card + Part + accessibility disable cbf37f0d7524adfb5ac317b9160b8cfd9067ff44
 5b   Cut                2b preset card chrome restoration     99b5a8d993230387a827b5e46ea4d4b1aa306ada
+5c   Cut                2c restore 78391d0 card               78391d095a416cfe156dc79d8533e042e182a603
 6    Look               Owner. No Codex.
 7    Send for review
 8    Inspection
@@ -49,36 +50,8 @@ Pan and zoom stay. 15px bottom and 25px side insets stay.
 Window is not a bed. Do not pin Fit to window bottom.
 
 ### Cut 2 — preset card
-Not a modal. Slots stay clickable while the card is open.
-Top row: label Presets | Lucide paint-bucket | name field | Check | X.
-Name field is shorter than today. Placeholder only: Name this preset.
-Check/X stay 22 / 14 / 2. One rule under that row. No footer rule. No Copy live text button.
+Restore only `.margin-presets`, `.margin-presets__head`, `.margin-presets__grid`, the centered preset-card layer, `.margin-preset-card`, and their card open/close JavaScript from `78391d095a416cfe156dc79d8533e042e182a603`.
 
-Paint-bucket Lucide paths only, 22 / 14 / 2, viewBox 24, stroke 2, fill none:
-M11 7 6 2
-M18.992 12H2.041
-M21.145 18.38A3.34 3.34 0 0 1 20 16.5a3.3 3.3 0 0 1-1.145 1.88c-.575.46-.855 1.02-.855 1.595A2 2 0 0 0 20 22a2 2 0 0 0 2-2.025c0-.58-.285-1.13-.855-1.595
-m8.5 4.5 2.148-2.148a1.205 1.205 0 0 1 1.704 0l7.296 7.296a1.205 1.205 0 0 1 0 1.704l-7.592 7.592a3.615 3.615 0 0 1-5.112 0l-3.888-3.888a3.615 3.615 0 0 1 0-5.112L5.67 7.33
-Title: Load canvas. Copies live Part / Blank / Gap / Margin into the open card, honoring section disable. Idle stroke #111111.
+The 154px sheet row is `PRESETS | pencil | plus | minus`, with the source pencil paths and 22 / 16 / 2 controls. The centered 252.4px card layer is z-index 201. Its name field is 222.4 × 31.46; the card contains Blank, Gap, and Margin only. Axis fields are 106.8 × 31.46. Check/X remain 22 / 14 / 2.
 
-Card open + empty slot target: fill rgba(22,163,74,0.22) stroke #16A34A.
-Card open + occupied slot target: gold arm rgba(255,206,27,0.55) / stroke rgba(201,140,0,0.85).
-Card closed + that slot is live on the canvas: same gold. No red chips.
-
-Check on an occupied target opens a second #E8E8E8 card 8.8px from the editor: Replace this preset? + Check/X. Empty target writes with no alert.
-
-Sections top to bottom: Part, Blank, Gap, Margin.
-Part defaults 2.500 × 3.500. Axis fields stay 106.8 × 31.46 with 8.8px gaps.
-Idle slot tap hydrates enabled sections only.
-
-Each section label row gets Lucide accessibility, 22 / 14 / 2, viewBox 24, stroke 2, fill none:
-circle cx=16 cy=4 r=1
-m18 19 1-7-6 1
-m5 8 3-3 5.5 3-2.36 3.5
-M4.24 14.5a5 5 0 0 0 6.88 6
-M13.76 17.5a5 5 0 0 0-6.88-6
-On / enabled: stroke #111111.
-Off / disabled: stroke #538BEC.
-Off sections do not write on save and do not hydrate on slot tap. Live canvas keeps those values. Off is stored on the slot.
-
-Pencil with no arm still opens the card hydrated from live values. Pencil is momentary. Card close returns pencil to #111111.
+Do not add Part, paint-bucket, accessibility controls, enabled-section storage, target colors, or overwrite confirmation. Do not restyle PART SIZE, GAP, or MARGIN chips. Do not change Fit park, count well, or AutoNest math.
