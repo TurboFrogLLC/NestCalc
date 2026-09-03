@@ -3170,11 +3170,20 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       partG.replaceChildren();
       function appendMarginBands(originX, originY, blankWidth, blankHeight) {
         function band(x, y, width, height) {
+          var minX = originX;
+          var maxX = originX + Math.max(0, blankWidth);
+          var minY = originY;
+          var maxY = originY + Math.max(0, blankHeight);
+          var left = Math.max(minX, Math.min(maxX, x));
+          var right = Math.max(minX, Math.min(maxX, x + Math.max(0, width)));
+          var bottom = Math.max(minY, Math.min(maxY, y));
+          var top = Math.max(minY, Math.min(maxY, y + Math.max(0, height)));
+          if (right <= left || top <= bottom) return;
           var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-          rect.setAttribute('x', x);
-          rect.setAttribute('y', y);
-          rect.setAttribute('width', width);
-          rect.setAttribute('height', height);
+          rect.setAttribute('x', left);
+          rect.setAttribute('y', bottom);
+          rect.setAttribute('width', right - left);
+          rect.setAttribute('height', top - bottom);
           rect.setAttribute('fill', 'rgba(220,48,48,0.22)');
           rect.setAttribute('stroke', 'none');
           partG.appendChild(rect);

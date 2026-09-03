@@ -219,6 +219,10 @@ At boot, the host measures the rendered tabular `999` face in the count font and
 
 `#blank-ticker-pin` is the unchanging outer 31.46px-high, 7.26px-radius `#E8E8E8` pin. While the blank editor is open, the host measures `#bt-travel-box` and records its five inner seat widths and four inter-seat gaps: rotate-ccw, rotate-cw, 13.31px / 650 / mono three-decimal size pair with `×`, 24px hamburger, and the fixed tabular-`999` count well with its 5px inset on each side. The closed row reuses that measured CSS grid exactly. Its inset rules therefore retain their open gaps, and closing with Check or X neither reflows the inner row nor changes the outer pin’s left coordinate or width. Check/X remain sibling actions outside the pin. Rotate and hamburger retain 24px hits, 16px glyphs, and 2px strokes; all Cut 8b camera, arc, eye, green arm, bands, AutoNest, SVG-inch, origin, trim-edge-policy, and no picker / calculator / chevron / bed locks remain unchanged.
 
+## AutoNest Cut 9 — clamp margin bands
+
+Each fill-only Cut 6 L/R/T/B band is clamped to the local bounds of the blank it represents. A uniform layout clamps to the sheet; a two-group layout clamps separately to each isolated blank, including its trim-facing edge. An oversized margin can therefore fill at most its own blank and cannot paint through the trim or into the neighboring blank. Tiles remain unclipped, and the eye control, armed-green hamburger, HUD seats, AutoNest math, and SVG-inch camera are unchanged.
+
 ---
 
 ## Seq 3 — blank-in-space canvas
