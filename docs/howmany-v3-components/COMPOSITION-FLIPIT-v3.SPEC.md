@@ -1,6 +1,6 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Cut 2g card hits, dirty alert, arc clear
+**Status:** Living — Cut 2i tightened card, label-row actions, sheet delete
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
@@ -192,6 +192,10 @@ Every card name and number field selects all on click. Blank, Gap, and Margin la
 At boot, the host measures the fixed `00.000 × 00.000` blank-size pair in `13.31px / 650 / mono` and uses those two tabular 6ch seats in the centered HUD’s one immutable grid. The measured tabular-`999` count well plus 5px side insets remains part of that same grid. Only after both measures does `#blank-ticker-pin` take its width once; count digit changes, opening, Check, and X cannot change its width or left pin. Pointerdown on either closed size number opens the same editor and select-alls that field in that click.
 
 The modal card is ordered **PART SIZE**, **BLANK**, **GAP**, **MARGIN**. PART SIZE uses two `106.8 × 31.46` fields with 6px radii and an 8.8px pair gap, the same `11px / 650 / 0.04em / uppercase` label token, and boot default `2.500 × 3.500`. Label-to-fields gap is 4px and section-to-section gap is 6px. Every card section has the locked accessibility hit: on is `#111111`; off is `#538BEC`, dims that row to 0.45, disables its inputs, and neither hydrates nor writes it, preserving live canvas values. The empty card name uses placeholder `Name preset` and saves as empty rather than writing `Preset`. No paint-bucket is added and AutoNest math remains unchanged.
+
+## Cut 2i — tighten card, label-row actions, sheet delete
+
+The `.margin-preset-card` remains `252.4px` wide and now has `12px` padding. Label-to-fields gap is `2px`, section-to-section gap is `4px`, and paired `106.8 × 31.46` fields retain their `8.8px` gap. PART SIZE, BLANK, and GAP label rows read label, 22px-hit / 14px-glyph / 2px-stroke Lucide Link, then 22 / 14 / 2 Check and X only while that section is focused or dirty; their accessibility hit stays at the far right. MARGIN retains no Link. A section Check commits only that section and its X restores only that section, while the header Check/X remains the whole-card commit/cancel pair. With the modal closed, sheet minus ignores an unarmed state and otherwise opens the same `z-index: 220` delete alert directly; it does not reopen the preset card. No paint-bucket, HUD pin-lock, Fit-park, or AutoNest-math change is introduced.
 
 ## AutoNest Cut 1 — HUD menu + best uniform
 

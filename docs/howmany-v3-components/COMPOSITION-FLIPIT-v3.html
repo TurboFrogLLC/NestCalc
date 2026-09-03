@@ -2310,18 +2310,21 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     .margin-preset-card-layer { position: fixed; inset: 0; z-index: 201; display: grid; place-items: center; visibility: hidden; pointer-events: none; background: rgba(17,17,17,.28); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
     .margin-preset-card-layer.is-open { visibility: visible; pointer-events: auto; }
     .margin-preset-modal-row { display: flex; align-items: center; gap: 15px; width: 421.4px; }
-    .margin-preset-card { box-sizing: border-box; width: 252.4px; padding: 15px; border-radius: 7.26px; background: #E8E8E8; box-shadow: 0 2px 7px rgba(0,0,0,.24); color: var(--ink); position: relative; }
+    .margin-preset-card { box-sizing: border-box; width: 252.4px; padding: 12px; border-radius: 7.26px; background: #E8E8E8; box-shadow: 0 2px 7px rgba(0,0,0,.24); color: var(--ink); position: relative; }
     .margin-preset-card input { box-sizing: border-box; height: 31.46px; border: 1.1px solid rgba(83,139,236,.35); border-radius: 6px; background: #fff; color: var(--ink); box-shadow: 0 0.5px 1px rgba(0,0,0,.25); font: 650 13.31px/1 var(--font-mono); font-variant-numeric: tabular-nums; }
     .margin-preset-card__header { height: 31.46px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1.1px solid rgba(26,20,40,.22); }
     .margin-preset-card__title { color: #111111; font-size: 11px; font-weight: 650; letter-spacing: .04em; line-height: 1; text-transform: uppercase; }
     .margin-preset-card__name { width: 222.4px; padding: 0 8.8px; margin: 8.8px 0 0; }
-    .margin-preset-card__fields { display: flex; flex-direction: column; gap: 6px; margin-top: 8.8px; }
-    .margin-preset-card__section { display: flex; flex-direction: column; gap: 4px; }
-    .margin-preset-card__section-head { display: flex; align-items: center; justify-content: space-between; min-height: 28px; }
+    .margin-preset-card__fields { display: flex; flex-direction: column; gap: 4px; margin-top: 8.8px; }
+    .margin-preset-card__section { display: flex; flex-direction: column; gap: 2px; }
+    .margin-preset-card__section-head { display: flex; align-items: center; justify-content: space-between; min-height: 22px; }
     .margin-preset-card__section-label { color: #111111; font: 650 11px/1 var(--font-mono); letter-spacing: .04em; text-transform: uppercase; }
-    .margin-preset-card__section-toggle { width: 28px; height: 28px; padding: 0; border: 0; background: transparent; color: #111111; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+    .margin-preset-card__section-head-left { display: flex; align-items: center; gap: 2px; min-width: 0; }
+    .margin-preset-card__section-actions { display: flex; align-items: center; gap: 2px; }
+    .margin-preset-card__section-action, .margin-preset-card__section-toggle { width: 22px; height: 22px; padding: 0; border: 0; background: transparent; color: #111111; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+    .margin-preset-card__section-action svg, .margin-preset-card__section-toggle svg { display: block; width: 14px; height: 14px; }
+    .margin-preset-card__section-action[hidden] { display: none; }
     .margin-preset-card__section-toggle[aria-pressed="false"] { color: #538BEC; }
-    .margin-preset-card__section-toggle svg { display: block; width: 18px; height: 18px; }
     .margin-preset-card__section.is-disabled { opacity: .45; }
     .margin-preset-card__section.is-disabled input { cursor: not-allowed; }
     .margin-preset-card__pair { display: grid; grid-template-columns: 106.8px 106.8px; gap: 8.8px; }
@@ -2372,21 +2375,21 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       <input class="margin-preset-card__name" data-margin-preset-name type="text" autocomplete="off" aria-label="Preset name" placeholder="Name preset" />
       <div class="margin-preset-card__fields">
         <section class="margin-preset-card__section" data-margin-preset-section="part" aria-label="Part size">
-          <div class="margin-preset-card__section-head"><span class="margin-preset-card__section-label">Part size</span><button type="button" class="margin-preset-card__section-toggle" data-margin-preset-section-toggle="part" title="Exclude Part size" aria-label="Exclude Part size" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="4" r="1"/><path d="m18 19 1-7-6 1"/><path d="m5 8 3-3 5.5 3-2.36 3.5"/><path d="M4.24 14.5a5 5 0 0 0 6.88 6"/><path d="M13.76 17.5a5 5 0 0 0-6.88-6"/></svg></button></div>
+          <div class="margin-preset-card__section-head"><div class="margin-preset-card__section-head-left"><span class="margin-preset-card__section-label">Part size</span><div class="margin-preset-card__section-actions"><button type="button" class="margin-preset-card__section-action" data-margin-preset-section-link="part" title="Link part axes" aria-label="Link part axes" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.07.07l2-2a5 5 0 0 0-7.07-7.07l-1.14 1.14"/><path d="M14 11a5 5 0 0 0-7.07-.07l-2 2A5 5 0 0 0 12 20l1.14-1.14"/></svg></button><button type="button" class="margin-preset-card__section-action" data-margin-preset-section-commit="part" title="Save part size" aria-label="Save part size" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button type="button" class="margin-preset-card__section-action" data-margin-preset-section-cancel="part" title="Cancel part size" aria-label="Cancel part size" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div></div><button type="button" class="margin-preset-card__section-toggle" data-margin-preset-section-toggle="part" title="Exclude Part size" aria-label="Exclude Part size" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="4" r="1"/><path d="m18 19 1-7-6 1"/><path d="m5 8 3-3 5.5 3-2.36 3.5"/><path d="M4.24 14.5a5 5 0 0 0 6.88 6"/><path d="M13.76 17.5a5 5 0 0 0-6.88-6"/></svg></button></div>
           <div class="margin-preset-card__pair">
             <label class="margin-preset-card__field"><input data-margin-preset-field="part.x" type="text" inputmode="decimal" autocomplete="off" aria-label="Part width" /></label>
             <label class="margin-preset-card__field"><input data-margin-preset-field="part.y" type="text" inputmode="decimal" autocomplete="off" aria-label="Part height" /></label>
           </div>
         </section>
         <section class="margin-preset-card__section" data-margin-preset-section="blank" aria-label="Blank">
-          <div class="margin-preset-card__section-head"><span class="margin-preset-card__section-label">Blank</span><button type="button" class="margin-preset-card__section-toggle" data-margin-preset-section-toggle="blank" title="Include Blank" aria-label="Include Blank" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="4" r="1"/><path d="m18 19 1-7-6 1"/><path d="m5 8 3-3 5.5 3-2.36 3.5"/><path d="M4.24 14.5a5 5 0 0 0 6.88 6"/><path d="M13.76 17.5a5 5 0 0 0-6.88-6"/></svg></button></div>
+          <div class="margin-preset-card__section-head"><div class="margin-preset-card__section-head-left"><span class="margin-preset-card__section-label">Blank</span><div class="margin-preset-card__section-actions"><button type="button" class="margin-preset-card__section-action" data-margin-preset-section-link="blank" title="Link blank axes" aria-label="Link blank axes" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.07.07l2-2a5 5 0 0 0-7.07-7.07l-1.14 1.14"/><path d="M14 11a5 5 0 0 0-7.07-.07l-2 2A5 5 0 0 0 12 20l1.14-1.14"/></svg></button><button type="button" class="margin-preset-card__section-action" data-margin-preset-section-commit="blank" title="Save blank" aria-label="Save blank" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button type="button" class="margin-preset-card__section-action" data-margin-preset-section-cancel="blank" title="Cancel blank" aria-label="Cancel blank" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div></div><button type="button" class="margin-preset-card__section-toggle" data-margin-preset-section-toggle="blank" title="Include Blank" aria-label="Include Blank" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="4" r="1"/><path d="m18 19 1-7-6 1"/><path d="m5 8 3-3 5.5 3-2.36 3.5"/><path d="M4.24 14.5a5 5 0 0 0 6.88 6"/><path d="M13.76 17.5a5 5 0 0 0-6.88-6"/></svg></button></div>
           <div class="margin-preset-card__pair">
             <label class="margin-preset-card__field"><input data-margin-preset-field="blank.x" type="text" inputmode="decimal" autocomplete="off" aria-label="Blank width" /></label>
             <label class="margin-preset-card__field"><input data-margin-preset-field="blank.y" type="text" inputmode="decimal" autocomplete="off" aria-label="Blank height" /></label>
           </div>
         </section>
         <section class="margin-preset-card__section" data-margin-preset-section="gap" aria-label="Gap">
-          <div class="margin-preset-card__section-head"><span class="margin-preset-card__section-label">Gap</span><button type="button" class="margin-preset-card__section-toggle" data-margin-preset-section-toggle="gap" title="Include Gap" aria-label="Include Gap" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="4" r="1"/><path d="m18 19 1-7-6 1"/><path d="m5 8 3-3 5.5 3-2.36 3.5"/><path d="M4.24 14.5a5 5 0 0 0 6.88 6"/><path d="M13.76 17.5a5 5 0 0 0-6.88-6"/></svg></button></div>
+          <div class="margin-preset-card__section-head"><div class="margin-preset-card__section-head-left"><span class="margin-preset-card__section-label">Gap</span><div class="margin-preset-card__section-actions"><button type="button" class="margin-preset-card__section-action" data-margin-preset-section-link="gap" title="Link gap axes" aria-label="Link gap axes" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.07.07l2-2a5 5 0 0 0-7.07-7.07l-1.14 1.14"/><path d="M14 11a5 5 0 0 0-7.07-.07l-2 2A5 5 0 0 0 12 20l1.14-1.14"/></svg></button><button type="button" class="margin-preset-card__section-action" data-margin-preset-section-commit="gap" title="Save gap" aria-label="Save gap" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button type="button" class="margin-preset-card__section-action" data-margin-preset-section-cancel="gap" title="Cancel gap" aria-label="Cancel gap" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div></div><button type="button" class="margin-preset-card__section-toggle" data-margin-preset-section-toggle="gap" title="Include Gap" aria-label="Include Gap" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="4" r="1"/><path d="m18 19 1-7-6 1"/><path d="m5 8 3-3 5.5 3-2.36 3.5"/><path d="M4.24 14.5a5 5 0 0 0 6.88 6"/><path d="M13.76 17.5a5 5 0 0 0-6.88-6"/></svg></button></div>
           <div class="margin-preset-card__pair">
             <label class="margin-preset-card__field"><input data-margin-preset-field="gap.x" type="text" inputmode="decimal" autocomplete="off" aria-label="Gap horizontal" /></label>
             <label class="margin-preset-card__field"><input data-margin-preset-field="gap.y" type="text" inputmode="decimal" autocomplete="off" aria-label="Gap vertical" /></label>
@@ -3705,6 +3708,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   var marginPresetSlots = Array.from({ length: 4 }, copyLivePreset);
   var marginPresetEditing = false, marginPresetArmed = null, marginPresetCardSlot = null, marginPresetAlertMode = null;
   var marginPresetSections = { part: true, blank: true, gap: true, margin: true };
+  var marginPresetSectionSnapshots = {}, marginPresetSectionLinks = { part: false, blank: false, gap: false };
   var marginPresetCardLayer = document.querySelector('[data-margin-preset-card-layer]');
   var marginPresetModalRow = document.querySelector('[data-margin-preset-modal-row]');
   var marginPresets = document.querySelector('.margin-presets');
@@ -3741,6 +3745,40 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
   function resetMarginPresetSections() { ['part', 'blank', 'gap', 'margin'].forEach(function (section) { setMarginPresetSectionEnabled(section, true); }); }
   function marginPresetSectionForPath(path) { return path.split('.')[0]; }
+  function marginPresetSectionInputs(section) { return Array.from(document.querySelectorAll('[data-margin-preset-section="' + section + '"] input')); }
+  function captureMarginPresetSection(section) { marginPresetSectionSnapshots[section] = marginPresetSectionInputs(section).map(function (input) { return input.value; }); }
+  function restoreMarginPresetSection(section) {
+    marginPresetSectionInputs(section).forEach(function (input, index) { input.value = (marginPresetSectionSnapshots[section] || [])[index] || ''; });
+    refreshMarginPresetSectionActions(section);
+  }
+  function marginPresetSectionIsDirty(section) {
+    var snapshot = marginPresetSectionSnapshots[section] || [];
+    return marginPresetSectionInputs(section).some(function (input, index) { return input.value !== snapshot[index]; });
+  }
+  function refreshMarginPresetSectionActions(section) {
+    var cardSection = document.querySelector('[data-margin-preset-section="' + section + '"]'); if (!cardSection || section === 'margin') return;
+    var visible = marginPresetSections[section] && (cardSection.contains(document.activeElement) || marginPresetSectionIsDirty(section));
+    ['commit', 'cancel'].forEach(function (action) {
+      var button = document.querySelector('[data-margin-preset-section-' + action + '="' + section + '"]');
+      if (button) button.hidden = !visible;
+    });
+  }
+  function refreshAllMarginPresetSectionActions() { ['part', 'blank', 'gap'].forEach(refreshMarginPresetSectionActions); }
+  function commitMarginPresetSection(section) {
+    if (!marginPresetSections[section]) return;
+    var target = marginPresetCardSlot;
+    if (target === null) {
+      target = marginPresetSlots.findIndex(isEmptyMarginPreset);
+      if (target === -1) { target = marginPresetSlots.length; marginPresetSlots.push(emptyMarginPreset()); }
+      marginPresetCardSlot = target; marginPresetArmed = target;
+    }
+    var preset = marginPresetSlots[target], prior = preset[section] || {};
+    marginPresetSectionInputs(section).forEach(function (input) {
+      var path = input.getAttribute('data-margin-preset-field').split('.')[1], value = parseLiveNumber(input);
+      preset[section][path] = value === null ? (Number.isFinite(prior[path]) ? prior[path] : liveMarginPresetValue(section + '.' + path)) : value;
+    });
+    captureMarginPresetSection(section); renderMarginPresetSlots(); refreshMarginPresetSectionActions(section);
+  }
   function renderMarginPresetSlots() {
     var grid = document.querySelector('[data-margin-preset-grid]'); if (!grid) return;
     grid.replaceChildren();
@@ -3763,6 +3801,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       var liveValue = liveMarginPresetValue(path);
       input.value = fmt3(presetNumber(preset, path, liveValue));
     });
+    ['part', 'blank', 'gap', 'margin'].forEach(captureMarginPresetSection);
+    refreshAllMarginPresetSectionActions();
   }
   function openMarginPresetCard(index) {
     var preset = index === null ? copyLivePreset() : marginPresetSlots[index]; if (!preset || !marginPresetCardLayer) return;
@@ -3804,7 +3844,38 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     toggle.addEventListener('click', function () {
       var section = toggle.getAttribute('data-margin-preset-section-toggle');
       setMarginPresetSectionEnabled(section, !marginPresetSections[section]);
+      refreshMarginPresetSectionActions(section);
     });
+  });
+  document.querySelectorAll('[data-margin-preset-section-link]').forEach(function (button) {
+    button.addEventListener('click', function () {
+      var section = button.getAttribute('data-margin-preset-section-link');
+      marginPresetSectionLinks[section] = !marginPresetSectionLinks[section];
+      button.setAttribute('aria-pressed', String(marginPresetSectionLinks[section]));
+      button.title = (marginPresetSectionLinks[section] ? 'Unlink ' : 'Link ') + section + ' axes';
+      button.setAttribute('aria-label', button.title);
+      if (marginPresetSectionLinks[section]) {
+        var inputs = marginPresetSectionInputs(section); if (inputs[0] && inputs[1]) inputs[1].value = inputs[0].value;
+      }
+      refreshMarginPresetSectionActions(section);
+    });
+  });
+  document.querySelectorAll('[data-margin-preset-section-commit]').forEach(function (button) {
+    button.addEventListener('click', function () { commitMarginPresetSection(button.getAttribute('data-margin-preset-section-commit')); });
+  });
+  document.querySelectorAll('[data-margin-preset-section-cancel]').forEach(function (button) {
+    button.addEventListener('click', function () { restoreMarginPresetSection(button.getAttribute('data-margin-preset-section-cancel')); });
+  });
+  ['part', 'blank', 'gap'].forEach(function (section) {
+    var cardSection = document.querySelector('[data-margin-preset-section="' + section + '"]'); if (!cardSection) return;
+    cardSection.addEventListener('focusin', function () { refreshMarginPresetSectionActions(section); });
+    cardSection.addEventListener('focusout', function () { requestAnimationFrame(function () { refreshMarginPresetSectionActions(section); }); });
+    cardSection.querySelectorAll('input').forEach(function (input) { input.addEventListener('input', function () {
+      if (marginPresetSectionLinks[section]) {
+        var inputs = marginPresetSectionInputs(section); if (inputs[0] === input && inputs[1]) inputs[1].value = input.value; else if (inputs[1] === input && inputs[0]) inputs[0].value = input.value;
+      }
+      refreshMarginPresetSectionActions(section);
+    }); });
   });
   function applyMarginPreset(index) {
     var preset = marginPresetSlots[index]; if (!preset) return; var live = copyLivePreset();
@@ -3836,7 +3907,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   if (removeMarginPreset) removeMarginPreset.addEventListener('click', function () {
     if (marginPresetArmed === null) return;
     if (localStorage.getItem('howmany.flipit.v3.presetDeleteSkip') === 'true') { deleteArmedMarginPreset(); return; }
-    openMarginPresetCard(marginPresetArmed);
     openMarginPresetAlert('delete');
   });
   function deleteArmedMarginPreset() {
