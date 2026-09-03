@@ -3,10 +3,10 @@
 Repo: NestCalc
 Owner: wReckless
 Part: FLiPIT hex nest
-Description: Hex ticket feeds a square machine array: rows, columns, X gap, Y gap. Two-row lattice, duplicate after that. Do not implement until Owner locks Cut 1.
+Description: Hex ticket feeds a square machine array: rows, columns, X gap, Y gap. Do not implement until Owner locks Cut 1.
 PR: 135
 Branch: docs/hex-nest
-Head: 97d26a3dea49998b7433a6d425d6b24f64b68d5f
+Head: 99532b22c6f34ac1a43e11bfec10a180edd3bb36
 Session: fresh
 job_id: NGJ-20260903-hex-nest
 flow_id:
@@ -38,32 +38,24 @@ Do not copy NC emission. Do not replace the AutoNest hamburger. Do not split rou
 
 ## Pin (not Cut 1 lock)
 
-Purpose: numbers for a square laser array. The array has four inputs only:
-# rows, # columns, X gap, Y gap.
-Machine work-offset is not an array field. hex-x from 0,0 is how pass 2 is started on the table, not typed into the array dialog.
+Array inputs only: # rows, # columns, X gap, Y gap.
+Gaps are real edge-to-edge distances on the dotted bounding boxes. Not center-to-center. Not p/2.
+Machine work-offset is not an array field.
 
-One square array cannot stagger. Two passes:
-- Pass A: even rows (1, 3, 5…)
-- Pass B: odd rows (2, 4, 6…), started at the row-2 origin from blank 0,0
-Both passes use the same columns / X gap / Y gap. Row count per pass is ceil or floor of total rows / 2.
+X gap = p − D
+Same-row, left edge of part N+1 minus right edge of part N. Actual clearance. 3 dp inches.
+
+Y gap = h − D
+Top of row-1 dotted box is 0 for this face. Bottom of row-2 dotted box minus that top.
+Signed. Negative when the boxes overlap. Array accepts negative. Not pinned to blank 0,0.
+
+Packer still uses typed GAP as the inset *circle* clearance, then produces these box gaps.
+Row 3 copies row 1. Row 4 copies row 2.
 
 Arm: Lucide hexagon left of hamburger. 24 / 16 / 2 / viewBox 24.
 Path: M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z
 Armed #16A34A. Off #111111.
 
-Part when armed: circle, diameter, PART SIZE linked. Dotted AABB on diameter.
-
-Packer: h from height, p from width, inset pair at typed GAP.
+Part when armed: circle, diameter, PART SIZE linked. Dotted unfilled AABB on diameter.
 Origin circle locked. Count = legal centers. Red wash = illegal ghost only.
-
-Array faces (3 dp inches):
-- columns
-- rows per pass
-- X gap = p − D  (same-row part-to-part)
-- Y gap = 2h − D  (same-parity row part-to-part, edge)  [pending Q16]
-
-Table start for pass B, from blank 0,0 (not an array field):
-- hex-x-off (center vs box-left still open)
-- hex-y-inset = h − D (signed; visual overlap of dotted boxes)
-
 No per-tile drag. No NC emission. No two-blank trim.
