@@ -1,6 +1,6 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Cut 2d preset-card modal pair
+**Status:** Living — Cut 2e preset-card header, blur, selected minus
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
@@ -172,6 +172,12 @@ The 154px sheet keeps its PRESETS row as label, stock Lucide pencil, plus, and m
 ## Cut 2d — preset-card modal pair
 
 The pencil opens a blocking modal layer above the header, HUD, blank, and all sheet chips. Its backdrop is `backdrop-filter: blur(8px)` over `rgba(17,17,17,0.28)`, and consumes background pointer input. The focused, vertically centered row is exactly the live 154px `.margin-presets`, a 15px gap, and the unchanged 252.4px `.margin-preset-card`: its 421.4px group is viewport-centered, placing the card center 84.5px to the viewport’s right of center. Opening moves the existing `.margin-presets` node into this row—slots and pencil/plus/minus are never cloned—and leaves a visibility-hidden sheet hole with its measured dimensions, so PART SIZE, GAP, and MARGIN do not move. Closing returns that same node to its sheet location and restores the pencil’s idle state. Card geometry and its Blank, Gap, and Margin-only contract remain Cut 2c; no Part, paint-bucket, accessibility control, header rewrite, Fit-park change, count-well change, or AutoNest math change is introduced.
+
+## Cut 2e — preset-card header, blur, selected minus
+
+The modal backdrop is `blur(4px)` over unchanged `rgba(17,17,17,0.28)`. The Cut 2d centered 154px presets + 15px gap + 252.4px editor pair stays fixed. The editor shell remains `#E8E8E8` with a 7.26px radius. Its 31.46px header is `Presets` at left and unboxed 22px-hit, 14px Lucide Check/X controls at right with 2px strokes. There is one rule under that header; the 222.4 × 31.46 name field and all card number inputs have 6px radii. Footer Check/X and its rule are removed. No paint-bucket, Part, accessibility, Fit-park, count-well, or AutoNest changes are introduced.
+
+Minus only acts on the armed gold slot; without an arm it does nothing. On the first armed deletion it opens a second `#E8E8E8`, 7.26px-radius confirmation card 8.8px from the editor: `Are you sure you want to delete this?`, unboxed Check/X, and `Don't show this again`. Check deletes the armed slot; if checked, it writes `howmany.flipit.v3.presetDeleteSkip` to local storage. Later armed minus deletes immediately when that key is set. X leaves the armed slot unchanged.
 
 ## AutoNest Cut 1 — HUD menu + best uniform
 
