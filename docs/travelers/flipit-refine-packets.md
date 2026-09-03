@@ -82,7 +82,7 @@ Operator: Codex App · Worker · Terra / Medium
 
 Operator: Codex App · Worker · Terra / Medium
 
-- Pending commit.
+- Commit: `9b91cb0f07fa72f4b2243e3bf44232fe1633043e`.
 - The Presets header now shares the PRESETS label type, and the empty name field reads `Name this preset`.
 - The former side confirmation is replaced by a viewport-centered z-index-220 alert-dialog with overlay, title, description, checkbox, and Cancel then destructive Delete footer. The modal pair remains behind it.
 - Verification: real-browser alert open/cancel/reopen/delete flow, `npm run lint`, and `git diff --check` passed.
