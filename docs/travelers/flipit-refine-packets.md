@@ -28,3 +28,12 @@ Operator: Codex App · Worker · Terra / Medium
 - The host reuses the existing stage-local `fitBed()` park after a committed center-HUD blank-size edit and after `pointerup` from `x`, `y`, or `xy` blank resizing.
 - Pan-only release and pointer-cancel do not re-park. The park remains `zoom = 1`, `topStop = HUD_BLANK_STOP`, and `panY = blankH * s + HUD_BLANK_STOP`.
 - Presets and AutoNest math were not changed. Verification: `git diff --check` passed before the Cut commit.
+
+## Seq 5 Cut 2 — Count well re-lock + preset card
+
+Operator: Codex App · Worker · Terra / Medium
+
+- Commit: `cbf37f0d7524adfb5ac317b9160b8cfd9067ff44`
+- The ticker now measures its rendered tabular `999` face after the bar renders, fixes the count well plus 5px side insets, reserves that minimum through the open seat lock, and derives the closed `#blank-ticker-pin` width from that complete row.
+- Replaced the blocking preset surface with an inline, non-modal card: interactive slots, the specified paint-bucket and accessibility paths, Part/Blank/Gap/Margin sections, disabled-section storage, live canvas load, green/gold target states, and an in-sheet overwrite confirmation.
+- Fit parking and AutoNest math were not changed. Verification: `git diff --check` and inline JavaScript parse check passed before the Cut commit.
