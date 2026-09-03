@@ -37,3 +37,12 @@ Operator: Codex App · Worker · Terra / Medium
 - The ticker now measures its rendered tabular `999` face after the bar renders, fixes the count well plus 5px side insets, reserves that minimum through the open seat lock, and derives the closed `#blank-ticker-pin` width from that complete row.
 - Replaced the blocking preset surface with an inline, non-modal card: interactive slots, the specified paint-bucket and accessibility paths, Part/Blank/Gap/Margin sections, disabled-section storage, live canvas load, green/gold target states, and an in-sheet overwrite confirmation.
 - Fit parking and AutoNest math were not changed. Verification: `git diff --check` and inline JavaScript parse check passed before the Cut commit.
+
+## Seq 5b Cut 2b — preset card chrome restoration
+
+Operator: Codex App · Worker · Terra / Medium
+
+- Commit: `99b5a8d993230387a827b5e46ea4d4b1aa306ada`
+- Restored the 154px PRESETS sheet row to label, stock Lucide pencil, plus, and minus. The row no longer carries the card’s name field, Check/X, or paint-bucket, and its slot button tokens are unchanged.
+- Moved the `#E8E8E8`, 7.26px-radius editor out of that sheet section. Its sole header row is Presets, Load canvas paint-bucket, name field, Check, and X, with one rule below it; its accessible Part, Blank, Gap, and Margin sections remain unchanged.
+- The pencil opens the card momentarily from the armed slot or live values; the card’s bucket refreshes enabled live values. Fit parking, count well, and AutoNest math were not changed. Verification: `git diff --check` and inline JavaScript parse check passed before the Cut commit.

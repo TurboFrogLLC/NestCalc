@@ -20,6 +20,7 @@ Seq  Label              Notes                                              Stamp
 3c   Cut                1c Re-park after blank size changes    41b6a91b4b0f7f74fcd290c0cc514f76f91a3b27
 4    Look               Owner. No Codex.
 5    Cut                2 preset card + Part + accessibility disable cbf37f0d7524adfb5ac317b9160b8cfd9067ff44
+5b   Cut                2b preset card chrome restoration     99b5a8d993230387a827b5e46ea4d4b1aa306ada
 6    Look               Owner. No Codex.
 7    Send for review
 8    Inspection
