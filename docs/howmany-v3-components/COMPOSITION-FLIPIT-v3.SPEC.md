@@ -1,6 +1,6 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Cut 29 pencil hydrate and blank grow
+**Status:** Living — Cut 2i tightened card, label-row actions, sheet delete
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
@@ -164,6 +164,42 @@ Pencil with an armed slot still opens that slot's card. With no armed slot, penc
 ## Cut 30 — HUD count three-digit slot
 
 The centered HUD count is a fixed-width slot: three tabular `ch` faces at 14.64px / 650 / mono plus the same 5px inset on each side that inset vertical rules use. It centers `1`, `14`, and `144` between the size|count separator and the bar’s inner right stroke, retains `#538BEC`, and does not alter the closed ticker width or its fixed-left pin.
+
+## Cut 2b — preset card chrome restoration
+
+The 154px sheet keeps its PRESETS row as label, stock Lucide pencil, plus, and minus only; it contains no name input, Check, X, or paint-bucket, and its slot buttons retain their existing side-chip tokens. The pencil is momentary: it opens the independent non-modal editor from the armed slot or, with no arm, from live Part, Blank, Gap, and Margin values; closing leaves its idle stroke `#111111`. The `252.4px` `#E8E8E8`, 7.26px-radius `.margin-preset-card` does not consume the PRESETS row or block sheet interaction. Its only header row is Presets, the locked 22 / 14 / 2 paint-bucket with title `Load canvas`, the shorter `Name this preset` field, and 22 / 14 / 2 Check/X, followed by exactly one rule. The bucket refreshes enabled sections from live canvas values and does not rename a sheet slot. Part, Blank, Gap, and Margin remain in that order; their accessibility hits retain the locked paths and off color `#538BEC`, while enabled hits use `#111111`. Axis fields stay 106.8 × 31.46 with 8.8px gaps and the 13.31px / 650 / mono token. There is no footer rule or Copy live control; slots remain clickable while the card is open, and Fit parking, count well, and AutoNest math remain unchanged.
+
+## Cut 2d — preset-card modal pair
+
+The pencil opens a blocking modal layer above the header, HUD, blank, and all sheet chips. Its backdrop is `backdrop-filter: blur(8px)` over `rgba(17,17,17,0.28)`, and consumes background pointer input. The focused, vertically centered row is exactly the live 154px `.margin-presets`, a 15px gap, and the unchanged 252.4px `.margin-preset-card`: its 421.4px group is viewport-centered, placing the card center 84.5px to the viewport’s right of center. Opening moves the existing `.margin-presets` node into this row—slots and pencil/plus/minus are never cloned—and leaves a visibility-hidden sheet hole with its measured dimensions, so PART SIZE, GAP, and MARGIN do not move. Closing returns that same node to its sheet location and restores the pencil’s idle state. Card geometry and its Blank, Gap, and Margin-only contract remain Cut 2c; no Part, paint-bucket, accessibility control, header rewrite, Fit-park change, count-well change, or AutoNest math change is introduced.
+
+## Cut 2e — preset-card header, blur, selected minus
+
+The modal backdrop is `blur(4px)` over unchanged `rgba(17,17,17,0.28)`. The Cut 2d centered 154px presets + 15px gap + 252.4px editor pair stays fixed. The editor shell remains `#E8E8E8` with a 7.26px radius. Its 31.46px header is `Presets` at left and unboxed 22px-hit, 14px Lucide Check/X controls at right with 2px strokes. There is one rule under that header; the 222.4 × 31.46 name field and all card number inputs have 6px radii. Footer Check/X and its rule are removed. No paint-bucket, Part, accessibility, Fit-park, count-well, or AutoNest changes are introduced.
+
+Minus only acts on the armed gold slot; without an arm it does nothing. On the first armed deletion it opens a second `#E8E8E8`, 7.26px-radius confirmation card 8.8px from the editor: `Are you sure you want to delete this?`, unboxed Check/X, and `Don't show this again`. Check deletes the armed slot; if checked, it writes `howmany.flipit.v3.presetDeleteSkip` to local storage. Later armed minus deletes immediately when that key is set. X leaves the armed slot unchanged.
+
+## Cut 2f — preset-card header type, placeholder, alert-dialog
+
+The editor header label uses the sheet PRESETS token: `11px / 650 / 0.04em / uppercase / #111111`. An empty name field shows `Name this preset`; `Preset` remains only the stored fallback name. The delete confirmation is a centered viewport alert-dialog at z-index 220 in front of the unchanged Cut 2d modal pair, with an overlay, content, header, title, description, checkbox, and Cancel/Delete footer. It reads `Are you sure you want to delete this?` and `This cannot be undone.`; Cancel closes it and destructive Delete removes the armed slot. Checked Delete stores `howmany.flipit.v3.presetDeleteSkip`. No Part, accessibility, paint-bucket, Fit-park, count-well, or AutoNest changes are introduced.
+
+## Cut 2g — card hits, dirty alert, arc clear
+
+Every card name and number field selects all on click. Blank, Gap, and Margin labels use the sheet label token (`11px / 650 / 0.04em / uppercase / #111111`) and carry the locked 28px Lucide accessibility hit with its 18px, 2px-stroke glyph. Each hit is black while included and `#538BEC` while off; an off section neither hydrates nor writes. Header Check/X use the same 28 / 18 / 2 token, and the open-modal pencil remains `#111111`. The shared z-index-220 alert shell caps content at 280px with a 12px radius and a black checkbox accent. It also confirms a dirty armed-slot edit: Cancel restores its field; Change writes the card values to that selected slot. The blank top stop gains 8px of arc clearance below the fixed HUD; count-well and AutoNest behavior stay unchanged. No Part row or paint-bucket is present.
+
+## Cut 2h — HUD seats, Part row, disable, gaps
+
+At boot, the host measures the fixed `00.000 × 00.000` blank-size pair in `13.31px / 650 / mono` and uses those two tabular 6ch seats in the centered HUD’s one immutable grid. The measured tabular-`999` count well plus 5px side insets remains part of that same grid. Only after both measures does `#blank-ticker-pin` take its width once; count digit changes, opening, Check, and X cannot change its width or left pin. Pointerdown on either closed size number opens the same editor and select-alls that field in that click.
+
+The modal card is ordered **PART SIZE**, **BLANK**, **GAP**, **MARGIN**. PART SIZE uses two `106.8 × 31.46` fields with 6px radii and an 8.8px pair gap, the same `11px / 650 / 0.04em / uppercase` label token, and boot default `2.500 × 3.500`. Label-to-fields gap is 4px and section-to-section gap is 6px. Every card section has the locked accessibility hit: on is `#111111`; off is `#538BEC`, dims that row to 0.45, disables its inputs, and neither hydrates nor writes it, preserving live canvas values. The empty card name uses placeholder `Name preset` and saves as empty rather than writing `Preset`. No paint-bucket is added and AutoNest math remains unchanged.
+
+## Cut 2i — tighten card, label-row actions, sheet delete
+
+The `.margin-preset-card` remains `252.4px` wide and now has `12px` padding. Label-to-fields gap is `2px`, section-to-section gap is `4px`, and paired `106.8 × 31.46` fields retain their `8.8px` gap. PART SIZE, BLANK, and GAP label rows read label, 22px-hit / 14px-glyph / 2px-stroke Lucide Link, then 22 / 14 / 2 Check and X only while that section is focused or dirty; their accessibility hit stays at the far right. MARGIN retains no Link. A section Check commits only that section and its X restores only that section, while the header Check/X remains the whole-card commit/cancel pair. With the modal closed, sheet minus ignores an unarmed state and otherwise opens the same `z-index: 220` delete alert directly; it does not reopen the preset card. No paint-bucket, HUD pin-lock, Fit-park, or AutoNest-math change is introduced.
+
+## Cut 2j — keep disable across slot; close card on delete
+
+While the preset card remains open, selecting another slot preserves every current accessibility inclusion state: disabled PART SIZE, BLANK, GAP, or MARGIN rows remain disabled and neither hydrate from nor write to the newly selected slot. Opening the card from its closed state restores the normal fully included state. Deleting an armed slot while the card is open closes the card and clears `marginPresetCardSlot`, so the header Check cannot write into the successor that shifts into the deleted index. No paint-bucket, green target, Fit-park, HUD pin-lock, or AutoNest-math change is introduced.
 
 ## AutoNest Cut 1 — HUD menu + best uniform
 
