@@ -23,8 +23,8 @@ Seq  Label              Notes                                              Stamp
 4    Look               Owner. No Codex.
 7    Send for review    PR 135 ready; @codex on 88e4121         39ef277
 8    Inspection
-9    Merge
-10   Close
+9    Merge              PR 135 into docs/autonest-host            0b0e643
+10   Close              packslip posted
 
 When a term → docs/GLOSSARY.md
 When this visit → docs/templates/packet.md

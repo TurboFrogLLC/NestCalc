@@ -68,3 +68,52 @@ Operator: Grok Build · Grok 4.6 · high
 - PR 135 marked ready. Head at request: `88e41217865e02d31dd3f6ca5de42183078237a5`.
 - Named review posted once: https://github.com/TurboFrogLLC/NestCalc/pull/135#issuecomment-5533467327 (`@codex review`).
 - Companion `agents-pr-review` not posted. No second review request. No merge in this Seq.
+
+## Seq 9 Merge
+
+Operator: Grok Build · Grok 4.6 · high
+
+- PR 135 merge-committed into `docs/autonest-host` at `0b0e6434ace9316646f86473b7c63b94a325c5ba`.
+- Codex COMMENTED two P2s on `88e4121`. Not required host fixes. No second `@codex`. Not merged to main.
+
+## Seq 10 Close
+
+Operator: Grok Build · Grok 4.6 · high
+
+- Packslip printed and posted on PR 135. Feature branch retained.
+- Parked stay parked: row-grab, red wash, NC emission, two-blank trim on rounds.
+
+### Packslip
+
+```text
+Repo: NestCalc
+Owner: wReckless
+Part: FLiPIT hex nest
+Description: Hex nest on FLiPIT. Lucide hexagon left of hamburger. Arms exclusive. Circles, dotted AABB, GAP-held squeeze packer, ticket in the left stack (COLUMNS, ROWS, X GAP, Y GAP, X OFFSET). No unit suffix. No NC. No second review.
+PR: 135
+Branch: docs/hex-nest
+Head: 0b0e6434ace9316646f86473b7c63b94a325c5ba
+Session: continuous
+job_id: NGJ-20260903-hex-nest
+flow_id:
+goal_sha256:
+Date: 2026-09-03
+
+Seq  Label              Notes                                              Stamp
+1    Plan               Hex spitball + lab pointer
+2    Start-branch       Owner local / Grok Build
+3    Cut                1 hex arm, circles, packer, array faces  61c7157
+3b   Cut                1b ticket off NE arc                    5a4db80
+3c   Cut                1c ticket in left stack                 665aaa8
+3d   Cut                1d exclusive arms, X OFFSET             e6eef97
+5    Cut                2 max-squeezed rows, GAP held           3b11920
+4    Look               Owner. No Codex.
+7    Send for review    PR 135 ready; @codex on 88e4121         39ef277
+8    Inspection
+9    Merge              PR 135 into docs/autonest-host            0b0e643
+10   Close              packslip posted
+
+Closed Corrective Action: none
+Still open: Codex P2 leftovers — Hex disarm does not restore rectangular Y; Hex Y field can drive diameter. Parked: row-grab, red wash, NC emission, two-blank trim on rounds.
+Next: none
+```
