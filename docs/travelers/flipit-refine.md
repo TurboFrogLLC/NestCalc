@@ -23,7 +23,7 @@ Seq  Label              Notes                                              Stamp
 5b   Cut                2b VOID patch on rewrite               99b5a8d993230387a827b5e46ea4d4b1aa306ada
 5c   Cut                2c restore card from 78391d0          16f7c066d7bf1eb560fac778d38978a559a1dd6c
 6    Look               Owner. No Codex.
-5d   Cut                2d modal pair — presets left, card right
+5d   Cut                2d modal pair — presets left, card right         2224b4af8a28310edcfdae9418e995f19c61d813
 5e   Cut                2e reserved — card-header adds
 7    Send for review
 8    Inspection

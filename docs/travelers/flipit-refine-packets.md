@@ -58,3 +58,13 @@ Operator: Codex App · Worker · Terra / Medium
 - Restored only the PRESETS row, centered z-index-201 preset card, and card open/close behavior from `78391d095a416cfe156dc79d8533e042e182a603`. The card is Blank, Gap, and Margin only; the old Part, paint-bucket, section toggles, target colors, and replacement confirmation are absent.
 - Fit parking, count well, PART SIZE/GAP/MARGIN chips, and AutoNest math were not changed.
 - Verification: exact source comparison for the four restored surfaces, `git diff --check`, inline JavaScript parse, and `npm run lint` passed before the Cut commit.
+
+## Seq 5d Cut 2d — modal pair
+
+Operator: Codex App · Worker · Terra / Medium
+
+- Commit: `2224b4af8a28310edcfdae9418e995f19c61d813`
+- Pencil opens a blocking `z-index: 201` modal with `blur(8px)` and `rgba(17,17,17,0.28)` backdrop. The centered 421.4px row is the live 154px PRESETS block, a 15px gap, and the unchanged 252.4px card; the card center is 84.5px right of viewport center.
+- The live PRESETS node moves into the row with a measured, visibility-hidden sheet hole left behind and returns on close. Slots, pencil, plus, and minus remain live; the sheet’s PART SIZE, GAP, and MARGIN positions do not jump.
+- Fit parking, count well, AutoNest math, card geometry, PART SIZE/GAP/MARGIN chips, paint-bucket, Part, accessibility, and header surfaces were not changed.
+- Verification: browser open/add-slot/cancel interaction check; `npm run lint`; and `git diff --check` passed. The only browser console entry was the existing local missing-favicon 404.
