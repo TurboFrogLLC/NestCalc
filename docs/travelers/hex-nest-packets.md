@@ -43,3 +43,11 @@ Operator: Codex App · GPT-5.6 Terra · Medium
 - Moved the array ticket into the left floating stack between MARGIN and PRESETS; it is a 154px read-only stack card using the MARGIN radius and shadow family.
 - Browser proof: hex armed shows the ticket in that stack order with COLUMNS 4, ROWS 3, X GAP 0.125 in, and Y GAP -0.227 in; disarming hex removes the ticket.
 - Removed the ticket's canvas positioning, leaving the NE resize arc clear; packer math, arm, circles, dotted AABBs, HUD pin, and AutoNest were unchanged.
+
+## Seq 3d Cut 1d — exclusive arms, ticket faces
+
+Operator: Codex App · GPT-5.6 Terra · Medium
+
+- Made Hex and AutoNest mutually exclusive: arming either clears the other's pressed state, restores its default `#111111` color, and leaves the active control `#16A34A`.
+- Added X OFFSET to the existing left-stack ticket as `L + p/2`, the row-2 first dotted-box left edge. Ticket measurements now render to three decimals without a unit suffix.
+- Browser proof: Hex-on shows AutoNest off and all five faces — COLUMNS 4, ROWS 3, X GAP 0.125, Y GAP -0.227, X OFFSET 1.563. AutoNest-on clears Hex and hides the ticket; Hex-on also clears AutoNest.
