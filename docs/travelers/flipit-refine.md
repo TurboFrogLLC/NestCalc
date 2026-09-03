@@ -6,7 +6,7 @@ Part: FLiPIT refine — Fit top + preset card
 Description: Fit parks blank top at the HUD stop. Preset card restore from 78391d0, then surgical adds. No picker. No calc. No bed. Q2 HUD-to-blank X is out.
 PR: 134
 Branch: docs/flipit-refine
-Head: f10103304a59007fdfa60413af3d3787b736ae73
+Head: f6f146c3dd5a1b0a9556857a05536cbecba5922f
 Session: fresh
 job_id: NGJ-20260902-flipit-refine
 flow_id:
@@ -25,7 +25,8 @@ Seq  Label              Notes                                              Stamp
 6    Look               Owner. No Codex.
 5d   Cut                2d modal pair — presets left, card right         2224b4af8a28310edcfdae9418e995f19c61d813
 5e   Cut                2e card header, blur, selected minus  a7e1c120787f7fa1dbaa76316a703dda8d14948b
-5f   Cut                2f header type, placeholder, alert-dialog
+5f   Cut                2f header type, placeholder, alert-dialog 9b91cb0f07fa72f4b2243e3bf44232fe1633043e
+5g   Cut                2g card hits, dirty alert, arc clear
 7    Send for review
 8    Inspection
 9    Merge
@@ -105,14 +106,25 @@ Minus deletes the armed gold slot only. No arm → minus does nothing.
 Card header label uses the sheet PRESETS type: 11px / 650 / 0.04em / uppercase / `#111111`.
 Empty name field placeholder is `Name this preset`. Saved name `Preset` only when that is the stored name.
 
-Delete confirm is not a side card. It is an alert-dialog in front of the whole modal pair at z-index 220.
-Look: https://ui.shadcn.com/docs/components/base/alert-dialog — Destructive example.
-Do not install shadcn, React, or a registry package. Mimic that composition only:
-Overlay, Content, Header / Title / Description, Footer / Cancel / Action.
-Title: `Are you sure you want to delete this?`
-Description: `This cannot be undone.`
-Checkbox under description: `Don't show this again`.
-Footer: Cancel then Delete. Delete is the destructive action.
-Cancel closes the alert. Delete removes the armed slot. Checked + Delete writes `howmany.flipit.v3.presetDeleteSkip`.
-Content is centered in the viewport. Pair and 2e card stay put behind it.
-No Part. No accessibility. No paint-bucket.
+Delete confirm is an alert-dialog at z-index 220. Look: https://ui.shadcn.com/docs/components/base/alert-dialog
+Do not install shadcn. Mimic Overlay / Content / Title / Description / Footer Cancel + Delete.
+
+### Cut 2g — card hits, dirty alert, arc clear
+Every card name and number field select-alls on click.
+
+Section labels BLANK, GAP, MARGIN use the sheet label type: 11px / 650 / 0.04em / uppercase / `#111111`.
+Each of those rows gets Lucide accessibility, 28 / 18 / 2, viewBox 24, fill none:
+circle cx=16 cy=4 r=1
+m18 19 1-7-6 1
+m5 8 3-3 5.5 3-2.36 3.5
+M4.24 14.5a5 5 0 0 0 6.88 6
+M13.76 17.5a5 5 0 0 0-6.88-6
+On `#111111`. Off `#538BEC`. Off does not write or hydrate.
+
+Card header Check and X become 28 / 18 / 2. Pencil stays `#111111` while the modal is open. No blue pencil.
+
+Delete alert content max-width 280px, `border-radius: 12px`. Checkbox `accent-color: #111111`.
+Same alert shell for an armed-slot dirty edit: title `Are you sure you want to change that?` Description `This will update the selected preset.` Footer Cancel / Change. Change writes the live card values onto that slot. Cancel restores the field.
+
+Resize arc must clear the HUD. Raise HUD-bottom → blank-top stop by 8px so the drawn arc is not clipped by `#blank-ticker-pin`. Do not change AutoNest math or the count well.
+No paint-bucket. No Part row.
