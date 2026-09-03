@@ -18,7 +18,7 @@ Seq  Label              Notes                                              Stamp
 3    Cut                1 hex arm, circles, packer, array faces  61c7157
 3b   Cut                1b ticket off NE arc                    5a4db80
 3c   Cut                1c ticket in left stack                 665aaa8
-3d   Cut                1d units, XOR arms, X OFFSET
+3d   Cut                1d exclusive arms, no unit suffix, X OFFSET
 4    Look               Owner. No Codex.
 7    Send for review
 8    Inspection
@@ -39,14 +39,15 @@ Proof: Owner remote.
 ## Cut lock
 
 ### Cut 1 / 1b / 1c
-Landed. Ticket stays in the left stack between MARGIN and PRESETS.
+Landed. Stack order stays PART SIZE, GAP, MARGIN, ticket, PRESETS.
 
-### Cut 1d — units, XOR arms, X OFFSET
-Strip the letters in from every ticket face. Numbers only, 3 dp. Labels stay COLUMNS, ROWS, X GAP, Y GAP, X OFFSET.
+### Cut 1d — exclusive arms, ticket faces
+Hex and AutoNest hamburger are mutually exclusive. Arming one sets the other aria-pressed=false and #111111. Armed control stays #16A34A. One nest mode at a time.
 
-Hex and hamburger cannot both be pressed. Arming hex sets hamburger aria-pressed=false and runs hex pack. Arming hamburger sets hex aria-pressed=false and runs rectangle AutoNest. Both off is legal (manual rectangles).
+Ticket labels stay COLUMNS, ROWS, X GAP, Y GAP. Add X OFFSET.
+X GAP = p − D. Y GAP = h − D signed (row-1 box top = 0).
+X OFFSET = left edge of the first row-2 dotted box, from blank 0,0 (= L + p/2). 3 dp.
+Do not print the letters i n after any number.
 
-Add X OFFSET: left edge of the first row-2 dotted box, measured from blank 0,0. Inches, 3 dp. Same card, still 154px. Do not add in.
-
-Do not change packer math, circle draw, AABB, HUD pin, stack order, or PRESETS.
-Done when ticket has no unit suffix, arms are XOR, and X OFFSET is visible while hex is on.
+Do not move the ticket. Do not change packer math, circles, AABB, or HUD pin.
+Done when hex-on hamburger is off, hamburger-on hex is off, ticket has five faces, and no unit suffix.
