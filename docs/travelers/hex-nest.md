@@ -21,7 +21,7 @@ Seq  Label              Notes                                              Stamp
 3d   Cut                1d exclusive arms, X OFFSET             e6eef97
 5    Cut                2 max-squeezed rows, GAP held           3b11920
 4    Look               Owner. No Codex.
-7    Send for review    PR 135 ready; @codex on 88e4121
+7    Send for review    PR 135 ready; @codex on 88e4121         39ef277
 8    Inspection
 9    Merge
 10   Close
