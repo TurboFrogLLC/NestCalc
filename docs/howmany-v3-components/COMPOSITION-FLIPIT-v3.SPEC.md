@@ -1,6 +1,6 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Cut 29 pencil hydrate and blank grow
+**Status:** Living — Cut 2b preset card chrome restoration
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
@@ -164,6 +164,10 @@ Pencil with an armed slot still opens that slot's card. With no armed slot, penc
 ## Cut 30 — HUD count three-digit slot
 
 The centered HUD count is a fixed-width slot: three tabular `ch` faces at 14.64px / 650 / mono plus the same 5px inset on each side that inset vertical rules use. It centers `1`, `14`, and `144` between the size|count separator and the bar’s inner right stroke, retains `#538BEC`, and does not alter the closed ticker width or its fixed-left pin.
+
+## Cut 2b — preset card chrome restoration
+
+The 154px sheet keeps its PRESETS row as label, stock Lucide pencil, plus, and minus only; it contains no name input, Check, X, or paint-bucket, and its slot buttons retain their existing side-chip tokens. The pencil is momentary: it opens the independent non-modal editor from the armed slot or, with no arm, from live Part, Blank, Gap, and Margin values; closing leaves its idle stroke `#111111`. The `252.4px` `#E8E8E8`, 7.26px-radius `.margin-preset-card` does not consume the PRESETS row or block sheet interaction. Its only header row is Presets, the locked 22 / 14 / 2 paint-bucket with title `Load canvas`, the shorter `Name this preset` field, and 22 / 14 / 2 Check/X, followed by exactly one rule. The bucket refreshes enabled sections from live canvas values and does not rename a sheet slot. Part, Blank, Gap, and Margin remain in that order; their accessibility hits retain the locked paths and off color `#538BEC`, while enabled hits use `#111111`. Axis fields stay 106.8 × 31.46 with 8.8px gaps and the 13.31px / 650 / mono token. There is no footer rule or Copy live control; slots remain clickable while the card is open, and Fit parking, count well, and AutoNest math remain unchanged.
 
 ## AutoNest Cut 1 — HUD menu + best uniform
 
