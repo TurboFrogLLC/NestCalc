@@ -6,7 +6,7 @@ Part: FLiPIT refine — Fit top + preset card
 Description: Fit parks blank top at the HUD stop. Preset card restore from 78391d0, then surgical adds. No picker. No calc. No bed. Q2 HUD-to-blank X is out.
 PR: 134
 Branch: docs/flipit-refine
-Head: 3abd1e78a61fdb5c4e9e2a8874f05d285c2dc782
+Head: c34a67b5c36b3fa59549c274aecf22efc9e49140
 Session: fresh
 job_id: NGJ-20260902-flipit-refine
 flow_id:
@@ -19,18 +19,10 @@ Seq  Label              Notes                                              Stamp
 3b   Cut                1b Fit shares clamp stage stop         eece6b896849b92cff6b29d1698c7578e11fb0e0
 3c   Cut                1c Re-park after blank size changes    41b6a91b4b0f7f74fcd290c0cc514f76f91a3b27
 4    Look               Owner. No Codex.
-5    Cut                2 VOID rewrite                         cbf37f0d7524adfb5ac317b9160b8cfd9067ff44
-5b   Cut                2b VOID patch on rewrite               99b5a8d993230387a827b5e46ea4d4b1aa306ada
-5c   Cut                2c restore card from 78391d0          16f7c066d7bf1eb560fac778d38978a559a1dd6c
-6    Look               Owner. No Codex.
-5d   Cut                2d modal pair
-5e   Cut                2e card header, blur, selected minus
-5f   Cut                2f alert-dialog
-5g   Cut                2g card hits, dirty alert, arc clear
-5h   Cut                2h HUD seats, Part row, disable, gaps
-5i   Cut                2i tighten card, label-row actions, sheet delete  a176c69317b9f6c2f47e17d8422ba802d8cb6a33
-7    Send for review                                                  3e1c7e63345f5b8c458599de929ac2140f257a95
-8    Inspection
+5    Cut                2c–2i preset card                      3e1c7e63345f5b8c458599de929ac2140f257a95
+7    Send for review    one @codex at 3e1c7e6                  c34a67b5c36b3fa59549c274aecf22efc9e49140
+8    Inspection         Codex P2 threads open
+5j   Cut                2j keep disable across slot; close card on delete
 9    Merge
 10   Close
 
@@ -41,22 +33,20 @@ When this packets log → docs/travelers/flipit-refine-packets.md
 When the host → docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html
 When the living contract → docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.SPEC.md
 When the shop table → SuperBrain nerveCenter/control-surface/OPERATOR-PIN.md
-When delete alert look → https://ui.shadcn.com/docs/components/base/alert-dialog
+When PR → https://github.com/TurboFrogLLC/NestCalc/pull/134
+When Codex disable thread → https://github.com/TurboFrogLLC/NestCalc/pull/134#discussion_r3924810634
+When Codex delete thread → https://github.com/TurboFrogLLC/NestCalc/pull/134#discussion_r3924810646
 
 Shop: Codex App, Terra, Medium
-Proof: Owner local host. Do not restore picker, calculator, chevron, old popover, or bed.
+Proof: Owner remote host. Do not restore picker, calculator, chevron, old popover, or bed.
 Do not change AutoNest math. Do not center the HUD on the blank.
+Do not post a second @codex review from this Cut.
 
 ## Cut lock
 
-### Cut 2h — HUD seats, Part row, disable, gaps
-Closed HUD size pair is two tabular 6ch seats from boot. Card sections PART SIZE, BLANK, GAP, MARGIN. Accessibility off disables the row.
+### Cut 2j — keep disable across slot; close card on delete
+Selecting another slot while the card is open must keep the current accessibility inclusion state. Do not reset every section to enabled before hydrate. Disabled sections do not hydrate from the new slot.
 
-### Cut 2i — tighten card, label-row actions, sheet delete
-Card pad becomes 12px. Label-to-fields gap is 2px. Section-to-section gap is 4px. Field pair gap stays 8.8px. Card width stays 252.4.
+Deleting the armed slot while the card is open closes the card and clears marginPresetCardSlot. Header Check must not write into the index that slid into the hole.
 
-PART SIZE, BLANK, and GAP label rows, left to right: label, Link, then Check and X only while that section is focused or dirty. Accessibility stays at the far right. Link is the existing GAP Lucide link at 22 / 14 / 2. MARGIN has no Link. Check/X on a section commit or cancel that section only. Header Check/X still commit or cancel the whole card.
-
-Minus on the sheet while the modal is closed uses the same z-220 delete alert as 2f. Armed slot required. No arm → minus does nothing.
-
-No paint-bucket. Do not change HUD pin lock, Fit park, or AutoNest math.
+No paint-bucket. No green target. No second review request.
