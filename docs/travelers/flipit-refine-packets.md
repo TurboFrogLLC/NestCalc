@@ -106,3 +106,12 @@ Operator: Codex App · Worker · Terra / Medium
 - The card now orders PART SIZE, BLANK, GAP, MARGIN. Part defaults to `2.500 × 3.500`; sections use the requested 4px label and 6px section gaps; `Name preset` is the empty-field placeholder and blank saved names remain blank.
 - Accessibility now dims and disables the full selected row, excludes it from card hydration and writes, and adds the same behavior to PART SIZE. No paint-bucket or AutoNest-math change was made.
 - Verification: real-browser blank-size pointer interaction focused the selected field; card inspection confirmed PART SIZE order/defaults and the `Name preset` placeholder; toggling Part made both Part inputs disabled. `npm run lint`, inline JavaScript parsing, and `git diff --check` passed. The browser retained only the existing local missing-favicon 404.
+
+## Seq 5i Cut 2i — tighten card, label-row actions, sheet delete
+
+Operator: Codex App · Worker · Terra / Medium
+
+- Commit: `a176c69317b9f6c2f47e17d8422ba802d8cb6a33`
+- The 252.4px card now uses 12px padding, 2px label-to-field gaps, 4px section gaps, and keeps its 8.8px field-pair gap. PART SIZE, BLANK, and GAP have Link then conditional section Check/X on their label rows; accessibility remains at far right and MARGIN remains Link-free.
+- Section Check/X commits or restores only that section. Header Check/X remains the whole-card pair. Sheet minus now preserves the modal-closed state and opens the existing z-220 delete alert only for an armed slot.
+- Verification: `npm run lint`, host-script syntax check, and `git diff --check` passed.

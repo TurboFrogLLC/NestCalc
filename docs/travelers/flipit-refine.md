@@ -28,7 +28,7 @@ Seq  Label              Notes                                              Stamp
 5f   Cut                2f alert-dialog
 5g   Cut                2g card hits, dirty alert, arc clear
 5h   Cut                2h HUD seats, Part row, disable, gaps
-5i   Cut                2i tighten card, label-row actions, sheet delete
+5i   Cut                2i tighten card, label-row actions, sheet delete  a176c69317b9f6c2f47e17d8422ba802d8cb6a33
 7    Send for review
 8    Inspection
 9    Merge
