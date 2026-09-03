@@ -6,7 +6,7 @@ Part: FLiPIT refine — Fit top + preset card
 Description: Fit parks blank top at the HUD stop. Preset card restore from 78391d0, then surgical adds. No picker. No calc. No bed. Q2 HUD-to-blank X is out.
 PR: 134
 Branch: docs/flipit-refine
-Head: 3b7971426d96377b790742bb622c4ed3e7e5f918
+Head: 3abd1e78a61fdb5c4e9e2a8874f05d285c2dc782
 Session: fresh
 job_id: NGJ-20260902-flipit-refine
 flow_id:
@@ -23,11 +23,12 @@ Seq  Label              Notes                                              Stamp
 5b   Cut                2b VOID patch on rewrite               99b5a8d993230387a827b5e46ea4d4b1aa306ada
 5c   Cut                2c restore card from 78391d0          16f7c066d7bf1eb560fac778d38978a559a1dd6c
 6    Look               Owner. No Codex.
-5d   Cut                2d modal pair — presets left, card right         2224b4af8a28310edcfdae9418e995f19c61d813
-5e   Cut                2e card header, blur, selected minus  a7e1c120787f7fa1dbaa76316a703dda8d14948b
-5f   Cut                2f header type, placeholder, alert-dialog 9b91cb0f07fa72f4b2243e3bf44232fe1633043e
-5g   Cut                2g card hits, dirty alert, arc clear  e23750382c475c70bfe8958b99a5dacceec43935
-5h   Cut                2h HUD seats, Part row, disable, gaps 89789e1f31c213e114c0e57c320e5fdaeee49fa5
+5d   Cut                2d modal pair
+5e   Cut                2e card header, blur, selected minus
+5f   Cut                2f alert-dialog
+5g   Cut                2g card hits, dirty alert, arc clear
+5h   Cut                2h HUD seats, Part row, disable, gaps
+5i   Cut                2i tighten card, label-row actions, sheet delete
 7    Send for review
 8    Inspection
 9    Merge
@@ -39,9 +40,7 @@ When the job sheet → docs/travelers/flipit-refine.md
 When this packets log → docs/travelers/flipit-refine-packets.md
 When the host → docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html
 When the living contract → docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.SPEC.md
-When the blueprint → docs/howmany-v3-components/TICKER-PICKER-BLUEPRINT.md
 When the shop table → SuperBrain nerveCenter/control-surface/OPERATOR-PIN.md
-When restore source → host at 78391d095a416cfe156dc79d8533e042e182a603
 When delete alert look → https://ui.shadcn.com/docs/components/base/alert-dialog
 
 Shop: Codex App, Terra, Medium
@@ -50,43 +49,14 @@ Do not change AutoNest math. Do not center the HUD on the blank.
 
 ## Cut lock
 
-### Cut 1 — Fit top-align
-`#lb-fit` / `fitBed()` parks the blank top at HEADER 64 + 15 + HUD 31.46 + 15.
-Blank origin stays bottom-left of the blank. Extra height hangs below.
-Pan and zoom stay. 15px bottom and 25px side insets stay.
-Window is not a bed. Do not pin Fit to window bottom.
-
-### Cut 2 — void
-Do not implement. `cbf37f0` rewrote the sheet and card. Dead.
-
-### Cut 2b — void
-Do not implement. `99b5a8d` patched that rewrite. Dead.
-
-### Cut 2c — restore card from 78391d0
-Source of truth: host at `78391d095a416cfe156dc79d8533e042e182a603`
-
-### Cut 2d — modal pair
-Pencil opens a modal. Live `.margin-presets` + 15px + card. Group 421.4px centered.
-
-### Cut 2e — card header, blur, selected minus
-Blur 4px. Header Presets + Check/X. Minus deletes armed slot only.
-
-### Cut 2f — header type, placeholder, alert-dialog
-Delete confirm is z-index 220 alert-dialog. Look: https://ui.shadcn.com/docs/components/base/alert-dialog
-
-### Cut 2g — card hits, dirty alert, arc clear
-Select-all on card fields. Accessibility 28 / 18 / 2. Delete alert 280px / 12px. HUD-bottom → blank-top +8px.
-
 ### Cut 2h — HUD seats, Part row, disable, gaps
-Closed HUD size pair is two tabular 6ch seats from boot, measured as `00.000 × 00.000` in 13.31px / 650 / mono. Count well stays the measured 999 face + 5px inset per side. Lock `#blank-ticker-pin` width after that measure, once. Digit count cannot change pin width. Open and close reuse that grid. Pointerdown on a size number opens the editor and select-alls that field in the same click.
+Closed HUD size pair is two tabular 6ch seats from boot. Card sections PART SIZE, BLANK, GAP, MARGIN. Accessibility off disables the row.
 
-Card sections top to bottom: PART SIZE, BLANK, GAP, MARGIN.
-PART SIZE uses the same 106.8 × 31.46 pair, 6px radius, 8.8px field gap, 11px / 650 / 0.04em / uppercase label.
-Default Part `2.500 × 3.500`.
+### Cut 2i — tighten card, label-row actions, sheet delete
+Card pad becomes 12px. Label-to-fields gap is 2px. Section-to-section gap is 4px. Field pair gap stays 8.8px. Card width stays 252.4.
 
-Label-to-fields gap is 4px. Section-to-section gap is 6px.
+PART SIZE, BLANK, and GAP label rows, left to right: label, Link, then Check and X only while that section is focused or dirty. Accessibility stays at the far right. Link is the existing GAP Lucide link at 22 / 14 / 2. MARGIN has no Link. Check/X on a section commit or cancel that section only. Header Check/X still commit or cancel the whole card.
 
-Accessibility off disables that row: inputs `disabled`, opacity 0.45, no write, no hydrate. Live canvas keeps those values. On `#111111`. Off `#538BEC`.
+Minus on the sheet while the modal is closed uses the same z-220 delete alert as 2f. Armed slot required. No arm → minus does nothing.
 
-Empty name placeholder is `Name preset`. Do not write the word Preset into an empty field.
-No paint-bucket. Do not change AutoNest math.
+No paint-bucket. Do not change HUD pin lock, Fit park, or AutoNest math.
