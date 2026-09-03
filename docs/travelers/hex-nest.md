@@ -3,10 +3,10 @@
 Repo: NestCalc
 Owner: wReckless
 Part: FLiPIT hex nest
-Description: Lucide hex arm left of hamburger. Circle parts on diameter. Lab HCP inset math. Do not implement until Owner locks Cut 1.
+Description: Hex is an array-offset ticket. Two-row lattice, duplicate after that. Do not implement until Owner locks Cut 1.
 PR: 135
 Branch: docs/hex-nest
-Head: 812f3a21ca039dd7f48ff100c22c137336abb93e
+Head: d56456408705649f4cf28deb107f6d2a3767a50c
 Session: fresh
 job_id: NGJ-20260903-hex-nest
 flow_id:
@@ -15,7 +15,7 @@ goal_sha256:
 Seq  Label              Notes                                              Stamp
 1    Plan               Hex spitball + lab pointer
 2    Start-branch       Owner remote / Codex App
-3    Cut                1 reserved — hex arm + circle part
+3    Cut                1 reserved
 4    Look               Owner. No Codex.
 7    Send for review
 8    Inspection
@@ -30,35 +30,33 @@ When the host → docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html
 When the living contract → docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.SPEC.md
 When lab hex layout → SuperBrain lab/laser-nc-fixtures/round-layout.mjs mode inset
 When lab hex fixture → SuperBrain lab/laser-nc-fixtures/F5-round-hex-inset-r10-g2.nc
-When the shop table → SuperBrain nerveCenter/control-surface/OPERATOR-PIN.md
 When PR → https://github.com/TurboFrogLLC/NestCalc/pull/135
 
 Shop: Codex App, Terra, Medium
 Proof: Owner remote. Do not restore picker, calculator, chevron, old popover, or bed.
-Do not copy NC emission into NestCalc. Do not replace the AutoNest hamburger.
+Do not copy NC emission. Do not replace the AutoNest hamburger. Do not split rounds into two blanks.
 
-## Pin
+## Pin (not Cut 1 lock)
 
-Lab points at hexagonal close-pack of round ODs. FLiPIT builds the calculator; it does not import the NC fixture pack.
+Purpose: laser array offsets. Row 3 copies row 1. Row 4 copies row 2.
 
-### Arm
-Lucide hexagon control in the center HUD, same hit/glyph/stroke class as the hamburger (24 hit / 16 glyph / 2 stroke / viewBox 24).
-Sits immediately left of the AutoNest hamburger.
-Armed stroke `#16A34A` (same green family as AutoNest arm). Off `#111111`.
-Hex arm and AutoNest arm are independent. Hex does not use the hamburger.
+Arm: Lucide hexagon left of hamburger. 24 / 16 / 2 / viewBox 24.
+Path: M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z
+Armed #16A34A. Off #111111. Independent of hamburger.
 
-### HUD seat lock
-Adding the hex control must not break the closed pin. Re-measure the full closed row (rotates, size pair, count well, hex, hamburger) once after the seat is added. Digit count and open/close must not resize `#blank-ticker-pin`.
+Part when armed: circle, diameter, PART SIZE linked. Tiles are circles. Blank stays a rectangle.
 
-### Part surface when hex is armed
-Part is a circle. Typed size is diameter only. PART SIZE stays linked: one field (X) drives diameter; Y follows. Canvas tiles render as circles, not rectangles.
-Blank stays a rectangle. Gap is edge-to-edge between circles. Margins stay on the blank.
+Packer: h from usable height, p from width so inset pair stays at typed GAP.
+h = min((D+g)√3/2, blankH − T − B − D)
+p = 2·sqrt((D+g)² − h²)
+Origin circle locked at blank 0,0 system: center (L+R, B+R). Not a handle.
+Count = legal centers only. Red wash only on an illegal ghost row.
 
-### Pack math (from lab)
-R = diameter / 2.
-p = 2R + gap (gap is the live edge gap; for equal X/Y gap use that value).
-Inset row offset: (p/2, p√3/2).
-Proven lab pair: R=10, g=2, p=22, second center (11, 19.052558883).
+Readouts from blank 0,0:
+- hex-x-off: X of the first row-2 part from 0,0 (inches, 3 dp)
+- hex-y-inset: h − D (signed; negative when dotted boxes overlap)
+- hex-gap-inset: produced inset part-to-part = center-dist − D (inches, 3 dp)
+- hex-gap-row: same-row part-to-part = p − D (inches, 3 dp)
 
-### Out of first Cut
-Hexagon-shaped tiles. Point-to-point vs flat-to-flat. NC emission. Paint-bucket. Changing AutoNest math except to call the hex pack when hex is armed.
+Visual: filled circle + dotted unfilled AABB on diameter.
+No per-tile drag. No NC emission. No two-blank trim.
