@@ -3214,20 +3214,35 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     return nestLayoutForRotation(state.partRot);
   }
 
-  /* Cut 1: circles use the lab's inset spacing, squeezed only in the row rise. */
+  /* Cut 2: largest N at the D+g pair. Leftover height buys a squeezed row; it does not open the nest. */
   function hexLayout() {
     var diameter = state.partW;
     var radius = diameter / 2;
     var m = state.margin;
     var clearance = state.gap.x;
-    if (!finitePositive(diameter) || !finiteNonNegative(clearance)) return { hex: true, columns: 0, rows: 0, count: 0, centers: [], p: 0, h: 0, xGap: 0, yGap: 0, xOffset: 0 };
+    var empty = { hex: true, columns: 0, rows: 0, count: 0, centers: [], failedRows: [], p: 0, h: 0, xGap: 0, yGap: 0, xOffset: 0 };
+    if (!finitePositive(diameter) || !finiteNonNegative(clearance)) return empty;
+    var pair = diameter + clearance;
+    var hcp = pair * Math.sqrt(3) / 2;
     var availableRise = state.blankH - m.t - m.b - diameter;
-    var h = Math.max(0, Math.min((diameter + clearance) * Math.sqrt(3) / 2, availableRise));
-    var p = 2 * Math.sqrt(Math.max(0, (diameter + clearance) * (diameter + clearance) - h * h));
     var minX = m.l + radius, maxX = state.blankW - m.r - radius;
     var minY = m.b + radius, maxY = state.blankH - m.t - radius;
-    var centers = [], rows = minY <= maxY + FIT_EPSILON ? (h > FIT_EPSILON ? Math.floor((maxY - minY) / h + FIT_EPSILON) + 1 : 1) : 0;
-    var columns = 0, failedRows = rows ? [] : [m.b];
+    if (minX > maxX + FIT_EPSILON || minY > maxY + FIT_EPSILON) return empty;
+    var n = 1, h = 0, p = pair;
+    if (availableRise > FIT_EPSILON) {
+      var maxN = Math.max(2, 1 + Math.floor(2 * availableRise / pair + FIT_EPSILON));
+      for (var candidate = maxN; candidate >= 2; candidate--) {
+        var rise = Math.min(hcp, availableRise / (candidate - 1));
+        if (candidate >= 3 && rise + FIT_EPSILON < pair / 2) continue;
+        var pitch = 2 * Math.sqrt(Math.max(0, pair * pair - rise * rise));
+        if (minX + pitch / 2 > maxX + FIT_EPSILON) continue;
+        n = candidate;
+        h = rise;
+        p = pitch;
+        break;
+      }
+    }
+    var centers = [], rows = n, columns = 0, failedRows = [];
     for (var row = 0; row < rows; row++) {
       var y = minY + row * h;
       var startX = minX + (row % 2 ? p / 2 : 0);

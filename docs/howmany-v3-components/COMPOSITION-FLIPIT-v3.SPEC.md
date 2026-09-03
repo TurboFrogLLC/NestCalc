@@ -1,6 +1,6 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Cut 1 hex arm, circles, packer, array ticket faces
+**Status:** Living — Cut 2 max-squeezed rows, GAP held
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
@@ -210,6 +210,21 @@ With the hex arm on, the part is a circle whose diameter is PART SIZE X; PART SI
 For diameter `D`, typed GAP clearance `g`, and radius `R = D / 2`, the inset packer uses `h = min((D + g) * sqrt(3) / 2, blankH - T - B - D)` and `p = 2 * sqrt((D + g)^2 - h^2)`. The first center is `(L + R, B + R)` in blank space, not a handle. Odd rows offset by `p / 2`; row 3 repeats row 1 and row 4 repeats row 2. Only legal centers contribute to the count. A red wash appears only for a row that still has no legal center after its rise has squeezed to `h`.
 
 The viewport-positioned array ticket is not pinned to the machine origin. It shows columns, rows, X gap `p - D`, and signed Y gap `h - D` (the top of row 1's box is zero; row 2's box bottom is measured against it). Gap faces show three-decimal inches.
+
+## Cut 2 — max-squeezed rows, GAP held
+
+This supersedes Cut 1's packer rise only. Hex arm, exclusive hamburger, ticket stack seat, dotted AABB, and HUD pin stay as landed.
+
+Typed GAP is the inset circle clearance. The live pair always equals `D + g`; it is never undercut. Leftover blank height buys another squeezed row. It does not open the nest.
+
+For `N ≥ 2`:
+
+- `h_N = min((D + g) · √3 / 2, (blankH − T − B − D) / (N − 1))`
+- `p_N = 2 · sqrt((D + g)² − h_N²)`
+
+The host picks the largest `N` whose `p_N` still places one even-row center and one odd-row center inside `blankW − L − R`. Copied rows (row 3 of row 1, row 4 of row 2) also stay at `≥ D + g`. Origin stays at `(L + R, B + R)`. Spread is `+X` only. Row 3 copies row 1; row 4 copies row 2; same `h` and half-stagger.
+
+Ticket faces from that lattice: `COLUMNS`, `ROWS = N`, `X GAP = p − D`, `Y GAP = h − D` signed, `X OFFSET = L + p / 2`. Three decimals, no unit suffix.
 
 ## AutoNest Cut 1 — HUD menu + best uniform
 
@@ -432,3 +447,4 @@ Do not require `file://`.
 | 2026-08-17 | **R13** `NC-FLIPIT-20260817-R13`. Blank/Gap/Margin: Edit is a visible write mode; Confirm stores the armed slot from live fields; Cancel exits without writing; main OK applies live values to HUD + bed and never writes a preset (Blank 12×12 no longer reverts). Enter settles a numeric field without closing the popover. Single equal-width frost-blue rail (no outer lip). Highlighted X/Y/Z/R are black at 4 decimal places. Ticker + calc, HUD, and zoom share the front surface; `#bt-calc` hover stays visible. |
 | 2026-09-01 | **R31** ticker-door chrome port: retained the 127 blank-in-space stage and moved only the ticker-door menu bar onto it. The picker opens above the −90/+90, blank-size, calculator, chevron travel row; no bed, grid, ruler, nest box, or Numeric HUD card is restored. |
 | 2026-09-01 | **R32** review remediation: selecting Part exposes its retained calculator controls; ticker placement uses the live cluster height rather than the former 34px constant. |
+| 2026-09-03 | **Cut 2** hex nest: largest N at the D+g pair. Leftover height adds a squeezed row; GAP is never undercut. |

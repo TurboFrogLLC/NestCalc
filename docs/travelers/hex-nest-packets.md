@@ -51,3 +51,12 @@ Operator: Codex App · GPT-5.6 Terra · Medium
 - Made Hex and AutoNest mutually exclusive: arming either clears the other's pressed state, restores its default `#111111` color, and leaves the active control `#16A34A`.
 - Added X OFFSET to the existing left-stack ticket as `L + p/2`, the row-2 first dotted-box left edge. Ticket measurements now render to three decimals without a unit suffix.
 - Browser proof: Hex-on shows AutoNest off and all five faces — COLUMNS 4, ROWS 3, X GAP 0.125, Y GAP -0.227, X OFFSET 1.563. AutoNest-on clears Hex and hides the ticket; Hex-on also clears AutoNest.
+
+## Seq 5 Cut 2 — max-squeezed rows, GAP held
+
+Operator: Grok Build · Grok 4.6 · high
+
+- Hex packer picks the largest N whose squeezed pitch still fits one even-row center and one odd-row center; leftover height adds a row instead of opening the nest.
+- Live pair stays D+g. Copied rows stay at ≥ D+g. Origin (L+R, B+R), +X only. Ticket faces follow that lattice with no unit suffix.
+- Hex arm, exclusive hamburger, ticket stack seat, dotted AABB, and HUD pin unchanged.
+- Replayed onto 4abd1e7 and pushed origin/docs/hex-nest so Owner Look can ff. Unpushed GB commits are not Look.
