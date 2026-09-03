@@ -3,25 +3,28 @@
 Repo: NestCalc
 Owner: wReckless
 Part: FLiPIT refine — Fit top + preset card
-Description: Fit parks blank top at the HUD stop. Preset editor is a non-modal card with Part, section disable, live load, and overwrite confirm. No picker. No calc. No bed. Q2 HUD-to-blank X is out.
+Description: Fit parks blank top at the HUD stop. Preset card restore from 78391d0, then surgical adds. No picker. No calc. No bed. Q2 HUD-to-blank X is out.
 PR: 134
 Branch: docs/flipit-refine
-Head: c16e89ddf7690a4752f5d6f9b52a7967a2abeebb
+Head: d7cd7be775d50dd8d083a114113a8b9650461bd1
 Session: fresh
 job_id: NGJ-20260902-flipit-refine
 flow_id:
 goal_sha256:
 
 Seq  Label              Notes                                              Stamp
-1    Plan               Fit top-align; preset card lock                    
+1    Plan               Fit top-align; preset card lock
 2    Start-branch       Owner remote / Codex App
 3    Cut                1 Fit blank top at HUD stop            768b7381e24ee68ba05ab0370ec32c1df6cdb1e0
 3b   Cut                1b Fit shares clamp stage stop         eece6b896849b92cff6b29d1698c7578e11fb0e0
 3c   Cut                1c Re-park after blank size changes    41b6a91b4b0f7f74fcd290c0cc514f76f91a3b27
 4    Look               Owner. No Codex.
-5    Cut                2 preset card + Part + accessibility disable cbf37f0d7524adfb5ac317b9160b8cfd9067ff44
-5b   Cut                2b preset card chrome restoration     99b5a8d993230387a827b5e46ea4d4b1aa306ada
+5    Cut                2 VOID rewrite                         cbf37f0d7524adfb5ac317b9160b8cfd9067ff44
+5b   Cut                2b VOID patch on rewrite               99b5a8d993230387a827b5e46ea4d4b1aa306ada
+5c   Cut                2c restore card from 78391d0
 6    Look               Owner. No Codex.
+5d   Cut                2d reserved — overlay off
+5e   Cut                2e reserved — card-header adds
 7    Send for review
 8    Inspection
 9    Merge
@@ -32,9 +35,10 @@ When this visit → docs/templates/packet.md
 When the job sheet → docs/travelers/flipit-refine.md
 When this packets log → docs/travelers/flipit-refine-packets.md
 When the host → docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html
-When the living SPEC → docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.SPEC.md
+When the living contract → docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.SPEC.md
 When the blueprint → docs/howmany-v3-components/TICKER-PICKER-BLUEPRINT.md
 When the shop table → SuperBrain nerveCenter/control-surface/OPERATOR-PIN.md
+When restore source → host at 78391d095a416cfe156dc79d8533e042e182a603
 
 Shop: Codex App, Terra, Medium
 Proof: Owner local host. Do not restore picker, calculator, chevron, old popover, or bed.
@@ -48,37 +52,35 @@ Blank origin stays bottom-left of the blank. Extra height hangs below.
 Pan and zoom stay. 15px bottom and 25px side insets stay.
 Window is not a bed. Do not pin Fit to window bottom.
 
-### Cut 2 — preset card
-Not a modal. Slots stay clickable while the card is open.
-Top row: label Presets | Lucide paint-bucket | name field | Check | X.
-Name field is shorter than today. Placeholder only: Name this preset.
-Check/X stay 22 / 14 / 2. One rule under that row. No footer rule. No Copy live text button.
+### Cut 2 — void
+Do not implement. `cbf37f0` rewrote the sheet and card. Dead.
 
-Paint-bucket Lucide paths only, 22 / 14 / 2, viewBox 24, stroke 2, fill none:
-M11 7 6 2
-M18.992 12H2.041
-M21.145 18.38A3.34 3.34 0 0 1 20 16.5a3.3 3.3 0 0 1-1.145 1.88c-.575.46-.855 1.02-.855 1.595A2 2 0 0 0 20 22a2 2 0 0 0 2-2.025c0-.58-.285-1.13-.855-1.595
-m8.5 4.5 2.148-2.148a1.205 1.205 0 0 1 1.704 0l7.296 7.296a1.205 1.205 0 0 1 0 1.704l-7.592 7.592a3.615 3.615 0 0 1-5.112 0l-3.888-3.888a3.615 3.615 0 0 1 0-5.112L5.67 7.33
-Title: Load canvas. Copies live Part / Blank / Gap / Margin into the open card, honoring section disable. Idle stroke #111111.
+### Cut 2b — void
+Do not implement. `99b5a8d` patched that rewrite. Dead.
 
-Card open + empty slot target: fill rgba(22,163,74,0.22) stroke #16A34A.
-Card open + occupied slot target: gold arm rgba(255,206,27,0.55) / stroke rgba(201,140,0,0.85).
-Card closed + that slot is live on the canvas: same gold. No red chips.
+### Cut 2c — restore card from 78391d0
+Source of truth: host at `78391d095a416cfe156dc79d8533e042e182a603`
+for `.margin-presets`, `.margin-presets-head`, `.margin-presets-grid`,
+`#margin-preset-card-layer`, `.margin-preset-card`, and the JS that opens and closes that card only.
 
-Check on an occupied target opens a second #E8E8E8 card 8.8px from the editor: Replace this preset? + Check/X. Empty target writes with no alert.
+Sheet row: PRESETS | pencil | plus | minus.
+Pencil paths only:
+`M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z`
+`m15 5 4 4`
+Hits 22 / glyphs 16 / stroke 2 / viewBox 24.
 
-Sections top to bottom: Part, Blank, Gap, Margin.
-Part defaults 2.500 × 3.500. Axis fields stay 106.8 × 31.46 with 8.8px gaps.
-Idle slot tap hydrates enabled sections only.
+Slots: 154px row, two frost-blue chips, 31.46 high, 7.26 radius, 1.1px stroke, 13.31px / 650 / mono.
 
-Each section label row gets Lucide accessibility, 22 / 14 / 2, viewBox 24, stroke 2, fill none:
-circle cx=16 cy=4 r=1
-m18 19 1-7-6 1
-m5 8 3-3 5.5 3-2.36 3.5
-M4.24 14.5a5 5 0 0 0 6.88 6
-M13.76 17.5a5 5 0 0 0-6.88-6
-On / enabled: stroke #111111.
-Off / disabled: stroke #538BEC.
-Off sections do not write on save and do not hydrate on slot tap. Live canvas keeps those values. Off is stored on the slot.
+Card layer: `position: fixed; inset: 0; z-index: 201; place-items: center`.
+Card: 252.4px wide, `#E8E8E8`, 7.26px radius, 15px pad, shadow `0 0.5px 1px rgba(0,0,0,.25)`.
+Inner width 222.4. Name field 222.4 × 31.46. Sections Blank, Gap, Margin only.
+Axis fields 106.8 × 31.46, 8.8px gap. Check/X 22 / 14 / 2 in the footer.
+No Copy live. No Part row. No paint-bucket. No accessibility.
 
-Pencil with no arm still opens the card hydrated from live values. Pencil is momentary. Card close returns pencil to #111111.
+Do not change Fit park, count well, AutoNest math, PART SIZE, GAP, or MARGIN chips.
+
+### Cut 2d — reserved
+Overlay off so slots stay live. Card stays the 2c geometry. Not this visit.
+
+### Cut 2e — reserved
+Card-header adds only. Not this visit.
