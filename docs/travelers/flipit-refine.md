@@ -13,7 +13,7 @@ flow_id:
 goal_sha256:
 
 Seq  Label              Notes                                              Stamp
-1    Plan               Fit top-align; preset card lock                    
+1    Plan               Fit top-align; preset card lock
 2    Start-branch       Owner remote / Codex App
 3    Cut                1 Fit blank top at HUD stop            768b7381e24ee68ba05ab0370ec32c1df6cdb1e0
 3b   Cut                1b Fit shares clamp stage stop         eece6b896849b92cff6b29d1698c7578e11fb0e0
@@ -21,7 +21,7 @@ Seq  Label              Notes                                              Stamp
 4    Look               Owner. No Codex.
 5    Cut                2 preset card + Part + accessibility disable cbf37f0d7524adfb5ac317b9160b8cfd9067ff44
 5b   Cut                2b preset card chrome restoration     99b5a8d993230387a827b5e46ea4d4b1aa306ada
-5c   Cut                2c restore 78391d0 card               78391d095a416cfe156dc79d8533e042e182a603
+5c   Cut                2c restore 78391d0 card               16f7c066d7bf1eb560fac778d38978a559a1dd6c
 6    Look               Owner. No Codex.
 7    Send for review
 8    Inspection

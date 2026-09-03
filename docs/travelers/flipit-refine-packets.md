@@ -46,3 +46,12 @@ Operator: Codex App · Worker · Terra / Medium
 - Restored the 154px PRESETS sheet row to label, stock Lucide pencil, plus, and minus. The row no longer carries the card’s name field, Check/X, or paint-bucket, and its slot button tokens are unchanged.
 - Moved the `#E8E8E8`, 7.26px-radius editor out of that sheet section. Its sole header row is Presets, Load canvas paint-bucket, name field, Check, and X, with one rule below it; its accessible Part, Blank, Gap, and Margin sections remain unchanged.
 - The pencil opens the card momentarily from the armed slot or live values; the card’s bucket refreshes enabled live values. Fit parking, count well, and AutoNest math were not changed. Verification: `git diff --check` and inline JavaScript parse check passed before the Cut commit.
+
+## Seq 5c Cut 2c — restore 78391d0 card
+
+Operator: Codex App · Worker · Terra / Medium
+
+- Commit: `16f7c066d7bf1eb560fac778d38978a559a1dd6c`
+- Restored only the PRESETS row, centered z-index-201 preset card, and card open/close behavior from `78391d095a416cfe156dc79d8533e042e182a603`. The card is Blank, Gap, and Margin only; the old Part, paint-bucket, section toggles, target colors, and replacement confirmation are absent.
+- Fit parking, count well, PART SIZE/GAP/MARGIN chips, and AutoNest math were not changed.
+- Verification: exact source comparison for the four restored surfaces, `git diff --check`, inline JavaScript parse, and `npm run lint` passed before the Cut commit.
