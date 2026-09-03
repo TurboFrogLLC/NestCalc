@@ -187,6 +187,12 @@ The editor header label uses the sheet PRESETS token: `11px / 650 / 0.04em / upp
 
 Every card name and number field selects all on click. Blank, Gap, and Margin labels use the sheet label token (`11px / 650 / 0.04em / uppercase / #111111`) and carry the locked 28px Lucide accessibility hit with its 18px, 2px-stroke glyph. Each hit is black while included and `#538BEC` while off; an off section neither hydrates nor writes. Header Check/X use the same 28 / 18 / 2 token, and the open-modal pencil remains `#111111`. The shared z-index-220 alert shell caps content at 280px with a 12px radius and a black checkbox accent. It also confirms a dirty armed-slot edit: Cancel restores its field; Change writes the card values to that selected slot. The blank top stop gains 8px of arc clearance below the fixed HUD; count-well and AutoNest behavior stay unchanged. No Part row or paint-bucket is present.
 
+## Cut 2h — HUD seats, Part row, disable, gaps
+
+At boot, the host measures the fixed `00.000 × 00.000` blank-size pair in `13.31px / 650 / mono` and uses those two tabular 6ch seats in the centered HUD’s one immutable grid. The measured tabular-`999` count well plus 5px side insets remains part of that same grid. Only after both measures does `#blank-ticker-pin` take its width once; count digit changes, opening, Check, and X cannot change its width or left pin. Pointerdown on either closed size number opens the same editor and select-alls that field in that click.
+
+The modal card is ordered **PART SIZE**, **BLANK**, **GAP**, **MARGIN**. PART SIZE uses two `106.8 × 31.46` fields with 6px radii and an 8.8px pair gap, the same `11px / 650 / 0.04em / uppercase` label token, and boot default `2.500 × 3.500`. Label-to-fields gap is 4px and section-to-section gap is 6px. Every card section has the locked accessibility hit: on is `#111111`; off is `#538BEC`, dims that row to 0.45, disables its inputs, and neither hydrates nor writes it, preserving live canvas values. The empty card name uses placeholder `Name preset` and saves as empty rather than writing `Preset`. No paint-bucket is added and AutoNest math remains unchanged.
+
 ## AutoNest Cut 1 — HUD menu + best uniform
 
 The centered HUD order is Lucide `rotate-ccw`, Lucide `rotate-cw`, blank size, Lucide `menu`, then the blue count. Every travel hit is 24px with a 16px glyph, 24px viewBox, and 2px stroke. The menu consists only of `M4 5h16`, `M4 12h16`, and `M4 19h16`.

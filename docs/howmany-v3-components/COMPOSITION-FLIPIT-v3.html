@@ -2315,13 +2315,15 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     .margin-preset-card__header { height: 31.46px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1.1px solid rgba(26,20,40,.22); }
     .margin-preset-card__title { color: #111111; font-size: 11px; font-weight: 650; letter-spacing: .04em; line-height: 1; text-transform: uppercase; }
     .margin-preset-card__name { width: 222.4px; padding: 0 8.8px; margin: 8.8px 0 0; }
-    .margin-preset-card__fields { display: flex; flex-direction: column; gap: 8.8px; margin-top: 8.8px; }
-    .margin-preset-card__section { display: flex; flex-direction: column; gap: 4.4px; }
+    .margin-preset-card__fields { display: flex; flex-direction: column; gap: 6px; margin-top: 8.8px; }
+    .margin-preset-card__section { display: flex; flex-direction: column; gap: 4px; }
     .margin-preset-card__section-head { display: flex; align-items: center; justify-content: space-between; min-height: 28px; }
     .margin-preset-card__section-label { color: #111111; font: 650 11px/1 var(--font-mono); letter-spacing: .04em; text-transform: uppercase; }
     .margin-preset-card__section-toggle { width: 28px; height: 28px; padding: 0; border: 0; background: transparent; color: #111111; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
     .margin-preset-card__section-toggle[aria-pressed="false"] { color: #538BEC; }
     .margin-preset-card__section-toggle svg { display: block; width: 18px; height: 18px; }
+    .margin-preset-card__section.is-disabled { opacity: .45; }
+    .margin-preset-card__section.is-disabled input { cursor: not-allowed; }
     .margin-preset-card__pair { display: grid; grid-template-columns: 106.8px 106.8px; gap: 8.8px; }
     .margin-preset-card__field { display: block; font-size: 0; line-height: 0; }
     .margin-preset-card__field input { width: 106.8px; padding: 0 8.8px; }
@@ -2367,8 +2369,15 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
           <button type="button" class="margin-preset-card__action" data-margin-preset-cancel title="Cancel preset edit" aria-label="Cancel preset edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
         </div>
       </div>
-      <input class="margin-preset-card__name" data-margin-preset-name type="text" autocomplete="off" aria-label="Preset name" placeholder="Name this preset" />
+      <input class="margin-preset-card__name" data-margin-preset-name type="text" autocomplete="off" aria-label="Preset name" placeholder="Name preset" />
       <div class="margin-preset-card__fields">
+        <section class="margin-preset-card__section" data-margin-preset-section="part" aria-label="Part size">
+          <div class="margin-preset-card__section-head"><span class="margin-preset-card__section-label">Part size</span><button type="button" class="margin-preset-card__section-toggle" data-margin-preset-section-toggle="part" title="Exclude Part size" aria-label="Exclude Part size" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="4" r="1"/><path d="m18 19 1-7-6 1"/><path d="m5 8 3-3 5.5 3-2.36 3.5"/><path d="M4.24 14.5a5 5 0 0 0 6.88 6"/><path d="M13.76 17.5a5 5 0 0 0-6.88-6"/></svg></button></div>
+          <div class="margin-preset-card__pair">
+            <label class="margin-preset-card__field"><input data-margin-preset-field="part.x" type="text" inputmode="decimal" autocomplete="off" aria-label="Part width" /></label>
+            <label class="margin-preset-card__field"><input data-margin-preset-field="part.y" type="text" inputmode="decimal" autocomplete="off" aria-label="Part height" /></label>
+          </div>
+        </section>
         <section class="margin-preset-card__section" data-margin-preset-section="blank" aria-label="Blank">
           <div class="margin-preset-card__section-head"><span class="margin-preset-card__section-label">Blank</span><button type="button" class="margin-preset-card__section-toggle" data-margin-preset-section-toggle="blank" title="Include Blank" aria-label="Include Blank" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="4" r="1"/><path d="m18 19 1-7-6 1"/><path d="m5 8 3-3 5.5 3-2.36 3.5"/><path d="M4.24 14.5a5 5 0 0 0 6.88 6"/><path d="M13.76 17.5a5 5 0 0 0-6.88-6"/></svg></button></div>
           <div class="margin-preset-card__pair">
@@ -2858,6 +2867,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   var SHEET_INSET = 24;
   var tickerClosedWidth = 0;
   var countWellWidth = 0;
+  var sizeSeatWidth = 0;
   function sheetLanePx() {
     var sheet = document.getElementById('hud');
     return (sheet ? sheet.offsetWidth : 154) + SHEET_INSET + STOP;
@@ -2881,40 +2891,31 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
   function lockClosedTickerPin() {
     var pin = document.getElementById('blank-ticker-pin');
-    if (!pin || !blankCluster || blankCluster.classList.contains('is-ticker-editing')) return;
-    tickerClosedWidth = 0;
-    pin.style.width = '';
+    if (!pin || !blankCluster || blankCluster.classList.contains('is-ticker-editing') || tickerClosedWidth || !countWellWidth || !sizeSeatWidth) return;
     var width = Math.ceil(pin.getBoundingClientRect().width);
     if (!width) return;
     tickerClosedWidth = width;
     pin.style.width = width + 'px';
   }
-  function lockOpenTickerSeats() {
+  function lockTickerSeatsAtBoot() {
     var row = document.getElementById('bt-travel-box');
-    var pin = document.getElementById('blank-ticker-pin');
-    if (!row || !pin || !blankCluster || !blankCluster.classList.contains('is-ticker-editing')) return;
-    var seats = [
-      document.getElementById('bt-rot-ccw'),
-      document.getElementById('bt-rot-cw'),
-      document.getElementById('blank-ticker'),
-      document.getElementById('bt-menu'),
-      document.getElementById('bt-parts')
-    ];
-    var rects = seats.map(function (seat) { return seat && seat.getBoundingClientRect(); });
-    var rowRect = row.getBoundingClientRect();
-    if (!rowRect.width || rects.some(function (rect) { return !rect || !rect.width; })) return;
+    var ticker = document.getElementById('blank-ticker');
+    if (!row || !ticker || sizeSeatWidth || !countWellWidth) return;
+    var probe = document.createElement('span');
+    probe.textContent = '00.000 × 00.000';
+    probe.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;font:650 13.31px/31.46px var(--font-mono);font-variant-numeric:tabular-nums;letter-spacing:.01em';
+    ticker.appendChild(probe);
+    sizeSeatWidth = Math.ceil(probe.getBoundingClientRect().width + 17.6);
+    probe.remove();
+    if (!sizeSeatWidth) return;
     function px(value) { return (Math.round(value * 1000) / 1000) + 'px'; }
-    var names = ['ccw', 'cw', 'size', 'menu', 'count'];
-    var countSeat = Math.max(rects[4].width, countWellWidth + 10);
-    names.forEach(function (name, index) { row.style.setProperty('--bt-seat-' + name, px(index === 4 ? countSeat : rects[index].width)); });
-    row.style.setProperty('--bt-seat-gap-ccw-cw', px(rects[1].left - rects[0].right));
-    row.style.setProperty('--bt-seat-gap-cw-size', px(rects[2].left - rects[1].right));
-    row.style.setProperty('--bt-seat-gap-size-menu', px(rects[3].left - rects[2].right));
-    row.style.setProperty('--bt-seat-gap-menu-count', px(rects[4].left - rects[3].right));
-    row.style.setProperty('--bt-seat-map-width', px(rowRect.width + Math.max(0, countSeat - rects[4].width)));
+    row.style.setProperty('--bt-seat-size', px(sizeSeatWidth));
+    row.style.setProperty('--bt-seat-count', px(countWellWidth + 10));
+    row.style.setProperty('--bt-seat-map-width', px(24 + 24 + sizeSeatWidth + 24 + countWellWidth + 10));
     row.classList.add('is-seat-locked');
+    lockClosedTickerPin();
   }
-  window.__bedLockTickerSeats = function () { window.requestAnimationFrame(lockOpenTickerSeats); };
+  window.__bedLockTickerSeats = lockTickerSeatsAtBoot;
 
   function snap(v) { var s = state.snap; return Math.round(v / s) * s; }
   function fittedScale() {
@@ -3512,7 +3513,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   window.addEventListener('resize', function () { fitBed(); render(); });
 
   fitBed(); render();
-  window.requestAnimationFrame(lockCountWell);
+  window.requestAnimationFrame(function () { lockCountWell(); lockTickerSeatsAtBoot(); });
   var sheet = document.getElementById('hud');
   if (sheet && typeof ResizeObserver !== 'undefined') {
     var sheetWidth = Math.round(sheet.getBoundingClientRect().width);
@@ -3696,14 +3697,14 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   function fmt3(n) { return (Number.isFinite(n) ? n : 0).toFixed(3); }
 
   /* Cut 24: a preset is a named live-field hydrate, not a picker or popover. */
-  function copyLivePreset() { return { name: 'Preset', blank: { x: paramState.blank.x, y: paramState.blank.y }, gap: { x: paramState.gap.x, y: paramState.gap.y }, margin: { l: paramState.margin.l, r: paramState.margin.r, b: paramState.margin.b, t: paramState.margin.t } }; }
-  function emptyMarginPreset() { return { name: '', blank: {}, gap: {}, margin: {} }; }
+  function copyLivePreset() { return { name: '', part: { x: paramState.part.x, y: paramState.part.y }, blank: { x: paramState.blank.x, y: paramState.blank.y }, gap: { x: paramState.gap.x, y: paramState.gap.y }, margin: { l: paramState.margin.l, r: paramState.margin.r, b: paramState.margin.b, t: paramState.margin.t } }; }
+  function emptyMarginPreset() { return { name: '', part: {}, blank: {}, gap: {}, margin: {} }; }
   function isEmptyMarginPreset(preset) {
-    return !!preset && !preset.name && !Object.keys(preset.blank || {}).length && !Object.keys(preset.gap || {}).length && !Object.keys(preset.margin || {}).length;
+    return !!preset && !preset.name && !Object.keys(preset.part || {}).length && !Object.keys(preset.blank || {}).length && !Object.keys(preset.gap || {}).length && !Object.keys(preset.margin || {}).length;
   }
   var marginPresetSlots = Array.from({ length: 4 }, copyLivePreset);
   var marginPresetEditing = false, marginPresetArmed = null, marginPresetCardSlot = null, marginPresetAlertMode = null;
-  var marginPresetSections = { blank: true, gap: true, margin: true };
+  var marginPresetSections = { part: true, blank: true, gap: true, margin: true };
   var marginPresetCardLayer = document.querySelector('[data-margin-preset-card-layer]');
   var marginPresetModalRow = document.querySelector('[data-margin-preset-modal-row]');
   var marginPresets = document.querySelector('.margin-presets');
@@ -3727,13 +3728,18 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   function setMarginPresetSectionEnabled(section, enabled) {
     marginPresetSections[section] = enabled;
     var toggle = document.querySelector('[data-margin-preset-section-toggle="' + section + '"]');
+    var cardSection = document.querySelector('[data-margin-preset-section="' + section + '"]');
+    if (cardSection) {
+      cardSection.classList.toggle('is-disabled', !enabled);
+      cardSection.querySelectorAll('input').forEach(function (input) { input.disabled = !enabled; });
+    }
     if (toggle) {
       toggle.setAttribute('aria-pressed', String(enabled));
       toggle.title = (enabled ? 'Exclude ' : 'Include ') + section.charAt(0).toUpperCase() + section.slice(1);
       toggle.setAttribute('aria-label', toggle.title);
     }
   }
-  function resetMarginPresetSections() { ['blank', 'gap', 'margin'].forEach(function (section) { setMarginPresetSectionEnabled(section, true); }); }
+  function resetMarginPresetSections() { ['part', 'blank', 'gap', 'margin'].forEach(function (section) { setMarginPresetSectionEnabled(section, true); }); }
   function marginPresetSectionForPath(path) { return path.split('.')[0]; }
   function renderMarginPresetSlots() {
     var grid = document.querySelector('[data-margin-preset-grid]'); if (!grid) return;
@@ -3748,12 +3754,13 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var pencil = document.querySelector('[data-margin-preset-edit]'); if (pencil) pencil.setAttribute('aria-pressed', String(marginPresetEditing));
   }
   function presetNumber(preset, path, live) { var value = preset; path.split('.').forEach(function (part) { value = value && value[part]; }); return Number.isFinite(value) ? value : live; }
+  function liveMarginPresetValue(path) { return presetNumber(copyLivePreset(), path, 0); }
   function writeMarginPresetCard(preset) {
-    var live = copyLivePreset(), name = document.querySelector('[data-margin-preset-name]'); if (name) name.value = preset.name || '';
+    var name = document.querySelector('[data-margin-preset-name]'); if (name) name.value = preset.name || '';
     document.querySelectorAll('[data-margin-preset-field]').forEach(function (input) {
       var path = input.getAttribute('data-margin-preset-field');
       if (!marginPresetSections[marginPresetSectionForPath(path)]) return;
-      var liveValue = path === 'blank.x' ? live.blank.x : path === 'blank.y' ? live.blank.y : path === 'gap.x' ? live.gap.x : path === 'gap.y' ? live.gap.y : live.margin[path.slice(-1)];
+      var liveValue = liveMarginPresetValue(path);
       input.value = fmt3(presetNumber(preset, path, liveValue));
     });
   }
@@ -3780,11 +3787,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
   function closeMarginPresetCard() { closeMarginPresetDeleteAlert(); if (marginPresetCardLayer) { marginPresetCardLayer.classList.remove('is-open'); marginPresetCardLayer.setAttribute('aria-hidden', 'true'); } restoreMarginPresetsToSheet(); marginPresetEditing = false; marginPresetCardSlot = null; renderMarginPresetSlots(); }
   function readMarginPresetCard() {
-    var prior = marginPresetCardSlot === null ? emptyMarginPreset() : marginPresetSlots[marginPresetCardSlot], next = { name: '', blank: {}, gap: {}, margin: {} }, name = document.querySelector('[data-margin-preset-name]');
-    next.name = (name && name.value.trim()) || 'Preset';
+    var prior = marginPresetCardSlot === null ? emptyMarginPreset() : marginPresetSlots[marginPresetCardSlot], next = { name: '', part: {}, blank: {}, gap: {}, margin: {} }, name = document.querySelector('[data-margin-preset-name]');
+    next.name = (name && name.value.trim()) || '';
     document.querySelectorAll('[data-margin-preset-field]').forEach(function (input) {
       var path = input.getAttribute('data-margin-preset-field'), value = parseLiveNumber(input);
-      var live = path === 'blank.x' ? paramState.blank.x : path === 'blank.y' ? paramState.blank.y : path === 'gap.x' ? paramState.gap.x : path === 'gap.y' ? paramState.gap.y : paramState.margin[path.slice(-1)];
+      var live = liveMarginPresetValue(path);
       var parts = path.split('.'); next[parts[0]][parts[1]] = !marginPresetSections[parts[0]] ? presetNumber(prior, path, live) : value === null ? presetNumber(prior, path, live) : value;
     });
     return next;
@@ -3801,6 +3808,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   });
   function applyMarginPreset(index) {
     var preset = marginPresetSlots[index]; if (!preset) return; var live = copyLivePreset();
+    paramState.part.x = presetNumber(preset, 'part.x', live.part.x); paramState.part.y = presetNumber(preset, 'part.y', live.part.y);
     paramState.blank.x = presetNumber(preset, 'blank.x', live.blank.x); paramState.blank.y = presetNumber(preset, 'blank.y', live.blank.y);
     paramState.gap.x = presetNumber(preset, 'gap.x', live.gap.x); paramState.gap.y = presetNumber(preset, 'gap.y', live.gap.y);
     ['l', 'r', 'b', 't'].forEach(function (edge) { paramState.margin[edge] = presetNumber(preset, 'margin.' + edge, live.margin[edge]); });
@@ -4545,7 +4553,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }
     finishChipEditor(actionName === 'commit');
   }
-  function openChipEditor(key) {
+  function openChipEditor(key, focusAxis) {
     if (chipEditor.key === key) return;
     if (chipEditor.key) finishChipEditor(true);
     clearMarginPresetArm();
@@ -4575,13 +4583,21 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     fillChipActions(actionsHostFor(ticker, isBlankTicker), gapLink + check + cancel);
     if (isBlankTicker) {
       bindBlankTickerInputs(ticker);
-      if (typeof window.__bedLockTickerSeats === 'function') window.__bedLockTickerSeats();
+      var targetInput = ticker.querySelector('[data-ticker-blank-field="' + (focusAxis || 'x') + '"]');
+      if (targetInput) { targetInput.focus(); targetInput.select(); }
     } else bindChipInputs(ticker, key);
   }
   window.__hudOpenChipEditor = openChipEditor;
   hud.addEventListener('click', onChipAction);
   var blankClusterEl = document.getElementById('blank-ticker-cluster');
   if (blankClusterEl) blankClusterEl.addEventListener('click', onChipAction);
+  if (blankClusterEl) blankClusterEl.addEventListener('pointerdown', function (e) {
+    var readout = e.target.closest && e.target.closest('#bt-readout');
+    if (!readout || chipEditor.key) return;
+    var rect = readout.getBoundingClientRect();
+    e.preventDefault(); e.stopPropagation();
+    openChipEditor('blank', e.clientX < rect.left + rect.width / 2 ? 'x' : 'y');
+  });
   hud.addEventListener('click', function (e) {
     var tick = e.target.closest && e.target.closest('.param-ticker[data-open]');
     if (!tick || !hud.contains(tick) || tick.classList.contains('header-part-ticker')) return;
