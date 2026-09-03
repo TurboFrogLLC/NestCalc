@@ -6,7 +6,7 @@ Part: FLiPIT refine — Fit top + preset card
 Description: Fit parks blank top at the HUD stop. Preset card restore from 78391d0, then surgical adds. No picker. No calc. No bed. Q2 HUD-to-blank X is out.
 PR: 134
 Branch: docs/flipit-refine
-Head: d412b6ddbaf69a9b768ce0ff3115c47174eb884a
+Head: f10103304a59007fdfa60413af3d3787b736ae73
 Session: fresh
 job_id: NGJ-20260902-flipit-refine
 flow_id:
@@ -24,7 +24,8 @@ Seq  Label              Notes                                              Stamp
 5c   Cut                2c restore card from 78391d0          16f7c066d7bf1eb560fac778d38978a559a1dd6c
 6    Look               Owner. No Codex.
 5d   Cut                2d modal pair — presets left, card right         2224b4af8a28310edcfdae9418e995f19c61d813
-5e   Cut                2e card header, blur, selected minus
+5e   Cut                2e card header, blur, selected minus  a7e1c120787f7fa1dbaa76316a703dda8d14948b
+5f   Cut                2f header type, placeholder, alert-dialog
 7    Send for review
 8    Inspection
 9    Merge
@@ -39,6 +40,7 @@ When the living contract → docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.SP
 When the blueprint → docs/howmany-v3-components/TICKER-PICKER-BLUEPRINT.md
 When the shop table → SuperBrain nerveCenter/control-surface/OPERATOR-PIN.md
 When restore source → host at 78391d095a416cfe156dc79d8533e042e182a603
+When delete alert look → https://ui.shadcn.com/docs/components/base/alert-dialog
 
 Shop: Codex App, Terra, Medium
 Proof: Owner local host. Do not restore picker, calculator, chevron, old popover, or bed.
@@ -97,6 +99,20 @@ Card header row, 31.46px high: label `Presets` at left, unboxed Lucide Check and
 
 Every card number input and the name field use `border-radius: 6px`. Card shell stays 7.26px.
 
-Minus deletes the armed gold slot only. No arm → minus does nothing. Minus does not remove the last slot by index.
+Minus deletes the armed gold slot only. No arm → minus does nothing.
 
-First delete: a second `#E8E8E8` card, 7.26px radius, 8.8px from the editor, text `Are you sure you want to delete this?`, Check confirms, X cancels. Under the text, a checkbox labeled `Don't show this again`. Checked + Check writes that skip to `localStorage` key `howmany.flipit.v3.presetDeleteSkip`. Later minus on an armed slot deletes immediately when that key is set. No Part. No accessibility.
+### Cut 2f — header type, placeholder, alert-dialog
+Card header label uses the sheet PRESETS type: 11px / 650 / 0.04em / uppercase / `#111111`.
+Empty name field placeholder is `Name this preset`. Saved name `Preset` only when that is the stored name.
+
+Delete confirm is not a side card. It is an alert-dialog in front of the whole modal pair at z-index 220.
+Look: https://ui.shadcn.com/docs/components/base/alert-dialog — Destructive example.
+Do not install shadcn, React, or a registry package. Mimic that composition only:
+Overlay, Content, Header / Title / Description, Footer / Cancel / Action.
+Title: `Are you sure you want to delete this?`
+Description: `This cannot be undone.`
+Checkbox under description: `Don't show this again`.
+Footer: Cancel then Delete. Delete is the destructive action.
+Cancel closes the alert. Delete removes the armed slot. Checked + Delete writes `howmany.flipit.v3.presetDeleteSkip`.
+Content is centered in the viewport. Pair and 2e card stay put behind it.
+No Part. No accessibility. No paint-bucket.
