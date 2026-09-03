@@ -6,7 +6,7 @@ Part: FLiPIT hex nest
 Description: Hex arm + circle tiles + auto inset packer + array ticket faces.
 PR: 135
 Branch: docs/hex-nest
-Head: 5a4db803efe59e03830d0b139f8516d961875631
+Head: 665aaa8a93181b2ae999c4fea1744d98eb6a38d3
 Session: continuous
 job_id: NGJ-20260903-hex-nest
 flow_id:
@@ -17,7 +17,8 @@ Seq  Label              Notes                                              Stamp
 2    Start-branch       Owner remote / Codex App
 3    Cut                1 hex arm, circles, packer, array faces  61c7157
 3b   Cut                1b ticket off NE arc                    5a4db80
-3c   Cut                1c ticket in left stack between MARGIN and PRESETS  f88a113
+3c   Cut                1c ticket in left stack                 665aaa8
+3d   Cut                1d units, XOR arms, X OFFSET
 4    Look               Owner. No Codex.
 7    Send for review
 8    Inspection
@@ -37,12 +38,15 @@ Proof: Owner remote.
 
 ## Cut lock
 
-### Cut 1 / 1b
-Landed. Do not reopen packer, arm, circles, AABB, or HUD pin.
+### Cut 1 / 1b / 1c
+Landed. Ticket stays in the left stack between MARGIN and PRESETS.
 
-### Cut 1c — ticket in the left stack
-When hex is armed, the array ticket (COLUMNS / ROWS / X GAP / Y GAP) lives in the left floating stack, between MARGIN and PRESETS.
-Same stack width as MARGIN (154px). Same chip radius / shadow family. Not a free overlay on the blank or HUD.
-When hex is off, the ticket is gone. PRESETS stay under it.
-Do not change packer math, arm, circles, AABB, HUD pin, AutoNest, or ticket numbers.
-Done when the stack order is PART SIZE, GAP, MARGIN, ticket, PRESETS and the resize arc stays clear.
+### Cut 1d — units, XOR arms, X OFFSET
+Strip the letters in from every ticket face. Numbers only, 3 dp. Labels stay COLUMNS, ROWS, X GAP, Y GAP, X OFFSET.
+
+Hex and hamburger cannot both be pressed. Arming hex sets hamburger aria-pressed=false and runs hex pack. Arming hamburger sets hex aria-pressed=false and runs rectangle AutoNest. Both off is legal (manual rectangles).
+
+Add X OFFSET: left edge of the first row-2 dotted box, measured from blank 0,0. Inches, 3 dp. Same card, still 154px. Do not add in.
+
+Do not change packer math, circle draw, AABB, HUD pin, stack order, or PRESETS.
+Done when ticket has no unit suffix, arms are XOR, and X OFFSET is visible while hex is on.
