@@ -16,7 +16,7 @@ Seq  Label              Notes                                              Stamp
 1    Plan               Hex spitball + lab pointer
 2    Start-branch       Owner remote / Codex App
 3    Cut                1 hex arm, circles, packer, array faces  61c7157
-3b   Cut                1b move array ticket off the resize arc
+3b   Cut                1b move array ticket off the resize arc  d3c8160
 4    Look               Owner. No Codex.
 7    Send for review
 8    Inspection
