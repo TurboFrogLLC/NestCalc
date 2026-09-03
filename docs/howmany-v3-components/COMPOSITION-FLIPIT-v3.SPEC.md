@@ -197,6 +197,10 @@ The modal card is ordered **PART SIZE**, **BLANK**, **GAP**, **MARGIN**. PART SI
 
 The `.margin-preset-card` remains `252.4px` wide and now has `12px` padding. Label-to-fields gap is `2px`, section-to-section gap is `4px`, and paired `106.8 × 31.46` fields retain their `8.8px` gap. PART SIZE, BLANK, and GAP label rows read label, 22px-hit / 14px-glyph / 2px-stroke Lucide Link, then 22 / 14 / 2 Check and X only while that section is focused or dirty; their accessibility hit stays at the far right. MARGIN retains no Link. A section Check commits only that section and its X restores only that section, while the header Check/X remains the whole-card commit/cancel pair. With the modal closed, sheet minus ignores an unarmed state and otherwise opens the same `z-index: 220` delete alert directly; it does not reopen the preset card. No paint-bucket, HUD pin-lock, Fit-park, or AutoNest-math change is introduced.
 
+## Cut 2j — keep disable across slot; close card on delete
+
+While the preset card remains open, selecting another slot preserves every current accessibility inclusion state: disabled PART SIZE, BLANK, GAP, or MARGIN rows remain disabled and neither hydrate from nor write to the newly selected slot. Opening the card from its closed state restores the normal fully included state. Deleting an armed slot while the card is open closes the card and clears `marginPresetCardSlot`, so the header Check cannot write into the successor that shifts into the deleted index. No paint-bucket, green target, Fit-park, HUD pin-lock, or AutoNest-math change is introduced.
+
 ## AutoNest Cut 1 — HUD menu + best uniform
 
 The centered HUD order is Lucide `rotate-ccw`, Lucide `rotate-cw`, blank size, Lucide `menu`, then the blue count. Every travel hit is 24px with a 16px glyph, 24px viewBox, and 2px stroke. The menu consists only of `M4 5h16`, `M4 12h16`, and `M4 19h16`.

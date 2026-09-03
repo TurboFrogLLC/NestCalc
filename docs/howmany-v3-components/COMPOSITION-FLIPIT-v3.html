@@ -3806,10 +3806,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
   function openMarginPresetCard(index) {
     var preset = index === null ? copyLivePreset() : marginPresetSlots[index]; if (!preset || !marginPresetCardLayer) return;
+    var wasOpen = marginPresetCardLayer.classList.contains('is-open');
     marginPresetEditing = true;
     if (index !== null) marginPresetArmed = index;
     marginPresetCardSlot = index;
-    resetMarginPresetSections(); renderMarginPresetSlots(); writeMarginPresetCard(preset); moveMarginPresetsToModal(); marginPresetCardLayer.classList.add('is-open'); marginPresetCardLayer.setAttribute('aria-hidden', 'false');
+    if (!wasOpen) resetMarginPresetSections();
+    renderMarginPresetSlots(); writeMarginPresetCard(preset); moveMarginPresetsToModal(); marginPresetCardLayer.classList.add('is-open'); marginPresetCardLayer.setAttribute('aria-hidden', 'false');
     var name = document.querySelector('[data-margin-preset-name]'); if (name) name.focus();
   }
   function closeMarginPresetDeleteAlert() { if (marginPresetDeleteAlert) marginPresetDeleteAlert.classList.remove('is-open'); marginPresetAlertMode = null; }
@@ -3913,6 +3915,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (marginPresetArmed === null) return;
     marginPresetSlots.splice(marginPresetArmed, 1);
     marginPresetArmed = null;
+    if (marginPresetCardSlot !== null) { closeMarginPresetCard(); return; }
     closeMarginPresetDeleteAlert();
     renderMarginPresetSlots();
   }
