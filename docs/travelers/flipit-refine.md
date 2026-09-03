@@ -27,7 +27,7 @@ Seq  Label              Notes                                              Stamp
 5e   Cut                2e card header, blur, selected minus  a7e1c120787f7fa1dbaa76316a703dda8d14948b
 5f   Cut                2f header type, placeholder, alert-dialog 9b91cb0f07fa72f4b2243e3bf44232fe1633043e
 5g   Cut                2g card hits, dirty alert, arc clear  e23750382c475c70bfe8958b99a5dacceec43935
-5h   Cut                2h HUD seats, Part row, disable, gaps
+5h   Cut                2h HUD seats, Part row, disable, gaps 89789e1f31c213e114c0e57c320e5fdaeee49fa5
 7    Send for review
 8    Inspection
 9    Merge

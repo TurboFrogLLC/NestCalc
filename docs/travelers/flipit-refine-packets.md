@@ -96,3 +96,13 @@ Operator: Codex App · Worker · Terra / Medium
 - Header Check/X use 28 / 18 / 2, the edit pencil stays black while the modal is open, and the existing delete alert is a 280px, 12px-radius shell with a black checkbox accent. The shell also confirms an armed-slot dirty edit: Cancel restores the card field and Change stores the selected slot.
 - The shared HUD-to-blank stop gains 8px of clearance for the resize arc. AutoNest math and the count well are unchanged; no Part row or paint-bucket was added.
 - Verification: real-browser dirty-edit alert opened with the specified copy and only Cancel/Change, and Cancel restored the edited value; `npm run lint`, inline JavaScript parsing, and `git diff --check` passed. Browser console retained only the existing local missing-favicon 404.
+
+## Seq 5h Cut 2h — HUD seats, Part row, disable, gaps
+
+Operator: Codex App · Worker · Terra / Medium
+
+- Commit: `89789e1f31c213e114c0e57c320e5fdaeee49fa5`
+- The centered HUD now measures the closed `00.000 × 00.000` size pair and tabular `999` count well at boot, reuses one immutable seat grid while editing, and fixes `#blank-ticker-pin` once after both measures.
+- The card now orders PART SIZE, BLANK, GAP, MARGIN. Part defaults to `2.500 × 3.500`; sections use the requested 4px label and 6px section gaps; `Name preset` is the empty-field placeholder and blank saved names remain blank.
+- Accessibility now dims and disables the full selected row, excludes it from card hydration and writes, and adds the same behavior to PART SIZE. No paint-bucket or AutoNest-math change was made.
+- Verification: real-browser blank-size pointer interaction focused the selected field; card inspection confirmed PART SIZE order/defaults and the `Name preset` placeholder; toggling Part made both Part inputs disabled. `npm run lint`, inline JavaScript parsing, and `git diff --check` passed. The browser retained only the existing local missing-favicon 404.
