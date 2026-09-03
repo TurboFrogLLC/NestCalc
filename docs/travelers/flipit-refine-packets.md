@@ -124,3 +124,13 @@ Operator: Codex App · Worker · Terra / Medium
 - Named review requested exactly once: [`@codex review`](https://github.com/TurboFrogLLC/NestCalc/pull/134#issuecomment-5526150146).
 - No merge and no host change.
 - Still open / Next: Inspection.
+
+## Seq 5j Cut 2j — keep disable across slot; close card on delete
+
+Operator: Codex App · Worker · Terra / Medium
+
+- Commit: `f0bd202984a1876a46509d4214d9e3c2c880f7d8`
+- A slot switch within the open card now retains the current PART SIZE, BLANK, GAP, and MARGIN inclusion state. Disabled rows remain disabled and are not hydrated from the incoming slot.
+- Deleting an armed slot with a card target closes the card and clears that target before any successor can be saved through Header Check.
+- No paint-bucket, green target, Fit parking, HUD pin lock, or AutoNest math changed.
+- Verification: `git diff --check` and `npm run lint` passed.

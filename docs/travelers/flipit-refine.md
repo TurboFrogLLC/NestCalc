@@ -22,7 +22,7 @@ Seq  Label              Notes                                              Stamp
 5    Cut                2c–2i preset card                      3e1c7e63345f5b8c458599de929ac2140f257a95
 7    Send for review    one @codex at 3e1c7e6                  c34a67b5c36b3fa59549c274aecf22efc9e49140
 8    Inspection         Codex P2 threads open
-5j   Cut                2j keep disable across slot; close card on delete
+5j   Cut                2j keep disable across slot; close card on delete  f0bd202984a1876a46509d4214d9e3c2c880f7d8
 9    Merge
 10   Close
 
