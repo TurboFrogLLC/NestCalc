@@ -3,10 +3,10 @@
 Repo: NestCalc
 Owner: wReckless
 Part: FLiPIT hex nest
-Description: Hex is an array-offset ticket. Two-row lattice, duplicate after that. Do not implement until Owner locks Cut 1.
+Description: Hex ticket feeds a square machine array: rows, columns, X gap, Y gap. Two-row lattice, duplicate after that. Do not implement until Owner locks Cut 1.
 PR: 135
 Branch: docs/hex-nest
-Head: d56456408705649f4cf28deb107f6d2a3767a50c
+Head: 97d26a3dea49998b7433a6d425d6b24f64b68d5f
 Session: fresh
 job_id: NGJ-20260903-hex-nest
 flow_id:
@@ -38,25 +38,32 @@ Do not copy NC emission. Do not replace the AutoNest hamburger. Do not split rou
 
 ## Pin (not Cut 1 lock)
 
-Purpose: laser array offsets. Row 3 copies row 1. Row 4 copies row 2.
+Purpose: numbers for a square laser array. The array has four inputs only:
+# rows, # columns, X gap, Y gap.
+Machine work-offset is not an array field. hex-x from 0,0 is how pass 2 is started on the table, not typed into the array dialog.
+
+One square array cannot stagger. Two passes:
+- Pass A: even rows (1, 3, 5…)
+- Pass B: odd rows (2, 4, 6…), started at the row-2 origin from blank 0,0
+Both passes use the same columns / X gap / Y gap. Row count per pass is ceil or floor of total rows / 2.
 
 Arm: Lucide hexagon left of hamburger. 24 / 16 / 2 / viewBox 24.
 Path: M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z
-Armed #16A34A. Off #111111. Independent of hamburger.
+Armed #16A34A. Off #111111.
 
-Part when armed: circle, diameter, PART SIZE linked. Tiles are circles. Blank stays a rectangle.
+Part when armed: circle, diameter, PART SIZE linked. Dotted AABB on diameter.
 
-Packer: h from usable height, p from width so inset pair stays at typed GAP.
-h = min((D+g)√3/2, blankH − T − B − D)
-p = 2·sqrt((D+g)² − h²)
-Origin circle locked at blank 0,0 system: center (L+R, B+R). Not a handle.
-Count = legal centers only. Red wash only on an illegal ghost row.
+Packer: h from height, p from width, inset pair at typed GAP.
+Origin circle locked. Count = legal centers. Red wash = illegal ghost only.
 
-Readouts from blank 0,0:
-- hex-x-off: X of the first row-2 part from 0,0 (inches, 3 dp)
-- hex-y-inset: h − D (signed; negative when dotted boxes overlap)
-- hex-gap-inset: produced inset part-to-part = center-dist − D (inches, 3 dp)
-- hex-gap-row: same-row part-to-part = p − D (inches, 3 dp)
+Array faces (3 dp inches):
+- columns
+- rows per pass
+- X gap = p − D  (same-row part-to-part)
+- Y gap = 2h − D  (same-parity row part-to-part, edge)  [pending Q16]
 
-Visual: filled circle + dotted unfilled AABB on diameter.
+Table start for pass B, from blank 0,0 (not an array field):
+- hex-x-off (center vs box-left still open)
+- hex-y-inset = h − D (signed; visual overlap of dotted boxes)
+
 No per-tile drag. No NC emission. No two-blank trim.
