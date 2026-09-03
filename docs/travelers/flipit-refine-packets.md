@@ -77,3 +77,12 @@ Operator: Codex App · Worker · Terra / Medium
 - The blocking backdrop is now `blur(4px)` with its `rgba(17,17,17,0.28)` dim unchanged. The centered Cut 2d presets/editor pair geometry is preserved.
 - The editor has a 31.46px Presets header with unboxed Check/X, a single header rule, 6px name/number field radii, and no footer actions or footer rule. It retains no paint-bucket or Part section.
 - Minus now removes only an armed gold slot. Its first use opens the adjacent 8.8px-spaced confirmation card; opting out persists `howmany.flipit.v3.presetDeleteSkip`, allowing later armed deletes to happen immediately.
+
+## Seq 5f Cut 2f — header type, placeholder, alert-dialog
+
+Operator: Codex App · Worker · Terra / Medium
+
+- Pending commit.
+- The Presets header now shares the PRESETS label type, and the empty name field reads `Name this preset`.
+- The former side confirmation is replaced by a viewport-centered z-index-220 alert-dialog with overlay, title, description, checkbox, and Cancel then destructive Delete footer. The modal pair remains behind it.
+- Verification: real-browser alert open/cancel/reopen/delete flow, `npm run lint`, and `git diff --check` passed.
