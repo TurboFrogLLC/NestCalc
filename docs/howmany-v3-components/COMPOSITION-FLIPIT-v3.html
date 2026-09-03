@@ -3465,8 +3465,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     face('y-gap', layout.yGap.toFixed(3) + ' in');
     var rect = blank.getBoundingClientRect();
     var ticketWidth = hexArrayTicket.offsetWidth || 170;
-    var left = Math.min(window.innerWidth - ticketWidth - STOP, Math.max(STOP, rect.right + STOP));
-    var top = Math.min(window.innerHeight - hexArrayTicket.offsetHeight - STOP, Math.max(HEADER_H + STOP, rect.top));
+    /* Cut 1b: park the read-only ticket beside the blank's west stroke, low enough
+       to leave the NE resize arc and its hit target completely unobstructed. */
+    var ticketHeight = hexArrayTicket.offsetHeight || 78;
+    var left = Math.max(STOP, rect.left - ticketWidth - STOP);
+    var top = Math.min(window.innerHeight - ticketHeight - STOP, Math.max(HEADER_H + STOP, rect.bottom - ticketHeight));
     hexArrayTicket.style.left = Math.round(left) + 'px';
     hexArrayTicket.style.top = Math.round(top) + 'px';
   }

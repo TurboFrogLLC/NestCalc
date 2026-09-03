@@ -27,3 +27,11 @@ Operator: Codex App · GPT-5.6 Terra · High
 - Added the independently armed Lucide hex control immediately left of AutoNest and included its seat in the locked ticker width.
 - Hex mode links PART SIZE to a circular diameter, packs legal inset centers, draws dotted diameter AABBs, and keeps AutoNest rectangle-only.
 - Added the viewport array ticket for columns, rows, and the signed three-decimal X/Y box gaps; no NC, row handle, or tile drag was added.
+
+## Seq 3b Cut 1b — ticket off the resize arc
+
+Operator: Codex App · GPT-5.6 Terra · Medium
+
+- Parked the armed hex array ticket against the blank's lower-west stroke with the required 15px gap, leaving the blank NE corner unoccupied.
+- Browser proof: the ticket ended at x=203 while the blank began at x=218; the NE resize hit target remained at x=1077, y=110 and completed a resize drag with the ticket open.
+- Packer math, hex arm, circles, dotted AABBs, HUD pin, AutoNest, and ticket values were not changed.
