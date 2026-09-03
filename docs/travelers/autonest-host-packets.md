@@ -59,3 +59,7 @@ Implementation commit: 2749f1137c04310a73996ceee6bbbdf38798cc27
 
 ## Seq 7 Send for review
 Worker: Codex App. Confirmed `origin/docs/autonest-host` at `72d614ac5c5e9c1615cc2eac6fda771e614b6423`, marked PR 133 ready for review, and posted exactly one `@codex review` request on that head. PR remains open; no merge was performed.
+
+## Seq 5j Cut 9 — clamp margin bands
+Worker: Codex App. Every Cut 6 L/R/T/B margin-band rectangle now clamps to its own local blank bounds before drawing. Uniform mode uses the sheet bounds; armed two-group mode uses each isolated blank’s own origin, width, and height, so an oversized side cannot cross a trim or paint the neighboring blank. Tiles remain unclipped; the eye toggle, green hamburger, HUD seats, AutoNest math, and SVG-inch camera are unchanged.
+Implementation commit: 106b1905401af2286476aadbf31e50b819be35ad

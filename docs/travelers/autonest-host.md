@@ -29,6 +29,7 @@ Seq  Label              Notes                                              Stamp
 5g   Cut                8 side inset + fixed 999 count well               3e2ea36d9f448f2d1976d05fef072ba917205d7f
 5h   Cut                8b measured count well + drawn arc inset          6f29bfc8e8542aecfe93c3be4f241533198f7ce7
 5i   Cut                8c HUD inner seats                                2749f1137c04310a73996ceee6bbbdf38798cc27
+5j   Cut                9 clamp margin bands                              106b1905401af2286476aadbf31e50b819be35ad
 6    Look               Owner htmlpreview. No Codex.
 7    Send for review                                                  72d614ac5c5e9c1615cc2eac6fda771e614b6423
 8    Inspection
