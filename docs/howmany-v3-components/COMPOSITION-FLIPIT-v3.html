@@ -3390,10 +3390,13 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   });
   function fitBed() {
     state.zoom = 1;
-    state.fitScale = fittedScale();
+    var H = svg.clientHeight || window.innerHeight;
+    var topStop = HEADER_H + HUD_BLANK_STOP;
+    var heightFit = Math.max(0.001, H - topStop - STOP) / Math.max(state.blankH, 0.001);
+    state.fitScale = Math.min(fittedScale(), heightFit);
     var s = state.fitScale;
     state.panX = subjectLeftPx();
-    state.panY = state.blankH * s + HUD_BLANK_STOP;
+    state.panY = state.blankH * s + topStop;
   }
 
   function onPointerDown(e) {
