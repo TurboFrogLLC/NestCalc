@@ -19,3 +19,11 @@ Operator: SuperGrok · Operations Manager
 - Lab HCP inset math: p = 2R + g; offset (p/2, p√3/2).
 - HUD seat lock required when the hex control is added.
 - No host change in this row.
+
+## Seq 3 Cut 1 — hex arm, circles, packer, array faces
+
+Operator: Codex App · GPT-5.6 Terra · High
+
+- Added the independently armed Lucide hex control immediately left of AutoNest and included its seat in the locked ticker width.
+- Hex mode links PART SIZE to a circular diameter, packs legal inset centers, draws dotted diameter AABBs, and keeps AutoNest rectangle-only.
+- Added the viewport array ticket for columns, rows, and the signed three-decimal X/Y box gaps; no NC, row handle, or tile drag was added.

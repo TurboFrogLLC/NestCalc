@@ -1,11 +1,11 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Cut 2i tightened card, label-row actions, sheet delete
+**Status:** Living — Cut 1 hex arm, circles, packer, array ticket faces
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
-**Branch:** `docs/side-stack-sheet`
-**Trace:** `NGJ-20260901-blankspace`
+**Branch:** `docs/hex-nest`
+**Trace:** `NGJ-20260903-hex-nest`
 **Host tip blob:** `55a1688ec9720fdb34409435fa56b46f3a5783ec` (Seq 3 composition commit)
 **Class:** Exploratory composition host only · not product GOAL · not a shared import  
 
@@ -200,6 +200,16 @@ The `.margin-preset-card` remains `252.4px` wide and now has `12px` padding. Lab
 ## Cut 2j — keep disable across slot; close card on delete
 
 While the preset card remains open, selecting another slot preserves every current accessibility inclusion state: disabled PART SIZE, BLANK, GAP, or MARGIN rows remain disabled and neither hydrate from nor write to the newly selected slot. Opening the card from its closed state restores the normal fully included state. Deleting an armed slot while the card is open closes the card and clears `marginPresetCardSlot`, so the header Check cannot write into the successor that shifts into the deleted index. No paint-bucket, green target, Fit-park, HUD pin-lock, or AutoNest-math change is introduced.
+
+## Cut 1 — hex arm, circles, packer, array faces
+
+The centered HUD adds the canonical Lucide hexagon immediately left of the AutoNest hamburger: 24px hit, 16px glyph, 2px stroke, 24px viewBox, and only `M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z`. It is `#111111` off and `#16A34A` while `aria-pressed="true"`, independently of the hamburger. The HUD remeasures and locks `#blank-ticker-pin` after adding this seat; count digits and blank-editor open, Check, and X do not resize or move its pin.
+
+With the hex arm on, the part is a circle whose diameter is PART SIZE X; PART SIZE is linked and X drives Y. The blank remains rectangular. Every live tile is a circle with a dotted, unfilled diameter AABB; there is no per-tile drag or row-handle control. The hamburger remains rectangle-only and AutoNest math is unchanged.
+
+For diameter `D`, typed GAP clearance `g`, and radius `R = D / 2`, the inset packer uses `h = min((D + g) * sqrt(3) / 2, blankH - T - B - D)` and `p = 2 * sqrt((D + g)^2 - h^2)`. The first center is `(L + R, B + R)` in blank space, not a handle. Odd rows offset by `p / 2`; row 3 repeats row 1 and row 4 repeats row 2. Only legal centers contribute to the count. A red wash appears only for a row that still has no legal center after its rise has squeezed to `h`.
+
+The viewport-positioned array ticket is not pinned to the machine origin. It shows columns, rows, X gap `p - D`, and signed Y gap `h - D` (the top of row 1's box is zero; row 2's box bottom is measured against it). Gap faces show three-decimal inches.
 
 ## AutoNest Cut 1 — HUD menu + best uniform
 
