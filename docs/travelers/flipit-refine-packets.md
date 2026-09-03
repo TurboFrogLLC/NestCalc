@@ -73,7 +73,7 @@ Operator: Codex App · Worker · Terra / Medium
 
 Operator: Codex App · Worker · Terra / Medium
 
-- Commit: `b02e3d03f5910a5e1da63493fbfbeea47c8b62d9`.
+- Commit: `a7e1c120787f7fa1dbaa76316a703dda8d14948b`.
 - The blocking backdrop is now `blur(4px)` with its `rgba(17,17,17,0.28)` dim unchanged. The centered Cut 2d presets/editor pair geometry is preserved.
 - The editor has a 31.46px Presets header with unboxed Check/X, a single header rule, 6px name/number field radii, and no footer actions or footer rule. It retains no paint-bucket or Part section.
 - Minus now removes only an armed gold slot. Its first use opens the adjacent 8.8px-spaced confirmation card; opting out persists `howmany.flipit.v3.presetDeleteSkip`, allowing later armed deletes to happen immediately.
