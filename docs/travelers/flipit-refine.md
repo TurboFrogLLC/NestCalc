@@ -26,7 +26,7 @@ Seq  Label              Notes                                              Stamp
 5d   Cut                2d modal pair — presets left, card right         2224b4af8a28310edcfdae9418e995f19c61d813
 5e   Cut                2e card header, blur, selected minus  a7e1c120787f7fa1dbaa76316a703dda8d14948b
 5f   Cut                2f header type, placeholder, alert-dialog 9b91cb0f07fa72f4b2243e3bf44232fe1633043e
-5g   Cut                2g card hits, dirty alert, arc clear
+5g   Cut                2g card hits, dirty alert, arc clear     e23750382c475c70bfe8958b99a5dacceec43935
 7    Send for review
 8    Inspection
 9    Merge

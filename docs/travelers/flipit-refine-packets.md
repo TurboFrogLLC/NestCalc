@@ -86,3 +86,13 @@ Operator: Codex App · Worker · Terra / Medium
 - The Presets header now shares the PRESETS label type, and the empty name field reads `Name this preset`.
 - The former side confirmation is replaced by a viewport-centered z-index-220 alert-dialog with overlay, title, description, checkbox, and Cancel then destructive Delete footer. The modal pair remains behind it.
 - Verification: real-browser alert open/cancel/reopen/delete flow, `npm run lint`, and `git diff --check` passed.
+
+## Seq 5g Cut 2g — card hits, dirty alert, arc clear
+
+Operator: Codex App · Worker · Terra / Medium
+
+- Commit: `e23750382c475c70bfe8958b99a5dacceec43935`
+- Card name and number fields select-all on click. BLANK, GAP, and MARGIN now use the sheet label token and each has the locked 28 / 18 / 2 accessibility control; disabled sections remain blue and do not hydrate or write.
+- Header Check/X use 28 / 18 / 2, the edit pencil stays black while the modal is open, and the existing delete alert is a 280px, 12px-radius shell with a black checkbox accent. The shell also confirms an armed-slot dirty edit: Cancel restores the card field and Change stores the selected slot.
+- The shared HUD-to-blank stop gains 8px of clearance for the resize arc. AutoNest math and the count well are unchanged; no Part row or paint-bucket was added.
+- Verification: real-browser dirty-edit alert opened with the specified copy and only Cancel/Change, and Cancel restored the edited value; `npm run lint`, inline JavaScript parsing, and `git diff --check` passed. Browser console retained only the existing local missing-favicon 404.
