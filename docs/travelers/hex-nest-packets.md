@@ -111,7 +111,7 @@ Seq  Label              Notes                                              Stamp
 7    Send for review    PR 135 ready; @codex on 88e4121         39ef277
 8    Inspection
 9    Merge              PR 135 into docs/autonest-host            0b0e643
-10   Close              packslip posted
+10   Close              packslip posted                           7336dfc
 
 Closed Corrective Action: none
 Still open: Codex P2 leftovers — Hex disarm does not restore rectangular Y; Hex Y field can drive diameter. Parked: row-grab, red wash, NC emission, two-blank trim on rounds.
