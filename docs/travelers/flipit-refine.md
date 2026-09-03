@@ -6,7 +6,7 @@ Part: FLiPIT refine — Fit top + preset card
 Description: Fit parks blank top at the HUD stop. Preset card restore from 78391d0, then surgical adds. No picker. No calc. No bed. Q2 HUD-to-blank X is out.
 PR: 134
 Branch: docs/flipit-refine
-Head: d7cd7be775d50dd8d083a114113a8b9650461bd1
+Head: 734e3472b48d110d330ae92d69569637031ac25d
 Session: fresh
 job_id: NGJ-20260902-flipit-refine
 flow_id:
@@ -23,7 +23,7 @@ Seq  Label              Notes                                              Stamp
 5b   Cut                2b VOID patch on rewrite               99b5a8d993230387a827b5e46ea4d4b1aa306ada
 5c   Cut                2c restore card from 78391d0          16f7c066d7bf1eb560fac778d38978a559a1dd6c
 6    Look               Owner. No Codex.
-5d   Cut                2d reserved — overlay off
+5d   Cut                2d modal pair — presets left, card right
 5e   Cut                2e reserved — card-header adds
 7    Send for review
 8    Inspection
@@ -79,8 +79,16 @@ No Copy live. No Part row. No paint-bucket. No accessibility.
 
 Do not change Fit park, count well, AutoNest math, PART SIZE, GAP, or MARGIN chips.
 
-### Cut 2d — reserved
-Overlay off so slots stay live. Card stays the 2c geometry. Not this visit.
+### Cut 2d — modal pair
+Pencil opens a modal. Backdrop is `backdrop-filter: blur(8px)` plus `rgba(17,17,17,0.28)`. Header, HUD, blank, PART SIZE, GAP, and MARGIN stay in that blur. They are not clickable.
+
+One focused row, vertically centered:
+`.margin-presets` (154px) + 15px gap + `.margin-preset-card` (252.4px).
+Group width 421.4px. Group is centered in the viewport, so the card sits 84.5px right of center.
+
+Move the live `.margin-presets` node into that row while open. Do not clone the slots. Hide the sheet hole with visibility so PART SIZE / GAP / MARGIN do not jump. On close, put `.margin-presets` back on the sheet.
+
+Card geometry stays Cut 2c. Slots, pencil, plus, minus stay live on the left block. No paint-bucket. No Part. No accessibility. No header rewrite.
 
 ### Cut 2e — reserved
 Card-header adds only. Not this visit.
