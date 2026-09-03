@@ -6,7 +6,7 @@ Part: FLiPIT refine — Fit top + preset card
 Description: Fit parks blank top at the HUD stop. Preset card restore from 78391d0, then surgical adds. No picker. No calc. No bed. Q2 HUD-to-blank X is out.
 PR: 134
 Branch: docs/flipit-refine
-Head: f6f146c3dd5a1b0a9556857a05536cbecba5922f
+Head: 3b7971426d96377b790742bb622c4ed3e7e5f918
 Session: fresh
 job_id: NGJ-20260902-flipit-refine
 flow_id:
@@ -26,7 +26,8 @@ Seq  Label              Notes                                              Stamp
 5d   Cut                2d modal pair — presets left, card right         2224b4af8a28310edcfdae9418e995f19c61d813
 5e   Cut                2e card header, blur, selected minus  a7e1c120787f7fa1dbaa76316a703dda8d14948b
 5f   Cut                2f header type, placeholder, alert-dialog 9b91cb0f07fa72f4b2243e3bf44232fe1633043e
-5g   Cut                2g card hits, dirty alert, arc clear     e23750382c475c70bfe8958b99a5dacceec43935
+5g   Cut                2g card hits, dirty alert, arc clear  e23750382c475c70bfe8958b99a5dacceec43935
+5h   Cut                2h HUD seats, Part row, disable, gaps
 7    Send for review
 8    Inspection
 9    Merge
@@ -63,68 +64,29 @@ Do not implement. `99b5a8d` patched that rewrite. Dead.
 
 ### Cut 2c — restore card from 78391d0
 Source of truth: host at `78391d095a416cfe156dc79d8533e042e182a603`
-for `.margin-presets`, `.margin-presets-head`, `.margin-presets-grid`,
-`#margin-preset-card-layer`, `.margin-preset-card`, and the JS that opens and closes that card only.
-
-Sheet row: PRESETS | pencil | plus | minus.
-Pencil paths only:
-`M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z`
-`m15 5 4 4`
-Hits 22 / glyphs 16 / stroke 2 / viewBox 24.
-
-Slots: 154px row, two frost-blue chips, 31.46 high, 7.26 radius, 1.1px stroke, 13.31px / 650 / mono.
-
-Card layer: `position: fixed; inset: 0; z-index: 201; place-items: center`.
-Card: 252.4px wide, `#E8E8E8`, 7.26px radius, 15px pad, shadow `0 0.5px 1px rgba(0,0,0,.25)`.
-Inner width 222.4. Name field 222.4 × 31.46. Sections Blank, Gap, Margin only.
-Axis fields 106.8 × 31.46, 8.8px gap. Check/X 22 / 14 / 2 in the footer.
-No Copy live. No Part row. No paint-bucket. No accessibility.
-
-Do not change Fit park, count well, AutoNest math, PART SIZE, GAP, or MARGIN chips.
 
 ### Cut 2d — modal pair
-Pencil opens a modal. Backdrop is `backdrop-filter: blur(8px)` plus `rgba(17,17,17,0.28)`. Header, HUD, blank, PART SIZE, GAP, and MARGIN stay in that blur. They are not clickable.
-
-One focused row, vertically centered:
-`.margin-presets` (154px) + 15px gap + `.margin-preset-card` (252.4px).
-Group width 421.4px. Group is centered in the viewport, so the card sits 84.5px right of center.
-
-Move the live `.margin-presets` node into that row while open. Do not clone the slots. Hide the sheet hole with visibility so PART SIZE / GAP / MARGIN do not jump. On close, put `.margin-presets` back on the sheet.
-
-Card geometry stays Cut 2c. Slots, pencil, plus, minus stay live on the left block. No paint-bucket. No Part. No accessibility. No header rewrite.
+Pencil opens a modal. Live `.margin-presets` + 15px + card. Group 421.4px centered.
 
 ### Cut 2e — card header, blur, selected minus
-Backdrop blur becomes `blur(4px)`. Dim stays `rgba(17,17,17,0.28)`. Pair geometry stays Cut 2d.
-
-Card header row, 31.46px high: label `Presets` at left, unboxed Lucide Check and X at right, 22 / 14 / 2. Remove the footer Check/X and the footer rule. One rule under the header. Name field stays 222.4 × 31.46 under that rule. No paint-bucket.
-
-Every card number input and the name field use `border-radius: 6px`. Card shell stays 7.26px.
-
-Minus deletes the armed gold slot only. No arm → minus does nothing.
+Blur 4px. Header Presets + Check/X. Minus deletes armed slot only.
 
 ### Cut 2f — header type, placeholder, alert-dialog
-Card header label uses the sheet PRESETS type: 11px / 650 / 0.04em / uppercase / `#111111`.
-Empty name field placeholder is `Name this preset`. Saved name `Preset` only when that is the stored name.
-
-Delete confirm is an alert-dialog at z-index 220. Look: https://ui.shadcn.com/docs/components/base/alert-dialog
-Do not install shadcn. Mimic Overlay / Content / Title / Description / Footer Cancel + Delete.
+Delete confirm is z-index 220 alert-dialog. Look: https://ui.shadcn.com/docs/components/base/alert-dialog
 
 ### Cut 2g — card hits, dirty alert, arc clear
-Every card name and number field select-alls on click.
+Select-all on card fields. Accessibility 28 / 18 / 2. Delete alert 280px / 12px. HUD-bottom → blank-top +8px.
 
-Section labels BLANK, GAP, MARGIN use the sheet label type: 11px / 650 / 0.04em / uppercase / `#111111`.
-Each of those rows gets Lucide accessibility, 28 / 18 / 2, viewBox 24, fill none:
-circle cx=16 cy=4 r=1
-m18 19 1-7-6 1
-m5 8 3-3 5.5 3-2.36 3.5
-M4.24 14.5a5 5 0 0 0 6.88 6
-M13.76 17.5a5 5 0 0 0-6.88-6
-On `#111111`. Off `#538BEC`. Off does not write or hydrate.
+### Cut 2h — HUD seats, Part row, disable, gaps
+Closed HUD size pair is two tabular 6ch seats from boot, measured as `00.000 × 00.000` in 13.31px / 650 / mono. Count well stays the measured 999 face + 5px inset per side. Lock `#blank-ticker-pin` width after that measure, once. Digit count cannot change pin width. Open and close reuse that grid. Pointerdown on a size number opens the editor and select-alls that field in the same click.
 
-Card header Check and X become 28 / 18 / 2. Pencil stays `#111111` while the modal is open. No blue pencil.
+Card sections top to bottom: PART SIZE, BLANK, GAP, MARGIN.
+PART SIZE uses the same 106.8 × 31.46 pair, 6px radius, 8.8px field gap, 11px / 650 / 0.04em / uppercase label.
+Default Part `2.500 × 3.500`.
 
-Delete alert content max-width 280px, `border-radius: 12px`. Checkbox `accent-color: #111111`.
-Same alert shell for an armed-slot dirty edit: title `Are you sure you want to change that?` Description `This will update the selected preset.` Footer Cancel / Change. Change writes the live card values onto that slot. Cancel restores the field.
+Label-to-fields gap is 4px. Section-to-section gap is 6px.
 
-Resize arc must clear the HUD. Raise HUD-bottom → blank-top stop by 8px so the drawn arc is not clipped by `#blank-ticker-pin`. Do not change AutoNest math or the count well.
-No paint-bucket. No Part row.
+Accessibility off disables that row: inputs `disabled`, opacity 0.45, no write, no hydrate. Live canvas keeps those values. On `#111111`. Off `#538BEC`.
+
+Empty name placeholder is `Name preset`. Do not write the word Preset into an empty field.
+No paint-bucket. Do not change AutoNest math.
