@@ -3459,7 +3459,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       if (clearsPocketRow) pocketCenters.push(pocket);
     }
     var firstPocket = pocketCenters[0] || { x: 0, y: 0 };
-    return { hex: true, skeleton: true, rem: true, diameter: diameter, radius: radius, holeD: holeD, holeR: holeR, p: pitchExist, h: 0, columns: pocketCenters.length, rows: 1, count: pocketCenters.length, centers: pocketCenters, voids: voids, failedRows: [], xGap: gExist, yGap: 0, pocketCols: pocketCenters.length, jogX: firstPocket.x, jogY: firstPocket.y };
+    var pocketXGap = 0;
+    for (var pocketIndex = 1; pocketIndex < pocketCenters.length; pocketIndex++) {
+      var edgeGap = (pocketCenters[pocketIndex].x - pocketCenters[pocketIndex - 1].x) - diameter;
+      if (pocketIndex === 1 || edgeGap < pocketXGap) pocketXGap = edgeGap;
+    }
+    return { hex: true, skeleton: true, rem: true, diameter: diameter, radius: radius, holeD: holeD, holeR: holeR, p: pitchExist, h: 0, columns: pocketCenters.length, rows: 1, count: pocketCenters.length, centers: pocketCenters, voids: voids, failedRows: [], xGap: pocketXGap, yGap: 0, pocketCols: pocketCenters.length, jogX: firstPocket.x, jogY: firstPocket.y };
   }
 
   function hexLayout() {
@@ -3732,8 +3737,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var jogXFace = hexArrayTicket.querySelector('[data-hex-ticket-face="jog-x"]');
     var jogYFace = hexArrayTicket.querySelector('[data-hex-ticket-face="jog-y"]');
     if (pocketFace) pocketFace.hidden = !skeletonOn;
-    if (xGapFace) xGapFace.hidden = skeletonOn;
-    if (yGapFace) yGapFace.hidden = skeletonOn;
+    if (xGapFace) xGapFace.hidden = false;
+    if (yGapFace) yGapFace.hidden = false;
     if (xOffsetFace) xOffsetFace.hidden = skeletonOn;
     if (jogXFace) jogXFace.hidden = !skeletonOn;
     if (jogYFace) jogYFace.hidden = !skeletonOn;

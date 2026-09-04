@@ -1,6 +1,6 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Cut 6 skeleton pockets and SKEL L/B jog
+**Status:** Living — Cut 6c skeleton array gap and machine jog
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
@@ -13,6 +13,14 @@
 This file is the **host only**. The four individual HTML tips stay standalone lock files. Do not overwrite them from this assembly. Do not add `flipit-v3-align.js` or `@import` into the tips.
 
 Prior composition/lock archives (`COMPOSITION-HUD-DECODER-v3.*`, `DE-CODER-v3-LOCKED.*`) stay on disk. They are not this host.
+
+---
+
+## Seq 5i Cut 6c — array X GAP and machine jog are different inputs
+
+With skull armed, the pockets-only skeleton ticket treats the one-row array and the machine work offset as separate inputs. `COLUMNS` and `POCKET COLS` are the painted pocket count; `ROWS` is `1`; `X GAP` is the minimum consecutive-pocket edge clearance on X, `center_x[i+1] − center_x[i] − D_p`; and `Y GAP` is `0`. It is neither the FLiPIT global GAP chip nor `X ROW GAP`.
+
+`JOG X` and `JOG Y` are the first painted pocket center measured from rem `0,0`, for the machine work offset before running that one-row array. `X OFFSET` is absent from the skeleton ticket and remains on the unchanged virgin-hex ticket.
 
 ---
 
@@ -543,3 +551,4 @@ Do not require `file://`.
 | 2026-09-03 | **Cut 5** hex rem inset: freeze part lattice after pockets; later blues are hex neighbors at `p = D_p + g`; no AABB+GAP restart. |
 | 2026-09-04 | **Cut 5b** hex rem inset: compare pocket extras against the independent phantom B lattice; paint the higher count, with clear-hex on a tie. |
 | 2026-09-04 | **Cut 6b** hex rem inset: SKEL L and SKEL B join the skeleton init card and write through to the retained rem faces. |
+| 2026-09-04 | **Cut 6c** hex rem inset: skeleton array X GAP measures painted-pocket edge clearance; machine JOG stays the first-pocket rem offset. |
