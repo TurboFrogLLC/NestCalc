@@ -3,10 +3,10 @@
 Repo: NestCalc
 Owner: wReckless
 Part: FLiPIT hex rem inset
-Description: AutoNest-style hex vs pocket compare on the rem with cutouts.
+Description: Pocket row + phantom lattice. Winner by count.
 PR: 136
 Branch: docs/hex-rem-inset
-Head: 0cc83c79d15f9362b92412c58cd2586fa94491e1
+Head: bbfc070661bef2b738cd297cac01c72e72cb328e
 Session: continuous
 job_id: NGJ-20260903-hex-rem
 flow_id:
@@ -21,7 +21,7 @@ Seq  Label              Notes                                              Stamp
 5c   Cut                4 skeleton arm + init card              d16f9ec
 5d   Cut                4b pocket lock + Codex P1/P2            83fd67c
 5e   Cut                5 freeze part lattice                   2d02875
-5f   Cut                5b compare pocket vs clear-hex
+5f   Cut                5b pocket row + phantom lattice
 4    Look               Owner. No Codex review until Send.
 7    Send for review
 8    Inspection
@@ -41,21 +41,23 @@ Worker worktree is not Owner Look. Push origin/docs/hex-rem-inset.
 
 ## Cut lock
 
-### Cut 5b — compare pocket vs clear-hex (AutoNest law)
-Skull armed and HOLE DIA > 0. Cutouts always paint. Both candidates see the same rem and the same reds.
+### Cut 5b — pocket row + phantom lattice + count winner
+Skull armed and HOLE DIA > 0. Cutouts always paint. Not perfect hex. Saturate the rem.
 
-Candidate H (clear-hex / manual hex on this rem)
-No pockets. One lattice p = D_p + g, h = √3 p / 2.
-First row is the lowest full-width hex row whose every cell clears every cutout at dWall = R_cut + R_p + g.
-Grow that lattice up. Count = |H|.
+Candidate P
+Array row 1: every legal cusp pocket. Those are extra parts, not lattice B seeds.
+Lattice B origin: x0 = L + R_p, y2 = (cutout AABB top) + g + R_p.
+Pitch p = D_p + g. Hex h = √3 p / 2. Array row 2 sits on y2, left to right from x0.
+A Lattice B cell that collides with a pocket (dist < D_p + g) is hidden. It is still a lattice point.
+Array row 3+ hex-nests from Lattice B including hidden points. Only rows 2–3 show gaps from those hides. Later rows are full hex on B.
+Count N_P = painted pockets + painted B cells.
 
-Candidate P (pocketed)
-Pockets in every legal cusp. Count those.
-Do not grow a D_p+g hex from pocket centers (Cut 5 miss: p_skel is not a multiple of p).
-If height remains, add Candidate H cells that also clear the pockets at pair = D_p + g. Count = |pockets| + |those H cells|.
+Candidate H
+No pockets. Same Lattice B. No hidden cells. Count N_H.
 
-Winner = max(|H|, |P|). Tie → H.
-Paint only the winner. Ticket faces from the winner. POCKET COLS = 0 when H wins.
+Winner max(N_P, N_H). Tie → H. Paint only the winner.
+POCKET COLS = 0 when H wins.
+Ticket faces from the painted lattice. X ORIGIN = x0.
 
 HOLE DIA 0 → virgin hex. Arms/chrome stay. No pocket toggle. No NC.
 Done only after origin has the implement commit.
