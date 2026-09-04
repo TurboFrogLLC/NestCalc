@@ -17,7 +17,7 @@ Seq  Label              Notes                                              Stamp
 2    Start-branch       Owner local / Codex App
 3    Cut                1 red void row + pocket inset           2bb43c4
 5    Cut                2 left-refill + hex diameter chip       e964f1f
-5b   Cut                3 pocket lock + hex grid above void AABB
+5b   Cut                3 pocket lock + hex grid above void AABB  8a7d533
 4    Look               Owner. No Codex review until Send.
 7    Send for review
 8    Inspection

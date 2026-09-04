@@ -20,3 +20,11 @@ Operator: Grok Build · Grok 4.6 · high
 - Cusp row stays blue row 1 only. Rows 2+ re-pack from the origin (+X) and eat leftover width at typed GAP. They do not inherit the cusp-row X origin or pitch. Row counts may differ. No second red row.
 - Hex armed: PART SIZE stays the same 154 × 31.46 box. One diameter number in the 6ch seat plus Lucide circle-off (`M2 2l20 20` / `M8.35 2.69A10 10 0 0 1 21.3 15.65` / `M19.08 19.08A10 10 0 1 1 4.92 4.92`). Hex off restores X × Y. Y is not overwritten.
 - Implement `e964f1f`. Pushed origin/docs/hex-rem-inset so Owner Look can ff. Unpushed GB commits are not Look.
+
+## Seq 5b Cut 3 — pocket lock + hex grid above void AABB
+
+Operator: Codex App · GPT-5.6 Terra · High
+
+- Pocket inserts stay locked in the cusps as ticket row 1. Ticket row 2 starts above the red AABB at `Y = redAABB.top + g + R_p` from origin X. That row and every row above sit on one hex grid (`p`, `h` from `D_p` + typed GAP). Occupied cells clear red walls, locked pockets, rem L/R/T/B, and typed GAP. No leftover greedy refill. No walkable hex holes.
+- If `B + D_h + T > blankH`, do not paint a void row through the blank stroke. No second red row. No NC. PART SIZE and GAP are not stolen. `HOLE DIA = 0` still restores the Cut 2 virgin packer.
+- Implement `8a7d533`. Pushed origin/docs/hex-rem-inset so Owner Look can ff. Unpushed GB commits are not Look.
