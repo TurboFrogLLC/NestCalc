@@ -2343,6 +2343,16 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       font-variant-numeric: tabular-nums; text-align: left; white-space: nowrap; overflow: hidden; cursor: text;
     }
     #hud .chip-editor-by { flex: 0 0 auto; color: inherit; font: 650 13.31px/1 var(--font-mono); padding: 0 0.35em; display: inline-flex; align-items: center; height: 100%; }
+    #hud .param-ticker .chip-hex-diameter {
+      display: inline-flex; align-items: center;
+      width: 6ch; min-width: 6ch; max-width: 6ch; height: 100%;
+      font: inherit; font-variant-numeric: tabular-nums;
+      white-space: nowrap; overflow: hidden;
+    }
+    #hud .param-ticker .chip-hex-circle-off {
+      flex: 0 0 16px; width: 16px; height: 16px; margin-left: 0.35em;
+      display: block; pointer-events: none; color: inherit;
+    }
     #hud .param-row[data-param="margin"] .param-ticker.is-chip-editing {
       height: auto; min-height: 31.46px; max-height: none; flex-direction: column;
       justify-content: center; align-items: stretch;
@@ -3306,7 +3316,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     return { hex: true, diameter: diameter, radius: radius, p: p, h: h, columns: columns, rows: rows, count: centers.length, centers: centers, voids: [], failedRows: failedRows, xGap: p - diameter, yGap: h - diameter, xOffset: m.l + p / 2 };
   }
 
-  /* Cut 1 rem: one red void row from (L+R_h, B+R_h); PART SIZE circles drop into those cusps, then Cut 2 squeeze. */
+  /* Cut 1 rem + Cut 2: one red void row; cusp row is pockets only; later rows left-pack from the origin. */
   function hexRemInsetLayout() {
     var diameter = state.partW;
     var radius = diameter / 2;
@@ -3366,11 +3376,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
     var usedPockets = pocketCenters.length > 0;
     var yRef = minY;
-    var start0 = minX;
     if (usedPockets) {
       yRef = pocketCenters[0].y;
       for (var pc = 1; pc < pocketCenters.length; pc++) if (pocketCenters[pc].y > yRef) yRef = pocketCenters[pc].y;
-      start0 = pocketCenters[0].x;
     }
 
     var availableRise = maxY - yRef;
@@ -3382,7 +3390,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         var rise = Math.min(hcp, availableRise / (candidate - 1));
         if (candidate >= 3 && rise + FIT_EPSILON < pair / 2) continue;
         var pitch = 2 * Math.sqrt(Math.max(0, pair * pair - rise * rise));
-        if (minX + pitch / 2 > maxX + FIT_EPSILON) continue;
+        /* Cut 2: row 2 left-packs from the origin. Only later staggered rows need p/2 to fit. */
+        if (candidate >= 3 && minX + pitch / 2 > maxX + FIT_EPSILON) continue;
         n = candidate;
         h = rise;
         p = pitch;
@@ -3399,7 +3408,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         continue;
       }
       var y = yRef + row * h;
-      var startX = start0 + (row % 2 ? p / 2 : 0);
+      /* Cut 2: rows 2+ re-pack from the origin (+X). Do not freeze to the cusp-row pitch. */
+      var stagger = usedPockets ? (row % 2 === 0) : (row % 2 === 1);
+      var startX = minX + (stagger ? p / 2 : 0);
       var rowColumns = 0;
       if (startX <= maxX + FIT_EPSILON && p > FIT_EPSILON) {
         var maxCols = Math.floor((maxX - startX) / p + FIT_EPSILON) + 1;
@@ -4330,16 +4341,24 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       '</span>';
   }
 
+  var HEX_CIRCLE_OFF = '<svg class="chip-hex-circle-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 2l20 20"/><path d="M8.35 2.69A10 10 0 0 1 21.3 15.65"/><path d="M19.08 19.08A10 10 0 1 1 4.92 4.92"/></svg>';
+  function hexDiameterChipHTML(value, editing) {
+    if (editing) return chipField('', 'x', value) + HEX_CIRCLE_OFF;
+    return '<span class="chip-hex-diameter">' + fmt3(value) + '</span>' + HEX_CIRCLE_OFF;
+  }
+
   function refreshTickers() {
     const p = paramState.part, b = paramState.blank, g = paramState.gap, m = paramState.margin;
-    if (window.__flipitHexArmed) { p.linked = true; p.y = p.x; }
     const tPart = document.querySelector('[data-ticker="part"]');
     const tPartCollapsed = document.querySelector('[data-ticker="part-collapsed"]');
     const tBlank = document.querySelector('[data-ticker="blank"]');
     const tGap = document.querySelector('[data-ticker="gap"]');
     const tMar = document.querySelector('[data-ticker="margin"]');
     const partText = fmt3(p.x) + ' × ' + fmt3(p.y);
-    if (tPart && !tPart.classList.contains('is-chip-editing')) tPart.textContent = partText;
+    if (tPart && !tPart.classList.contains('is-chip-editing')) {
+      if (window.__flipitHexArmed) tPart.innerHTML = hexDiameterChipHTML(p.x, false);
+      else tPart.textContent = partText;
+    }
     if (tPartCollapsed) tPartCollapsed.textContent = partText;
     if (tBlank && !tBlank.classList.contains('is-chip-editing')) tBlank.textContent = fmt3(b.x) + ' × ' + fmt3(b.y);
     if (tGap && !tGap.classList.contains('is-chip-editing')) tGap.textContent = fmt3(g.x) + ' × ' + fmt3(g.y);
@@ -4920,10 +4939,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
           var peer = ticker.querySelector('[data-chip-field="' + peerAxis + '"]');
           if (peer && peer !== input) { peer.value = input.value; sizeChipInput(peer); }
         } else if (key === 'part' && window.__flipitHexArmed) {
-          paramState.part.x = value; paramState.part.y = value;
-          var partPeerAxis = axis === 'x' ? 'y' : 'x';
-          var partPeer = ticker.querySelector('[data-chip-field="' + partPeerAxis + '"]');
-          if (partPeer && partPeer !== input) { partPeer.value = input.value; sizeChipInput(partPeer); }
+          paramState.part.x = value;
         } else paramState[key][axis] = value;
         refreshTickers();
       });
@@ -5019,6 +5035,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     } else if (key === 'margin') {
       var m = paramState.margin;
       ticker.innerHTML = '<span class="m-grid">' + chipField('L', 'l', m.l) + chipField('R', 'r', m.r) + chipField('B', 'b', m.b) + chipField('T', 't', m.t) + '</span>';
+    } else if (key === 'part' && window.__flipitHexArmed) {
+      ticker.innerHTML = hexDiameterChipHTML(paramState.part.x, true);
     } else {
       var bag = paramState[key];
       ticker.innerHTML = chipField('', 'x', bag.x) + '<span class="chip-editor-by">×</span>' + chipField('', 'y', bag.y);
@@ -5032,12 +5050,14 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
   window.__hudOpenChipEditor = openChipEditor;
   window.__hudSetHexArmed = function (armed) {
-    if (armed) {
-      paramState.part.linked = true;
-      paramState.part.y = paramState.part.x;
-      var x = document.querySelector('[data-part="x"]'), y = document.querySelector('[data-part="y"]');
-      if (x) x.value = fmt3(paramState.part.x);
-      if (y) y.value = fmt3(paramState.part.y);
+    var ticker = document.querySelector('[data-ticker="part"]');
+    if (chipEditor.key === 'part' && ticker) {
+      ticker.innerHTML = armed
+        ? hexDiameterChipHTML(paramState.part.x, true)
+        : chipField('', 'x', paramState.part.x) + '<span class="chip-editor-by">×</span>' + chipField('', 'y', paramState.part.y);
+      bindChipInputs(ticker, 'part');
+      var focus = ticker.querySelector('[data-chip-field="x"]');
+      if (focus) focus.focus();
     }
     refreshTickers();
   };

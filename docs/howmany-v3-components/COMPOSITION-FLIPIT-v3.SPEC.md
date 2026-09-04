@@ -1,6 +1,6 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Cut 1 red void row + pocket inset
+**Status:** Living — Cut 2 left-refill + hex diameter chip
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
@@ -234,6 +234,18 @@ One existing hole row auto-fills from blank `(0, 0)`. Red disks are voids, not p
 
 New PART SIZE circles drop into the cusps of that row. Live GAP is new-to-new and new-to-red-wall: `dist(centers) ≥ R_h + R_p + g`. A pocket center may slide off the existing-gap midpoint to stay inside L/R/T/B. Further blue rows stack with the Cut 2 squeeze from that pocket row. Row counts may differ. L/R/T/B still bound the rem outline. No extra ticker margin is added above the void AABB. No NC is emitted.
 
+## Cut 2 — left-refill after cusp row + hex diameter chip
+
+This supersedes Cut 1 rem's further-row stack and the hex PART SIZE X=Y link.
+
+Cusp row is blue row 1 only: one new disk per pocket between reds, offset into the cusp legal.
+
+Rows 2+ re-pack from the origin (`L + R_p`) in +X. They eat leftover width at typed GAP to red walls and to other blues. They do not inherit the cusp-row X origin or pitch. Row counts may differ. Leftover height still buys squeezed rows at the Cut 2 `D + g` pair; it does not freeze later rows to the pocket lattice. A left-packed center that still clears GAP occupies the previous right-side waste on a wide rem.
+
+Hex armed: PART SIZE stays the same 154 × 31.46 chip. One diameter number in the current 6ch tabular seat. Lucide `circle-off` only, `viewBox="0 0 24 24"`, paths `M2 2l20 20`, `M8.35 2.69A10 10 0 0 1 21.3 15.65`, and `M19.08 19.08A10 10 0 1 1 4.92 4.92`. Hex off restores `X × Y`. Linked X=Y while hex is on is not the hex readout — drop the second number. Y is not overwritten.
+
+`HOLE DIA = 0` still restores the Cut 2 virgin packer. No second red row. No NC.
+
 ## AutoNest Cut 1 — HUD menu + best uniform
 
 The centered HUD order is Lucide `rotate-ccw`, Lucide `rotate-cw`, blank size, Lucide `menu`, then the blue count. Every travel hit is 24px with a 16px glyph, 24px viewBox, and 2px stroke. The menu consists only of `M4 5h16`, `M4 12h16`, and `M4 19h16`.
@@ -457,3 +469,4 @@ Do not require `file://`.
 | 2026-09-01 | **R32** review remediation: selecting Part exposes its retained calculator controls; ticker placement uses the live cluster height rather than the former 34px constant. |
 | 2026-09-03 | **Cut 2** hex nest: largest N at the D+g pair. Leftover height adds a squeezed row; GAP is never undercut. |
 | 2026-09-03 | **Cut 1** hex rem inset: one red void row from `(L + R_h, B + R_h)`; PART SIZE circles drop into those pockets; rem faces sit next to the hex ticket. |
+| 2026-09-03 | **Cut 2** hex rem inset: rows after the cusp re-pack from the origin and eat leftover width; PART SIZE is one diameter + Lucide circle-off while hex is armed. |
