@@ -3,10 +3,10 @@
 Repo: NestCalc
 Owner: wReckless
 Part: FLiPIT hex rem inset
-Description: Skeleton is pockets only. SKEL L/B → jog.
+Description: Cut 6b SKEL L/B on init card.
 PR: 136
 Branch: docs/hex-rem-inset
-Head: 46d5c8c
+Head: 45d1db20ec59280a0d15403641099abad08ae864
 Session: continuous
 job_id: NGJ-20260903-hex-rem
 flow_id:
@@ -22,7 +22,8 @@ Seq  Label              Notes                                              Stamp
 5d   Cut                4b pocket lock + Codex P1/P2            83fd67c
 5e   Cut                5 freeze part lattice                   2d02875
 5f   Cut                5b phantom lattice + count winner       46d5c8c
-5g   Cut                6 pockets only + SKEL L/B jog          631521f
+5g   Cut                6 pockets only + SKEL L/B jog           45d1db2
+5h   Cut                6b SKEL L/B on init card
 4    Look               Owner. No Codex review until Send.
 7    Send for review
 8    Inspection
@@ -42,26 +43,9 @@ Worker worktree is not Owner Look. Push origin/docs/hex-rem-inset.
 
 ## Cut lock
 
-### Cut 6 — pockets only + SKEL L/B → jog
-Skull armed. HOLE DIA > 0.
-
-Skeleton paints cutouts and legal cusp pockets. That is the whole nest.
-No Lattice B. No clear-hex candidate. No phantom row. No extra blues above the cutouts. Count = pocket count only.
-Hex-on + skull-off stays virgin hex (full sheet, no reds).
-
-Nest L/R/T/B stay clearance for NEW pocket parts vs rem edges. They do not place the hole row.
-
-New rem faces next to HOLE DIA / X ROW GAP:
-- SKEL L = measured left edge → first cutout. Default 0.250.
-- SKEL B = measured bottom edge → cutout row. Default 0.500.
-
-Cutout centers: x = SKEL L + R_cut + i * (D_cut + g_skel), y = SKEL B + R_cut.
-
-Ticket, unitless 3 dp:
-- COLUMNS = pocket count, ROWS = 1
-- JOG X / JOG Y = first pocket from rem 0,0 (machine jog before the array)
-- POCKET COLS = those column indices on a would-be full row if useful; else pocket count
-Drop X ORIGIN from the skeleton ticket if it only duplicated JOG X.
-
-HOLE DIA 0 → virgin hex. Arms/chrome stay. No NC.
-Done only after origin has the implement commit.
+### Cut 6b — SKEL L / SKEL B on the init card
+Skull-arm init card already has SKELETON W×H, CUTOUT D, LATTICE GAP, NEW PART D, don't-show-again.
+Add SKEL L and SKEL B on that card, same input chrome, defaults 0.250 and 0.500, 3 dp, select-all on click.
+OK writes those two into the rem faces and places the cutout row. Live ticker SKEL L / SKEL B stay; they are not removed.
+Do not add nest L/R/T/B to the card. Do not restore Lattice B or extra hex. Pockets-only law from Cut 6 stays.
+No NC. Done only after origin has the implement commit.
