@@ -37,3 +37,13 @@ Operator: Grok Build · Grok 4.6 · high
 - Init card uses preset chrome: skeleton W × H, cutout D default `2.000`, lattice gap, new part D, don't-show-this-again. After OK, values stay live. `Hmin = B+D_cut+T`, `Wmin = L+D_cut+R`. Circle-off sits left of the hex PART SIZE diameter.
 - One hex lattice for pockets and every blue row. Pockets are a subset of the same-stagger columns as row 3. Ticket X ORIGIN is row 3 col 1, not the first pocket. Ticket adds POCKET COLS. Y GAP keeps the Cut 2 signed law. No second cutout row. No NC.
 - Implement `d16f9ec`. Pushed origin/docs/hex-rem-inset so Owner Look can ff. Unpushed GB commits are not Look.
+
+## Seq 5d Cut 4b — pocket lock + Codex P1/P2
+
+Operator: Codex App · GPT-5.6 Terra · High
+
+- Skull armed with `HOLE DIA > 0` keeps every legal cusp insert as ticket row 1. That row is fixed by the cutout cusps, so lifting the rem adds rows above without evicting pockets. Above it, parts use the fixed `D + GAP` hex lattice and clear cutouts, pockets, and rem edges.
+- Skull armed with `HOLE DIA = 0` now dispatches to the Cut 2 virgin packer with no cutouts or pockets, while retaining the armed rem faces for a later positive hole diameter.
+- Opening the hex PART SIZE diameter focuses and select-alls its inserted field in that same click. Skull glyph swap, init card, circle-off-left, and NC ban are unchanged.
+- Browser proof: positive-hole `POCKET COLS` stayed `2` after blank height grew `8.000 → 12.000`; zero-hole returned the virgin layout with `POCKET COLS 0`; one-click typing replaced `2.500` with `3.000` before cancel.
+- Implement `6ce0d55`. Pushed origin/docs/hex-rem-inset so Owner Look can ff. GitHub review threads left unresolved.

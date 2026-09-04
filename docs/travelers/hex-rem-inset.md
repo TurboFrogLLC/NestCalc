@@ -19,7 +19,7 @@ Seq  Label              Notes                                              Stamp
 5    Cut                2 left-refill + diameter chip           e964f1f
 5b   Cut                3 pocket lock + hex grid                8a7d533
 5c   Cut                4 skeleton arm + init card              d16f9ec
-5d   Cut                4b pocket lock + Codex P1/P2
+5d   Cut                4b pocket lock + Codex P1/P2           6ce0d55
 4    Look               Owner. No Codex review until Send.
 7    Send for review
 8    Inspection
