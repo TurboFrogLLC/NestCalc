@@ -2517,6 +2517,18 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
             <label class="margin-preset-card__field"><input data-skeleton-init="gap" type="text" inputmode="decimal" autocomplete="off" aria-label="Skeleton lattice gap" /></label>
           </div>
         </section>
+        <section class="margin-preset-card__section" aria-label="Skeleton left inset">
+          <div class="margin-preset-card__section-head"><span class="margin-preset-card__section-label">SKEL L</span></div>
+          <div class="margin-preset-card__pair is-single">
+            <label class="margin-preset-card__field"><input data-skeleton-init="skel-l" type="text" inputmode="decimal" autocomplete="off" aria-label="Skeleton left edge to first cutout" /></label>
+          </div>
+        </section>
+        <section class="margin-preset-card__section" aria-label="Skeleton bottom inset">
+          <div class="margin-preset-card__section-head"><span class="margin-preset-card__section-label">SKEL B</span></div>
+          <div class="margin-preset-card__pair is-single">
+            <label class="margin-preset-card__field"><input data-skeleton-init="skel-b" type="text" inputmode="decimal" autocomplete="off" aria-label="Skeleton bottom edge to cutout row" /></label>
+          </div>
+        </section>
         <section class="margin-preset-card__section" aria-label="New part diameter">
           <div class="margin-preset-card__section-head"><span class="margin-preset-card__section-label">New part D</span></div>
           <div class="margin-preset-card__pair is-single">
@@ -3855,6 +3867,26 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (hexRemFaces) {
       var holeEl = hexRemFaces.querySelector('[data-hex-rem="hole"]');
       if (holeEl) holeEl.value = (d).toFixed(3);
+    }
+    if (state.hexArmed) render();
+  };
+  window.__bedGetRemSkelL = function () { return state.remSkelL; };
+  window.__bedSetRemSkelL = function (value) {
+    if (!Number.isFinite(value)) return;
+    state.remSkelL = value;
+    if (hexRemFaces) {
+      var skelLEl = hexRemFaces.querySelector('[data-hex-rem="skel-l"]');
+      if (skelLEl) skelLEl.value = value.toFixed(3);
+    }
+    if (state.hexArmed) render();
+  };
+  window.__bedGetRemSkelB = function () { return state.remSkelB; };
+  window.__bedSetRemSkelB = function (value) {
+    if (!Number.isFinite(value)) return;
+    state.remSkelB = value;
+    if (hexRemFaces) {
+      var skelBEl = hexRemFaces.querySelector('[data-hex-rem="skel-b"]');
+      if (skelBEl) skelBEl.value = value.toFixed(3);
     }
     if (state.hexArmed) render();
   };
@@ -5206,6 +5238,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }
     if (Number.isFinite(values.part)) paramState.part.x = values.part;
     if (Number.isFinite(values.cutout) && typeof window.__bedSetRemHole === 'function') window.__bedSetRemHole(values.cutout);
+    if (Number.isFinite(values.skelL) && typeof window.__bedSetRemSkelL === 'function') window.__bedSetRemSkelL(values.skelL);
+    if (Number.isFinite(values.skelB) && typeof window.__bedSetRemSkelB === 'function') window.__bedSetRemSkelB(values.skelB);
     refreshTickers();
   }
   function openSkeletonInitCard() {
@@ -5218,12 +5252,18 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var partEl = skeletonInitField('part');
     var wEl = skeletonInitField('blank-w');
     var hEl = skeletonInitField('blank-h');
+    var skelLEl = skeletonInitField('skel-l');
+    var skelBEl = skeletonInitField('skel-b');
     if (wEl) wEl.value = fmt3(paramState.blank.x);
     if (hEl) hEl.value = fmt3(paramState.blank.y);
     if (gapEl) gapEl.value = fmt3(paramState.gap.x);
     if (partEl) partEl.value = fmt3(paramState.part.x);
     var liveCutout = typeof window.__bedGetRemHole === 'function' ? window.__bedGetRemHole() : 2;
     if (cutoutEl) cutoutEl.value = fmt3(skeletonInitCommitted && Number.isFinite(liveCutout) ? liveCutout : 2);
+    var liveSkelL = typeof window.__bedGetRemSkelL === 'function' ? window.__bedGetRemSkelL() : 0.25;
+    var liveSkelB = typeof window.__bedGetRemSkelB === 'function' ? window.__bedGetRemSkelB() : 0.5;
+    if (skelLEl) skelLEl.value = fmt3(skeletonInitCommitted && Number.isFinite(liveSkelL) ? liveSkelL : 0.25);
+    if (skelBEl) skelBEl.value = fmt3(skeletonInitCommitted && Number.isFinite(liveSkelB) ? liveSkelB : 0.5);
     var skip = skeletonInitLayer.querySelector('[data-skeleton-init-skip]');
     if (skip) skip.checked = false;
     skeletonInitLayer.classList.add('is-open');
@@ -5251,15 +5291,18 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var part = parseSkeletonInitField('part', paramState.part.x);
     var w = parseSkeletonInitField('blank-w', paramState.blank.x);
     var h = parseSkeletonInitField('blank-h', paramState.blank.y);
+    var skelL = parseSkeletonInitField('skel-l', 0.25);
+    var skelB = parseSkeletonInitField('skel-b', 0.5);
     if (cutout < 0) cutout = 0;
     if (gap < 0) gap = 0;
     if (part < 0) part = 0;
-    var m = paramState.margin;
+    if (skelL < 0) skelL = 0;
+    if (skelB < 0) skelB = 0;
     if (cutout > 0) {
-      w = Math.max(w, m.l + cutout + m.r);
-      h = Math.max(h, m.b + cutout + m.t);
+      w = Math.max(w, skelL + cutout);
+      h = Math.max(h, skelB + cutout);
     }
-    applySkeletonInitValues({ w: w, h: h, gap: gap, part: part, cutout: cutout });
+    applySkeletonInitValues({ w: w, h: h, gap: gap, part: part, cutout: cutout, skelL: skelL, skelB: skelB });
     skeletonInitCommitted = true;
     var skip = skeletonInitLayer && skeletonInitLayer.querySelector('[data-skeleton-init-skip]');
     if (skip && skip.checked) {

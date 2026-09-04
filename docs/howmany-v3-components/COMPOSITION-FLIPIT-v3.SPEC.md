@@ -16,6 +16,14 @@ Prior composition/lock archives (`COMPOSITION-HUD-DECODER-v3.*`, `DE-CODER-v3-LO
 
 ---
 
+## Seq 5h Cut 6b — SKEL L / SKEL B on the init card
+
+The skull-arm init card includes `SKEL L` and `SKEL B` with the same input chrome as its other skeleton measures. They default to `0.250` and `0.500`, render to three decimal places, and select all on click. On OK, they write to the existing live rem faces and place the cutout row from rem `0,0`; the live `SKEL L` / `SKEL B` faces remain present.
+
+Nest L/R/T/B do not appear on the card and remain pocket-to-rem clearances only. The Cut 6 pockets-only paint remains unchanged: one red cutout row and legal blue cusp pockets, with no Lattice B, clear-hex candidate, phantom row, or blue parts above the cutouts.
+
+---
+
 ## Seq 5g Cut 6 — skeleton pockets only + SKEL L/B jog
 
 With hex on, skull armed, and `HOLE DIA > 0`, the skeleton paints only one row of red cutouts and the legal blue cusp pockets between them. It paints no Lattice B, clear-hex candidate, phantom row, or blue parts above the cutouts. The displayed count is the pocket count only.
@@ -534,3 +542,4 @@ Do not require `file://`.
 | 2026-09-03 | **Cut 4** hex rem inset: hex-on skull glyph; skull click arms skeleton; init card; one lattice with pocket columns; circle-off left of diameter. |
 | 2026-09-03 | **Cut 5** hex rem inset: freeze part lattice after pockets; later blues are hex neighbors at `p = D_p + g`; no AABB+GAP restart. |
 | 2026-09-04 | **Cut 5b** hex rem inset: compare pocket extras against the independent phantom B lattice; paint the higher count, with clear-hex on a tie. |
+| 2026-09-04 | **Cut 6b** hex rem inset: SKEL L and SKEL B join the skeleton init card and write through to the retained rem faces. |
