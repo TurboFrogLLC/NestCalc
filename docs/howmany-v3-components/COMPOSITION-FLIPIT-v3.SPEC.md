@@ -1,11 +1,11 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Cut 2 max-squeezed rows, GAP held
+**Status:** Living — Cut 1 red void row + pocket inset
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
-**Branch:** `docs/hex-nest`
-**Trace:** `NGJ-20260903-hex-nest`
+**Branch:** `docs/hex-rem-inset`
+**Trace:** `NGJ-20260903-hex-rem`
 **Host tip blob:** `55a1688ec9720fdb34409435fa56b46f3a5783ec` (Seq 3 composition commit)
 **Class:** Exploratory composition host only · not product GOAL · not a shared import  
 
@@ -225,6 +225,14 @@ For `N ≥ 2`:
 The host picks the largest `N` whose `p_N` still places one even-row center and one odd-row center inside `blankW − L − R`. Copied rows (row 3 of row 1, row 4 of row 2) also stay at `≥ D + g`. Origin stays at `(L + R, B + R)`. Spread is `+X` only. Row 3 copies row 1; row 4 copies row 2; same `h` and half-stagger.
 
 Ticket faces from that lattice: `COLUMNS`, `ROWS = N`, `X GAP = p − D`, `Y GAP = h − D` signed, `X OFFSET = L + p / 2`. Three decimals, no unit suffix.
+
+## Cut 1 — red void row + pocket inset
+
+Hex arm stays the nest mode. Two rem faces sit next to the hex ticket in the left stack: **HOLE DIA** (existing rem hole diameter) and **X ROW GAP** (existing X-row edge-to-edge gap). They do not steal PART SIZE or GAP. Boot values are `2.500` and `0.125`, then independent. `HOLE DIA > 0` with a non-negative X-row gap is live rem inset. `HOLE DIA = 0` restores the Cut 2 virgin packer.
+
+One existing hole row auto-fills from blank `(0, 0)`. Red disks are voids, not parts, and are not in the blue count. First void center is `(L + R_h, B + R_h)` with equal `g_exist` across that row and as many red holes as fit `blankW − L − R`. There is no second red row.
+
+New PART SIZE circles drop into the cusps of that row. Live GAP is new-to-new and new-to-red-wall: `dist(centers) ≥ R_h + R_p + g`. A pocket center may slide off the existing-gap midpoint to stay inside L/R/T/B. Further blue rows stack with the Cut 2 squeeze from that pocket row. Row counts may differ. L/R/T/B still bound the rem outline. No extra ticker margin is added above the void AABB. No NC is emitted.
 
 ## AutoNest Cut 1 — HUD menu + best uniform
 
@@ -448,3 +456,4 @@ Do not require `file://`.
 | 2026-09-01 | **R31** ticker-door chrome port: retained the 127 blank-in-space stage and moved only the ticker-door menu bar onto it. The picker opens above the −90/+90, blank-size, calculator, chevron travel row; no bed, grid, ruler, nest box, or Numeric HUD card is restored. |
 | 2026-09-01 | **R32** review remediation: selecting Part exposes its retained calculator controls; ticker placement uses the live cluster height rather than the former 34px constant. |
 | 2026-09-03 | **Cut 2** hex nest: largest N at the D+g pair. Leftover height adds a squeezed row; GAP is never undercut. |
+| 2026-09-03 | **Cut 1** hex rem inset: one red void row from `(L + R_h, B + R_h)`; PART SIZE circles drop into those pockets; rem faces sit next to the hex ticket. |
