@@ -3,10 +3,10 @@
 Repo: NestCalc
 Owner: wReckless
 Part: FLiPIT hex rem inset
-Description: Red void row + pocket inset + left refill + hex diameter chip.
+Description: Red void row + pocket lock + hex grid above void AABB.
 PR: 136
 Branch: docs/hex-rem-inset
-Head: 43f2b6fced1e16189a12a612efe2c416d2e94642
+Head: c7bd067744158226b1283dea8462d098518c18f4
 Session: fresh
 job_id: NGJ-20260903-hex-rem
 flow_id:
@@ -14,10 +14,11 @@ goal_sha256:
 
 Seq  Label              Notes                                              Stamp
 1    Plan               Rem-pocket spitball
-2    Start-branch       Owner local / Grok Build
+2    Start-branch       Owner local / Codex App
 3    Cut                1 red void row + pocket inset           2bb43c4
-5    Cut                2 left-refill after cusp row + hex diameter chip  e964f1f
-4    Look               Owner. No Codex.
+5    Cut                2 left-refill + hex diameter chip       e964f1f
+5b   Cut                3 pocket lock + hex grid above void AABB
+4    Look               Owner. No Codex review until Send.
 7    Send for review
 8    Inspection
 9    Merge
@@ -31,26 +32,24 @@ When the host → docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html
 When the living contract → docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.SPEC.md
 When PR → https://github.com/TurboFrogLLC/NestCalc/pull/136
 
-Shop: Grok Build, Grok 4.6, high
-Grok Build worktree is not Owner Look.
+Shop: Codex App, GPT-5.6 Terra, High
+Worker worktree is not Owner Look.
 Owner Look clone: /Users/computer/wrecklesstoddler/vibe/projects/nestcalc
-Worker must push origin/docs/hex-rem-inset after the Cut. Unpushed GB commits are not Look. Do not edit the nestcalc clone.
+Worker must push origin/docs/hex-rem-inset after the Cut. Unpushed commits are not Look. Do not edit the nestcalc clone.
 
 ## Cut lock
 
-### Cut 1 — red void row + pocket inset
-Landed 2bb43c4 / origin 43f2b6f. One red row from 0,0. Rem faces stay. Do not steal PART SIZE or GAP.
+### Cut 1 / Cut 2
+Landed. Diameter chip and rem faces stay. HOLE DIA 0 restores virgin hex.
 
-### Cut 2 — left-refill + hex diameter chip
-Cusp row is blue row 1 only: one new disk per pocket between reds, offset into the cusp legal.
-Rows 2+ re-pack from the origin (+X). Eat leftover width. Keep typed GAP to red walls and to other blues. Row counts may differ. Do not freeze the stack to the cusp-row pitch.
+### Cut 3 — pocket lock + hex grid above void AABB
+Red voids stay inside the rem. If B + D_h + T > blankH, do not paint a void row through the blank stroke.
 
-Hex armed: PART SIZE chip stays the same box. One diameter number. Lucide circle-off only, viewBox 24:
-M2 2l20 20
-M8.35 2.69A10 10 0 0 1 21.3 15.65
-M19.08 19.08A10 10 0 1 1 4.92 4.92
-Same digit seats as the current size field. Hex off restores X × Y. Linked X=Y only while hex is on is not enough — drop the second number.
+Pocket inserts sit in the cusps and lock. Ticket row 1 = those locked inserts.
+Ticket row 2 is not another cusp copy. It starts above the red AABB: Y = redAABB.top + g + R_p. Runs from origin X across the rem.
+That row and every row above sit on one hex grid (p,h from D_p + typed GAP). Occupied if the cell clears red walls, locked pockets, rem L/R/T/B, and typed GAP. Empty cells stay empty only when a neighbor would collide. Do not greedy-scatter. Do not leave walkable hex holes.
+Dodge the locked pocket parts. Then stack the same grid.
 
-Do not add a second red row. Do not emit NC. HOLE DIA 0 still restores virgin hex.
-Done when the right-side waste on a wide rem is filled when a left-packed center still clears GAP, and PART SIZE shows one diameter + circle-off while hex is armed.
+Do not add a second red row. Do not emit NC. Do not steal PART SIZE or GAP.
+Done when shot-style rem shows locked cusp inserts plus a regular hex field above the void box, no right-side swiss cheese.
 Done only after origin/docs/hex-rem-inset has the implement commit.
