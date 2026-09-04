@@ -3447,12 +3447,49 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       for (var vi = 0; vi < voids.length; vi++) if (dist2(pt, voids[vi]) + FIT_EPSILON < dWall * dWall) return false;
       return true;
     }
+    /* Keep a cusp when its midpoint misses a nest edge but a legal offset remains. */
+    function offsetCuspPocket(leftVoid, rightVoid) {
+      var lo = Math.max(minX, Math.min(leftVoid.x, rightVoid.x));
+      var hi = Math.min(maxX, Math.max(leftVoid.x, rightVoid.x));
+      if (lo > hi + FIT_EPSILON) return null;
+
+      /* At maxY, each red cutout forbids the X interval that still needs a higher Y. */
+      var blocked = [];
+      for (var vi = 0; vi < voids.length; vi++) {
+        var vertical = maxY - voids[vi].y;
+        if (vertical >= dWall - FIT_EPSILON) continue;
+        var reach = vertical <= 0 ? dWall : Math.sqrt(Math.max(0, dWall * dWall - vertical * vertical));
+        var start = Math.max(lo, voids[vi].x - reach);
+        var end = Math.min(hi, voids[vi].x + reach);
+        if (start < end - FIT_EPSILON) blocked.push({ start: start, end: end });
+      }
+      blocked.sort(function(a, b) { return a.start - b.start; });
+
+      var mid = (leftVoid.x + rightVoid.x) / 2;
+      var cursor = lo;
+      var candidate = null;
+      function consider(start, end) {
+        if (start > end + FIT_EPSILON) return;
+        var x = Math.max(start, Math.min(end, mid));
+        if (candidate === null || Math.abs(x - mid) < Math.abs(candidate - mid) - FIT_EPSILON || (Math.abs(x - mid) <= Math.abs(candidate - mid) + FIT_EPSILON && x < candidate)) candidate = x;
+      }
+      for (var bi = 0; bi < blocked.length; bi++) {
+        if (blocked[bi].start > cursor + FIT_EPSILON) consider(cursor, blocked[bi].start);
+        cursor = Math.max(cursor, blocked[bi].end);
+        if (cursor > hi + FIT_EPSILON) break;
+      }
+      if (cursor < hi - FIT_EPSILON) consider(cursor, hi);
+      if (candidate === null) return null;
+
+      var pocket = { x: candidate, y: yClearOfReds(candidate) };
+      if (pocket.y < minY - FIT_EPSILON || pocket.y > maxY + FIT_EPSILON || !clearsReds(pocket)) return null;
+      return pocket;
+    }
     /* A legal cusp is the lowest pocket center that clears every cutout and rem edge. */
     var pocketCenters = [];
     for (var ci = 0; ci + 1 < voids.length; ci++) {
-      var pocket = { x: (voids[ci].x + voids[ci + 1].x) / 2, y: 0 };
-      pocket.y = yClearOfReds(pocket.x);
-      if (pocket.x < minX - FIT_EPSILON || pocket.x > maxX + FIT_EPSILON || pocket.y < minY - FIT_EPSILON || pocket.y > maxY + FIT_EPSILON || !clearsReds(pocket)) continue;
+      var pocket = offsetCuspPocket(voids[ci], voids[ci + 1]);
+      if (!pocket) continue;
       var clearsPocketRow = true;
       for (var pi = 0; pi < pocketCenters.length; pi++) {
         if (dist2(pocket, pocketCenters[pi]) + FIT_EPSILON < pair * pair) { clearsPocketRow = false; break; }

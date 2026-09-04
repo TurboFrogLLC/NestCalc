@@ -1,6 +1,6 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Cut 6c2 skeleton X OFFSET face removal
+**Status:** Living — Cut 7 skeleton cusp-offset pocket retention
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
@@ -13,6 +13,14 @@
 This file is the **host only**. The four individual HTML tips stay standalone lock files. Do not overwrite them from this assembly. Do not add `flipit-v3-align.js` or `@import` into the tips.
 
 Prior composition/lock archives (`COMPOSITION-HUD-DECODER-v3.*`, `DE-CODER-v3-LOCKED.*`) stay on disk. They are not this host.
+
+---
+
+## Seq 8 Cut 7 — retain a feasible offset cusp pocket
+
+With skull armed, each adjacent cutout pair first proposes its midpoint, but a midpoint outside a nest L/R margin is not an automatic reject. The skeleton searches the feasible X span within that cutout pair and the nest L/R bounds, then uses the lowest Y that clears every cutout and the nest B/T bounds. It keeps the closest legal center when one exists; it still drops the pocket when no center clears the red cutouts, rem edges, and earlier pocket centers.
+
+This remains the pockets-only skeleton: no Lattice B, phantom cells, clear-hex candidate, or blue row above the cutouts returns. Part-to-part separation remains `pair = D_p + GAP`; `X GAP` remains the minimum consecutive painted-pocket edge clearance; and `JOG X` / `JOG Y` remain the first painted pocket from rem `0,0`.
 
 ---
 
