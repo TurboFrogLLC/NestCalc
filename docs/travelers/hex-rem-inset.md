@@ -3,10 +3,10 @@
 Repo: NestCalc
 Owner: wReckless
 Part: FLiPIT hex rem inset
-Description: Cut 6b SKEL L/B on init card.
+Description: Cut 6c skeleton ticket faces for the array.
 PR: 136
 Branch: docs/hex-rem-inset
-Head: 45d1db20ec59280a0d15403641099abad08ae864
+Head: 11d68184321e6ba12e6bf60abe267254cf488f7d
 Session: continuous
 job_id: NGJ-20260903-hex-rem
 flow_id:
@@ -23,7 +23,8 @@ Seq  Label              Notes                                              Stamp
 5e   Cut                5 freeze part lattice                   2d02875
 5f   Cut                5b phantom lattice + count winner       46d5c8c
 5g   Cut                6 pockets only + SKEL L/B jog           45d1db2
-5h   Cut                6b SKEL L/B on init card                 3cf0f62
+5h   Cut                6b SKEL L/B on init card                11d6818
+5i   Cut                6c ticket X GAP min-X + drop X OFFSET
 4    Look               Owner. No Codex review until Send.
 7    Send for review
 8    Inspection
@@ -43,9 +44,17 @@ Worker worktree is not Owner Look. Push origin/docs/hex-rem-inset.
 
 ## Cut lock
 
-### Cut 6b — SKEL L / SKEL B on the init card
-Skull-arm init card already has SKELETON W×H, CUTOUT D, LATTICE GAP, NEW PART D, don't-show-again.
-Add SKEL L and SKEL B on that card, same input chrome, defaults 0.250 and 0.500, 3 dp, select-all on click.
-OK writes those two into the rem faces and places the cutout row. Live ticker SKEL L / SKEL B stay; they are not removed.
-Do not add nest L/R/T/B to the card. Do not restore Lattice B or extra hex. Pockets-only law from Cut 6 stays.
+### Cut 6c — skeleton ticket X GAP is min X, drop X OFFSET
+Skull armed. Pockets-only from Cut 6 stays.
+
+Ticket X GAP is the HMI array X gap. It is the minimum edge-to-edge distance on the X axis between consecutive painted pockets:
+  X GAP = (center_x[i+1] - center_x[i]) - D_p
+It is not the FLiPIT global GAP field. It is not X ROW GAP.
+On this Look that is (D_cut + g_skel) - D_p.
+If only one pocket, X GAP = 0.
+Y GAP stays 0 on one row.
+
+Drop X OFFSET from the skeleton ticket. JOG X / JOG Y stay first-pocket from rem 0,0.
+COLUMNS = pocket count. ROWS = 1.
+Virgin hex ticket is unchanged when skull is off.
 No NC. Done only after origin has the implement commit.
