@@ -1,11 +1,11 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Cut 29 pencil hydrate and blank grow
+**Status:** Living — Cut 7 skeleton cusp-offset pocket retention
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
-**Branch:** `docs/side-stack-sheet`
-**Trace:** `NGJ-20260901-blankspace`
+**Branch:** `docs/hex-rem-inset`
+**Trace:** `NGJ-20260903-hex-rem`
 **Host tip blob:** `55a1688ec9720fdb34409435fa56b46f3a5783ec` (Seq 3 composition commit)
 **Class:** Exploratory composition host only · not product GOAL · not a shared import  
 
@@ -13,6 +13,48 @@
 This file is the **host only**. The four individual HTML tips stay standalone lock files. Do not overwrite them from this assembly. Do not add `flipit-v3-align.js` or `@import` into the tips.
 
 Prior composition/lock archives (`COMPOSITION-HUD-DECODER-v3.*`, `DE-CODER-v3-LOCKED.*`) stay on disk. They are not this host.
+
+---
+
+## Seq 8 Cut 7 — retain a feasible offset cusp pocket
+
+With skull armed, each adjacent cutout pair first proposes its midpoint, but a midpoint outside a nest L/R margin is not an automatic reject. The skeleton searches the feasible X span within that cutout pair and the nest L/R bounds, then uses the lowest Y that clears every cutout and the nest B/T bounds. It keeps the closest legal center when one exists; it still drops the pocket when no center clears the red cutouts, rem edges, and earlier pocket centers.
+
+This remains the pockets-only skeleton: no Lattice B, phantom cells, clear-hex candidate, or blue row above the cutouts returns. Part-to-part separation remains `pair = D_p + GAP`; `X GAP` remains the minimum consecutive painted-pocket edge clearance; and `JOG X` / `JOG Y` remain the first painted pocket from rem `0,0`.
+
+---
+
+## Seq 5i2 Cut 6c2 — hide the skeleton X OFFSET face
+
+`X OFFSET` is hidden by default in the ticket markup and is revealed only for the unchanged virgin-hex ticket. The face-level `hidden` contract resolves to `display: none`, so with skull armed the skeleton ticket has no `X OFFSET` face at any render point; it retains `COLUMNS`, `ROWS`, `X GAP`, `Y GAP`, `JOG X`, `JOG Y`, and `POCKET COLS`.
+
+This is display-only: skeleton `X GAP` remains the minimum consecutive-pocket edge clearance, and `JOG X` / `JOG Y` remain the first painted pocket measured from rem `0,0`.
+
+---
+
+## Seq 5i Cut 6c — array X GAP and machine jog are different inputs
+
+With skull armed, the pockets-only skeleton ticket treats the one-row array and the machine work offset as separate inputs. `COLUMNS` and `POCKET COLS` are the painted pocket count; `ROWS` is `1`; `X GAP` is the minimum consecutive-pocket edge clearance on X, `center_x[i+1] − center_x[i] − D_p`; and `Y GAP` is `0`. It is neither the FLiPIT global GAP chip nor `X ROW GAP`.
+
+`JOG X` and `JOG Y` are the first painted pocket center measured from rem `0,0`, for the machine work offset before running that one-row array. `X OFFSET` is absent from the skeleton ticket and remains on the unchanged virgin-hex ticket.
+
+---
+
+## Seq 5h Cut 6b — SKEL L / SKEL B on the init card
+
+The skull-arm init card includes `SKEL L` and `SKEL B` with the same input chrome as its other skeleton measures. They default to `0.250` and `0.500`, render to three decimal places, and select all on click. On OK, they write to the existing live rem faces and place the cutout row from rem `0,0`; the live `SKEL L` / `SKEL B` faces remain present.
+
+Nest L/R/T/B do not appear on the card and remain pocket-to-rem clearances only. The Cut 6 pockets-only paint remains unchanged: one red cutout row and legal blue cusp pockets, with no Lattice B, clear-hex candidate, phantom row, or blue parts above the cutouts.
+
+---
+
+## Seq 5g Cut 6 — skeleton pockets only + SKEL L/B jog
+
+With hex on, skull armed, and `HOLE DIA > 0`, the skeleton paints only one row of red cutouts and the legal blue cusp pockets between them. It paints no Lattice B, clear-hex candidate, phantom row, or blue parts above the cutouts. The displayed count is the pocket count only.
+
+The rem faces add `SKEL L` and `SKEL B`, defaulting to `0.250` and `0.500`. They measure rem edge to the first cutout and rem bottom to the cutout row: `x = SKEL L + R_cut + i × (D_cut + g_skel)` and `y = SKEL B + R_cut`. Nest L/R/T/B remain clearance for new pocket parts against the rem edges; they do not position the cutouts.
+
+The skeleton ticket reports `COLUMNS` as the pocket count, `ROWS` as `1`, and unitless three-decimal `JOG X` / `JOG Y` from rem `0,0` to the first pocket. `POCKET COLS` reports the pocket count. `X ORIGIN` is absent for the skeleton ticket. With skull off, hex remains the virgin full-sheet packer with no red cutouts; `HOLE DIA 0` also returns that virgin layout while retaining the armed rem faces.
 
 ---
 
@@ -164,6 +206,195 @@ Pencil with an armed slot still opens that slot's card. With no armed slot, penc
 ## Cut 30 — HUD count three-digit slot
 
 The centered HUD count is a fixed-width slot: three tabular `ch` faces at 14.64px / 650 / mono plus the same 5px inset on each side that inset vertical rules use. It centers `1`, `14`, and `144` between the size|count separator and the bar’s inner right stroke, retains `#538BEC`, and does not alter the closed ticker width or its fixed-left pin.
+
+## Cut 2b — preset card chrome restoration
+
+The 154px sheet keeps its PRESETS row as label, stock Lucide pencil, plus, and minus only; it contains no name input, Check, X, or paint-bucket, and its slot buttons retain their existing side-chip tokens. The pencil is momentary: it opens the independent non-modal editor from the armed slot or, with no arm, from live Part, Blank, Gap, and Margin values; closing leaves its idle stroke `#111111`. The `252.4px` `#E8E8E8`, 7.26px-radius `.margin-preset-card` does not consume the PRESETS row or block sheet interaction. Its only header row is Presets, the locked 22 / 14 / 2 paint-bucket with title `Load canvas`, the shorter `Name this preset` field, and 22 / 14 / 2 Check/X, followed by exactly one rule. The bucket refreshes enabled sections from live canvas values and does not rename a sheet slot. Part, Blank, Gap, and Margin remain in that order; their accessibility hits retain the locked paths and off color `#538BEC`, while enabled hits use `#111111`. Axis fields stay 106.8 × 31.46 with 8.8px gaps and the 13.31px / 650 / mono token. There is no footer rule or Copy live control; slots remain clickable while the card is open, and Fit parking, count well, and AutoNest math remain unchanged.
+
+## Cut 2d — preset-card modal pair
+
+The pencil opens a blocking modal layer above the header, HUD, blank, and all sheet chips. Its backdrop is `backdrop-filter: blur(8px)` over `rgba(17,17,17,0.28)`, and consumes background pointer input. The focused, vertically centered row is exactly the live 154px `.margin-presets`, a 15px gap, and the unchanged 252.4px `.margin-preset-card`: its 421.4px group is viewport-centered, placing the card center 84.5px to the viewport’s right of center. Opening moves the existing `.margin-presets` node into this row—slots and pencil/plus/minus are never cloned—and leaves a visibility-hidden sheet hole with its measured dimensions, so PART SIZE, GAP, and MARGIN do not move. Closing returns that same node to its sheet location and restores the pencil’s idle state. Card geometry and its Blank, Gap, and Margin-only contract remain Cut 2c; no Part, paint-bucket, accessibility control, header rewrite, Fit-park change, count-well change, or AutoNest math change is introduced.
+
+## Cut 2e — preset-card header, blur, selected minus
+
+The modal backdrop is `blur(4px)` over unchanged `rgba(17,17,17,0.28)`. The Cut 2d centered 154px presets + 15px gap + 252.4px editor pair stays fixed. The editor shell remains `#E8E8E8` with a 7.26px radius. Its 31.46px header is `Presets` at left and unboxed 22px-hit, 14px Lucide Check/X controls at right with 2px strokes. There is one rule under that header; the 222.4 × 31.46 name field and all card number inputs have 6px radii. Footer Check/X and its rule are removed. No paint-bucket, Part, accessibility, Fit-park, count-well, or AutoNest changes are introduced.
+
+Minus only acts on the armed gold slot; without an arm it does nothing. On the first armed deletion it opens a second `#E8E8E8`, 7.26px-radius confirmation card 8.8px from the editor: `Are you sure you want to delete this?`, unboxed Check/X, and `Don't show this again`. Check deletes the armed slot; if checked, it writes `howmany.flipit.v3.presetDeleteSkip` to local storage. Later armed minus deletes immediately when that key is set. X leaves the armed slot unchanged.
+
+## Cut 2f — preset-card header type, placeholder, alert-dialog
+
+The editor header label uses the sheet PRESETS token: `11px / 650 / 0.04em / uppercase / #111111`. An empty name field shows `Name this preset`; `Preset` remains only the stored fallback name. The delete confirmation is a centered viewport alert-dialog at z-index 220 in front of the unchanged Cut 2d modal pair, with an overlay, content, header, title, description, checkbox, and Cancel/Delete footer. It reads `Are you sure you want to delete this?` and `This cannot be undone.`; Cancel closes it and destructive Delete removes the armed slot. Checked Delete stores `howmany.flipit.v3.presetDeleteSkip`. No Part, accessibility, paint-bucket, Fit-park, count-well, or AutoNest changes are introduced.
+
+## Cut 2g — card hits, dirty alert, arc clear
+
+Every card name and number field selects all on click. Blank, Gap, and Margin labels use the sheet label token (`11px / 650 / 0.04em / uppercase / #111111`) and carry the locked 28px Lucide accessibility hit with its 18px, 2px-stroke glyph. Each hit is black while included and `#538BEC` while off; an off section neither hydrates nor writes. Header Check/X use the same 28 / 18 / 2 token, and the open-modal pencil remains `#111111`. The shared z-index-220 alert shell caps content at 280px with a 12px radius and a black checkbox accent. It also confirms a dirty armed-slot edit: Cancel restores its field; Change writes the card values to that selected slot. The blank top stop gains 8px of arc clearance below the fixed HUD; count-well and AutoNest behavior stay unchanged. No Part row or paint-bucket is present.
+
+## Cut 2h — HUD seats, Part row, disable, gaps
+
+At boot, the host measures the fixed `00.000 × 00.000` blank-size pair in `13.31px / 650 / mono` and uses those two tabular 6ch seats in the centered HUD’s one immutable grid. The measured tabular-`999` count well plus 5px side insets remains part of that same grid. Only after both measures does `#blank-ticker-pin` take its width once; count digit changes, opening, Check, and X cannot change its width or left pin. Pointerdown on either closed size number opens the same editor and select-alls that field in that click.
+
+The modal card is ordered **PART SIZE**, **BLANK**, **GAP**, **MARGIN**. PART SIZE uses two `106.8 × 31.46` fields with 6px radii and an 8.8px pair gap, the same `11px / 650 / 0.04em / uppercase` label token, and boot default `2.500 × 3.500`. Label-to-fields gap is 4px and section-to-section gap is 6px. Every card section has the locked accessibility hit: on is `#111111`; off is `#538BEC`, dims that row to 0.45, disables its inputs, and neither hydrates nor writes it, preserving live canvas values. The empty card name uses placeholder `Name preset` and saves as empty rather than writing `Preset`. No paint-bucket is added and AutoNest math remains unchanged.
+
+## Cut 2i — tighten card, label-row actions, sheet delete
+
+The `.margin-preset-card` remains `252.4px` wide and now has `12px` padding. Label-to-fields gap is `2px`, section-to-section gap is `4px`, and paired `106.8 × 31.46` fields retain their `8.8px` gap. PART SIZE, BLANK, and GAP label rows read label, 22px-hit / 14px-glyph / 2px-stroke Lucide Link, then 22 / 14 / 2 Check and X only while that section is focused or dirty; their accessibility hit stays at the far right. MARGIN retains no Link. A section Check commits only that section and its X restores only that section, while the header Check/X remains the whole-card commit/cancel pair. With the modal closed, sheet minus ignores an unarmed state and otherwise opens the same `z-index: 220` delete alert directly; it does not reopen the preset card. No paint-bucket, HUD pin-lock, Fit-park, or AutoNest-math change is introduced.
+
+## Cut 2j — keep disable across slot; close card on delete
+
+While the preset card remains open, selecting another slot preserves every current accessibility inclusion state: disabled PART SIZE, BLANK, GAP, or MARGIN rows remain disabled and neither hydrate from nor write to the newly selected slot. Opening the card from its closed state restores the normal fully included state. Deleting an armed slot while the card is open closes the card and clears `marginPresetCardSlot`, so the header Check cannot write into the successor that shifts into the deleted index. No paint-bucket, green target, Fit-park, HUD pin-lock, or AutoNest-math change is introduced.
+
+## Cut 1 — hex arm, circles, packer, array faces
+
+The centered HUD adds the canonical Lucide hexagon immediately left of the AutoNest hamburger: 24px hit, 16px glyph, 2px stroke, 24px viewBox, and only `M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z`. It is `#111111` off and `#16A34A` while `aria-pressed="true"`, independently of the hamburger. The HUD remeasures and locks `#blank-ticker-pin` after adding this seat; count digits and blank-editor open, Check, and X do not resize or move its pin.
+
+With the hex arm on, the part is a circle whose diameter is PART SIZE X; PART SIZE is linked and X drives Y. The blank remains rectangular. Every live tile is a circle with a dotted, unfilled diameter AABB; there is no per-tile drag or row-handle control. The hamburger remains rectangle-only and AutoNest math is unchanged.
+
+For diameter `D`, typed GAP clearance `g`, and radius `R = D / 2`, the inset packer uses `h = min((D + g) * sqrt(3) / 2, blankH - T - B - D)` and `p = 2 * sqrt((D + g)^2 - h^2)`. The first center is `(L + R, B + R)` in blank space, not a handle. Odd rows offset by `p / 2`; row 3 repeats row 1 and row 4 repeats row 2. Only legal centers contribute to the count. A red wash appears only for a row that still has no legal center after its rise has squeezed to `h`.
+
+The viewport-positioned array ticket is not pinned to the machine origin. It shows columns, rows, X gap `p - D`, and signed Y gap `h - D` (the top of row 1's box is zero; row 2's box bottom is measured against it). Gap faces show three-decimal inches.
+
+## Cut 2 — max-squeezed rows, GAP held
+
+This supersedes Cut 1's packer rise only. Hex arm, exclusive hamburger, ticket stack seat, dotted AABB, and HUD pin stay as landed.
+
+Typed GAP is the inset circle clearance. The live pair always equals `D + g`; it is never undercut. Leftover blank height buys another squeezed row. It does not open the nest.
+
+For `N ≥ 2`:
+
+- `h_N = min((D + g) · √3 / 2, (blankH − T − B − D) / (N − 1))`
+- `p_N = 2 · sqrt((D + g)² − h_N²)`
+
+The host picks the largest `N` whose `p_N` still places one even-row center and one odd-row center inside `blankW − L − R`. Copied rows (row 3 of row 1, row 4 of row 2) also stay at `≥ D + g`. Origin stays at `(L + R, B + R)`. Spread is `+X` only. Row 3 copies row 1; row 4 copies row 2; same `h` and half-stagger.
+
+Ticket faces from that lattice: `COLUMNS`, `ROWS = N`, `X GAP = p − D`, `Y GAP = h − D` signed, `X OFFSET = L + p / 2`. Three decimals, no unit suffix.
+
+## Cut 1 — red void row + pocket inset
+
+Hex arm stays the nest mode. Two rem faces sit next to the hex ticket in the left stack: **HOLE DIA** (existing rem hole diameter) and **X ROW GAP** (existing X-row edge-to-edge gap). They do not steal PART SIZE or GAP. Boot values are `2.500` and `0.125`, then independent. `HOLE DIA > 0` with a non-negative X-row gap is live rem inset. `HOLE DIA = 0` restores the Cut 2 virgin packer.
+
+One existing hole row auto-fills from blank `(0, 0)`. Red disks are voids, not parts, and are not in the blue count. First void center is `(L + R_h, B + R_h)` with equal `g_exist` across that row and as many red holes as fit `blankW − L − R`. There is no second red row.
+
+New PART SIZE circles drop into the cusps of that row. Live GAP is new-to-new and new-to-red-wall: `dist(centers) ≥ R_h + R_p + g`. A pocket center may slide off the existing-gap midpoint to stay inside L/R/T/B. Further blue rows stack with the Cut 2 squeeze from that pocket row. Row counts may differ. L/R/T/B still bound the rem outline. No extra ticker margin is added above the void AABB. No NC is emitted.
+
+## Cut 2 — left-refill after cusp row + hex diameter chip
+
+This supersedes Cut 1 rem's further-row stack and the hex PART SIZE X=Y link.
+
+Cusp row is blue row 1 only: one new disk per pocket between reds, offset into the cusp legal.
+
+Rows 2+ re-pack from the origin (`L + R_p`) in +X. They eat leftover width at typed GAP to red walls and to other blues. They do not inherit the cusp-row X origin or pitch. Row counts may differ. Leftover height still buys squeezed rows at the Cut 2 `D + g` pair; it does not freeze later rows to the pocket lattice. A left-packed center that still clears GAP occupies the previous right-side waste on a wide rem.
+
+Hex armed: PART SIZE stays the same 154 × 31.46 chip. One diameter number in the current 6ch tabular seat. Lucide `circle-off` only, `viewBox="0 0 24 24"`, paths `M2 2l20 20`, `M8.35 2.69A10 10 0 0 1 21.3 15.65`, and `M19.08 19.08A10 10 0 1 1 4.92 4.92`. Hex off restores `X × Y`. Linked X=Y while hex is on is not the hex readout — drop the second number. Y is not overwritten.
+
+`HOLE DIA = 0` still restores the Cut 2 virgin packer. No second red row. No NC.
+
+## Cut 3 — pocket lock + hex grid above void AABB
+
+This supersedes Cut 2 rem's further-row left-refill only. Hex diameter chip, rem faces, and `HOLE DIA = 0` stay as landed.
+
+Red voids stay inside the rem. If `B + D_h + T > blankH`, do not paint a void row through the blank stroke.
+
+Pocket inserts sit in the cusps and lock. Ticket row 1 is those locked inserts.
+
+Ticket row 2 is not another cusp copy. It starts above the red AABB: `Y = redAABB.top + g + R_p`, and runs from origin X across the rem. That row and every row above sit on one hex grid (`p`, `h` from `D_p` + typed GAP). A cell is occupied if it clears red walls, locked pockets, rem L/R/T/B, and typed GAP. Empty cells stay empty only when a neighbor would collide. Do not greedy-scatter leftover width. Do not leave walkable hex holes. Dodge the locked pocket parts, then stack the same grid.
+
+Do not add a second red row. Do not emit NC. Do not steal PART SIZE or GAP.
+
+## Cut 4 — skeleton arm + one hex grid + init card
+
+This supersedes Cut 3 rem occupancy and hex-on rem-face visibility. The hex diameter chip stays; Lucide circle-off moves to the LEFT of the number. Glyph swap is not an arm.
+
+Hex off + hamburger on is rectangle AutoNest. The hamburger glyph stays the Lucide hamburger.
+
+Hex on replaces the hamburger glyph with the Lucide skull: `viewBox="0 0 24 24"`, paths `m12.5 17-.5-1-.5 1h1z` and `M15 22a1 1 0 0 0 1-1v-1a2 2 0 0 0 1.56-3.25 8 8 0 1 0-11.12 0A2 2 0 0 0 8 20v1a1 1 0 0 0 1 1z`, circles `15,12 r1` and `9,12 r1`. Tooltip `skeleton cut`. The skull starts off (`#111111`). Rem is empty stock. The live packer is the Cut 2 virgin hex. No cutouts. No init card. Hole D is ignored.
+
+Skull click while hex is on arms skeleton (`#16A34A`). Only then: the init card, red cutouts, pockets, skeleton ticket faces, and min-rem clamp. Skull off while hex is on returns to virgin hex; rem is empty again.
+
+Init card uses the preset card chrome. Fields: skeleton W × H, cutout D default `2.000`, skeleton lattice gap, new part D. Don't-show-this-again checkbox. After OK, values stay live and clamp. `Hmin = B + D_cut + T`. `Wmin = L + D_cut + R`. Do not paint a cutout through the blank stroke.
+
+Hex PART SIZE (virgin or skeleton): one diameter, Lucide circle-off to the LEFT of the number. One click on any dimension opens + select-all.
+
+Grid, skull armed only: one hex lattice for pockets and every blue row. Pockets occupy a subset of columns on the same-stagger line as row 3. Array X origin is the leftmost part of a FULL same-stagger row (row 3 col 1), not the first pocket. Ticket: COLUMNS, ROWS, X GAP, Y GAP, X ORIGIN (that leftmost full-row X from rem 0,0), POCKET COLS. Y jog is pocket center Y from rem 0,0. Array negative Y GAP uses the Cut 2 virgin law. Row 2+ fill legal hex cells. No swiss cheese when a cell clears GAP, cutouts, and rem edges.
+
+Cutouts remain red and out of the blue count. No second cutout row. No NC.
+
+## Cut 4b — pocket lock + review corrections
+
+With skull armed and `HOLE DIA > 0`, every legal cusp insert remains locked as array row 1 when the rem height grows. That row is not re-derived with Cut 2's height squeeze. Rows above use the one `D + GAP` hex grid from the skeleton AABB, skipping only cells that collide with a cutout, locked pocket, or rem edge.
+
+With skull armed and `HOLE DIA = 0`, the layout is the Cut 2 virgin packer: no cutouts or pocket row are painted. The armed rem faces remain available so a positive hole diameter can restore the skeleton layout.
+
+Hex PART SIZE remains one diameter with circle-off at its left. Clicking that closed diameter opens, focuses, and select-alls the inserted input in the same click. Skull glyph swap, init card, and the NC ban remain unchanged.
+
+## Cut 5b — pocket row + phantom lattice + count winner
+
+This supersedes Cut 5's pocket-seeded later-blue layout only. Skull arm, init card, rem faces, hex diameter chip, and `HOLE DIA = 0` virgin dispatch stay as landed.
+
+Skull armed and `HOLE DIA > 0`: cutouts always paint. Lattice A is the red cutout row and is not counted. The part candidates see the same rem and reds.
+
+Candidate P paints every legal cusp pocket as array row 1. Pockets are extra parts, not Lattice B seeds. Lattice B begins at `x0 = L + R_p` and `y2 = cutout AABB top + g + R_p`, with `p = D_p + g` and `h = sqrt(3) * p / 2`. Its row 2 begins at `x0`; later rows retain that alternating hex phase. A B cell that is closer than `D_p + g` to a pocket is hidden but remains a lattice point, so rows 2–3 retain their phase despite those gaps and later rows are full B rows. `N_P` is painted pockets plus painted B cells.
+
+Candidate H paints no pockets and paints the same red-clearing Lattice B with no pocket hides. `N_H` is its painted B-cell count. The host paints the larger count; a tie selects H. Ticket faces come from the selected B lattice with `X ORIGIN = x0`; `POCKET COLS` is zero when H wins.
+
+`HOLE DIA = 0` still restores the Cut 2 virgin packer. No pocket toggle, second cutout row, or NC.
+
+## AutoNest Cut 1 — HUD menu + best uniform
+
+The centered HUD order is Lucide `rotate-ccw`, Lucide `rotate-cw`, blank size, Lucide `menu`, then the blue count. Every travel hit is 24px with a 16px glyph, 24px viewBox, and 2px stroke. The menu consists only of `M4 5h16`, `M4 12h16`, and `M4 19h16`.
+
+With the menu off, tiles and count use the current `nestLayout` rotation. With the menu on, the host evaluates the live blank, part, gap, and four margins through the best-uniform rule: compare 0° and 90°, keep 0° on a tie, and make the higher count the live tiles and blue count. A 90° win writes `partRot` before redraw. Idle blank, part, gap, margin, and rotation edits while armed re-run this rule. No picker, calculator, chevron, or bed is restored.
+
+## AutoNest Cut 1b — Lucide menu glyph
+
+The control between blank size and the blue count is the canonical Lucide `menu`: a 24px hit with a 16px glyph, 2px stroke, and `viewBox="0 0 24 24"`. Its SVG contains only `M4 5h16`, `M4 12h16`, and `M4 19h16`; it does not use equal, align-justify, grip, or panel paths.
+
+## AutoNest Cut 1c — Lucide hamburger glyph
+
+The Owner supersedes the Cut 1b menu icon with the Lucide `hamburger` glyph. The control retains its 24px hit, 16px glyph, 2px stroke, and `viewBox="0 0 24 24"`; its paths are only `M12 16H4a2 2 0 1 1 0-4h16a2 2 0 1 1 0 4h-4.25`, `M5 12a2 2 0 0 1-2-2 9 7 0 0 1 18 0 2 2 0 0 1-2 2`, `M5 16a2 2 0 0 0-2 2 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 2 2 0 0 0-2-2q0 0 0 0`, and `m6.67 12 6.13 4.6a2 2 0 0 0 2.8-.4l3.15-4.2`. The best-uniform math and every other Cut 1 behavior remain unchanged.
+
+## AutoNest Cut 1d — hamburger armed color
+
+The hamburger stroke uses the shared travel-hit off color `#111111`, matching the rotate pair. While AutoNest is armed (`aria-pressed="true"`), only the hamburger’s `currentColor` stroke changes to green `#16A34A`; its SVG remains fill-none and its hit, glyph, and paths remain unchanged.
+
+## AutoNest Cut 2 — two-group plus trim
+
+While the hamburger is armed, the FLiPIT host consumes `calculateAutoNest` from `src/lib/autoNestEngine.ts` using the live blank, part, gap, and four margins. When its two-group result strictly exceeds the best-uniform total, the blue count is the two-group `totalParts`; the blank draws both returned frost-blue tile grids and exactly one `trimLine` at the engine’s vertical or horizontal split. Each group keeps its returned grid dimensions, gaps, and achieved margins. When two-group does not strictly improve the total, the existing Cut 1 best-uniform layout and rotation remain live. Disarming returns to the current `nestLayout` grid with the black hamburger. No picker, calculator, chevron, bed, React `AutoNestPreview`, or HowMany shell is introduced.
+
+## AutoNest Cut 3 — isolated blanks, full margins
+
+Armed two-group AutoNest uses `trimEdgePolicy: 'full'`. A vertical split creates independent left and right blanks; a horizontal split creates independent top and bottom blanks. Every resulting blank receives the current ticker L, R, T, and B margins in full, including its trim-facing edge. Tiles are positioned from that blank’s returned `achievedMargins`, so each group remains inset on all four of its own sides; the host still draws exactly one engine `trimLine`. The count, strict two-group improvement rule, Cut 1 best-uniform fallback, hamburger-off grid, and glyph states are unchanged.
+
+## AutoNest Cut 4 — isolated blank origin
+
+Each two-group blank packs from its own bottom-left just as the single blank does. The live ticker L and B are the local tile origin insets: left and bottom groups start at sheet L/B; right groups start at trim + L / sheet B; top groups start at sheet L / trim + B. This leaves every blank’s unused space on its right and top while the full-policy engine result guarantees L/R/T/B containment. The trim remains one engine line. A translucent red per-blank L/R/T/B margin band is deferred for a later operation only and is not drawn here.
+
+## AutoNest Cut 5 — true-inch scale
+
+The blank, uniform tiles, two-group tiles, gaps, margins, and trim all use one SVG-inch coordinate space under the existing `translate(panX, panY) scale(s, -s)` camera. The blank begins at local `(0, 0)`; every tile begins at its local L/B inch inset and advances by its part size plus the live X/Y gap, so each drawn-length-to-blank-length ratio equals the corresponding ticker-value ratio. The inherited fixed `48 × 48` bed clip no longer truncates a typed blank or its tiles. Two-group blanks retain their Cut 4 local bottom-left origins, right/top leftover, full trim-edge margins, and one trim line. No CSS padding, secondary scale, extra tile inset, or margin wash is added.
+
+## AutoNest Cut 6 — red margin band
+
+Every blank shows a quiet inside reserved-margin band in `rgba(220,48,48,0.22)`, with no added stroke. Its four fill-only sides use the live ticker dimensions exactly: L from the local left edge, R from the local right edge, B from the local bottom edge, and T from the local top edge. Uniform layout draws one four-sided band on the blank; two-group AutoNest draws a separate four-sided band inside each returned isolated blank at its Cut 4 bottom-left origin. Bands remain below the frost-blue tiles and the trim line. The Cut 5 SVG-inch camera, full trim-edge policy, and right/top leftover are otherwise unchanged.
+
+## AutoNest Cut 7 — margin-band visibility + arm state
+
+The far right of the 154px MARGIN label row carries a 22 × 22 Lucide visibility hit with a 16px glyph, 2px stroke, and `viewBox="0 0 24 24"`. Margin bands default visible and the control shows `eye-off`; hiding every Cut 6 band on every blank shows `eye`. The control does not open the MARGIN editor. The centered HUD AutoNest hamburger remains `#111111` off and is `#16A34A` while armed. Its fixed `#blank-ticker-pin` retains the closed three-digit count slot width and left pin through blank-editor Check or X, so counts such as `66` neither clip nor shift. AutoNest math, SVG-inch space, origins, full trim-edge policy, trim, and the no picker / calculator / chevron / bed boundary are unchanged.
+
+## AutoNest Cut 8 — side inset + count well
+
+Fit, pan, and zoom add a 25px viewport inset on both horizontal sides of the blank subject: the left inset is outside the reserved sheet lane and the right inset is outside the existing 15px blank stop. The resize arc therefore remains visible at either side without changing the 15px header/HUD/blank vertical stops. The centered count is a rigid clipped well sized to the 14.64px / 650 / mono tabular `999` face (three `ch`) plus its existing 5px side insets; it centers `1`, `95`, `150`, and `196` without changing the closed bar width. Blank-editor Check/X remain outside the bar. Cut 7 eye toggle, green arm, AutoNest math, SVG-inch space, margin bands, origins, full trim-edge policy, and trim remain unchanged.
+
+## AutoNest Cut 8b — measured count well + drawn arc inset
+
+At boot, the host measures the rendered tabular `999` face in the count font and fixes the blue well to that pixel width plus its existing 5px rule inset on both sides. The value is centered and clipped inside that immutable well; changing it cannot resize the closed `#blank-ticker-pin`, and Check/X remain outside. Every render reads the resize arc with `getBoundingClientRect()` after applying the camera and corrects its pan position if either arc edge would fall inside the 25px viewport inset. Fit, pan, and zoom use the matching right allowance for the arc’s 19px drawn extent. The 15px header/HUD/blank stops, sheet lane, eye toggle, green arm, AutoNest math, SVG-inch space, bands, origins, full trim-edge policy, and trim remain unchanged.
+
+## AutoNest Cut 8c — HUD inner seats
+
+`#blank-ticker-pin` is the unchanging outer 31.46px-high, 7.26px-radius `#E8E8E8` pin. While the blank editor is open, the host measures `#bt-travel-box` and records its five inner seat widths and four inter-seat gaps: rotate-ccw, rotate-cw, 13.31px / 650 / mono three-decimal size pair with `×`, 24px hamburger, and the fixed tabular-`999` count well with its 5px inset on each side. The closed row reuses that measured CSS grid exactly. Its inset rules therefore retain their open gaps, and closing with Check or X neither reflows the inner row nor changes the outer pin’s left coordinate or width. Check/X remain sibling actions outside the pin. Rotate and hamburger retain 24px hits, 16px glyphs, and 2px strokes; all Cut 8b camera, arc, eye, green arm, bands, AutoNest, SVG-inch, origin, trim-edge-policy, and no picker / calculator / chevron / bed locks remain unchanged.
+
+## AutoNest Cut 9 — clamp margin bands
+
+Each fill-only Cut 6 L/R/T/B band is clamped to the local bounds of the blank it represents. A uniform layout clamps to the sheet; a two-group layout clamps separately to each isolated blank, including its trim-facing edge. An oversized margin can therefore fill at most its own blank and cannot paint through the trim or into the neighboring blank. Tiles remain unclipped, and the eye control, armed-green hamburger, HUD seats, AutoNest math, and SVG-inch camera are unchanged.
 
 ---
 
@@ -328,3 +559,12 @@ Do not require `file://`.
 | 2026-08-17 | **R13** `NC-FLIPIT-20260817-R13`. Blank/Gap/Margin: Edit is a visible write mode; Confirm stores the armed slot from live fields; Cancel exits without writing; main OK applies live values to HUD + bed and never writes a preset (Blank 12×12 no longer reverts). Enter settles a numeric field without closing the popover. Single equal-width frost-blue rail (no outer lip). Highlighted X/Y/Z/R are black at 4 decimal places. Ticker + calc, HUD, and zoom share the front surface; `#bt-calc` hover stays visible. |
 | 2026-09-01 | **R31** ticker-door chrome port: retained the 127 blank-in-space stage and moved only the ticker-door menu bar onto it. The picker opens above the −90/+90, blank-size, calculator, chevron travel row; no bed, grid, ruler, nest box, or Numeric HUD card is restored. |
 | 2026-09-01 | **R32** review remediation: selecting Part exposes its retained calculator controls; ticker placement uses the live cluster height rather than the former 34px constant. |
+| 2026-09-03 | **Cut 2** hex nest: largest N at the D+g pair. Leftover height adds a squeezed row; GAP is never undercut. |
+| 2026-09-03 | **Cut 1** hex rem inset: one red void row from `(L + R_h, B + R_h)`; PART SIZE circles drop into those pockets; rem faces sit next to the hex ticket. |
+| 2026-09-03 | **Cut 2** hex rem inset: rows after the cusp re-pack from the origin and eat leftover width; PART SIZE is one diameter + Lucide circle-off while hex is armed. |
+| 2026-09-03 | **Cut 3** hex rem inset: lock cusp inserts; hex grid from origin X above the red AABB; no leftover greedy refill. |
+| 2026-09-03 | **Cut 4** hex rem inset: hex-on skull glyph; skull click arms skeleton; init card; one lattice with pocket columns; circle-off left of diameter. |
+| 2026-09-03 | **Cut 5** hex rem inset: freeze part lattice after pockets; later blues are hex neighbors at `p = D_p + g`; no AABB+GAP restart. |
+| 2026-09-04 | **Cut 5b** hex rem inset: compare pocket extras against the independent phantom B lattice; paint the higher count, with clear-hex on a tie. |
+| 2026-09-04 | **Cut 6b** hex rem inset: SKEL L and SKEL B join the skeleton init card and write through to the retained rem faces. |
+| 2026-09-04 | **Cut 6c** hex rem inset: skeleton array X GAP measures painted-pocket edge clearance; machine JOG stays the first-pocket rem offset. |

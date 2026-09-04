@@ -188,3 +188,10 @@ This supersedes the Cut 6 sheet side: the sheet is fixed at left 48px and top `6
 - The blue `#538BEC` count has a locked slot of three tabular `ch` faces at 14.64px / 650 / mono plus the same 5px inset on each side used by the vertical rules.
 - Center `1`, `14`, and `144` within that slot between the size|count separator and the inner right stroke. The size field does not shift or clip as the count changes.
 - The closed-width ticker pin remains locked; chips, presets, boot defaults, Fit, and stops do not change.
+
+## Cut 8c HUD inner seats
+
+- `#blank-ticker-pin` is the outer 31.46px-high, 7.26px-radius `#E8E8E8` pin. `#bt-travel-box` is its only inner row; Check/X are sibling actions outside the pin and do not participate in its width.
+- On blank-editor open, measure the row’s `getBoundingClientRect()` seat map: rotate-ccw, rotate-cw, size editor, hamburger, and count well widths; and the four exact gaps between their adjacent rectangles. Record those five widths, four gaps, and row width as CSS pixel variables on the row.
+- Reuse the recorded grid on close: 24px rotate and hamburger hits hold their 16px / 2px Lucide glyph token; the size seat remains the 13.31px / 650 / mono three-decimal `×` pair; and the count seat remains the centered, clipped tabular-`999` well plus the 5px rule inset on each side. The vertical rules remain in their measured gaps.
+- Check and X may close or commit the editor without changing `#blank-ticker-pin` left or width, expanding the size seat, or changing any inner rule gap. The closed inner row’s measured rectangles equal the open map, with only the external actions absent.

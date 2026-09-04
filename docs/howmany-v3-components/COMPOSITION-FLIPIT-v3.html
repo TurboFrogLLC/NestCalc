@@ -139,13 +139,41 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     border-radius: 7.26px; background: #E8E8E8; color: #1A1428; pointer-events: auto;
     flex-shrink: 0; height: 31.46px; min-height: 31.46px; box-shadow: 0 0.5px 1px rgba(0,0,0,.25);
   }
-  .bt-travel { display: inline-flex; align-items: center; gap: 0; }
+  #bt-travel-box {
+    --bt-seat-ccw: 24px;
+    --bt-seat-gap-ccw-cw: 0px;
+    --bt-seat-cw: 24px;
+    --bt-seat-gap-cw-size: 0px;
+    --bt-seat-size: auto;
+    --bt-seat-gap-size-hex: 0px;
+    --bt-seat-hex: 24px;
+    --bt-seat-gap-hex-menu: 0px;
+    --bt-seat-menu: 24px;
+    --bt-seat-gap-menu-count: 0px;
+    --bt-seat-count: auto;
+    display: grid;
+    grid-template-columns: var(--bt-seat-ccw) var(--bt-seat-gap-ccw-cw) var(--bt-seat-cw) var(--bt-seat-gap-cw-size) var(--bt-seat-size) var(--bt-seat-gap-size-hex) var(--bt-seat-hex) var(--bt-seat-gap-hex-menu) var(--bt-seat-menu) var(--bt-seat-gap-menu-count) minmax(var(--bt-count-min, 0px), var(--bt-seat-count));
+    align-items: center;
+    width: max-content;
+    height: 100%;
+    flex: 0 0 auto;
+  }
+  #bt-travel-box.is-seat-locked { width: var(--bt-seat-map-width); }
+  #bt-travel-box.is-seat-locked > #blank-ticker { width: 100%; }
+  #bt-travel-box > #bt-rot-ccw { grid-column: 1; }
+  #bt-travel-box > #bt-rot-cw { grid-column: 3; }
+  #bt-travel-box > #blank-ticker { grid-column: 5; min-width: 0; }
+  #bt-travel-box > #bt-hex { grid-column: 7; }
+  #bt-travel-box > #bt-menu { grid-column: 9; }
+  #bt-travel-box > #bt-parts { grid-column: 11; }
   .bt-hit {
     width: 24px; height: 24px; min-width: 24px; min-height: 24px; margin: 0; padding: 0;
-    border: 0; border-radius: 0; background: transparent; color: #1A1428;
+    border: 0; border-radius: 0; background: transparent; color: #111111;
     display: inline-flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
   }
   .bt-hit svg { display: block; width: 16px; height: 16px; pointer-events: none; }
+  #bt-menu[aria-pressed="true"] { color: #16A34A; }
+  #bt-hex[aria-pressed="true"] { color: #16A34A; }
   .bt-hit + .bt-hit, .blank-ticker, .bt-parts { position: relative; }
   .bt-hit + .bt-hit::before, .blank-ticker::before, .bt-parts::before {
     content: ""; position: absolute; left: 0; top: var(--bt-rule-inset); bottom: var(--bt-rule-inset); width: 1px; background: rgba(26,20,40,.22);
@@ -173,12 +201,16 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
   .blank-ticker .bt-readout { line-height: 31.46px; letter-spacing: 0.01em; }
   .bt-parts {
+    --bt-count-well: 0px;
+    --bt-count-well-total: calc(var(--bt-count-well) + var(--bt-rule-inset) + var(--bt-rule-inset));
     box-sizing: border-box;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    flex: 0 0 calc(3ch + var(--bt-rule-inset) + var(--bt-rule-inset));
-    width: calc(3ch + var(--bt-rule-inset) + var(--bt-rule-inset));
+    flex: 0 0 var(--bt-count-well-total);
+    width: var(--bt-count-well-total);
+    min-width: var(--bt-count-well-total);
+    max-width: var(--bt-count-well-total);
     padding: 0 var(--bt-rule-inset);
     font: 650 14.64px/31.46px var(--font-mono);
     font-variant-numeric: tabular-nums;
@@ -187,6 +219,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     text-align: center;
     text-transform: none;
     white-space: nowrap;
+    overflow: hidden;
   }
   .blank-ticker.is-chip-editing {
     align-self: stretch; justify-content: center; align-items: center;
@@ -212,6 +245,68 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
   .chip-editor-action svg { display: block; width: 14px; height: 14px; pointer-events: none; }
   .chip-editor-action:hover { color: var(--blue); }
+
+  /* Cut 1c: the hex ticket is a read-only member of the left field stack. */
+  .hex-array-ticket {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4.4px;
+    width: 154px;
+    min-width: 154px;
+    max-width: 154px;
+    padding: 7px 8.8px;
+    border: 1.1px solid rgba(83, 139, 236, 0.35);
+    border-radius: 7.26px;
+    background: rgba(83, 139, 236, 0.22);
+    box-shadow: 0 0.5px 1px rgba(0,0,0,.25);
+    color: #1A1428;
+    font-family: var(--font-mono);
+    pointer-events: none;
+  }
+  .hex-array-ticket[hidden] { display: none; }
+  .hex-array-face {
+    display: grid;
+    gap: 1px;
+    min-width: 0;
+    padding: 3px 4px;
+    border-radius: 4px;
+    background: rgba(255,255,255,.76);
+  }
+  .hex-array-face[hidden] { display: none; }
+  .hex-array-face b { font: 650 9px/1 var(--font); letter-spacing: .04em; }
+  .hex-array-face span { font: 650 11px/1.2 var(--font-mono); font-variant-numeric: tabular-nums; }
+
+  /* Cut 1 rem: hole dia + X-row gap sit next to the hex ticket. Do not steal PART SIZE or GAP. */
+  .hex-rem-faces {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4.4px;
+    width: 154px;
+    min-width: 154px;
+    max-width: 154px;
+    padding: 7px 8.8px;
+    border: 1.1px solid rgba(220, 48, 48, 0.35);
+    border-radius: 7.26px;
+    background: rgba(220, 48, 48, 0.22);
+    box-shadow: 0 0.5px 1px rgba(0,0,0,.25);
+    color: #1A1428;
+    font-family: var(--font-mono);
+    pointer-events: auto;
+  }
+  .hex-rem-faces[hidden] { display: none; }
+  .hex-rem-faces .hex-array-face { cursor: text; }
+  .hex-rem-faces .hex-array-face input {
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: 650 11px/1.2 var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    outline: none;
+  }
 
 /* ── Numeric HUD (NUMERIC-HUD-v3) ── */
 :root {
@@ -2199,6 +2294,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     #hud .param-row { display: flex; flex-direction: column; align-items: stretch; gap: 4.4px; min-height: 0; overflow: visible; }
     #hud .param-row[data-param="margin"] { align-items: stretch; }
     #hud .param-label-row { display: flex; align-items: center; gap: 4.4px; min-height: 22px; }
+    #hud .margin-band-toggle {
+      width: 22px; height: 22px; min-width: 22px; min-height: 22px; margin-left: auto; padding: 0;
+      border: 0; border-radius: 0; background: transparent; color: var(--ink);
+      display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+    }
+    #hud .margin-band-toggle svg { display: block; width: 16px; height: 16px; pointer-events: none; }
     #hud .param-label { flex: 0 0 auto; font-size: 11px; font-weight: 650; letter-spacing: 0.04em; line-height: 1; }
     #hud .chip-seat { display: flex; flex-direction: row; align-items: center; gap: 4.4px; width: max-content; max-width: none; overflow: visible; }
     #hud .param-ticker {
@@ -2243,6 +2344,16 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       font-variant-numeric: tabular-nums; text-align: left; white-space: nowrap; overflow: hidden; cursor: text;
     }
     #hud .chip-editor-by { flex: 0 0 auto; color: inherit; font: 650 13.31px/1 var(--font-mono); padding: 0 0.35em; display: inline-flex; align-items: center; height: 100%; }
+    #hud .param-ticker .chip-hex-diameter {
+      display: inline-flex; align-items: center;
+      width: 6ch; min-width: 6ch; max-width: 6ch; height: 100%;
+      font: inherit; font-variant-numeric: tabular-nums;
+      white-space: nowrap; overflow: hidden;
+    }
+    #hud .param-ticker .chip-hex-circle-off {
+      flex: 0 0 16px; width: 16px; height: 16px; margin-right: 0.35em;
+      display: block; pointer-events: none; color: inherit;
+    }
     #hud .param-row[data-param="margin"] .param-ticker.is-chip-editing {
       height: auto; min-height: 31.46px; max-height: none; flex-direction: column;
       justify-content: center; align-items: stretch;
@@ -2253,40 +2364,69 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }
     #hud .param-row[data-param="margin"] .chip-editor-field,
     #hud .param-row[data-param="margin"] .chip-editor-field input { height: auto; line-height: 1; }
-    /* Cut 23: named presets stay in the sheet; their editor is a blocking card, never the old popover. */
-    #hud .margin-presets { display: flex; flex-direction: column; gap: 4.4px; width: 154px; }
-    #hud .margin-presets__head { display: flex; align-items: center; justify-content: space-between; min-height: 11px; }
-    #hud .margin-presets__label { font-size: 11px; font-weight: 650; letter-spacing: 0.04em; line-height: 1; }
-    #hud .margin-presets__controls { display: inline-flex; align-items: center; gap: 2.2px; }
-    #hud .margin-presets__control {
+    .margin-presets { display: flex; flex-direction: column; gap: 4.4px; width: 154px; }
+    .margin-presets__head { display: flex; align-items: center; justify-content: space-between; min-height: 11px; }
+    .margin-presets__label { font-size: 11px; font-weight: 650; letter-spacing: 0.04em; line-height: 1; }
+    .margin-presets__controls { display: inline-flex; align-items: center; gap: 2.2px; }
+    .margin-presets__control {
       width: 22px; height: 22px; padding: 0; border: 0; border-radius: 0; background: transparent; color: var(--ink);
       display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
     }
-    #hud .margin-presets__control[data-margin-preset-edit][aria-pressed="true"] { color: #538BEC; }
-    #hud .margin-presets__control svg { display: block; width: 14px; height: 14px; }
-    #hud .margin-presets__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8.8px; width: 154px; }
-    #hud .margin-presets__slot {
+    .margin-presets__control[data-margin-preset-edit][aria-pressed="true"] { color: #111111; }
+    .margin-presets__control svg { display: block; width: 14px; height: 14px; }
+    .margin-presets__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8.8px; width: 154px; }
+    .margin-presets__slot {
       height: 31.46px; min-height: 31.46px; padding: 0 8.8px; border: 1.1px solid rgba(83,139,236,.35); border-radius: 7.26px;
       background: var(--frost-blue); color: var(--ink); box-shadow: 0 0.5px 1px rgba(0,0,0,.25);
       font: 650 13.31px/31.46px var(--font-mono); font-variant-numeric: tabular-nums; text-align: center; cursor: pointer;
     }
-    #hud .margin-presets__slot:hover { background: #E8E8E8; }
-    #hud .margin-presets__slot.is-armed { background: rgba(255,206,27,.55) !important; border-color: rgba(201,140,0,.85) !important; }
-    .margin-preset-card-layer { position: fixed; inset: 0; z-index: 201; display: flex; align-items: center; justify-content: center; visibility: hidden; pointer-events: none; background: rgba(0,0,0,.18); }
+    .margin-presets__slot:hover { background: #E8E8E8; }
+    .margin-presets__slot.is-armed { background: rgba(255,206,27,.55) !important; border-color: rgba(201,140,0,.85) !important; }
+    .margin-presets-sheet-hole { visibility: hidden; flex: 0 0 auto; }
+    .margin-preset-card-layer { position: fixed; inset: 0; z-index: 201; display: grid; place-items: center; visibility: hidden; pointer-events: none; background: rgba(17,17,17,.28); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
     .margin-preset-card-layer.is-open { visibility: visible; pointer-events: auto; }
-    .margin-preset-card { box-sizing: border-box; width: 252.4px; padding: 15px; border-radius: 7.26px; background: #E8E8E8; box-shadow: 0 2px 7px rgba(0,0,0,.24); color: var(--ink); }
-    .margin-preset-card input { box-sizing: border-box; height: 31.46px; border: 1.1px solid rgba(83,139,236,.35); border-radius: 7.26px; background: #fff; color: var(--ink); box-shadow: 0 0.5px 1px rgba(0,0,0,.25); font: 650 13.31px/1 var(--font-mono); font-variant-numeric: tabular-nums; }
-    .margin-preset-card__name { width: 222.4px; padding: 0 8.8px; margin: 0; }
-    .margin-preset-card__fields { display: flex; flex-direction: column; gap: 8.8px; margin-top: 8.8px; padding-top: 8.8px; border-top: 1.1px solid rgba(26,20,40,.22); }
-    .margin-preset-card__section { display: flex; flex-direction: column; gap: 4.4px; }
-    .margin-preset-card__section-label { font: 650 11px/1 var(--font-mono); }
+    .margin-preset-modal-row { display: flex; align-items: center; gap: 15px; width: 421.4px; }
+    .margin-preset-card { box-sizing: border-box; width: 252.4px; padding: 12px; border-radius: 7.26px; background: #E8E8E8; box-shadow: 0 2px 7px rgba(0,0,0,.24); color: var(--ink); position: relative; }
+    .margin-preset-card input { box-sizing: border-box; height: 31.46px; border: 1.1px solid rgba(83,139,236,.35); border-radius: 6px; background: #fff; color: var(--ink); box-shadow: 0 0.5px 1px rgba(0,0,0,.25); font: 650 13.31px/1 var(--font-mono); font-variant-numeric: tabular-nums; }
+    .margin-preset-card__header { height: 31.46px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1.1px solid rgba(26,20,40,.22); }
+    .margin-preset-card__title { color: #111111; font-size: 11px; font-weight: 650; letter-spacing: .04em; line-height: 1; text-transform: uppercase; }
+    .margin-preset-card__name { width: 222.4px; padding: 0 8.8px; margin: 8.8px 0 0; }
+    .margin-preset-card__fields { display: flex; flex-direction: column; gap: 4px; margin-top: 8.8px; }
+    .margin-preset-card__section { display: flex; flex-direction: column; gap: 2px; }
+    .margin-preset-card__section-head { display: flex; align-items: center; justify-content: space-between; min-height: 22px; }
+    .margin-preset-card__section-label { color: #111111; font: 650 11px/1 var(--font-mono); letter-spacing: .04em; text-transform: uppercase; }
+    .margin-preset-card__section-head-left { display: flex; align-items: center; gap: 2px; min-width: 0; }
+    .margin-preset-card__section-actions { display: flex; align-items: center; gap: 2px; }
+    .margin-preset-card__section-action, .margin-preset-card__section-toggle { width: 22px; height: 22px; padding: 0; border: 0; background: transparent; color: #111111; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+    .margin-preset-card__section-action svg, .margin-preset-card__section-toggle svg { display: block; width: 14px; height: 14px; }
+    .margin-preset-card__section-action[hidden] { display: none; }
+    .margin-preset-card__section-toggle[aria-pressed="false"] { color: #538BEC; }
+    .margin-preset-card__section.is-disabled { opacity: .45; }
+    .margin-preset-card__section.is-disabled input { cursor: not-allowed; }
     .margin-preset-card__pair { display: grid; grid-template-columns: 106.8px 106.8px; gap: 8.8px; }
     .margin-preset-card__field { display: block; font-size: 0; line-height: 0; }
     .margin-preset-card__field input { width: 106.8px; padding: 0 8.8px; }
-    .margin-preset-card__footer { display: flex; align-items: center; justify-content: space-between; margin-top: 8.8px; padding-top: 8.8px; border-top: 1.1px solid rgba(26,20,40,.22); }
     .margin-preset-card__actions { display: flex; align-items: center; gap: 4.4px; }
-    .margin-preset-card__action { width: 22px; height: 22px; padding: 0; border: 0; background: transparent; color: var(--ink); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
-    .margin-preset-card__action svg { width: 14px; height: 14px; }
+    .margin-preset-card__action { width: 28px; height: 28px; padding: 0; border: 0; background: transparent; color: var(--ink); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+    .margin-preset-card__action svg { width: 18px; height: 18px; }
+    .margin-preset-delete-alert { position: fixed; inset: 0; z-index: 220; display: grid; place-items: center; visibility: hidden; pointer-events: none; }
+    .margin-preset-delete-alert.is-open { visibility: visible; pointer-events: auto; }
+    .margin-preset-delete-alert__overlay { position: absolute; inset: 0; background: rgba(17,17,17,.28); }
+    .margin-preset-delete-alert__content { position: relative; box-sizing: border-box; width: min(280px, calc(100vw - 32px)); max-width: 280px; padding: 20px; border-radius: 12px; background: #E8E8E8; box-shadow: 0 2px 7px rgba(0,0,0,.24); color: var(--ink); }
+    .margin-preset-delete-alert__header { display: flex; flex-direction: column; gap: 8.8px; }
+    .margin-preset-delete-alert__title { margin: 0; font: 650 13.31px/1.2 var(--font-mono); }
+    .margin-preset-delete-alert__description { margin: 0; color: rgba(17,17,17,.72); font: 13.31px/1.35 var(--font); }
+    .margin-preset-delete-alert__option { display: flex; align-items: center; gap: 4.4px; margin-top: 15px; font: 650 11px/1 var(--font-mono); }
+    .margin-preset-delete-alert__option[hidden] { display: none; }
+    .margin-preset-delete-alert__option input { accent-color: #111111; }
+    .margin-preset-delete-alert__footer { display: flex; justify-content: flex-end; gap: 8.8px; margin-top: 20px; }
+    .margin-preset-delete-alert__button { height: 31.46px; padding: 0 12px; border: 1.1px solid rgba(17,17,17,.2); border-radius: 6px; background: #fff; color: var(--ink); font: 650 13.31px/1 var(--font); cursor: pointer; }
+    .margin-preset-delete-alert__button--destructive { border-color: #B42318; background: #B42318; color: #fff; }
+    .skeleton-init-card-layer { position: fixed; inset: 0; z-index: 201; display: grid; place-items: center; visibility: hidden; pointer-events: none; background: rgba(17,17,17,.28); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+    .skeleton-init-card-layer.is-open { visibility: visible; pointer-events: auto; }
+    .skeleton-init-card-layer .margin-preset-card__option { display: flex; align-items: center; gap: 4.4px; margin-top: 8.8px; font: 650 11px/1 var(--font-mono); }
+    .skeleton-init-card-layer .margin-preset-card__option input { accent-color: #111111; }
+    .skeleton-init-card-layer .margin-preset-card__pair.is-single { grid-template-columns: 106.8px; }
 </style>
 </head>
 <body>
@@ -2304,25 +2444,40 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   </header>
 
   <div class="margin-preset-card-layer" data-margin-preset-card-layer aria-hidden="true">
+    <div class="margin-preset-modal-row" data-margin-preset-modal-row>
     <section class="margin-preset-card" role="dialog" aria-modal="true" aria-labelledby="margin-preset-card-title">
-      <input class="margin-preset-card__name" data-margin-preset-name id="margin-preset-card-title" type="text" autocomplete="off" aria-label="Preset name" placeholder="Preset" />
+      <div class="margin-preset-card__header">
+        <span class="margin-preset-card__title" id="margin-preset-card-title">Presets</span>
+        <div class="margin-preset-card__actions">
+          <button type="button" class="margin-preset-card__action" data-margin-preset-save title="Save preset" aria-label="Save preset"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button>
+          <button type="button" class="margin-preset-card__action" data-margin-preset-cancel title="Cancel preset edit" aria-label="Cancel preset edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+        </div>
+      </div>
+      <input class="margin-preset-card__name" data-margin-preset-name type="text" autocomplete="off" aria-label="Preset name" placeholder="Name preset" />
       <div class="margin-preset-card__fields">
-        <section class="margin-preset-card__section" aria-label="Blank">
-          <span class="margin-preset-card__section-label">Blank</span>
+        <section class="margin-preset-card__section" data-margin-preset-section="part" aria-label="Part size">
+          <div class="margin-preset-card__section-head"><div class="margin-preset-card__section-head-left"><span class="margin-preset-card__section-label">Part size</span><div class="margin-preset-card__section-actions"><button type="button" class="margin-preset-card__section-action" data-margin-preset-section-link="part" title="Link part axes" aria-label="Link part axes" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.07.07l2-2a5 5 0 0 0-7.07-7.07l-1.14 1.14"/><path d="M14 11a5 5 0 0 0-7.07-.07l-2 2A5 5 0 0 0 12 20l1.14-1.14"/></svg></button><button type="button" class="margin-preset-card__section-action" data-margin-preset-section-commit="part" title="Save part size" aria-label="Save part size" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button type="button" class="margin-preset-card__section-action" data-margin-preset-section-cancel="part" title="Cancel part size" aria-label="Cancel part size" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div></div><button type="button" class="margin-preset-card__section-toggle" data-margin-preset-section-toggle="part" title="Exclude Part size" aria-label="Exclude Part size" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="4" r="1"/><path d="m18 19 1-7-6 1"/><path d="m5 8 3-3 5.5 3-2.36 3.5"/><path d="M4.24 14.5a5 5 0 0 0 6.88 6"/><path d="M13.76 17.5a5 5 0 0 0-6.88-6"/></svg></button></div>
+          <div class="margin-preset-card__pair">
+            <label class="margin-preset-card__field"><input data-margin-preset-field="part.x" type="text" inputmode="decimal" autocomplete="off" aria-label="Part width" /></label>
+            <label class="margin-preset-card__field"><input data-margin-preset-field="part.y" type="text" inputmode="decimal" autocomplete="off" aria-label="Part height" /></label>
+          </div>
+        </section>
+        <section class="margin-preset-card__section" data-margin-preset-section="blank" aria-label="Blank">
+          <div class="margin-preset-card__section-head"><div class="margin-preset-card__section-head-left"><span class="margin-preset-card__section-label">Blank</span><div class="margin-preset-card__section-actions"><button type="button" class="margin-preset-card__section-action" data-margin-preset-section-link="blank" title="Link blank axes" aria-label="Link blank axes" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.07.07l2-2a5 5 0 0 0-7.07-7.07l-1.14 1.14"/><path d="M14 11a5 5 0 0 0-7.07-.07l-2 2A5 5 0 0 0 12 20l1.14-1.14"/></svg></button><button type="button" class="margin-preset-card__section-action" data-margin-preset-section-commit="blank" title="Save blank" aria-label="Save blank" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button type="button" class="margin-preset-card__section-action" data-margin-preset-section-cancel="blank" title="Cancel blank" aria-label="Cancel blank" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div></div><button type="button" class="margin-preset-card__section-toggle" data-margin-preset-section-toggle="blank" title="Include Blank" aria-label="Include Blank" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="4" r="1"/><path d="m18 19 1-7-6 1"/><path d="m5 8 3-3 5.5 3-2.36 3.5"/><path d="M4.24 14.5a5 5 0 0 0 6.88 6"/><path d="M13.76 17.5a5 5 0 0 0-6.88-6"/></svg></button></div>
           <div class="margin-preset-card__pair">
             <label class="margin-preset-card__field"><input data-margin-preset-field="blank.x" type="text" inputmode="decimal" autocomplete="off" aria-label="Blank width" /></label>
             <label class="margin-preset-card__field"><input data-margin-preset-field="blank.y" type="text" inputmode="decimal" autocomplete="off" aria-label="Blank height" /></label>
           </div>
         </section>
-        <section class="margin-preset-card__section" aria-label="Gap">
-          <span class="margin-preset-card__section-label">Gap</span>
+        <section class="margin-preset-card__section" data-margin-preset-section="gap" aria-label="Gap">
+          <div class="margin-preset-card__section-head"><div class="margin-preset-card__section-head-left"><span class="margin-preset-card__section-label">Gap</span><div class="margin-preset-card__section-actions"><button type="button" class="margin-preset-card__section-action" data-margin-preset-section-link="gap" title="Link gap axes" aria-label="Link gap axes" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.07.07l2-2a5 5 0 0 0-7.07-7.07l-1.14 1.14"/><path d="M14 11a5 5 0 0 0-7.07-.07l-2 2A5 5 0 0 0 12 20l1.14-1.14"/></svg></button><button type="button" class="margin-preset-card__section-action" data-margin-preset-section-commit="gap" title="Save gap" aria-label="Save gap" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button><button type="button" class="margin-preset-card__section-action" data-margin-preset-section-cancel="gap" title="Cancel gap" aria-label="Cancel gap" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div></div><button type="button" class="margin-preset-card__section-toggle" data-margin-preset-section-toggle="gap" title="Include Gap" aria-label="Include Gap" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="4" r="1"/><path d="m18 19 1-7-6 1"/><path d="m5 8 3-3 5.5 3-2.36 3.5"/><path d="M4.24 14.5a5 5 0 0 0 6.88 6"/><path d="M13.76 17.5a5 5 0 0 0-6.88-6"/></svg></button></div>
           <div class="margin-preset-card__pair">
             <label class="margin-preset-card__field"><input data-margin-preset-field="gap.x" type="text" inputmode="decimal" autocomplete="off" aria-label="Gap horizontal" /></label>
             <label class="margin-preset-card__field"><input data-margin-preset-field="gap.y" type="text" inputmode="decimal" autocomplete="off" aria-label="Gap vertical" /></label>
           </div>
         </section>
-        <section class="margin-preset-card__section" aria-label="Margin">
-          <span class="margin-preset-card__section-label">Margin</span>
+        <section class="margin-preset-card__section" data-margin-preset-section="margin" aria-label="Margin">
+          <div class="margin-preset-card__section-head"><span class="margin-preset-card__section-label">Margin</span><button type="button" class="margin-preset-card__section-toggle" data-margin-preset-section-toggle="margin" title="Include Margin" aria-label="Include Margin" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="4" r="1"/><path d="m18 19 1-7-6 1"/><path d="m5 8 3-3 5.5 3-2.36 3.5"/><path d="M4.24 14.5a5 5 0 0 0 6.88 6"/><path d="M13.76 17.5a5 5 0 0 0-6.88-6"/></svg></button></div>
           <div class="margin-preset-card__pair">
             <label class="margin-preset-card__field"><input data-margin-preset-field="margin.l" type="text" inputmode="decimal" autocomplete="off" aria-label="Margin left" /></label>
             <label class="margin-preset-card__field"><input data-margin-preset-field="margin.r" type="text" inputmode="decimal" autocomplete="off" aria-label="Margin right" /></label>
@@ -2331,11 +2486,71 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
           </div>
         </section>
       </div>
-      <div class="margin-preset-card__footer">
+    </section>
+    </div>
+  </div>
+  <div class="skeleton-init-card-layer" data-skeleton-init-layer aria-hidden="true">
+    <section class="margin-preset-card" role="dialog" aria-modal="true" aria-labelledby="skeleton-init-title">
+      <div class="margin-preset-card__header">
+        <span class="margin-preset-card__title" id="skeleton-init-title">Skeleton</span>
         <div class="margin-preset-card__actions">
-          <button type="button" class="margin-preset-card__action" data-margin-preset-save title="Save preset" aria-label="Save preset"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button>
-          <button type="button" class="margin-preset-card__action" data-margin-preset-cancel title="Cancel preset edit" aria-label="Cancel preset edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+          <button type="button" class="margin-preset-card__action" data-skeleton-init-ok title="Save skeleton" aria-label="Save skeleton"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button>
+          <button type="button" class="margin-preset-card__action" data-skeleton-init-cancel title="Cancel skeleton" aria-label="Cancel skeleton"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
         </div>
+      </div>
+      <div class="margin-preset-card__fields">
+        <section class="margin-preset-card__section" aria-label="Skeleton size">
+          <div class="margin-preset-card__section-head"><span class="margin-preset-card__section-label">Skeleton</span></div>
+          <div class="margin-preset-card__pair">
+            <label class="margin-preset-card__field"><input data-skeleton-init="blank-w" type="text" inputmode="decimal" autocomplete="off" aria-label="Skeleton width" /></label>
+            <label class="margin-preset-card__field"><input data-skeleton-init="blank-h" type="text" inputmode="decimal" autocomplete="off" aria-label="Skeleton height" /></label>
+          </div>
+        </section>
+        <section class="margin-preset-card__section" aria-label="Cutout diameter">
+          <div class="margin-preset-card__section-head"><span class="margin-preset-card__section-label">Cutout D</span></div>
+          <div class="margin-preset-card__pair is-single">
+            <label class="margin-preset-card__field"><input data-skeleton-init="cutout" type="text" inputmode="decimal" autocomplete="off" aria-label="Cutout diameter" /></label>
+          </div>
+        </section>
+        <section class="margin-preset-card__section" aria-label="Skeleton lattice gap">
+          <div class="margin-preset-card__section-head"><span class="margin-preset-card__section-label">Lattice gap</span></div>
+          <div class="margin-preset-card__pair is-single">
+            <label class="margin-preset-card__field"><input data-skeleton-init="gap" type="text" inputmode="decimal" autocomplete="off" aria-label="Skeleton lattice gap" /></label>
+          </div>
+        </section>
+        <section class="margin-preset-card__section" aria-label="Skeleton left inset">
+          <div class="margin-preset-card__section-head"><span class="margin-preset-card__section-label">SKEL L</span></div>
+          <div class="margin-preset-card__pair is-single">
+            <label class="margin-preset-card__field"><input data-skeleton-init="skel-l" type="text" inputmode="decimal" autocomplete="off" aria-label="Skeleton left edge to first cutout" /></label>
+          </div>
+        </section>
+        <section class="margin-preset-card__section" aria-label="Skeleton bottom inset">
+          <div class="margin-preset-card__section-head"><span class="margin-preset-card__section-label">SKEL B</span></div>
+          <div class="margin-preset-card__pair is-single">
+            <label class="margin-preset-card__field"><input data-skeleton-init="skel-b" type="text" inputmode="decimal" autocomplete="off" aria-label="Skeleton bottom edge to cutout row" /></label>
+          </div>
+        </section>
+        <section class="margin-preset-card__section" aria-label="New part diameter">
+          <div class="margin-preset-card__section-head"><span class="margin-preset-card__section-label">New part D</span></div>
+          <div class="margin-preset-card__pair is-single">
+            <label class="margin-preset-card__field"><input data-skeleton-init="part" type="text" inputmode="decimal" autocomplete="off" aria-label="New part diameter" /></label>
+          </div>
+        </section>
+      </div>
+      <label class="margin-preset-card__option"><input type="checkbox" data-skeleton-init-skip /> <span>Don't show this again</span></label>
+    </section>
+  </div>
+  <div class="margin-preset-delete-alert" data-margin-preset-delete-alert>
+    <div class="margin-preset-delete-alert__overlay"></div>
+    <section class="margin-preset-delete-alert__content">
+      <div class="margin-preset-delete-alert__header">
+        <h2 class="margin-preset-delete-alert__title" data-margin-preset-alert-title>Are you sure you want to delete this?</h2>
+        <p class="margin-preset-delete-alert__description" data-margin-preset-alert-description>This cannot be undone.</p>
+      </div>
+      <label class="margin-preset-delete-alert__option"><input type="checkbox" data-margin-preset-delete-skip /> <span>Don't show this again</span></label>
+      <div class="margin-preset-delete-alert__footer">
+        <button type="button" class="margin-preset-delete-alert__button" data-margin-preset-delete-cancel>Cancel</button>
+        <button type="button" class="margin-preset-delete-alert__button margin-preset-delete-alert__button--destructive" data-margin-preset-delete-confirm>Delete</button>
       </div>
     </section>
   </div>
@@ -2357,9 +2572,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         <line id="lb-edge-x" x1="0" y1="0" x2="48" y2="0" stroke="#000000" stroke-opacity="0.50" stroke-width="1.75" vector-effect="non-scaling-stroke"/>
         <line id="lb-edge-y" x1="0" y1="0" x2="0" y2="48" stroke="#000000" stroke-opacity="0.50" stroke-width="1.75" vector-effect="non-scaling-stroke"/>
         <circle cx="0" cy="0" r="0.12" fill="#000000"/>
-        <rect id="lb-blank" x="0" y="0" width="12" height="8" fill="#ffffff" fill-opacity="0.80" stroke="#000000" stroke-width="1.25" vector-effect="non-scaling-stroke" clip-path="url(#lb-bed-clip)" style="pointer-events:none"/>
-        <rect id="lb-nest-box" x="0.25" y="0.25" width="11.5" height="7.5" fill="none" stroke="#538BEC" stroke-opacity="0.50" stroke-width="1" stroke-dasharray="3 2.4" vector-effect="non-scaling-stroke" clip-path="url(#lb-bed-clip)" style="pointer-events:none"/>
-        <g id="lb-part-g" clip-path="url(#lb-bed-clip)" style="pointer-events:none">
+        <rect id="lb-blank" x="0" y="0" width="12" height="8" fill="#ffffff" fill-opacity="0.80" stroke="#000000" stroke-width="1.25" vector-effect="non-scaling-stroke" style="pointer-events:none"/>
+        <rect id="lb-nest-box" x="0.25" y="0.25" width="11.5" height="7.5" fill="none" stroke="#538BEC" stroke-opacity="0.50" stroke-width="1" stroke-dasharray="3 2.4" vector-effect="non-scaling-stroke" style="pointer-events:none"/>
+        <g id="lb-part-g" style="pointer-events:none">
           <rect id="lb-part" x="0" y="0" width="2.500" height="3.500" fill="rgba(83,139,236,0.22)" stroke="#538BEC" stroke-width="1.15" vector-effect="non-scaling-stroke"/>
         </g>
         <g id="lb-bed-rulers"></g>
@@ -2375,15 +2590,16 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     </svg>
     <!-- The blank size is the same in-place editor as the BLANK chip. -->
     <div class="blank-ticker-cluster" id="blank-ticker-cluster">
-      <div class="bt-travel-box" id="bt-travel-box"><div class="bt-travel">
+      <div class="bt-travel-box" id="blank-ticker-pin"><div class="bt-travel" id="bt-travel-box">
         <button type="button" class="bt-hit" id="bt-rot-ccw" title="−90" aria-label="−90"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></button>
         <button type="button" class="bt-hit" id="bt-rot-cw" title="+90" aria-label="+90"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg></button>
         <span class="blank-ticker" id="blank-ticker" aria-label="Blank size"><span class="bt-readout" id="bt-readout">12.000 × 8.000</span></span>
-        <span class="bt-parts" id="bt-parts" aria-label="Part count">14</span>
+        <button type="button" class="bt-hit" id="bt-hex" title="Hex nest" aria-label="Hex nest" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></button>
+        <button type="button" class="bt-hit" id="bt-menu" title="AutoNest" aria-label="AutoNest" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16H4a2 2 0 1 1 0-4h16a2 2 0 1 1 0 4h-4.25"/><path d="M5 12a2 2 0 0 1-2-2 9 7 0 0 1 18 0 2 2 0 0 1-2 2"/><path d="M5 16a2 2 0 0 0-2 2 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 2 2 0 0 0-2-2q0 0 0 0"/><path d="m6.67 12 6.13 4.6a2 2 0 0 0 2.8-.4l3.15-4.2"/></svg></button>
+        <span class="bt-parts" id="bt-parts" aria-label="Part count"></span>
       </div></div>
       <div class="chip-editor-actions" id="bt-chip-actions" hidden></div>
     </div>
-  
     <!-- Field stack shell; Cut 10 opens editors inside its chips. -->
 <div class="keypad" id="hud" aria-label="Field stack">
     <div class="keypad-header" id="hud-header" title="Drag HUD">
@@ -2470,7 +2686,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
             </div>
 
             <div class="param-row" data-param="margin">
-              <div class="param-label-row"><span class="param-label">Margin</span><div class="chip-editor-actions" hidden></div></div>
+              <div class="param-label-row"><span class="param-label">Margin</span><div class="chip-editor-actions" hidden></div><button type="button" class="margin-band-toggle" id="margin-band-toggle" aria-pressed="true" aria-label="Hide margin bands" title="Hide margin bands"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></svg></button></div>
               <div class="chip-seat">
               <div class="param-ticker" data-ticker="margin" data-open="margin" tabindex="0"><span class="m-grid"><span class="m-cell">L 0.250</span><span class="m-cell">R 0.250</span><span class="m-cell">B 0.500</span><span class="m-cell">T 0.250</span></span></div>
               </div>
@@ -2499,6 +2715,24 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
                   <label class="pop-m-field"><span>T</span><input data-m="t" type="text" inputmode="decimal" value="0.250" /><button type="button" class="pop-clear" title="Clear" aria-label="Clear" tabindex="-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.15" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></label>
                 </div>
               </div>
+            </div>
+
+            <div class="hex-array-ticket" id="hex-array-ticket" aria-label="Hex array ticket" hidden>
+              <div class="hex-array-face"><b>COLUMNS</b><span data-hex-ticket="columns">0</span></div>
+              <div class="hex-array-face"><b>ROWS</b><span data-hex-ticket="rows">0</span></div>
+              <div class="hex-array-face" data-hex-ticket-face="x-gap"><b>X GAP</b><span data-hex-ticket="x-gap">0.000</span></div>
+              <div class="hex-array-face" data-hex-ticket-face="y-gap"><b>Y GAP</b><span data-hex-ticket="y-gap">0.000</span></div>
+              <div class="hex-array-face" data-hex-ticket-face="x-offset" hidden><b>X OFFSET</b><span data-hex-ticket="x-offset">0.000</span></div>
+              <div class="hex-array-face" data-hex-ticket-face="jog-x" hidden><b>JOG X</b><span data-hex-ticket="jog-x">0.000</span></div>
+              <div class="hex-array-face" data-hex-ticket-face="jog-y" hidden><b>JOG Y</b><span data-hex-ticket="jog-y">0.000</span></div>
+              <div class="hex-array-face" data-hex-ticket-face="pocket-cols" hidden><b>POCKET COLS</b><span data-hex-ticket="pocket-cols">0</span></div>
+            </div>
+
+            <div class="hex-rem-faces" id="hex-rem-faces" aria-label="Rem hole faces" hidden>
+              <label class="hex-array-face"><b>HOLE DIA</b><input data-hex-rem="hole" type="text" inputmode="decimal" autocomplete="off" value="2.500" aria-label="Rem hole diameter" /></label>
+              <label class="hex-array-face"><b>X ROW GAP</b><input data-hex-rem="x-gap" type="text" inputmode="decimal" autocomplete="off" value="0.125" aria-label="Rem X-row edge-to-edge gap" /></label>
+              <label class="hex-array-face"><b>SKEL L</b><input data-hex-rem="skel-l" type="text" inputmode="decimal" autocomplete="off" value="0.250" aria-label="Skeleton left edge to first cutout" /></label>
+              <label class="hex-array-face"><b>SKEL B</b><input data-hex-rem="skel-b" type="text" inputmode="decimal" autocomplete="off" value="0.500" aria-label="Skeleton bottom edge to cutout row" /></label>
             </div>
 
             <section class="margin-presets" aria-label="Margin presets">
@@ -2750,7 +2984,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     blankW: 12, blankH: 8, snap: 0.125, zoom: 1, fitScale: null, panX: 0, panY: 0, dragging: null, start: null,
     partW: 2.5, partH: 3.5, partRot: 0,
     margin: { l: 0.25, r: 0.25, t: 0.25, b: 0.5 },
-    gap: { x: 0.125, y: 0.125 }
+    gap: { x: 0.125, y: 0.125 }, remHoleD: 2.5, remGapX: 0.125, remSkelL: 0.25, remSkelB: 0.5, autoNestArmed: false, hexArmed: false, skeletonArmed: false, marginBandsVisible: true
   };
 
   var svg = document.getElementById('lb-world');
@@ -2770,27 +3004,81 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   var blankTicker = document.getElementById('blank-ticker');
   var blankCluster = document.getElementById('blank-ticker-cluster');
   var btReadout = document.getElementById('bt-readout');
+  var btHex = document.getElementById('bt-hex');
+  var btMenu = document.getElementById('bt-menu');
   var btParts = document.getElementById('bt-parts');
+  var hexArrayTicket = document.getElementById('hex-array-ticket');
+  var hexRemFaces = document.getElementById('hex-rem-faces');
+  var marginBandToggle = document.getElementById('margin-band-toggle');
   if (!svg || !camera || !blank) return;
 
   var STOP = 15;
+  var SIDE_INSET = 25;
+  var ARC_OUTSET = 19;
   var HEADER_H = 64;
   var TICKER_H = 31.46;
-  var HUD_BLANK_STOP = STOP + TICKER_H + STOP;
+  var ARC_HUD_CLEARANCE = 8;
+  var HUD_BLANK_STOP = STOP + TICKER_H + STOP + ARC_HUD_CLEARANCE;
   var MIN_LABEL_PX = 36;
   var SHEET_INSET = 24;
   var tickerClosedWidth = 0;
+  var countWellWidth = 0;
+  var sizeSeatWidth = 0;
   function sheetLanePx() {
     var sheet = document.getElementById('hud');
     return (sheet ? sheet.offsetWidth : 154) + SHEET_INSET + STOP;
   }
+  function subjectLeftPx() { return sheetLanePx() + SIDE_INSET; }
+  function subjectRightPx() { return SIDE_INSET + ARC_OUTSET; }
+  function lockCountWell() {
+    if (!btParts) return;
+    var probe = document.createElement('span');
+    probe.textContent = '999';
+    probe.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;font:650 14.64px/31.46px var(--font-mono);font-variant-numeric:tabular-nums;letter-spacing:0';
+    btParts.appendChild(probe);
+    var width = Math.ceil(probe.getBoundingClientRect().width);
+    probe.remove();
+    if (!width) return;
+    countWellWidth = width;
+    btParts.style.setProperty('--bt-count-well', width + 'px');
+    var row = document.getElementById('bt-travel-box');
+    if (row) row.style.setProperty('--bt-count-min', (width + 10) + 'px');
+    lockClosedTickerPin();
+  }
+  function lockClosedTickerPin() {
+    var pin = document.getElementById('blank-ticker-pin');
+    if (!pin || !blankCluster || blankCluster.classList.contains('is-ticker-editing') || tickerClosedWidth || !countWellWidth || !sizeSeatWidth) return;
+    var width = Math.ceil(pin.getBoundingClientRect().width);
+    if (!width) return;
+    tickerClosedWidth = width;
+    pin.style.width = width + 'px';
+  }
+  function lockTickerSeatsAtBoot() {
+    var row = document.getElementById('bt-travel-box');
+    var ticker = document.getElementById('blank-ticker');
+    if (!row || !ticker || sizeSeatWidth || !countWellWidth) return;
+    var probe = document.createElement('span');
+    probe.textContent = '00.000 × 00.000';
+    probe.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;font:650 13.31px/31.46px var(--font-mono);font-variant-numeric:tabular-nums;letter-spacing:.01em';
+    ticker.appendChild(probe);
+    sizeSeatWidth = Math.ceil(probe.getBoundingClientRect().width + 17.6);
+    probe.remove();
+    if (!sizeSeatWidth) return;
+    function px(value) { return (Math.round(value * 1000) / 1000) + 'px'; }
+    row.style.setProperty('--bt-seat-size', px(sizeSeatWidth));
+    row.style.setProperty('--bt-seat-count', px(countWellWidth + 10));
+    row.style.setProperty('--bt-seat-map-width', px(24 + 24 + sizeSeatWidth + 24 + 24 + countWellWidth + 10));
+    row.classList.add('is-seat-locked');
+    lockClosedTickerPin();
+  }
+  window.__bedLockTickerSeats = lockTickerSeatsAtBoot;
 
   function snap(v) { var s = state.snap; return Math.round(v / s) * s; }
   function fittedScale() {
     var W = svg.clientWidth || window.innerWidth;
     var H = svg.clientHeight || window.innerHeight;
-    var lane = sheetLanePx();
-    return Math.min(Math.max(80, W - lane - STOP) / Math.max(state.blankW, 0.001), Math.max(80, H - HUD_BLANK_STOP - STOP) / Math.max(state.blankH, 0.001));
+    var left = subjectLeftPx(), right = subjectRightPx();
+    return Math.min(Math.max(80, W - left - right) / Math.max(state.blankW, 0.001), Math.max(80, H - HUD_BLANK_STOP - STOP) / Math.max(state.blankH, 0.001));
   }
   function pxPerInch() { return (state.fitScale == null ? fittedScale() : state.fitScale) * state.zoom; }
   function labelStep() {
@@ -2801,8 +3089,225 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   function tickStep(L) { if (L >= 12) return 12; if (L >= 6) return 6; return 1; }
 
   /* One layout is the authority for both the blue count and the blank tiles. */
-  function nestLayout() {
-    var quarterTurn = Math.abs((state.partRot || 0) % 180) === 90;
+  var FIT_EPSILON = 1e-9;
+  var TWO_GROUP_SEARCH_CANDIDATE_BUDGET = 20000;
+
+  function coalesce(value) { return value == null ? 0 : value; }
+  function finitePositive(value) { return Number.isFinite(value) && value > 0; }
+  function finiteNonNegative(value) { return Number.isFinite(value) && value >= 0; }
+  function partsInDimension(usable, part, gap) {
+    if (usable < part || part <= 0) return 0;
+    return Math.floor((usable + gap) / (part + gap) + FIT_EPSILON);
+  }
+  function gridSpan(count, size, gap) {
+    return count <= 0 ? 0 : count * size + Math.max(0, count - 1) * gap;
+  }
+  function calculateNest(inputs) {
+    var margins = inputs.margins;
+    var usableWidth = coalesce(inputs.remnantWidth) - coalesce(margins.left) - coalesce(margins.right);
+    var usableHeight = coalesce(inputs.remnantHeight) - coalesce(margins.top) - coalesce(margins.bottom);
+    var partsAcross = partsInDimension(usableWidth, coalesce(inputs.partWidth), coalesce(inputs.gapX));
+    var partsDown = partsInDimension(usableHeight, coalesce(inputs.partHeight), coalesce(inputs.gapY));
+    return { usableWidth: usableWidth, usableHeight: usableHeight, partsAcross: partsAcross, partsDown: partsDown, totalParts: partsAcross * partsDown };
+  }
+  function emptyNestResult() {
+    return { usableWidth: 0, usableHeight: 0, partsAcross: 0, partsDown: 0, totalParts: 0 };
+  }
+  function effectiveAutoNestMargins(settings) {
+    var globalMargin = coalesce(settings.globalClampMargin);
+    if (!settings.overrideGlobalMargins) return { left: globalMargin, right: globalMargin, top: globalMargin, bottom: globalMargin };
+    return {
+      left: settings.marginOverrides.left == null ? globalMargin : settings.marginOverrides.left,
+      right: settings.marginOverrides.right == null ? globalMargin : settings.marginOverrides.right,
+      top: settings.marginOverrides.top == null ? globalMargin : settings.marginOverrides.top,
+      bottom: settings.marginOverrides.bottom == null ? globalMargin : settings.marginOverrides.bottom
+    };
+  }
+  function trimEdgePolicy(settings) {
+    return settings.trimEdgePolicy === 'full' || settings.trimEdgePolicy === 'shared' ? settings.trimEdgePolicy : 'open';
+  }
+  function requiredMarginsForSplit(settings, outer, orientation) {
+    var policy = trimEdgePolicy(settings);
+    if (policy === 'full') return [{ left: outer.left, right: outer.right, top: outer.top, bottom: outer.bottom }, { left: outer.left, right: outer.right, top: outer.top, bottom: outer.bottom }];
+    var shared = policy === 'shared' ? coalesce(settings.sharedTrimClearance) : 0;
+    if (orientation === 'vertical') return [
+      { left: outer.left, right: 0, top: outer.top, bottom: outer.bottom },
+      { left: shared, right: outer.right, top: outer.top, bottom: outer.bottom }
+    ];
+    return [
+      { left: outer.left, right: outer.right, top: outer.top, bottom: 0 },
+      { left: outer.left, right: outer.right, top: shared, bottom: outer.bottom }
+    ];
+  }
+  function hasUsableAutoNestInputs(inputs, margins, settings) {
+    var sharedClearanceIsValid = trimEdgePolicy(settings) !== 'shared' || finiteNonNegative(coalesce(settings.sharedTrimClearance));
+    return finitePositive(inputs.partWidth) && finitePositive(inputs.partHeight) &&
+      finitePositive(inputs.remnantWidth) && finitePositive(inputs.remnantHeight) &&
+      finiteNonNegative(coalesce(inputs.gapX)) && finiteNonNegative(coalesce(inputs.gapY)) &&
+      [margins.left, margins.right, margins.top, margins.bottom].every(function (value) { return finiteNonNegative(coalesce(value)); }) &&
+      sharedClearanceIsValid;
+  }
+  function inputsForOrientation(inputs, margins, orientation) {
+    return {
+      partWidth: orientation === '0deg' ? inputs.partWidth : inputs.partHeight,
+      partHeight: orientation === '0deg' ? inputs.partHeight : inputs.partWidth,
+      remnantWidth: inputs.remnantWidth, remnantHeight: inputs.remnantHeight,
+      margins: margins, gapX: inputs.gapX, gapY: inputs.gapY
+    };
+  }
+  function calculateBestUniformNest(inputs, settings) {
+    var margins = effectiveAutoNestMargins(settings);
+    var zeroDegree = calculateNest(inputsForOrientation(inputs, margins, '0deg'));
+    var ninetyDegree = calculateNest(inputsForOrientation(inputs, margins, '90deg'));
+    return ninetyDegree.totalParts > zeroDegree.totalParts ? ninetyDegree : zeroDegree;
+  }
+  function packedGroupForGrid(part, columns, rows, gapX, gapY) {
+    return {
+      orientation: part.orientation, count: columns * rows,
+      boundingBox: { width: gridSpan(columns, part.width, gapX), height: gridSpan(rows, part.height, gapY) },
+      grid: { columns: columns, rows: rows, partWidth: part.width, partHeight: part.height, gapX: gapX, gapY: gapY }
+    };
+  }
+  function makeBlank(width, height, margins, group) {
+    var left = coalesce(margins.left), top = coalesce(margins.top);
+    return {
+      width: width, height: height,
+      achievedMargins: { left: left, top: top, right: width - left - group.boundingBox.width, bottom: height - top - group.boundingBox.height },
+      group: group
+    };
+  }
+  function usefulBlankThreshold(inputs, margins, settings) {
+    var largestMargin = Math.max(coalesce(margins.left), coalesce(margins.right), coalesce(margins.top), coalesce(margins.bottom), trimEdgePolicy(settings) === 'shared' ? coalesce(settings.sharedTrimClearance) : 0);
+    return Math.max(Math.min(coalesce(inputs.partWidth), coalesce(inputs.partHeight)), largestMargin * 2);
+  }
+  function achievedMarginsAreValid(blankResult, margins) {
+    return coalesce(blankResult.achievedMargins.left) + FIT_EPSILON >= coalesce(margins.left) &&
+      coalesce(blankResult.achievedMargins.right) + FIT_EPSILON >= coalesce(margins.right) &&
+      coalesce(blankResult.achievedMargins.top) + FIT_EPSILON >= coalesce(margins.top) &&
+      coalesce(blankResult.achievedMargins.bottom) + FIT_EPSILON >= coalesce(margins.bottom);
+  }
+  function candidateIsUseful(candidate, requiredMargins, threshold) {
+    return candidate.blanks.every(function (blankResult, index) {
+      return blankResult.width + FIT_EPSILON >= threshold && blankResult.height + FIT_EPSILON >= threshold && achievedMarginsAreValid(blankResult, requiredMargins[index]);
+    });
+  }
+  function candidateTieBreaker(candidate) {
+    return Math.min(candidate.blanks[0].width, candidate.blanks[0].height, candidate.blanks[1].width, candidate.blanks[1].height);
+  }
+  function isBetterCandidate(candidate, current) {
+    if (!current) return true;
+    if (candidate.totalParts !== current.totalParts) return candidate.totalParts > current.totalParts;
+    var candidateSpan = candidateTieBreaker(candidate), currentSpan = candidateTieBreaker(current);
+    if (Math.abs(candidateSpan - currentSpan) > FIT_EPSILON) return candidateSpan > currentSpan;
+    if (candidate.trimLine.orientation !== current.trimLine.orientation) return candidate.trimLine.orientation === 'vertical';
+    return candidate.trimLine.position < current.trimLine.position;
+  }
+  function verticalCandidate(first, second, remnantWidth, remnantHeight, requiredMargins) {
+    var firstMargins = requiredMargins[0], secondMargins = requiredMargins[1];
+    var firstWidth = coalesce(firstMargins.left) + first.boundingBox.width + coalesce(firstMargins.right);
+    var secondMinimumWidth = coalesce(secondMargins.left) + second.boundingBox.width + coalesce(secondMargins.right);
+    if (firstWidth + secondMinimumWidth > remnantWidth + FIT_EPSILON) return null;
+    var secondWidth = remnantWidth - firstWidth;
+    return {
+      totalParts: first.count + second.count,
+      trimLine: { orientation: 'vertical', position: firstWidth },
+      blanks: [makeBlank(firstWidth, remnantHeight, firstMargins, first), makeBlank(secondWidth, remnantHeight, secondMargins, second)],
+      suggestedOriginOffset: { x: firstWidth, y: 0 }
+    };
+  }
+  function horizontalCandidate(first, second, remnantWidth, remnantHeight, requiredMargins) {
+    var firstMargins = requiredMargins[0], secondMargins = requiredMargins[1];
+    var firstHeight = coalesce(firstMargins.top) + first.boundingBox.height + coalesce(firstMargins.bottom);
+    var secondMinimumHeight = coalesce(secondMargins.top) + second.boundingBox.height + coalesce(secondMargins.bottom);
+    if (firstHeight + secondMinimumHeight > remnantHeight + FIT_EPSILON) return null;
+    var secondHeight = remnantHeight - firstHeight;
+    return {
+      totalParts: first.count + second.count,
+      trimLine: { orientation: 'horizontal', position: firstHeight },
+      blanks: [makeBlank(remnantWidth, firstHeight, firstMargins, first), makeBlank(remnantWidth, secondHeight, secondMargins, second)],
+      suggestedOriginOffset: { x: 0, y: firstHeight }
+    };
+  }
+  function estimateTwoGroupSearchCandidates(inputs, margins, settings) {
+    var remnantWidth = coalesce(inputs.remnantWidth), remnantHeight = coalesce(inputs.remnantHeight);
+    var gapX = coalesce(inputs.gapX), gapY = coalesce(inputs.gapY);
+    var verticalFirstMargins = requiredMarginsForSplit(settings, margins, 'vertical')[0];
+    var horizontalFirstMargins = requiredMarginsForSplit(settings, margins, 'horizontal')[0];
+    var parts = [{ orientation: '0deg', width: coalesce(inputs.partWidth), height: coalesce(inputs.partHeight) }, { orientation: '90deg', width: coalesce(inputs.partHeight), height: coalesce(inputs.partWidth) }];
+    var candidates = 0;
+    [[parts[0], parts[1]], [parts[1], parts[0]]].forEach(function (pair) {
+      var firstPart = pair[0];
+      var verticalRowsFirst = partsInDimension(remnantHeight - coalesce(verticalFirstMargins.top) - coalesce(verticalFirstMargins.bottom), firstPart.height, gapY);
+      if (verticalRowsFirst > 0) candidates += partsInDimension(remnantWidth - coalesce(verticalFirstMargins.left) - coalesce(verticalFirstMargins.right), firstPart.width, gapX);
+      var horizontalColumnsFirst = partsInDimension(remnantWidth - coalesce(horizontalFirstMargins.left) - coalesce(horizontalFirstMargins.right), firstPart.width, gapX);
+      if (horizontalColumnsFirst > 0) candidates += partsInDimension(remnantHeight - coalesce(horizontalFirstMargins.top) - coalesce(horizontalFirstMargins.bottom), firstPart.height, gapY);
+    });
+    return candidates;
+  }
+  function findBestTwoGroupCandidate(inputs, margins, settings) {
+    var remnantWidth = coalesce(inputs.remnantWidth), remnantHeight = coalesce(inputs.remnantHeight);
+    var gapX = coalesce(inputs.gapX), gapY = coalesce(inputs.gapY);
+    var parts = [{ orientation: '0deg', width: coalesce(inputs.partWidth), height: coalesce(inputs.partHeight) }, { orientation: '90deg', width: coalesce(inputs.partHeight), height: coalesce(inputs.partWidth) }];
+    var threshold = usefulBlankThreshold(inputs, margins, settings);
+    var verticalMargins = requiredMarginsForSplit(settings, margins, 'vertical');
+    var horizontalMargins = requiredMarginsForSplit(settings, margins, 'horizontal');
+    var best = null;
+    [[parts[0], parts[1]], [parts[1], parts[0]]].forEach(function (pair) {
+      var firstPart = pair[0], secondPart = pair[1];
+      var verticalRowsFirst = partsInDimension(remnantHeight - coalesce(verticalMargins[0].top) - coalesce(verticalMargins[0].bottom), firstPart.height, gapY);
+      var verticalRowsSecond = partsInDimension(remnantHeight - coalesce(verticalMargins[1].top) - coalesce(verticalMargins[1].bottom), secondPart.height, gapY);
+      var maxFirstVerticalColumns = partsInDimension(remnantWidth - coalesce(verticalMargins[0].left) - coalesce(verticalMargins[0].right), firstPart.width, gapX);
+      for (var firstColumns = 1; firstColumns <= maxFirstVerticalColumns && verticalRowsFirst > 0; firstColumns += 1) {
+        var firstGroup = packedGroupForGrid(firstPart, firstColumns, verticalRowsFirst, gapX, gapY);
+        var firstWidth = coalesce(verticalMargins[0].left) + firstGroup.boundingBox.width + coalesce(verticalMargins[0].right);
+        var secondColumns = partsInDimension(remnantWidth - firstWidth - coalesce(verticalMargins[1].left) - coalesce(verticalMargins[1].right), secondPart.width, gapX);
+        if (secondColumns <= 0 || verticalRowsSecond <= 0) continue;
+        var secondGroup = packedGroupForGrid(secondPart, secondColumns, verticalRowsSecond, gapX, gapY);
+        var vertical = verticalCandidate(firstGroup, secondGroup, remnantWidth, remnantHeight, verticalMargins);
+        if (vertical && candidateIsUseful(vertical, verticalMargins, threshold) && isBetterCandidate(vertical, best)) best = vertical;
+      }
+      var horizontalColumnsFirst = partsInDimension(remnantWidth - coalesce(horizontalMargins[0].left) - coalesce(horizontalMargins[0].right), firstPart.width, gapX);
+      var horizontalColumnsSecond = partsInDimension(remnantWidth - coalesce(horizontalMargins[1].left) - coalesce(horizontalMargins[1].right), secondPart.width, gapX);
+      var maxFirstHorizontalRows = partsInDimension(remnantHeight - coalesce(horizontalMargins[0].top) - coalesce(horizontalMargins[0].bottom), firstPart.height, gapY);
+      for (var firstRows = 1; firstRows <= maxFirstHorizontalRows && horizontalColumnsFirst > 0; firstRows += 1) {
+        var firstHorizontalGroup = packedGroupForGrid(firstPart, horizontalColumnsFirst, firstRows, gapX, gapY);
+        var firstHeight = coalesce(horizontalMargins[0].top) + firstHorizontalGroup.boundingBox.height + coalesce(horizontalMargins[0].bottom);
+        var secondRows = partsInDimension(remnantHeight - firstHeight - coalesce(horizontalMargins[1].top) - coalesce(horizontalMargins[1].bottom), secondPart.height, gapY);
+        if (secondRows <= 0 || horizontalColumnsSecond <= 0) continue;
+        var secondHorizontalGroup = packedGroupForGrid(secondPart, horizontalColumnsSecond, secondRows, gapX, gapY);
+        var horizontal = horizontalCandidate(firstHorizontalGroup, secondHorizontalGroup, remnantWidth, remnantHeight, horizontalMargins);
+        if (horizontal && candidateIsUseful(horizontal, horizontalMargins, threshold) && isBetterCandidate(horizontal, best)) best = horizontal;
+      }
+    });
+    return best;
+  }
+  /* Port of src/lib/autoNestEngine.ts: two groups only win on a strict count improvement. */
+  function calculateAutoNest(inputs, settings) {
+    var margins = effectiveAutoNestMargins(settings);
+    if (!hasUsableAutoNestInputs(inputs, margins, settings)) {
+      var safeFallback = emptyNestResult();
+      return { status: 'fallback', reason: 'insufficient-inputs', bestUniform: safeFallback, fallback: safeFallback };
+    }
+    var bestUniform = calculateBestUniformNest(inputs, settings);
+    if (estimateTwoGroupSearchCandidates(inputs, margins, settings) > TWO_GROUP_SEARCH_CANDIDATE_BUDGET) {
+      return { status: 'fallback', reason: 'search-budget-exceeded', bestUniform: bestUniform, fallback: bestUniform };
+    }
+    var twoGroup = findBestTwoGroupCandidate(inputs, margins, settings);
+    if (!twoGroup || twoGroup.totalParts <= bestUniform.totalParts) {
+      return { status: 'fallback', reason: 'two-group-not-useful', bestUniform: bestUniform, fallback: bestUniform };
+    }
+    return { status: 'computed', bestUniform: bestUniform, twoGroup: twoGroup };
+  }
+  function autoNestInputs() {
+    var m = state.margin;
+    return { partWidth: state.partW, partHeight: state.partH, remnantWidth: state.blankW, remnantHeight: state.blankH, margins: { left: m.l, right: m.r, top: m.t, bottom: m.b }, gapX: state.gap.x, gapY: state.gap.y };
+  }
+  function autoNestSettings() {
+    var m = state.margin;
+    return { globalClampMargin: 0, trimEdgePolicy: 'full', sharedTrimClearance: 0, overrideGlobalMargins: true, marginOverrides: { left: m.l, right: m.r, top: m.t, bottom: m.b } };
+  }
+  function nestLayoutForRotation(partRot) {
+    var quarterTurn = Math.abs((partRot || 0) % 180) === 90;
     var partW = quarterTurn ? state.partH : state.partW;
     var partH = quarterTurn ? state.partW : state.partH;
     var m = state.margin;
@@ -2815,13 +3320,230 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     return { columns: columns, rows: rows, count: columns * rows, partW: partW, partH: partH };
   }
 
+  function nestLayout() {
+    return nestLayoutForRotation(state.partRot);
+  }
+
+  function readRemFaces() {
+    if (!hexRemFaces) return;
+    var holeEl = hexRemFaces.querySelector('[data-hex-rem="hole"]');
+    var gapEl = hexRemFaces.querySelector('[data-hex-rem="x-gap"]');
+    var skelLEl = hexRemFaces.querySelector('[data-hex-rem="skel-l"]');
+    var skelBEl = hexRemFaces.querySelector('[data-hex-rem="skel-b"]');
+    if (holeEl) {
+      var hole = parseFloat(holeEl.value);
+      if (Number.isFinite(hole)) state.remHoleD = hole;
+    }
+    if (gapEl) {
+      var gap = parseFloat(gapEl.value);
+      if (Number.isFinite(gap)) state.remGapX = gap;
+    }
+    if (skelLEl) {
+      var skelL = parseFloat(skelLEl.value);
+      if (Number.isFinite(skelL)) state.remSkelL = skelL;
+    }
+    if (skelBEl) {
+      var skelB = parseFloat(skelBEl.value);
+      if (Number.isFinite(skelB)) state.remSkelB = skelB;
+    }
+  }
+
+  function hexSqueezeMetrics(minX, maxX, y0, maxY, pair) {
+    var hcp = pair * Math.sqrt(3) / 2;
+    var availableRise = maxY - y0;
+    var n = 1, h = 0, p = pair;
+    if (availableRise > FIT_EPSILON) {
+      var maxN = Math.max(2, 1 + Math.floor(2 * availableRise / pair + FIT_EPSILON));
+      for (var candidate = maxN; candidate >= 2; candidate--) {
+        var rise = Math.min(hcp, availableRise / (candidate - 1));
+        if (candidate >= 3 && rise + FIT_EPSILON < pair / 2) continue;
+        var pitch = 2 * Math.sqrt(Math.max(0, pair * pair - rise * rise));
+        if (minX + pitch / 2 > maxX + FIT_EPSILON) continue;
+        n = candidate;
+        h = rise;
+        p = pitch;
+        break;
+      }
+    }
+    return { n: n, h: h, p: p };
+  }
+
+  /* Cut 2: largest N at the D+g pair. Leftover height buys a squeezed row; it does not open the nest. */
+  function hexVirginLayout() {
+    var diameter = state.partW;
+    var radius = diameter / 2;
+    var m = state.margin;
+    var clearance = state.gap.x;
+    var empty = { hex: true, columns: 0, rows: 0, count: 0, centers: [], voids: [], failedRows: [], p: 0, h: 0, xGap: 0, yGap: 0, xOffset: 0 };
+    if (!finitePositive(diameter) || !finiteNonNegative(clearance)) return empty;
+    var pair = diameter + clearance;
+    var minX = m.l + radius, maxX = state.blankW - m.r - radius;
+    var minY = m.b + radius, maxY = state.blankH - m.t - radius;
+    if (minX > maxX + FIT_EPSILON || minY > maxY + FIT_EPSILON) return empty;
+    var metrics = hexSqueezeMetrics(minX, maxX, minY, maxY, pair);
+    var n = metrics.n, h = metrics.h, p = metrics.p;
+    var centers = [], rows = n, columns = 0, failedRows = [];
+    for (var row = 0; row < rows; row++) {
+      var y = minY + row * h;
+      var startX = minX + (row % 2 ? p / 2 : 0);
+      var rowColumns = startX <= maxX + FIT_EPSILON && p > FIT_EPSILON ? Math.floor((maxX - startX) / p + FIT_EPSILON) + 1 : 0;
+      if (!rowColumns) failedRows.push(y);
+      columns = Math.max(columns, rowColumns);
+      for (var column = 0; column < rowColumns; column++) centers.push({ x: startX + column * p, y: y });
+    }
+    return { hex: true, diameter: diameter, radius: radius, p: p, h: h, columns: columns, rows: rows, count: centers.length, centers: centers, voids: [], failedRows: failedRows, xGap: p - diameter, yGap: h - diameter, xOffset: m.l + p / 2 };
+  }
+
+  /* Cut 6: the skeleton is one cutout row and its legal cusp pockets only. */
+  function hexSkeletonLayout() {
+    var diameter = state.partW;
+    var radius = diameter / 2;
+    var holeD = state.remHoleD;
+    var holeR = holeD / 2;
+    var gExist = state.remGapX;
+    var skelL = state.remSkelL;
+    var skelB = state.remSkelB;
+    var m = state.margin;
+    var clearance = state.gap.x;
+    var empty = { hex: true, skeleton: true, rem: true, columns: 0, rows: 1, count: 0, centers: [], voids: [], failedRows: [], p: 0, h: 0, xGap: 0, yGap: 0, pocketCols: 0, jogX: 0, jogY: 0, diameter: diameter, radius: radius, holeD: holeD, holeR: holeR };
+    if (!finitePositive(diameter) || !finiteNonNegative(clearance) || !finitePositive(holeD) || !finiteNonNegative(gExist) || !finiteNonNegative(skelL) || !finiteNonNegative(skelB)) return empty;
+    if (finitePositive(holeD)) {
+      var minW = skelL + holeD;
+      var minH = skelB + holeD;
+      if (state.blankW + FIT_EPSILON < minW) state.blankW = minW;
+      if (state.blankH + FIT_EPSILON < minH) state.blankH = minH;
+    }
+    var pair = diameter + clearance;
+    var dWall = holeR + radius + clearance;
+    var pitchExist = holeD + gExist;
+    var holeMinX = skelL + holeR;
+    var holeMaxX = state.blankW - holeR;
+    var holeY = skelB + holeR;
+    var voids = [];
+    /* SKEL L/B place the cutout row from rem 0,0; nest margins do not. */
+    if (holeY + holeR <= state.blankH + FIT_EPSILON && holeMinX <= holeMaxX + FIT_EPSILON && pitchExist > FIT_EPSILON) {
+      var holeN = Math.floor((holeMaxX - holeMinX) / pitchExist + FIT_EPSILON) + 1;
+      for (var hi = 0; hi < holeN; hi++) {
+        var vx = holeMinX + hi * pitchExist;
+        if (vx > holeMaxX + FIT_EPSILON) break;
+        voids.push({ x: vx, y: holeY });
+      }
+    }
+    var minX = m.l + radius, maxX = state.blankW - m.r - radius;
+    var minY = m.b + radius, maxY = state.blankH - m.t - radius;
+    if (minX > maxX + FIT_EPSILON || minY > maxY + FIT_EPSILON) return Object.assign(empty, { voids: voids });
+
+    function dist2(a, b) { var dx = a.x - b.x, dy = a.y - b.y; return dx * dx + dy * dy; }
+    function yClearOfReds(x) {
+      var y = minY;
+      for (var vi = 0; vi < voids.length; vi++) {
+        var dx = Math.abs(x - voids[vi].x);
+        if (dx + FIT_EPSILON >= dWall) continue;
+        y = Math.max(y, voids[vi].y + Math.sqrt(Math.max(0, dWall * dWall - dx * dx)));
+      }
+      return y;
+    }
+    function clearsReds(pt) {
+      for (var vi = 0; vi < voids.length; vi++) if (dist2(pt, voids[vi]) + FIT_EPSILON < dWall * dWall) return false;
+      return true;
+    }
+    /* Keep a cusp when its midpoint misses a nest edge but a legal offset remains. */
+    function offsetCuspPocket(leftVoid, rightVoid) {
+      var lo = Math.max(minX, Math.min(leftVoid.x, rightVoid.x));
+      var hi = Math.min(maxX, Math.max(leftVoid.x, rightVoid.x));
+      if (lo > hi + FIT_EPSILON) return null;
+
+      /* At maxY, each red cutout forbids the X interval that still needs a higher Y. */
+      var blocked = [];
+      for (var vi = 0; vi < voids.length; vi++) {
+        var vertical = maxY - voids[vi].y;
+        if (vertical >= dWall - FIT_EPSILON) continue;
+        var reach = vertical <= 0 ? dWall : Math.sqrt(Math.max(0, dWall * dWall - vertical * vertical));
+        var start = Math.max(lo, voids[vi].x - reach);
+        var end = Math.min(hi, voids[vi].x + reach);
+        if (start < end - FIT_EPSILON) blocked.push({ start: start, end: end });
+      }
+      blocked.sort(function(a, b) { return a.start - b.start; });
+
+      var mid = (leftVoid.x + rightVoid.x) / 2;
+      var cursor = lo;
+      var candidate = null;
+      function consider(start, end) {
+        if (start > end + FIT_EPSILON) return;
+        var x = Math.max(start, Math.min(end, mid));
+        if (candidate === null || Math.abs(x - mid) < Math.abs(candidate - mid) - FIT_EPSILON || (Math.abs(x - mid) <= Math.abs(candidate - mid) + FIT_EPSILON && x < candidate)) candidate = x;
+      }
+      for (var bi = 0; bi < blocked.length; bi++) {
+        if (blocked[bi].start > cursor + FIT_EPSILON) consider(cursor, blocked[bi].start);
+        cursor = Math.max(cursor, blocked[bi].end);
+        if (cursor > hi + FIT_EPSILON) break;
+      }
+      if (cursor < hi - FIT_EPSILON) consider(cursor, hi);
+      if (candidate === null) return null;
+
+      var pocket = { x: candidate, y: yClearOfReds(candidate) };
+      if (pocket.y < minY - FIT_EPSILON || pocket.y > maxY + FIT_EPSILON || !clearsReds(pocket)) return null;
+      return pocket;
+    }
+    /* A legal cusp is the lowest pocket center that clears every cutout and rem edge. */
+    var pocketCenters = [];
+    for (var ci = 0; ci + 1 < voids.length; ci++) {
+      var pocket = offsetCuspPocket(voids[ci], voids[ci + 1]);
+      if (!pocket) continue;
+      var clearsPocketRow = true;
+      for (var pi = 0; pi < pocketCenters.length; pi++) {
+        if (dist2(pocket, pocketCenters[pi]) + FIT_EPSILON < pair * pair) { clearsPocketRow = false; break; }
+      }
+      if (clearsPocketRow) pocketCenters.push(pocket);
+    }
+    var firstPocket = pocketCenters[0] || { x: 0, y: 0 };
+    var pocketXGap = 0;
+    for (var pocketIndex = 1; pocketIndex < pocketCenters.length; pocketIndex++) {
+      var edgeGap = (pocketCenters[pocketIndex].x - pocketCenters[pocketIndex - 1].x) - diameter;
+      if (pocketIndex === 1 || edgeGap < pocketXGap) pocketXGap = edgeGap;
+    }
+    return { hex: true, skeleton: true, rem: true, diameter: diameter, radius: radius, holeD: holeD, holeR: holeR, p: pitchExist, h: 0, columns: pocketCenters.length, rows: 1, count: pocketCenters.length, centers: pocketCenters, voids: voids, failedRows: [], xGap: pocketXGap, yGap: 0, pocketCols: pocketCenters.length, jogX: firstPocket.x, jogY: firstPocket.y };
+  }
+
+  function hexLayout() {
+    readRemFaces();
+    if (state.skeletonArmed) {
+      /* HOLE DIA 0 is the documented switch back to the Cut 2 virgin packer. */
+      if (!finitePositive(state.remHoleD)) {
+        var virgin = hexVirginLayout();
+        return Object.assign(virgin, { rem: true, holeD: state.remHoleD, holeR: 0 });
+      }
+      return hexSkeletonLayout();
+    }
+    return hexVirginLayout();
+  }
+
+  /* The Cut 1 uniform result remains the fallback and preserves its 90° state write. */
+  function bestUniformLayout() {
+    var inputs = autoNestInputs(), settings = autoNestSettings();
+    var zeroDegree = calculateNest(inputsForOrientation(inputs, effectiveAutoNestMargins(settings), '0deg'));
+    var ninetyDegree = calculateNest(inputsForOrientation(inputs, effectiveAutoNestMargins(settings), '90deg'));
+    var best = calculateBestUniformNest(inputs, settings);
+    var ninetyWins = ninetyDegree.totalParts > zeroDegree.totalParts;
+    state.partRot = ninetyWins ? 90 : 0;
+    return { columns: best.partsAcross, rows: best.partsDown, count: best.totalParts, partW: ninetyWins ? state.partH : state.partW, partH: ninetyWins ? state.partW : state.partH };
+  }
+  function autoNestLayout() {
+    var inputs = autoNestInputs(), settings = autoNestSettings();
+    var result = calculateAutoNest(inputs, settings);
+    var uniform = bestUniformLayout();
+    if (result.status !== 'computed') return uniform;
+    return { count: result.twoGroup.totalParts, groups: result.twoGroup.blanks, trimLine: result.twoGroup.trimLine };
+  }
+
   function applyCamera() {
+    /* SVG user units are inches: blank, parts, gaps, margins, and trim share this one camera. */
     var s = pxPerInch();
     var t = 'translate(' + state.panX + ', ' + state.panY + ') scale(' + s + ', ' + (-s) + ')';
     camera.setAttribute('transform', t);
     if (blankCam) blankCam.setAttribute('transform', t);
   }
-  function layoutBlank() {
+  function layoutBlank(layout) {
     var w = state.blankW, h = state.blankH;
     blank.setAttribute('width', w); blank.setAttribute('height', h);
     hitRight.setAttribute('x', w - 0.35); hitRight.setAttribute('y', 0);
@@ -2844,26 +3566,143 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var nw = Math.max(0.05, w - m.l - m.r);
     var nh = Math.max(0.05, h - m.b - m.t);
     if (nestBox) {
+      nestBox.setAttribute('visibility', state.hexArmed ? 'hidden' : 'visible');
       nestBox.setAttribute('x', nx);
       nestBox.setAttribute('y', ny);
       nestBox.setAttribute('width', nw);
       nestBox.setAttribute('height', nh);
     }
     if (partG) {
-      var layout = nestLayout();
+      layout = layout || nestLayout();
       partG.replaceChildren();
-      for (var row = 0; row < layout.rows; row++) {
-        for (var column = 0; column < layout.columns; column++) {
-          var tile = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-          tile.setAttribute('x', nx + column * (layout.partW + state.gap.x));
-          tile.setAttribute('y', ny + row * (layout.partH + state.gap.y));
-          tile.setAttribute('width', layout.partW);
-          tile.setAttribute('height', layout.partH);
-          tile.setAttribute('fill', 'rgba(83,139,236,0.22)');
-          tile.setAttribute('stroke', '#538BEC');
-          tile.setAttribute('stroke-width', '1.15');
-          tile.setAttribute('vector-effect', 'non-scaling-stroke');
-          partG.appendChild(tile);
+      function appendMarginBands(originX, originY, blankWidth, blankHeight) {
+        function band(x, y, width, height) {
+          var minX = originX;
+          var maxX = originX + Math.max(0, blankWidth);
+          var minY = originY;
+          var maxY = originY + Math.max(0, blankHeight);
+          var left = Math.max(minX, Math.min(maxX, x));
+          var right = Math.max(minX, Math.min(maxX, x + Math.max(0, width)));
+          var bottom = Math.max(minY, Math.min(maxY, y));
+          var top = Math.max(minY, Math.min(maxY, y + Math.max(0, height)));
+          if (right <= left || top <= bottom) return;
+          var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+          rect.setAttribute('x', left);
+          rect.setAttribute('y', bottom);
+          rect.setAttribute('width', right - left);
+          rect.setAttribute('height', top - bottom);
+          rect.setAttribute('fill', 'rgba(220,48,48,0.22)');
+          rect.setAttribute('stroke', 'none');
+          partG.appendChild(rect);
+        }
+        if (!state.marginBandsVisible) return;
+        /* Each band is an inside, live-inch L/R/T/B reserve for this blank. */
+        band(originX, originY, m.l, blankHeight);
+        band(originX + blankWidth - m.r, originY, m.r, blankHeight);
+        band(originX, originY, blankWidth, m.b);
+        band(originX, originY + blankHeight - m.t, blankWidth, m.t);
+      }
+      function appendTile(x, y, width, height) {
+        var tile = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        tile.setAttribute('x', x);
+        tile.setAttribute('y', y);
+        tile.setAttribute('width', width);
+        tile.setAttribute('height', height);
+        tile.setAttribute('fill', 'rgba(83,139,236,0.22)');
+        tile.setAttribute('stroke', '#538BEC');
+        tile.setAttribute('stroke-width', '1.15');
+        tile.setAttribute('vector-effect', 'non-scaling-stroke');
+        partG.appendChild(tile);
+      }
+      function appendHexTile(center) {
+        var aabb = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        aabb.setAttribute('x', center.x - layout.radius);
+        aabb.setAttribute('y', center.y - layout.radius);
+        aabb.setAttribute('width', layout.diameter);
+        aabb.setAttribute('height', layout.diameter);
+        aabb.setAttribute('fill', 'none');
+        aabb.setAttribute('stroke', '#538BEC');
+        aabb.setAttribute('stroke-width', '1');
+        aabb.setAttribute('stroke-dasharray', '2 2');
+        aabb.setAttribute('vector-effect', 'non-scaling-stroke');
+        var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', center.x);
+        circle.setAttribute('cy', center.y);
+        circle.setAttribute('r', layout.radius);
+        circle.setAttribute('fill', 'rgba(83,139,236,0.22)');
+        circle.setAttribute('stroke', '#538BEC');
+        circle.setAttribute('stroke-width', '1.15');
+        circle.setAttribute('vector-effect', 'non-scaling-stroke');
+        partG.appendChild(aabb);
+        partG.appendChild(circle);
+      }
+      function appendVoidTile(center) {
+        var holeR = layout.holeR;
+        var holeD = layout.holeD;
+        var aabb = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        aabb.setAttribute('x', center.x - holeR);
+        aabb.setAttribute('y', center.y - holeR);
+        aabb.setAttribute('width', holeD);
+        aabb.setAttribute('height', holeD);
+        aabb.setAttribute('fill', 'none');
+        aabb.setAttribute('stroke', '#C62828');
+        aabb.setAttribute('stroke-width', '1');
+        aabb.setAttribute('stroke-dasharray', '2 2');
+        aabb.setAttribute('vector-effect', 'non-scaling-stroke');
+        var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', center.x);
+        circle.setAttribute('cy', center.y);
+        circle.setAttribute('r', holeR);
+        circle.setAttribute('fill', 'rgba(220,48,48,0.22)');
+        circle.setAttribute('stroke', '#C62828');
+        circle.setAttribute('stroke-width', '1.15');
+        circle.setAttribute('vector-effect', 'non-scaling-stroke');
+        partG.appendChild(aabb);
+        partG.appendChild(circle);
+      }
+      if (layout.hex) {
+        (layout.voids || []).forEach(appendVoidTile);
+        layout.failedRows.forEach(function (y) {
+          var wash = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+          wash.setAttribute('x', Math.max(0, m.l));
+          wash.setAttribute('y', Math.max(0, y - layout.radius));
+          wash.setAttribute('width', Math.max(0, w - m.l - m.r));
+          wash.setAttribute('height', Math.min(layout.diameter, h));
+          wash.setAttribute('fill', 'rgba(220,48,48,0.22)');
+          wash.setAttribute('stroke', 'none');
+          partG.appendChild(wash);
+        });
+        layout.centers.forEach(appendHexTile);
+      } else if (layout.groups) {
+        for (var groupIndex = 0; groupIndex < layout.groups.length; groupIndex++) {
+          var groupBlank = layout.groups[groupIndex];
+          var group = groupBlank.group, grid = group.grid;
+          var originX = layout.trimLine.orientation === 'vertical' && groupIndex === 1 ? layout.trimLine.position : 0;
+          var originY = layout.trimLine.orientation === 'horizontal' && groupIndex === 1 ? layout.trimLine.position : 0;
+          var localLeft = Math.max(0, m.l);
+          var localBottom = Math.max(0, m.b);
+          appendMarginBands(originX, originY, groupBlank.width, groupBlank.height);
+          for (var groupRow = 0; groupRow < grid.rows; groupRow++) {
+            for (var groupColumn = 0; groupColumn < grid.columns; groupColumn++) {
+              appendTile(
+                originX + localLeft + groupColumn * (grid.partWidth + grid.gapX),
+                originY + localBottom + groupRow * (grid.partHeight + grid.gapY),
+                grid.partWidth,
+                grid.partHeight
+              );
+            }
+          }
+        }
+        var trim = layout.trimLine.orientation === 'vertical'
+          ? line(layout.trimLine.position, 0, layout.trimLine.position, h, 1.15, '#111111')
+          : line(0, layout.trimLine.position, w, layout.trimLine.position, 1.15, '#111111');
+        partG.appendChild(trim);
+      } else {
+        appendMarginBands(0, 0, w, h);
+        for (var row = 0; row < layout.rows; row++) {
+          for (var column = 0; column < layout.columns; column++) {
+            appendTile(nx + column * (layout.partW + state.gap.x), ny + row * (layout.partH + state.gap.y), layout.partW, layout.partH);
+          }
         }
       }
     }
@@ -2900,7 +3739,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
 
   /* The live ticker is a fixed, viewport-centered HUD rather than blank chrome. */
-  function positionBlankTicker() {
+  function positionBlankTicker(layout) {
     var pin = blankCluster || blankTicker;
     if (!pin) return;
 
@@ -2908,17 +3747,50 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var txt = state.blankW.toFixed(3) + ' × ' + state.blankH.toFixed(3);
     btReadout = document.getElementById('bt-readout');
     if (btReadout) btReadout.textContent = txt;
-    if (btParts) btParts.textContent = String(nestLayout().count);
+    if (btParts) btParts.textContent = String((layout || nestLayout()).count);
 
-    /* Cut 18: pin from the first closed measurement; editor actions hang right. */
-    var box = document.getElementById('bt-travel-box') || pin;
-    if (!tickerClosedWidth && !pin.classList.contains('is-ticker-editing')) {
-      tickerClosedWidth = box.offsetWidth || 140;
-      box.style.width = tickerClosedWidth + 'px';
-    }
+    /* Cut 18: pin from the measured closed row; editor actions hang right. */
+    var box = document.getElementById('blank-ticker-pin') || pin;
+    if (!tickerClosedWidth && countWellWidth && !pin.classList.contains('is-ticker-editing')) lockClosedTickerPin();
     var tw = tickerClosedWidth || box.offsetWidth || 140;
     pin.style.left = Math.round((window.innerWidth - tw) / 2) + 'px';
     pin.style.top = (HEADER_H + STOP) + 'px';
+    positionHexArrayTicket(layout);
+  }
+  function positionHexArrayTicket(layout) {
+    var hexOn = !!(layout && layout.hex);
+    var skeletonOn = !!(hexOn && layout.skeleton);
+    if (hexRemFaces) hexRemFaces.hidden = !(hexOn && layout.rem);
+    if (!hexArrayTicket) return;
+    if (!hexOn) { hexArrayTicket.hidden = true; return; }
+    hexArrayTicket.hidden = false;
+    function face(name, value) {
+      var el = hexArrayTicket.querySelector('[data-hex-ticket="' + name + '"]');
+      if (el) el.textContent = value;
+    }
+    var pocketFace = hexArrayTicket.querySelector('[data-hex-ticket-face="pocket-cols"]');
+    var xGapFace = hexArrayTicket.querySelector('[data-hex-ticket-face="x-gap"]');
+    var yGapFace = hexArrayTicket.querySelector('[data-hex-ticket-face="y-gap"]');
+    var xOffsetFace = hexArrayTicket.querySelector('[data-hex-ticket-face="x-offset"]');
+    var jogXFace = hexArrayTicket.querySelector('[data-hex-ticket-face="jog-x"]');
+    var jogYFace = hexArrayTicket.querySelector('[data-hex-ticket-face="jog-y"]');
+    if (pocketFace) pocketFace.hidden = !skeletonOn;
+    if (xGapFace) xGapFace.hidden = false;
+    if (yGapFace) yGapFace.hidden = false;
+    if (xOffsetFace) xOffsetFace.hidden = skeletonOn;
+    if (jogXFace) jogXFace.hidden = !skeletonOn;
+    if (jogYFace) jogYFace.hidden = !skeletonOn;
+    face('columns', String(layout.columns));
+    face('rows', String(layout.rows));
+    face('x-gap', layout.xGap.toFixed(3));
+    face('y-gap', layout.yGap.toFixed(3));
+    if (skeletonOn) {
+      face('jog-x', (layout.jogX || 0).toFixed(3));
+      face('jog-y', (layout.jogY || 0).toFixed(3));
+      face('pocket-cols', String(layout.pocketCols || 0));
+    } else {
+      face('x-offset', layout.xOffset.toFixed(3));
+    }
   }
   function syncHudBlankFromBed() {
     if (typeof window.__hudSyncBlank === 'function') window.__hudSyncBlank(state.blankW, state.blankH);
@@ -2926,19 +3798,29 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   function clampSubjectToStops() {
     var W = svg.clientWidth || window.innerWidth;
     var H = svg.clientHeight || window.innerHeight;
-    var lane = sheetLanePx();
+    var left = subjectLeftPx(), right = subjectRightPx();
     var baseScale = state.fitScale == null ? fittedScale() : state.fitScale;
-    var maxZoom = Math.max(0.001, (W - lane - STOP) / Math.max(state.blankW * baseScale, 1));
+    var maxZoom = Math.max(0.001, (W - left - right) / Math.max(state.blankW * baseScale, 1));
     state.zoom = Math.min(state.zoom, maxZoom);
     var s = pxPerInch();
     var minPanY = state.blankH * s + HUD_BLANK_STOP;
     var maxPanY = H - STOP;
-    state.panX = Math.max(lane, Math.min(W - STOP - state.blankW * s, state.panX));
+    state.panX = Math.max(left, Math.min(W - right - state.blankW * s, state.panX));
     state.panY = Math.max(minPanY, Math.min(maxPanY, state.panY));
+  }
+  function keepResizeArcInViewport() {
+    if (!cornerArc) return;
+    var rect = cornerArc.getBoundingClientRect();
+    var min = SIDE_INSET, max = window.innerWidth - SIDE_INSET;
+    var correction = rect.left < min ? min - rect.left : rect.right > max ? max - rect.right : 0;
+    if (!correction) return;
+    state.panX += correction;
+    applyCamera();
   }
 
   function render() {
-    clampSubjectToStops(); layoutBlank(); applyCamera(); drawBedRulers(); positionBlankTicker(); syncHudBlankFromBed();
+    var layout = state.hexArmed ? hexLayout() : (state.autoNestArmed ? autoNestLayout() : nestLayout());
+    clampSubjectToStops(); layoutBlank(layout); applyCamera(); keepResizeArcInViewport(); drawBedRulers(); positionBlankTicker(layout); syncHudBlankFromBed();
   }
   window.__bedSetBlank = function (w, h) {
     var nw = Number.isFinite(w) ? w : state.blankW;
@@ -2969,6 +3851,25 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (Number.isFinite(y)) state.gap.y = y;
     render();
   };
+  if (hexRemFaces) {
+    hexRemFaces.addEventListener('input', function (e) {
+      var field = e.target && e.target.getAttribute && e.target.getAttribute('data-hex-rem');
+      if (!field) return;
+      var n = parseFloat(e.target.value);
+      if (!Number.isFinite(n)) return;
+      if (field === 'hole') state.remHoleD = n;
+      if (field === 'x-gap') state.remGapX = n;
+      if (field === 'skel-l') state.remSkelL = n;
+      if (field === 'skel-b') state.remSkelB = n;
+      render();
+    });
+    hexRemFaces.addEventListener('focusout', function (e) {
+      var field = e.target && e.target.getAttribute && e.target.getAttribute('data-hex-rem');
+      if (!field) return;
+      var n = field === 'hole' ? state.remHoleD : field === 'x-gap' ? state.remGapX : field === 'skel-l' ? state.remSkelL : state.remSkelB;
+      e.target.value = (Number.isFinite(n) ? n : 0).toFixed(3);
+    });
+  }
   document.getElementById('bt-rot-ccw').addEventListener('click', function () {
     state.partRot = (state.partRot - 90 + 360) % 360;
     render();
@@ -2977,6 +3878,130 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     state.partRot = (state.partRot + 90) % 360;
     render();
   });
+  var BT_HAMBURGER_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16H4a2 2 0 1 1 0-4h16a2 2 0 1 1 0 4h-4.25"/><path d="M5 12a2 2 0 0 1-2-2 9 7 0 0 1 18 0 2 2 0 0 1-2 2"/><path d="M5 16a2 2 0 0 0-2 2 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 2 2 0 0 0-2-2q0 0 0 0"/><path d="m6.67 12 6.13 4.6a2 2 0 0 0 2.8-.4l3.15-4.2"/></svg>';
+  var BT_SKULL_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12.5 17-.5-1-.5 1h1z"/><path d="M15 22a1 1 0 0 0 1-1v-1a2 2 0 0 0 1.56-3.25 8 8 0 1 0-11.12 0A2 2 0 0 0 8 20v1a1 1 0 0 0 1 1z"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="12" r="1"/></svg>';
+  var SKELETON_INIT_SKIP = 'howmany.flipit.v3.skeletonInitSkip';
+  function syncMenuGlyph() {
+    if (!btMenu) return;
+    if (state.hexArmed) {
+      btMenu.innerHTML = BT_SKULL_SVG;
+      btMenu.setAttribute('title', 'skeleton cut');
+      btMenu.setAttribute('aria-label', 'skeleton cut');
+      btMenu.setAttribute('aria-pressed', String(!!state.skeletonArmed));
+    } else {
+      btMenu.innerHTML = BT_HAMBURGER_SVG;
+      btMenu.setAttribute('title', 'AutoNest');
+      btMenu.setAttribute('aria-label', 'AutoNest');
+      btMenu.setAttribute('aria-pressed', String(!!state.autoNestArmed));
+    }
+  }
+  function setSkeletonArmed(armed) {
+    state.skeletonArmed = !!armed;
+    window.__flipitSkeletonArmed = state.skeletonArmed;
+    if (!state.skeletonArmed && typeof window.__hudCloseSkeletonInit === 'function') window.__hudCloseSkeletonInit();
+    syncMenuGlyph();
+    render();
+  }
+  window.__bedSetSkeletonArmed = setSkeletonArmed;
+  window.__bedGetRemHole = function () { return state.remHoleD; };
+  window.__bedSetRemHole = function (d) {
+    if (!Number.isFinite(d)) return;
+    state.remHoleD = d;
+    if (hexRemFaces) {
+      var holeEl = hexRemFaces.querySelector('[data-hex-rem="hole"]');
+      if (holeEl) holeEl.value = (d).toFixed(3);
+    }
+    if (state.hexArmed) render();
+  };
+  window.__bedGetRemSkelL = function () { return state.remSkelL; };
+  window.__bedSetRemSkelL = function (value) {
+    if (!Number.isFinite(value)) return;
+    state.remSkelL = value;
+    if (hexRemFaces) {
+      var skelLEl = hexRemFaces.querySelector('[data-hex-rem="skel-l"]');
+      if (skelLEl) skelLEl.value = value.toFixed(3);
+    }
+    if (state.hexArmed) render();
+  };
+  window.__bedGetRemSkelB = function () { return state.remSkelB; };
+  window.__bedSetRemSkelB = function (value) {
+    if (!Number.isFinite(value)) return;
+    state.remSkelB = value;
+    if (hexRemFaces) {
+      var skelBEl = hexRemFaces.querySelector('[data-hex-rem="skel-b"]');
+      if (skelBEl) skelBEl.value = value.toFixed(3);
+    }
+    if (state.hexArmed) render();
+  };
+  if (btMenu) btMenu.addEventListener('click', function () {
+    if (state.hexArmed) {
+      if (state.skeletonArmed) {
+        setSkeletonArmed(false);
+        return;
+      }
+      if (typeof window.__hudSkeletonInitIsOpen === 'function' && window.__hudSkeletonInitIsOpen()) {
+        if (typeof window.__hudCloseSkeletonInit === 'function') window.__hudCloseSkeletonInit();
+        return;
+      }
+      var skip = false;
+      try { skip = localStorage.getItem(SKELETON_INIT_SKIP) === 'true'; } catch (_) {}
+      if (skip) {
+        setSkeletonArmed(true);
+        return;
+      }
+      if (typeof window.__hudOpenSkeletonInit === 'function') window.__hudOpenSkeletonInit();
+      else setSkeletonArmed(true);
+      return;
+    }
+    state.autoNestArmed = !state.autoNestArmed;
+    if (state.autoNestArmed) {
+      state.hexArmed = false;
+      state.skeletonArmed = false;
+      window.__flipitHexArmed = false;
+      window.__flipitSkeletonArmed = false;
+      if (btHex) btHex.setAttribute('aria-pressed', 'false');
+      if (typeof window.__hudSetHexArmed === 'function') window.__hudSetHexArmed(false);
+      if (typeof window.__hudCloseSkeletonInit === 'function') window.__hudCloseSkeletonInit();
+    }
+    syncMenuGlyph();
+    render();
+  });
+  if (btHex) btHex.addEventListener('click', function () {
+    state.hexArmed = !state.hexArmed;
+    if (state.hexArmed) {
+      state.autoNestArmed = false;
+      state.skeletonArmed = false;
+      window.__flipitSkeletonArmed = false;
+      if (typeof window.__hudCloseSkeletonInit === 'function') window.__hudCloseSkeletonInit();
+    } else {
+      state.skeletonArmed = false;
+      window.__flipitSkeletonArmed = false;
+      if (typeof window.__hudCloseSkeletonInit === 'function') window.__hudCloseSkeletonInit();
+    }
+    window.__flipitHexArmed = state.hexArmed;
+    btHex.setAttribute('aria-pressed', String(state.hexArmed));
+    syncMenuGlyph();
+    if (typeof window.__hudSetHexArmed === 'function') window.__hudSetHexArmed(state.hexArmed);
+    render();
+  });
+  function renderMarginBandToggle() {
+    if (!marginBandToggle) return;
+    var visible = state.marginBandsVisible;
+    marginBandToggle.setAttribute('aria-pressed', String(visible));
+    marginBandToggle.setAttribute('aria-label', visible ? 'Hide margin bands' : 'Show margin bands');
+    marginBandToggle.setAttribute('title', visible ? 'Hide margin bands' : 'Show margin bands');
+    marginBandToggle.innerHTML = visible
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></svg>'
+      : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>';
+  }
+  if (marginBandToggle) marginBandToggle.addEventListener('click', function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+    state.marginBandsVisible = !state.marginBandsVisible;
+    renderMarginBandToggle();
+    render();
+  });
+  renderMarginBandToggle();
   blankTicker.addEventListener('click', function (e) {
     if (blankTicker.classList.contains('is-chip-editing')) return;
     e.preventDefault(); e.stopPropagation();
@@ -2984,11 +4009,15 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   });
   function fitBed() {
     state.zoom = 1;
-    state.fitScale = fittedScale();
+    var H = svg.clientHeight || window.innerHeight;
+    var topStop = HUD_BLANK_STOP;
+    var heightFit = Math.max(0.001, H - topStop - STOP) / Math.max(state.blankH, 0.001);
+    state.fitScale = Math.min(fittedScale(), heightFit);
     var s = state.fitScale;
-    state.panX = sheetLanePx();
-    state.panY = state.blankH * s + HUD_BLANK_STOP;
+    state.panX = subjectLeftPx();
+    state.panY = state.blankH * s + topStop;
   }
+  window.__bedParkFit = function () { fitBed(); render(); };
 
   function onPointerDown(e) {
     var t = e.target;
@@ -3008,8 +4037,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (state.dragging === 'pan') {
       var W = svg.clientWidth || window.innerWidth;
       var H = svg.clientHeight || window.innerHeight;
-      var lane = sheetLanePx();
-      state.panX = Math.max(lane, Math.min(W - STOP - state.blankW * s, state.start.panX + dx));
+      var left = subjectLeftPx(), right = subjectRightPx();
+      state.panX = Math.max(left, Math.min(W - right - state.blankW * s, state.start.panX + dx));
       state.panY = Math.max(state.blankH * s + HUD_BLANK_STOP, Math.min(H - STOP, state.start.panY + dy));
     }
     else if (state.dragging === 'x') state.blankW = Math.max(state.snap, snap(state.start.w + dx / s));
@@ -3020,9 +4049,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }
     render();
   }
-  function onPointerUp() {
+  function onPointerUp(e) {
+    var wasResize = state.dragging === 'x' || state.dragging === 'y' || state.dragging === 'xy';
     state.dragging = null; state.start = null;
     document.body.classList.remove('lb-dragging-x','lb-dragging-y','lb-dragging-xy','lb-panning','lb-dragging');
+    if (wasResize && e && e.type === 'pointerup') window.__bedParkFit();
   }
 
   svg.addEventListener('pointerdown', onPointerDown);
@@ -3048,6 +4079,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   window.addEventListener('resize', function () { fitBed(); render(); });
 
   fitBed(); render();
+  window.requestAnimationFrame(function () { lockCountWell(); lockTickerSeatsAtBoot(); });
   var sheet = document.getElementById('hud');
   if (sheet && typeof ResizeObserver !== 'undefined') {
     var sheetWidth = Math.round(sheet.getBoundingClientRect().width);
@@ -3231,15 +4263,85 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   function fmt3(n) { return (Number.isFinite(n) ? n : 0).toFixed(3); }
 
   /* Cut 24: a preset is a named live-field hydrate, not a picker or popover. */
-  function copyLivePreset() { return { name: 'Preset', blank: { x: paramState.blank.x, y: paramState.blank.y }, gap: { x: paramState.gap.x, y: paramState.gap.y }, margin: { l: paramState.margin.l, r: paramState.margin.r, b: paramState.margin.b, t: paramState.margin.t } }; }
-  function emptyMarginPreset() { return { name: '', blank: {}, gap: {}, margin: {} }; }
+  function copyLivePreset() { return { name: '', part: { x: paramState.part.x, y: paramState.part.y }, blank: { x: paramState.blank.x, y: paramState.blank.y }, gap: { x: paramState.gap.x, y: paramState.gap.y }, margin: { l: paramState.margin.l, r: paramState.margin.r, b: paramState.margin.b, t: paramState.margin.t } }; }
+  function emptyMarginPreset() { return { name: '', part: {}, blank: {}, gap: {}, margin: {} }; }
   function isEmptyMarginPreset(preset) {
-    return !!preset && !preset.name && !Object.keys(preset.blank || {}).length && !Object.keys(preset.gap || {}).length && !Object.keys(preset.margin || {}).length;
+    return !!preset && !preset.name && !Object.keys(preset.part || {}).length && !Object.keys(preset.blank || {}).length && !Object.keys(preset.gap || {}).length && !Object.keys(preset.margin || {}).length;
   }
   var marginPresetSlots = Array.from({ length: 4 }, copyLivePreset);
-  var marginPresetEditing = false, marginPresetArmed = null, marginPresetCardSlot = null;
+  var marginPresetEditing = false, marginPresetArmed = null, marginPresetCardSlot = null, marginPresetAlertMode = null;
+  var marginPresetSections = { part: true, blank: true, gap: true, margin: true };
+  var marginPresetSectionSnapshots = {}, marginPresetSectionLinks = { part: false, blank: false, gap: false };
   var marginPresetCardLayer = document.querySelector('[data-margin-preset-card-layer]');
+  var marginPresetModalRow = document.querySelector('[data-margin-preset-modal-row]');
+  var marginPresets = document.querySelector('.margin-presets');
+  var marginPresetDeleteAlert = document.querySelector('[data-margin-preset-delete-alert]');
+  var marginPresetsSheetHole = document.createElement('div');
+  marginPresetsSheetHole.className = 'margin-presets-sheet-hole';
+  function moveMarginPresetsToModal() {
+    if (!marginPresets || !marginPresetModalRow) return;
+    if (!marginPresetsSheetHole.isConnected) {
+      var box = marginPresets.getBoundingClientRect();
+      marginPresetsSheetHole.style.width = box.width + 'px';
+      marginPresetsSheetHole.style.height = box.height + 'px';
+      marginPresets.before(marginPresetsSheetHole);
+    }
+    marginPresetModalRow.insertBefore(marginPresets, marginPresetModalRow.firstElementChild);
+  }
+  function restoreMarginPresetsToSheet() {
+    if (marginPresetsSheetHole.isConnected) marginPresetsSheetHole.replaceWith(marginPresets);
+  }
   function clearMarginPresetArm() { if (marginPresetArmed === null) return; marginPresetArmed = null; renderMarginPresetSlots(); }
+  function setMarginPresetSectionEnabled(section, enabled) {
+    marginPresetSections[section] = enabled;
+    var toggle = document.querySelector('[data-margin-preset-section-toggle="' + section + '"]');
+    var cardSection = document.querySelector('[data-margin-preset-section="' + section + '"]');
+    if (cardSection) {
+      cardSection.classList.toggle('is-disabled', !enabled);
+      cardSection.querySelectorAll('input').forEach(function (input) { input.disabled = !enabled; });
+    }
+    if (toggle) {
+      toggle.setAttribute('aria-pressed', String(enabled));
+      toggle.title = (enabled ? 'Exclude ' : 'Include ') + section.charAt(0).toUpperCase() + section.slice(1);
+      toggle.setAttribute('aria-label', toggle.title);
+    }
+  }
+  function resetMarginPresetSections() { ['part', 'blank', 'gap', 'margin'].forEach(function (section) { setMarginPresetSectionEnabled(section, true); }); }
+  function marginPresetSectionForPath(path) { return path.split('.')[0]; }
+  function marginPresetSectionInputs(section) { return Array.from(document.querySelectorAll('[data-margin-preset-section="' + section + '"] input')); }
+  function captureMarginPresetSection(section) { marginPresetSectionSnapshots[section] = marginPresetSectionInputs(section).map(function (input) { return input.value; }); }
+  function restoreMarginPresetSection(section) {
+    marginPresetSectionInputs(section).forEach(function (input, index) { input.value = (marginPresetSectionSnapshots[section] || [])[index] || ''; });
+    refreshMarginPresetSectionActions(section);
+  }
+  function marginPresetSectionIsDirty(section) {
+    var snapshot = marginPresetSectionSnapshots[section] || [];
+    return marginPresetSectionInputs(section).some(function (input, index) { return input.value !== snapshot[index]; });
+  }
+  function refreshMarginPresetSectionActions(section) {
+    var cardSection = document.querySelector('[data-margin-preset-section="' + section + '"]'); if (!cardSection || section === 'margin') return;
+    var visible = marginPresetSections[section] && (cardSection.contains(document.activeElement) || marginPresetSectionIsDirty(section));
+    ['commit', 'cancel'].forEach(function (action) {
+      var button = document.querySelector('[data-margin-preset-section-' + action + '="' + section + '"]');
+      if (button) button.hidden = !visible;
+    });
+  }
+  function refreshAllMarginPresetSectionActions() { ['part', 'blank', 'gap'].forEach(refreshMarginPresetSectionActions); }
+  function commitMarginPresetSection(section) {
+    if (!marginPresetSections[section]) return;
+    var target = marginPresetCardSlot;
+    if (target === null) {
+      target = marginPresetSlots.findIndex(isEmptyMarginPreset);
+      if (target === -1) { target = marginPresetSlots.length; marginPresetSlots.push(emptyMarginPreset()); }
+      marginPresetCardSlot = target; marginPresetArmed = target;
+    }
+    var preset = marginPresetSlots[target], prior = preset[section] || {};
+    marginPresetSectionInputs(section).forEach(function (input) {
+      var path = input.getAttribute('data-margin-preset-field').split('.')[1], value = parseLiveNumber(input);
+      preset[section][path] = value === null ? (Number.isFinite(prior[path]) ? prior[path] : liveMarginPresetValue(section + '.' + path)) : value;
+    });
+    captureMarginPresetSection(section); renderMarginPresetSlots(); refreshMarginPresetSectionActions(section);
+  }
   function renderMarginPresetSlots() {
     var grid = document.querySelector('[data-margin-preset-grid]'); if (!grid) return;
     grid.replaceChildren();
@@ -3253,35 +4355,96 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var pencil = document.querySelector('[data-margin-preset-edit]'); if (pencil) pencil.setAttribute('aria-pressed', String(marginPresetEditing));
   }
   function presetNumber(preset, path, live) { var value = preset; path.split('.').forEach(function (part) { value = value && value[part]; }); return Number.isFinite(value) ? value : live; }
+  function liveMarginPresetValue(path) { return presetNumber(copyLivePreset(), path, 0); }
   function writeMarginPresetCard(preset) {
-    var live = copyLivePreset(), name = document.querySelector('[data-margin-preset-name]'); if (name) name.value = preset.name || '';
+    var name = document.querySelector('[data-margin-preset-name]'); if (name) name.value = preset.name || '';
     document.querySelectorAll('[data-margin-preset-field]').forEach(function (input) {
       var path = input.getAttribute('data-margin-preset-field');
-      var liveValue = path === 'blank.x' ? live.blank.x : path === 'blank.y' ? live.blank.y : path === 'gap.x' ? live.gap.x : path === 'gap.y' ? live.gap.y : live.margin[path.slice(-1)];
+      if (!marginPresetSections[marginPresetSectionForPath(path)]) return;
+      var liveValue = liveMarginPresetValue(path);
       input.value = fmt3(presetNumber(preset, path, liveValue));
     });
+    ['part', 'blank', 'gap', 'margin'].forEach(captureMarginPresetSection);
+    refreshAllMarginPresetSectionActions();
   }
   function openMarginPresetCard(index) {
     var preset = index === null ? copyLivePreset() : marginPresetSlots[index]; if (!preset || !marginPresetCardLayer) return;
+    var wasOpen = marginPresetCardLayer.classList.contains('is-open');
     marginPresetEditing = true;
     if (index !== null) marginPresetArmed = index;
     marginPresetCardSlot = index;
-    renderMarginPresetSlots(); writeMarginPresetCard(preset); marginPresetCardLayer.classList.add('is-open'); marginPresetCardLayer.setAttribute('aria-hidden', 'false');
+    if (!wasOpen) resetMarginPresetSections();
+    renderMarginPresetSlots(); writeMarginPresetCard(preset); moveMarginPresetsToModal(); marginPresetCardLayer.classList.add('is-open'); marginPresetCardLayer.setAttribute('aria-hidden', 'false');
     var name = document.querySelector('[data-margin-preset-name]'); if (name) name.focus();
   }
-  function closeMarginPresetCard() { if (marginPresetCardLayer) { marginPresetCardLayer.classList.remove('is-open'); marginPresetCardLayer.setAttribute('aria-hidden', 'true'); } marginPresetCardSlot = null; renderMarginPresetSlots(); }
+  function closeMarginPresetDeleteAlert() { if (marginPresetDeleteAlert) marginPresetDeleteAlert.classList.remove('is-open'); marginPresetAlertMode = null; }
+  function openMarginPresetAlert(mode) {
+    if (!marginPresetDeleteAlert) return;
+    marginPresetAlertMode = mode;
+    var title = document.querySelector('[data-margin-preset-alert-title]'), description = document.querySelector('[data-margin-preset-alert-description]');
+    var option = document.querySelector('.margin-preset-delete-alert__option'), confirm = document.querySelector('[data-margin-preset-delete-confirm]');
+    var isDelete = mode === 'delete';
+    if (title) title.textContent = isDelete ? 'Are you sure you want to delete this?' : 'Are you sure you want to change that?';
+    if (description) description.textContent = isDelete ? 'This cannot be undone.' : 'This will update the selected preset.';
+    if (option) option.hidden = !isDelete;
+    if (confirm) { confirm.textContent = isDelete ? 'Delete' : 'Change'; confirm.classList.toggle('margin-preset-delete-alert__button--destructive', isDelete); }
+    marginPresetDeleteAlert.classList.add('is-open');
+  }
+  function closeMarginPresetCard() { closeMarginPresetDeleteAlert(); if (marginPresetCardLayer) { marginPresetCardLayer.classList.remove('is-open'); marginPresetCardLayer.setAttribute('aria-hidden', 'true'); } restoreMarginPresetsToSheet(); marginPresetEditing = false; marginPresetCardSlot = null; renderMarginPresetSlots(); }
   function readMarginPresetCard() {
-    var prior = marginPresetCardSlot === null ? emptyMarginPreset() : marginPresetSlots[marginPresetCardSlot], next = { name: '', blank: {}, gap: {}, margin: {} }, name = document.querySelector('[data-margin-preset-name]');
-    next.name = (name && name.value.trim()) || 'Preset';
+    var prior = marginPresetCardSlot === null ? emptyMarginPreset() : marginPresetSlots[marginPresetCardSlot], next = { name: '', part: {}, blank: {}, gap: {}, margin: {} }, name = document.querySelector('[data-margin-preset-name]');
+    next.name = (name && name.value.trim()) || '';
     document.querySelectorAll('[data-margin-preset-field]').forEach(function (input) {
       var path = input.getAttribute('data-margin-preset-field'), value = parseLiveNumber(input);
-      var live = path === 'blank.x' ? paramState.blank.x : path === 'blank.y' ? paramState.blank.y : path === 'gap.x' ? paramState.gap.x : path === 'gap.y' ? paramState.gap.y : paramState.margin[path.slice(-1)];
-      var parts = path.split('.'); next[parts[0]][parts[1]] = value === null ? presetNumber(prior, path, live) : value;
+      var live = liveMarginPresetValue(path);
+      var parts = path.split('.'); next[parts[0]][parts[1]] = !marginPresetSections[parts[0]] ? presetNumber(prior, path, live) : value === null ? presetNumber(prior, path, live) : value;
     });
     return next;
   }
+  function marginPresetMatches(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
+  document.querySelectorAll('[data-margin-preset-name], [data-margin-preset-field]').forEach(function (input) {
+    input.addEventListener('click', function () { input.select(); });
+  });
+  document.querySelectorAll('[data-margin-preset-section-toggle]').forEach(function (toggle) {
+    toggle.addEventListener('click', function () {
+      var section = toggle.getAttribute('data-margin-preset-section-toggle');
+      setMarginPresetSectionEnabled(section, !marginPresetSections[section]);
+      refreshMarginPresetSectionActions(section);
+    });
+  });
+  document.querySelectorAll('[data-margin-preset-section-link]').forEach(function (button) {
+    button.addEventListener('click', function () {
+      var section = button.getAttribute('data-margin-preset-section-link');
+      marginPresetSectionLinks[section] = !marginPresetSectionLinks[section];
+      button.setAttribute('aria-pressed', String(marginPresetSectionLinks[section]));
+      button.title = (marginPresetSectionLinks[section] ? 'Unlink ' : 'Link ') + section + ' axes';
+      button.setAttribute('aria-label', button.title);
+      if (marginPresetSectionLinks[section]) {
+        var inputs = marginPresetSectionInputs(section); if (inputs[0] && inputs[1]) inputs[1].value = inputs[0].value;
+      }
+      refreshMarginPresetSectionActions(section);
+    });
+  });
+  document.querySelectorAll('[data-margin-preset-section-commit]').forEach(function (button) {
+    button.addEventListener('click', function () { commitMarginPresetSection(button.getAttribute('data-margin-preset-section-commit')); });
+  });
+  document.querySelectorAll('[data-margin-preset-section-cancel]').forEach(function (button) {
+    button.addEventListener('click', function () { restoreMarginPresetSection(button.getAttribute('data-margin-preset-section-cancel')); });
+  });
+  ['part', 'blank', 'gap'].forEach(function (section) {
+    var cardSection = document.querySelector('[data-margin-preset-section="' + section + '"]'); if (!cardSection) return;
+    cardSection.addEventListener('focusin', function () { refreshMarginPresetSectionActions(section); });
+    cardSection.addEventListener('focusout', function () { requestAnimationFrame(function () { refreshMarginPresetSectionActions(section); }); });
+    cardSection.querySelectorAll('input').forEach(function (input) { input.addEventListener('input', function () {
+      if (marginPresetSectionLinks[section]) {
+        var inputs = marginPresetSectionInputs(section); if (inputs[0] === input && inputs[1]) inputs[1].value = input.value; else if (inputs[1] === input && inputs[0]) inputs[0].value = input.value;
+      }
+      refreshMarginPresetSectionActions(section);
+    }); });
+  });
   function applyMarginPreset(index) {
     var preset = marginPresetSlots[index]; if (!preset) return; var live = copyLivePreset();
+    paramState.part.x = presetNumber(preset, 'part.x', live.part.x); paramState.part.y = presetNumber(preset, 'part.y', live.part.y);
     paramState.blank.x = presetNumber(preset, 'blank.x', live.blank.x); paramState.blank.y = presetNumber(preset, 'blank.y', live.blank.y);
     paramState.gap.x = presetNumber(preset, 'gap.x', live.gap.x); paramState.gap.y = presetNumber(preset, 'gap.y', live.gap.y);
     ['l', 'r', 'b', 't'].forEach(function (edge) { paramState.margin[edge] = presetNumber(preset, 'margin.' + edge, live.margin[edge]); });
@@ -3290,18 +4453,15 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   var marginPresetGrid = document.querySelector('[data-margin-preset-grid]');
   if (marginPresetGrid) {
     marginPresetGrid.addEventListener('click', function (event) {
-      var slot = event.target.closest('[data-margin-preset-slot]');
-      if (!slot) return;
-      var index = Number(slot.getAttribute('data-margin-preset-slot'));
+    var slot = event.target.closest('[data-margin-preset-slot]'); if (!slot) return;
+    var index = Number(slot.getAttribute('data-margin-preset-slot'));
       if (marginPresetEditing) openMarginPresetCard(index); else applyMarginPreset(index);
     });
   }
   var editMarginPreset = document.querySelector('[data-margin-preset-edit]');
   if (editMarginPreset) editMarginPreset.addEventListener('click', function () {
-    marginPresetEditing = !marginPresetEditing;
-    if (marginPresetEditing && marginPresetArmed !== null) openMarginPresetCard(marginPresetArmed);
-    else if (marginPresetEditing) openMarginPresetCard(null);
-    else renderMarginPresetSlots();
+    if (marginPresetCardLayer && marginPresetCardLayer.classList.contains('is-open')) { closeMarginPresetCard(); return; }
+    openMarginPresetCard(marginPresetArmed);
   });
   var addMarginPreset = document.querySelector('[data-margin-preset-add]');
   if (addMarginPreset) addMarginPreset.addEventListener('click', function () {
@@ -3310,12 +4470,38 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   });
   var removeMarginPreset = document.querySelector('[data-margin-preset-remove]');
   if (removeMarginPreset) removeMarginPreset.addEventListener('click', function () {
-    marginPresetSlots.pop();
-    if (marginPresetArmed !== null && marginPresetArmed >= marginPresetSlots.length) marginPresetArmed = null;
+    if (marginPresetArmed === null) return;
+    if (localStorage.getItem('howmany.flipit.v3.presetDeleteSkip') === 'true') { deleteArmedMarginPreset(); return; }
+    openMarginPresetAlert('delete');
+  });
+  function deleteArmedMarginPreset() {
+    if (marginPresetArmed === null) return;
+    marginPresetSlots.splice(marginPresetArmed, 1);
+    marginPresetArmed = null;
+    if (marginPresetCardSlot !== null) { closeMarginPresetCard(); return; }
+    closeMarginPresetDeleteAlert();
     renderMarginPresetSlots();
+  }
+  var confirmMarginPresetDelete = document.querySelector('[data-margin-preset-delete-confirm]');
+  if (confirmMarginPresetDelete) confirmMarginPresetDelete.addEventListener('click', function () {
+    if (marginPresetAlertMode === 'dirty') {
+      var target = marginPresetCardSlot, next = readMarginPresetCard();
+      if (target !== null && next) { marginPresetSlots[target] = next; marginPresetArmed = target; }
+      closeMarginPresetCard();
+      return;
+    }
+    var skip = document.querySelector('[data-margin-preset-delete-skip]');
+    if (skip && skip.checked) localStorage.setItem('howmany.flipit.v3.presetDeleteSkip', 'true');
+    deleteArmedMarginPreset();
+  });
+  var cancelMarginPresetDelete = document.querySelector('[data-margin-preset-delete-cancel]');
+  if (cancelMarginPresetDelete) cancelMarginPresetDelete.addEventListener('click', function () {
+    if (marginPresetAlertMode === 'dirty' && marginPresetCardSlot !== null) writeMarginPresetCard(marginPresetSlots[marginPresetCardSlot]);
+    closeMarginPresetDeleteAlert();
   });
   var saveMarginPreset = document.querySelector('[data-margin-preset-save]'); if (saveMarginPreset) saveMarginPreset.addEventListener('click', function () {
     var next = readMarginPresetCard(), target = marginPresetCardSlot;
+    if (target !== null && next && !marginPresetMatches(next, marginPresetSlots[target])) { openMarginPresetAlert('dirty'); return; }
     if (next) {
       if (target === null) target = marginPresetSlots.findIndex(isEmptyMarginPreset);
       if (target === -1) { target = marginPresetSlots.length; marginPresetSlots.push(next); }
@@ -3343,6 +4529,12 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       '</span>';
   }
 
+  var HEX_CIRCLE_OFF = '<svg class="chip-hex-circle-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 2l20 20"/><path d="M8.35 2.69A10 10 0 0 1 21.3 15.65"/><path d="M19.08 19.08A10 10 0 1 1 4.92 4.92"/></svg>';
+  function hexDiameterChipHTML(value, editing) {
+    if (editing) return HEX_CIRCLE_OFF + chipField('', 'x', value);
+    return HEX_CIRCLE_OFF + '<span class="chip-hex-diameter">' + fmt3(value) + '</span>';
+  }
+
   function refreshTickers() {
     const p = paramState.part, b = paramState.blank, g = paramState.gap, m = paramState.margin;
     const tPart = document.querySelector('[data-ticker="part"]');
@@ -3351,7 +4543,10 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     const tGap = document.querySelector('[data-ticker="gap"]');
     const tMar = document.querySelector('[data-ticker="margin"]');
     const partText = fmt3(p.x) + ' × ' + fmt3(p.y);
-    if (tPart && !tPart.classList.contains('is-chip-editing')) tPart.textContent = partText;
+    if (tPart && !tPart.classList.contains('is-chip-editing')) {
+      if (window.__flipitHexArmed) tPart.innerHTML = hexDiameterChipHTML(p.x, false);
+      else tPart.textContent = partText;
+    }
     if (tPartCollapsed) tPartCollapsed.textContent = partText;
     if (tBlank && !tBlank.classList.contains('is-chip-editing')) tBlank.textContent = fmt3(b.x) + ' × ' + fmt3(b.y);
     if (tGap && !tGap.classList.contains('is-chip-editing')) tGap.textContent = fmt3(g.x) + ' × ' + fmt3(g.y);
@@ -3931,6 +5126,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
           var peerAxis = axis === 'x' ? 'y' : 'x';
           var peer = ticker.querySelector('[data-chip-field="' + peerAxis + '"]');
           if (peer && peer !== input) { peer.value = input.value; sizeChipInput(peer); }
+        } else if (key === 'part' && window.__flipitHexArmed) {
+          paramState.part.x = value;
         } else paramState[key][axis] = value;
         refreshTickers();
       });
@@ -3978,6 +5175,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }
     if (!isBlankTicker) hud.classList.remove('has-chip-editor');
     refreshTickers();
+    if (commit && isBlankTicker && typeof window.__bedParkFit === 'function') window.__bedParkFit();
     if (ticker) ticker.focus();
   }
   function onChipAction(e) {
@@ -4002,7 +5200,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }
     finishChipEditor(actionName === 'commit');
   }
-  function openChipEditor(key) {
+  function openChipEditor(key, focusAxis) {
     if (chipEditor.key === key) return;
     if (chipEditor.key) finishChipEditor(true);
     clearMarginPresetArm();
@@ -4025,18 +5223,160 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     } else if (key === 'margin') {
       var m = paramState.margin;
       ticker.innerHTML = '<span class="m-grid">' + chipField('L', 'l', m.l) + chipField('R', 'r', m.r) + chipField('B', 'b', m.b) + chipField('T', 't', m.t) + '</span>';
+    } else if (key === 'part' && window.__flipitHexArmed) {
+      ticker.innerHTML = hexDiameterChipHTML(paramState.part.x, true);
     } else {
       var bag = paramState[key];
       ticker.innerHTML = chipField('', 'x', bag.x) + '<span class="chip-editor-by">×</span>' + chipField('', 'y', bag.y);
     }
     fillChipActions(actionsHostFor(ticker, isBlankTicker), gapLink + check + cancel);
-    if (isBlankTicker) bindBlankTickerInputs(ticker);
-    else bindChipInputs(ticker, key);
+    if (isBlankTicker) {
+      bindBlankTickerInputs(ticker);
+      var targetInput = ticker.querySelector('[data-ticker-blank-field="' + (focusAxis || 'x') + '"]');
+      if (targetInput) { targetInput.focus(); targetInput.select(); }
+    } else {
+      bindChipInputs(ticker, key);
+      if (key === 'part' && window.__flipitHexArmed) {
+        var diameterInput = ticker.querySelector('[data-chip-field="x"]');
+        if (diameterInput) { diameterInput.focus(); diameterInput.select(); }
+      }
+    }
   }
   window.__hudOpenChipEditor = openChipEditor;
+  window.__hudSetHexArmed = function (armed) {
+    var ticker = document.querySelector('[data-ticker="part"]');
+    if (chipEditor.key === 'part' && ticker) {
+      ticker.innerHTML = armed
+        ? hexDiameterChipHTML(paramState.part.x, true)
+        : chipField('', 'x', paramState.part.x) + '<span class="chip-editor-by">×</span>' + chipField('', 'y', paramState.part.y);
+      bindChipInputs(ticker, 'part');
+      var focus = ticker.querySelector('[data-chip-field="x"]');
+      if (focus) focus.focus();
+    }
+    refreshTickers();
+  };
+  var SKELETON_INIT_SKIP = 'howmany.flipit.v3.skeletonInitSkip';
+  var skeletonInitLayer = document.querySelector('[data-skeleton-init-layer]');
+  var skeletonInitBound = false;
+  var skeletonInitCommitted = false;
+  function skeletonInitField(name) {
+    return skeletonInitLayer && skeletonInitLayer.querySelector('[data-skeleton-init="' + name + '"]');
+  }
+  function parseSkeletonInitField(name, fallback) {
+    var el = skeletonInitField(name);
+    var n = el ? parseFloat(el.value) : NaN;
+    return Number.isFinite(n) ? n : fallback;
+  }
+  function closeSkeletonInitCard() {
+    if (!skeletonInitLayer) return;
+    skeletonInitLayer.classList.remove('is-open');
+    skeletonInitLayer.setAttribute('aria-hidden', 'true');
+  }
+  function applySkeletonInitValues(values) {
+    if (Number.isFinite(values.w)) paramState.blank.x = values.w;
+    if (Number.isFinite(values.h)) paramState.blank.y = values.h;
+    if (Number.isFinite(values.gap)) {
+      paramState.gap.x = values.gap;
+      if (paramState.gap.linked) paramState.gap.y = values.gap;
+    }
+    if (Number.isFinite(values.part)) paramState.part.x = values.part;
+    if (Number.isFinite(values.cutout) && typeof window.__bedSetRemHole === 'function') window.__bedSetRemHole(values.cutout);
+    if (Number.isFinite(values.skelL) && typeof window.__bedSetRemSkelL === 'function') window.__bedSetRemSkelL(values.skelL);
+    if (Number.isFinite(values.skelB) && typeof window.__bedSetRemSkelB === 'function') window.__bedSetRemSkelB(values.skelB);
+    refreshTickers();
+  }
+  function openSkeletonInitCard() {
+    if (!skeletonInitLayer) {
+      if (typeof window.__bedSetSkeletonArmed === 'function') window.__bedSetSkeletonArmed(true);
+      return;
+    }
+    var cutoutEl = skeletonInitField('cutout');
+    var gapEl = skeletonInitField('gap');
+    var partEl = skeletonInitField('part');
+    var wEl = skeletonInitField('blank-w');
+    var hEl = skeletonInitField('blank-h');
+    var skelLEl = skeletonInitField('skel-l');
+    var skelBEl = skeletonInitField('skel-b');
+    if (wEl) wEl.value = fmt3(paramState.blank.x);
+    if (hEl) hEl.value = fmt3(paramState.blank.y);
+    if (gapEl) gapEl.value = fmt3(paramState.gap.x);
+    if (partEl) partEl.value = fmt3(paramState.part.x);
+    var liveCutout = typeof window.__bedGetRemHole === 'function' ? window.__bedGetRemHole() : 2;
+    if (cutoutEl) cutoutEl.value = fmt3(skeletonInitCommitted && Number.isFinite(liveCutout) ? liveCutout : 2);
+    var liveSkelL = typeof window.__bedGetRemSkelL === 'function' ? window.__bedGetRemSkelL() : 0.25;
+    var liveSkelB = typeof window.__bedGetRemSkelB === 'function' ? window.__bedGetRemSkelB() : 0.5;
+    if (skelLEl) skelLEl.value = fmt3(skeletonInitCommitted && Number.isFinite(liveSkelL) ? liveSkelL : 0.25);
+    if (skelBEl) skelBEl.value = fmt3(skeletonInitCommitted && Number.isFinite(liveSkelB) ? liveSkelB : 0.5);
+    var skip = skeletonInitLayer.querySelector('[data-skeleton-init-skip]');
+    if (skip) skip.checked = false;
+    skeletonInitLayer.classList.add('is-open');
+    skeletonInitLayer.setAttribute('aria-hidden', 'false');
+    if (!skeletonInitBound) {
+      skeletonInitBound = true;
+      skeletonInitLayer.querySelectorAll('[data-skeleton-init]').forEach(function (input) {
+        bindSelectAllOnClick(input);
+        input.addEventListener('input', function () { sanitizeNumericLive(input); });
+        input.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') { e.preventDefault(); commitSkeletonInit(); }
+          if (e.key === 'Escape') { e.preventDefault(); cancelSkeletonInit(); }
+        });
+      });
+      skeletonInitLayer.addEventListener('click', function (e) {
+        if (e.target === skeletonInitLayer) cancelSkeletonInit();
+      });
+    }
+    var focus = cutoutEl || wEl;
+    if (focus) { focus.focus(); focus.select(); }
+  }
+  function commitSkeletonInit() {
+    var cutout = parseSkeletonInitField('cutout', 2);
+    var gap = parseSkeletonInitField('gap', paramState.gap.x);
+    var part = parseSkeletonInitField('part', paramState.part.x);
+    var w = parseSkeletonInitField('blank-w', paramState.blank.x);
+    var h = parseSkeletonInitField('blank-h', paramState.blank.y);
+    var skelL = parseSkeletonInitField('skel-l', 0.25);
+    var skelB = parseSkeletonInitField('skel-b', 0.5);
+    if (cutout < 0) cutout = 0;
+    if (gap < 0) gap = 0;
+    if (part < 0) part = 0;
+    if (skelL < 0) skelL = 0;
+    if (skelB < 0) skelB = 0;
+    if (cutout > 0) {
+      w = Math.max(w, skelL + cutout);
+      h = Math.max(h, skelB + cutout);
+    }
+    applySkeletonInitValues({ w: w, h: h, gap: gap, part: part, cutout: cutout, skelL: skelL, skelB: skelB });
+    skeletonInitCommitted = true;
+    var skip = skeletonInitLayer && skeletonInitLayer.querySelector('[data-skeleton-init-skip]');
+    if (skip && skip.checked) {
+      try { localStorage.setItem(SKELETON_INIT_SKIP, 'true'); } catch (_) {}
+    }
+    closeSkeletonInitCard();
+    if (typeof window.__bedSetSkeletonArmed === 'function') window.__bedSetSkeletonArmed(true);
+  }
+  function cancelSkeletonInit() {
+    closeSkeletonInitCard();
+    if (typeof window.__bedSetSkeletonArmed === 'function') window.__bedSetSkeletonArmed(false);
+  }
+  window.__hudOpenSkeletonInit = openSkeletonInitCard;
+  window.__hudCloseSkeletonInit = closeSkeletonInitCard;
+  window.__hudSkeletonInitIsOpen = function () {
+    return !!(skeletonInitLayer && skeletonInitLayer.classList.contains('is-open'));
+  };
+  var skeletonInitOk = document.querySelector('[data-skeleton-init-ok]');
+  if (skeletonInitOk) skeletonInitOk.addEventListener('click', function (e) { e.preventDefault(); commitSkeletonInit(); });
+  var skeletonInitCancel = document.querySelector('[data-skeleton-init-cancel]');
+  if (skeletonInitCancel) skeletonInitCancel.addEventListener('click', function (e) { e.preventDefault(); cancelSkeletonInit(); });
   hud.addEventListener('click', onChipAction);
   var blankClusterEl = document.getElementById('blank-ticker-cluster');
   if (blankClusterEl) blankClusterEl.addEventListener('click', onChipAction);
+  if (blankClusterEl) blankClusterEl.addEventListener('pointerdown', function (e) {
+    var readout = e.target.closest && e.target.closest('#bt-readout');
+    if (!readout || chipEditor.key) return;
+    var rect = readout.getBoundingClientRect();
+    e.preventDefault(); e.stopPropagation();
+    openChipEditor('blank', e.clientX < rect.left + rect.width / 2 ? 'x' : 'y');
+  });
   hud.addEventListener('click', function (e) {
     var tick = e.target.closest && e.target.closest('.param-ticker[data-open]');
     if (!tick || !hud.contains(tick) || tick.classList.contains('header-part-ticker')) return;
