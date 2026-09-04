@@ -1,6 +1,6 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Cut 2 left-refill + hex diameter chip
+**Status:** Living — Cut 3 pocket lock + hex grid above void AABB
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
@@ -246,6 +246,18 @@ Hex armed: PART SIZE stays the same 154 × 31.46 chip. One diameter number in th
 
 `HOLE DIA = 0` still restores the Cut 2 virgin packer. No second red row. No NC.
 
+## Cut 3 — pocket lock + hex grid above void AABB
+
+This supersedes Cut 2 rem's further-row left-refill only. Hex diameter chip, rem faces, and `HOLE DIA = 0` stay as landed.
+
+Red voids stay inside the rem. If `B + D_h + T > blankH`, do not paint a void row through the blank stroke.
+
+Pocket inserts sit in the cusps and lock. Ticket row 1 is those locked inserts.
+
+Ticket row 2 is not another cusp copy. It starts above the red AABB: `Y = redAABB.top + g + R_p`, and runs from origin X across the rem. That row and every row above sit on one hex grid (`p`, `h` from `D_p` + typed GAP). A cell is occupied if it clears red walls, locked pockets, rem L/R/T/B, and typed GAP. Empty cells stay empty only when a neighbor would collide. Do not greedy-scatter leftover width. Do not leave walkable hex holes. Dodge the locked pocket parts, then stack the same grid.
+
+Do not add a second red row. Do not emit NC. Do not steal PART SIZE or GAP.
+
 ## AutoNest Cut 1 — HUD menu + best uniform
 
 The centered HUD order is Lucide `rotate-ccw`, Lucide `rotate-cw`, blank size, Lucide `menu`, then the blue count. Every travel hit is 24px with a 16px glyph, 24px viewBox, and 2px stroke. The menu consists only of `M4 5h16`, `M4 12h16`, and `M4 19h16`.
@@ -470,3 +482,4 @@ Do not require `file://`.
 | 2026-09-03 | **Cut 2** hex nest: largest N at the D+g pair. Leftover height adds a squeezed row; GAP is never undercut. |
 | 2026-09-03 | **Cut 1** hex rem inset: one red void row from `(L + R_h, B + R_h)`; PART SIZE circles drop into those pockets; rem faces sit next to the hex ticket. |
 | 2026-09-03 | **Cut 2** hex rem inset: rows after the cusp re-pack from the origin and eat leftover width; PART SIZE is one diameter + Lucide circle-off while hex is armed. |
+| 2026-09-03 | **Cut 3** hex rem inset: lock cusp inserts; hex grid from origin X above the red AABB; no leftover greedy refill. |

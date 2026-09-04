@@ -3316,7 +3316,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     return { hex: true, diameter: diameter, radius: radius, p: p, h: h, columns: columns, rows: rows, count: centers.length, centers: centers, voids: [], failedRows: failedRows, xGap: p - diameter, yGap: h - diameter, xOffset: m.l + p / 2 };
   }
 
-  /* Cut 1 rem + Cut 2: one red void row; cusp row is pockets only; later rows left-pack from the origin. */
+  /* Cut 3: locked cusp inserts; one hex grid above the red AABB. No leftover greedy refill. */
   function hexRemInsetLayout() {
     var diameter = state.partW;
     var radius = diameter / 2;
@@ -3334,10 +3334,16 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var holeMaxX = state.blankW - m.r - holeR;
     var holeY = m.b + holeR;
     var voids = [];
-    if (holeMinX <= holeMaxX + FIT_EPSILON && pitchExist > FIT_EPSILON) {
+    /* Red voids stay inside the rem. Do not paint a void row through the blank stroke. */
+    if (m.b + holeD + m.t <= state.blankH + FIT_EPSILON && holeMinX <= holeMaxX + FIT_EPSILON && pitchExist > FIT_EPSILON) {
       var holeN = Math.floor((holeMaxX - holeMinX) / pitchExist + FIT_EPSILON) + 1;
-      for (var hi = 0; hi < holeN; hi++) voids.push({ x: holeMinX + hi * pitchExist, y: holeY });
+      for (var hi = 0; hi < holeN; hi++) {
+        var vx = holeMinX + hi * pitchExist;
+        if (vx > holeMaxX + FIT_EPSILON) break;
+        voids.push({ x: vx, y: holeY });
+      }
     }
+    if (!voids.length) return hexVirginLayout();
     var minX = m.l + radius, maxX = state.blankW - m.r - radius;
     var minY = m.b + radius, maxY = state.blankH - m.t - radius;
     if (minX > maxX + FIT_EPSILON || minY > maxY + FIT_EPSILON) return Object.assign(empty, { voids: voids });
@@ -3375,58 +3381,47 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }
 
     var usedPockets = pocketCenters.length > 0;
-    var yRef = minY;
-    if (usedPockets) {
-      yRef = pocketCenters[0].y;
-      for (var pc = 1; pc < pocketCenters.length; pc++) if (pocketCenters[pc].y > yRef) yRef = pocketCenters[pc].y;
-    }
-
-    var availableRise = maxY - yRef;
-    var n = 1, h = 0, p = pair;
-    var hcp = pair * Math.sqrt(3) / 2;
-    if (availableRise > FIT_EPSILON) {
-      var maxN = Math.max(2, 1 + Math.floor(2 * availableRise / pair + FIT_EPSILON));
-      for (var candidate = maxN; candidate >= 2; candidate--) {
-        var rise = Math.min(hcp, availableRise / (candidate - 1));
-        if (candidate >= 3 && rise + FIT_EPSILON < pair / 2) continue;
-        var pitch = 2 * Math.sqrt(Math.max(0, pair * pair - rise * rise));
-        /* Cut 2: row 2 left-packs from the origin. Only later staggered rows need p/2 to fit. */
-        if (candidate >= 3 && minX + pitch / 2 > maxX + FIT_EPSILON) continue;
-        n = candidate;
-        h = rise;
-        p = pitch;
-        break;
-      }
+    var redTop = holeY + holeR;
+    var gridY0 = redTop + clearance + radius;
+    var p = pair;
+    var h = pair * Math.sqrt(3) / 2;
+    var n = 0;
+    if (gridY0 <= maxY + FIT_EPSILON) {
+      n = 1;
+      var availableRise = maxY - gridY0;
+      if (h > FIT_EPSILON && availableRise > FIT_EPSILON) n += Math.floor(availableRise / h + FIT_EPSILON);
     }
 
     var centers = [];
-    var rows = n, columns = 0, failedRows = [];
-    for (var row = 0; row < rows; row++) {
-      if (row === 0 && usedPockets) {
-        for (var pk = 0; pk < pocketCenters.length; pk++) centers.push(pocketCenters[pk]);
-        columns = Math.max(columns, pocketCenters.length);
-        continue;
-      }
-      var y = yRef + row * h;
-      /* Cut 2: rows 2+ re-pack from the origin (+X). Do not freeze to the cusp-row pitch. */
-      var stagger = usedPockets ? (row % 2 === 0) : (row % 2 === 1);
-      var startX = minX + (stagger ? p / 2 : 0);
+    var columns = 0, occupiedRows = 0;
+    if (usedPockets) {
+      for (var pk = 0; pk < pocketCenters.length; pk++) centers.push(pocketCenters[pk]);
+      columns = pocketCenters.length;
+      occupiedRows = 1;
+    }
+    for (var row = 0; row < n; row++) {
+      var y = gridY0 + row * h;
+      var startX = minX + (row % 2 ? p / 2 : 0);
       var rowColumns = 0;
-      if (startX <= maxX + FIT_EPSILON && p > FIT_EPSILON) {
+      if (y <= maxY + FIT_EPSILON && startX <= maxX + FIT_EPSILON && p > FIT_EPSILON) {
         var maxCols = Math.floor((maxX - startX) / p + FIT_EPSILON) + 1;
         for (var column = 0; column < maxCols; column++) {
           var pt = { x: startX + column * p, y: y };
-          if (pt.x > maxX + FIT_EPSILON) break;
-          if (!clearsReds(pt) || !clearsParts(pt, centers)) continue;
+          if (pt.x < minX - FIT_EPSILON || pt.x > maxX + FIT_EPSILON) continue;
+          if (pt.y < minY - FIT_EPSILON || pt.y > maxY + FIT_EPSILON) continue;
+          /* Occupancy on the lattice. Do not slide off-grid to eat leftover width. */
+          if (!clearsReds(pt) || !clearsParts(pt, pocketCenters)) continue;
           centers.push(pt);
           rowColumns++;
         }
       }
-      if (!rowColumns) failedRows.push(y);
-      columns = Math.max(columns, rowColumns);
+      if (rowColumns) {
+        occupiedRows++;
+        columns = Math.max(columns, rowColumns);
+      }
     }
 
-    return { hex: true, rem: true, diameter: diameter, radius: radius, holeD: holeD, holeR: holeR, p: p, h: h, columns: columns, rows: rows, count: centers.length, centers: centers, voids: voids, failedRows: failedRows, xGap: p - diameter, yGap: h - diameter, xOffset: m.l + p / 2 };
+    return { hex: true, rem: true, diameter: diameter, radius: radius, holeD: holeD, holeR: holeR, p: p, h: h, columns: columns, rows: occupiedRows, count: centers.length, centers: centers, voids: voids, failedRows: [], xGap: p - diameter, yGap: h - diameter, xOffset: m.l + p / 2 };
   }
 
   function hexLayout() {
