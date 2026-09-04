@@ -2707,15 +2707,19 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
             <div class="hex-array-ticket" id="hex-array-ticket" aria-label="Hex array ticket" hidden>
               <div class="hex-array-face"><b>COLUMNS</b><span data-hex-ticket="columns">0</span></div>
               <div class="hex-array-face"><b>ROWS</b><span data-hex-ticket="rows">0</span></div>
-              <div class="hex-array-face"><b>X GAP</b><span data-hex-ticket="x-gap">0.000</span></div>
-              <div class="hex-array-face"><b>Y GAP</b><span data-hex-ticket="y-gap">0.000</span></div>
-              <div class="hex-array-face"><b data-hex-ticket-label="x-origin">X OFFSET</b><span data-hex-ticket="x-offset">0.000</span></div>
+              <div class="hex-array-face" data-hex-ticket-face="x-gap"><b>X GAP</b><span data-hex-ticket="x-gap">0.000</span></div>
+              <div class="hex-array-face" data-hex-ticket-face="y-gap"><b>Y GAP</b><span data-hex-ticket="y-gap">0.000</span></div>
+              <div class="hex-array-face" data-hex-ticket-face="x-offset"><b>X OFFSET</b><span data-hex-ticket="x-offset">0.000</span></div>
+              <div class="hex-array-face" data-hex-ticket-face="jog-x" hidden><b>JOG X</b><span data-hex-ticket="jog-x">0.000</span></div>
+              <div class="hex-array-face" data-hex-ticket-face="jog-y" hidden><b>JOG Y</b><span data-hex-ticket="jog-y">0.000</span></div>
               <div class="hex-array-face" data-hex-ticket-face="pocket-cols" hidden><b>POCKET COLS</b><span data-hex-ticket="pocket-cols">0</span></div>
             </div>
 
             <div class="hex-rem-faces" id="hex-rem-faces" aria-label="Rem hole faces" hidden>
               <label class="hex-array-face"><b>HOLE DIA</b><input data-hex-rem="hole" type="text" inputmode="decimal" autocomplete="off" value="2.500" aria-label="Rem hole diameter" /></label>
               <label class="hex-array-face"><b>X ROW GAP</b><input data-hex-rem="x-gap" type="text" inputmode="decimal" autocomplete="off" value="0.125" aria-label="Rem X-row edge-to-edge gap" /></label>
+              <label class="hex-array-face"><b>SKEL L</b><input data-hex-rem="skel-l" type="text" inputmode="decimal" autocomplete="off" value="0.250" aria-label="Skeleton left edge to first cutout" /></label>
+              <label class="hex-array-face"><b>SKEL B</b><input data-hex-rem="skel-b" type="text" inputmode="decimal" autocomplete="off" value="0.500" aria-label="Skeleton bottom edge to cutout row" /></label>
             </div>
 
             <section class="margin-presets" aria-label="Margin presets">
@@ -2967,7 +2971,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     blankW: 12, blankH: 8, snap: 0.125, zoom: 1, fitScale: null, panX: 0, panY: 0, dragging: null, start: null,
     partW: 2.5, partH: 3.5, partRot: 0,
     margin: { l: 0.25, r: 0.25, t: 0.25, b: 0.5 },
-    gap: { x: 0.125, y: 0.125 }, remHoleD: 2.5, remGapX: 0.125, autoNestArmed: false, hexArmed: false, skeletonArmed: false, marginBandsVisible: true
+    gap: { x: 0.125, y: 0.125 }, remHoleD: 2.5, remGapX: 0.125, remSkelL: 0.25, remSkelB: 0.5, autoNestArmed: false, hexArmed: false, skeletonArmed: false, marginBandsVisible: true
   };
 
   var svg = document.getElementById('lb-world');
@@ -3311,6 +3315,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (!hexRemFaces) return;
     var holeEl = hexRemFaces.querySelector('[data-hex-rem="hole"]');
     var gapEl = hexRemFaces.querySelector('[data-hex-rem="x-gap"]');
+    var skelLEl = hexRemFaces.querySelector('[data-hex-rem="skel-l"]');
+    var skelBEl = hexRemFaces.querySelector('[data-hex-rem="skel-b"]');
     if (holeEl) {
       var hole = parseFloat(holeEl.value);
       if (Number.isFinite(hole)) state.remHoleD = hole;
@@ -3318,6 +3324,14 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (gapEl) {
       var gap = parseFloat(gapEl.value);
       if (Number.isFinite(gap)) state.remGapX = gap;
+    }
+    if (skelLEl) {
+      var skelL = parseFloat(skelLEl.value);
+      if (Number.isFinite(skelL)) state.remSkelL = skelL;
+    }
+    if (skelBEl) {
+      var skelB = parseFloat(skelBEl.value);
+      if (Number.isFinite(skelB)) state.remSkelB = skelB;
     }
   }
 
@@ -3367,32 +3381,34 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     return { hex: true, diameter: diameter, radius: radius, p: p, h: h, columns: columns, rows: rows, count: centers.length, centers: centers, voids: [], failedRows: failedRows, xGap: p - diameter, yGap: h - diameter, xOffset: m.l + p / 2 };
   }
 
-  /* Cut 5b: compare a pocket row against the independent phantom Lattice B. */
+  /* Cut 6: the skeleton is one cutout row and its legal cusp pockets only. */
   function hexSkeletonLayout() {
     var diameter = state.partW;
     var radius = diameter / 2;
     var holeD = state.remHoleD;
     var holeR = holeD / 2;
     var gExist = state.remGapX;
+    var skelL = state.remSkelL;
+    var skelB = state.remSkelB;
     var m = state.margin;
     var clearance = state.gap.x;
-    var empty = { hex: true, skeleton: true, rem: true, columns: 0, rows: 0, count: 0, centers: [], voids: [], failedRows: [], p: 0, h: 0, xGap: 0, yGap: 0, xOffset: 0, xOrigin: 0, pocketCols: 0, yJog: 0, diameter: diameter, radius: radius, holeD: holeD, holeR: holeR };
-    if (!finitePositive(diameter) || !finiteNonNegative(clearance)) return empty;
+    var empty = { hex: true, skeleton: true, rem: true, columns: 0, rows: 1, count: 0, centers: [], voids: [], failedRows: [], p: 0, h: 0, xGap: 0, yGap: 0, pocketCols: 0, jogX: 0, jogY: 0, diameter: diameter, radius: radius, holeD: holeD, holeR: holeR };
+    if (!finitePositive(diameter) || !finiteNonNegative(clearance) || !finitePositive(holeD) || !finiteNonNegative(gExist) || !finiteNonNegative(skelL) || !finiteNonNegative(skelB)) return empty;
     if (finitePositive(holeD)) {
-      var minW = m.l + holeD + m.r;
-      var minH = m.b + holeD + m.t;
+      var minW = skelL + holeD;
+      var minH = skelB + holeD;
       if (state.blankW + FIT_EPSILON < minW) state.blankW = minW;
       if (state.blankH + FIT_EPSILON < minH) state.blankH = minH;
     }
     var pair = diameter + clearance;
     var dWall = holeR + radius + clearance;
     var pitchExist = holeD + gExist;
-    var holeMinX = m.l + holeR;
-    var holeMaxX = state.blankW - m.r - holeR;
-    var holeY = m.b + holeR;
+    var holeMinX = skelL + holeR;
+    var holeMaxX = state.blankW - holeR;
+    var holeY = skelB + holeR;
     var voids = [];
-    /* Red cutouts stay inside the rem. Min-rem clamp keeps them off the blank stroke. */
-    if (finitePositive(holeD) && finiteNonNegative(gExist) && m.b + holeD + m.t <= state.blankH + FIT_EPSILON && holeMinX <= holeMaxX + FIT_EPSILON && pitchExist > FIT_EPSILON) {
+    /* SKEL L/B place the cutout row from rem 0,0; nest margins do not. */
+    if (holeY + holeR <= state.blankH + FIT_EPSILON && holeMinX <= holeMaxX + FIT_EPSILON && pitchExist > FIT_EPSILON) {
       var holeN = Math.floor((holeMaxX - holeMinX) / pitchExist + FIT_EPSILON) + 1;
       for (var hi = 0; hi < holeN; hi++) {
         var vx = holeMinX + hi * pitchExist;
@@ -3418,9 +3434,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       for (var vi = 0; vi < voids.length; vi++) if (dist2(pt, voids[vi]) + FIT_EPSILON < dWall * dWall) return false;
       return true;
     }
-    /* Pockets are extras. Lattice B begins from its own rem origin. */
-    var p = pair;
-    var h = pair * Math.sqrt(3) / 2;
+    /* A legal cusp is the lowest pocket center that clears every cutout and rem edge. */
     var pocketCenters = [];
     for (var ci = 0; ci + 1 < voids.length; ci++) {
       var pocket = { x: (voids[ci].x + voids[ci + 1].x) / 2, y: 0 };
@@ -3432,42 +3446,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       }
       if (clearsPocketRow) pocketCenters.push(pocket);
     }
-    var xOrigin = minX;
-    var y2 = holeY + holeR + clearance + radius;
-    var lattice = [], latticeRows = 0, latticeColumns = 0;
-    /*
-     * Lattice B has no pocket seed. Its hidden P cells remain in this list,
-     * so the row-3 stagger cannot shift when a row-2 cell is obscured.
-     */
-    for (var row = 0, y = y2; y <= maxY + FIT_EPSILON; row++, y += h) {
-      var startX = xOrigin + (row % 2 ? p / 2 : 0);
-      var rowColumns = 0;
-      for (var x = startX; x <= maxX + FIT_EPSILON; x += p) {
-        var cell = { x: x, y: y, row: row + 2 };
-        if (!clearsReds(cell)) continue;
-        lattice.push(cell);
-        rowColumns++;
-      }
-      latticeRows++;
-      latticeColumns = Math.max(latticeColumns, rowColumns);
-    }
-    function collidesPocket(cell) {
-      for (var pi = 0; pi < pocketCenters.length; pi++) {
-        if (dist2(cell, pocketCenters[pi]) + FIT_EPSILON < pair * pair) return true;
-      }
-      return false;
-    }
-    var clearCells = lattice.slice();
-    var pocketCells = lattice.filter(function (cell) { return cell.row > 3 || !collidesPocket(cell); });
-    var pocketCount = pocketCenters.length + pocketCells.length;
-    var clearCount = clearCells.length;
-    /* A tie deliberately paints the clear-hex candidate. */
-    var pocketWins = pocketCount > clearCount;
-    var paintedCells = pocketWins ? pocketCells : clearCells;
-    var centers = pocketWins ? pocketCenters.concat(paintedCells) : paintedCells;
-    var paintedRows = latticeRows + (pocketWins && pocketCenters.length ? 1 : 0);
-
-    return { hex: true, skeleton: true, rem: true, diameter: diameter, radius: radius, holeD: holeD, holeR: holeR, p: p, h: h, columns: latticeColumns, rows: paintedRows, count: centers.length, centers: centers, voids: voids, failedRows: [], xGap: p - diameter, yGap: h - diameter, xOffset: xOrigin, xOrigin: xOrigin, pocketCols: pocketWins ? pocketCenters.length : 0, yJog: y2, candidate: pocketWins ? 'P' : 'H', pocketCount: pocketCount, clearCount: clearCount };
+    var firstPocket = pocketCenters[0] || { x: 0, y: 0 };
+    return { hex: true, skeleton: true, rem: true, diameter: diameter, radius: radius, holeD: holeD, holeR: holeR, p: pitchExist, h: 0, columns: pocketCenters.length, rows: 1, count: pocketCenters.length, centers: pocketCenters, voids: voids, failedRows: [], xGap: gExist, yGap: 0, pocketCols: pocketCenters.length, jogX: firstPocket.x, jogY: firstPocket.y };
   }
 
   function hexLayout() {
@@ -3476,7 +3456,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       /* HOLE DIA 0 is the documented switch back to the Cut 2 virgin packer. */
       if (!finitePositive(state.remHoleD)) {
         var virgin = hexVirginLayout();
-        return Object.assign(virgin, { skeleton: true, rem: true, holeD: state.remHoleD, holeR: 0, xOrigin: virgin.xOffset, pocketCols: 0, yJog: virgin.radius + state.margin.b });
+        return Object.assign(virgin, { rem: true, holeD: state.remHoleD, holeR: 0 });
       }
       return hexSkeletonLayout();
     }
@@ -3725,7 +3705,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   function positionHexArrayTicket(layout) {
     var hexOn = !!(layout && layout.hex);
     var skeletonOn = !!(hexOn && layout.skeleton);
-    if (hexRemFaces) hexRemFaces.hidden = !skeletonOn;
+    if (hexRemFaces) hexRemFaces.hidden = !(hexOn && layout.rem);
     if (!hexArrayTicket) return;
     if (!hexOn) { hexArrayTicket.hidden = true; return; }
     hexArrayTicket.hidden = false;
@@ -3733,16 +3713,29 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       var el = hexArrayTicket.querySelector('[data-hex-ticket="' + name + '"]');
       if (el) el.textContent = value;
     }
-    var originLabel = hexArrayTicket.querySelector('[data-hex-ticket-label="x-origin"]');
     var pocketFace = hexArrayTicket.querySelector('[data-hex-ticket-face="pocket-cols"]');
-    if (originLabel) originLabel.textContent = skeletonOn ? 'X ORIGIN' : 'X OFFSET';
+    var xGapFace = hexArrayTicket.querySelector('[data-hex-ticket-face="x-gap"]');
+    var yGapFace = hexArrayTicket.querySelector('[data-hex-ticket-face="y-gap"]');
+    var xOffsetFace = hexArrayTicket.querySelector('[data-hex-ticket-face="x-offset"]');
+    var jogXFace = hexArrayTicket.querySelector('[data-hex-ticket-face="jog-x"]');
+    var jogYFace = hexArrayTicket.querySelector('[data-hex-ticket-face="jog-y"]');
     if (pocketFace) pocketFace.hidden = !skeletonOn;
+    if (xGapFace) xGapFace.hidden = skeletonOn;
+    if (yGapFace) yGapFace.hidden = skeletonOn;
+    if (xOffsetFace) xOffsetFace.hidden = skeletonOn;
+    if (jogXFace) jogXFace.hidden = !skeletonOn;
+    if (jogYFace) jogYFace.hidden = !skeletonOn;
     face('columns', String(layout.columns));
     face('rows', String(layout.rows));
     face('x-gap', layout.xGap.toFixed(3));
     face('y-gap', layout.yGap.toFixed(3));
-    face('x-offset', (skeletonOn ? layout.xOrigin : layout.xOffset).toFixed(3));
-    if (skeletonOn) face('pocket-cols', String(layout.pocketCols || 0));
+    if (skeletonOn) {
+      face('jog-x', (layout.jogX || 0).toFixed(3));
+      face('jog-y', (layout.jogY || 0).toFixed(3));
+      face('pocket-cols', String(layout.pocketCols || 0));
+    } else {
+      face('x-offset', layout.xOffset.toFixed(3));
+    }
   }
   function syncHudBlankFromBed() {
     if (typeof window.__hudSyncBlank === 'function') window.__hudSyncBlank(state.blankW, state.blankH);
@@ -3811,12 +3804,14 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       if (!Number.isFinite(n)) return;
       if (field === 'hole') state.remHoleD = n;
       if (field === 'x-gap') state.remGapX = n;
+      if (field === 'skel-l') state.remSkelL = n;
+      if (field === 'skel-b') state.remSkelB = n;
       render();
     });
     hexRemFaces.addEventListener('focusout', function (e) {
       var field = e.target && e.target.getAttribute && e.target.getAttribute('data-hex-rem');
       if (!field) return;
-      var n = field === 'hole' ? state.remHoleD : state.remGapX;
+      var n = field === 'hole' ? state.remHoleD : field === 'x-gap' ? state.remGapX : field === 'skel-l' ? state.remSkelL : state.remSkelB;
       e.target.value = (Number.isFinite(n) ? n : 0).toFixed(3);
     });
   }

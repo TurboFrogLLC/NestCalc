@@ -1,6 +1,6 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Cut 5b pocket row, phantom lattice, count winner
+**Status:** Living — Cut 6 skeleton pockets and SKEL L/B jog
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
@@ -13,6 +13,16 @@
 This file is the **host only**. The four individual HTML tips stay standalone lock files. Do not overwrite them from this assembly. Do not add `flipit-v3-align.js` or `@import` into the tips.
 
 Prior composition/lock archives (`COMPOSITION-HUD-DECODER-v3.*`, `DE-CODER-v3-LOCKED.*`) stay on disk. They are not this host.
+
+---
+
+## Seq 5g Cut 6 — skeleton pockets only + SKEL L/B jog
+
+With hex on, skull armed, and `HOLE DIA > 0`, the skeleton paints only one row of red cutouts and the legal blue cusp pockets between them. It paints no Lattice B, clear-hex candidate, phantom row, or blue parts above the cutouts. The displayed count is the pocket count only.
+
+The rem faces add `SKEL L` and `SKEL B`, defaulting to `0.250` and `0.500`. They measure rem edge to the first cutout and rem bottom to the cutout row: `x = SKEL L + R_cut + i × (D_cut + g_skel)` and `y = SKEL B + R_cut`. Nest L/R/T/B remain clearance for new pocket parts against the rem edges; they do not position the cutouts.
+
+The skeleton ticket reports `COLUMNS` as the pocket count, `ROWS` as `1`, and unitless three-decimal `JOG X` / `JOG Y` from rem `0,0` to the first pocket. `POCKET COLS` reports the pocket count. `X ORIGIN` is absent for the skeleton ticket. With skull off, hex remains the virgin full-sheet packer with no red cutouts; `HOLE DIA 0` also returns that virgin layout while retaining the armed rem faces.
 
 ---
 
