@@ -18,7 +18,7 @@ Seq  Label              Notes                                              Stamp
 3    Cut                1 red cutout row                        2bb43c4
 5    Cut                2 left-refill + diameter chip           e964f1f
 5b   Cut                3 pocket lock + hex grid                8a7d533
-5c   Cut                4 skeleton arm + grid origin + init card
+5c   Cut                4 skeleton arm + grid origin + init card  d16f9ec
 4    Look               Owner. No Codex review until Send.
 7    Send for review
 8    Inspection

@@ -28,3 +28,12 @@ Operator: Codex App · GPT-5.6 Terra · High
 - Pocket inserts stay locked in the cusps as ticket row 1. Ticket row 2 starts above the red AABB at `Y = redAABB.top + g + R_p` from origin X. That row and every row above sit on one hex grid (`p`, `h` from `D_p` + typed GAP). Occupied cells clear red walls, locked pockets, rem L/R/T/B, and typed GAP. No leftover greedy refill. No walkable hex holes.
 - If `B + D_h + T > blankH`, do not paint a void row through the blank stroke. No second red row. No NC. PART SIZE and GAP are not stolen. `HOLE DIA = 0` still restores the Cut 2 virgin packer.
 - Implement `8a7d533`. Pushed origin/docs/hex-rem-inset so Owner Look can ff. Unpushed GB commits are not Look.
+
+## Seq 5c Cut 4 — skeleton arm + one hex grid + init card
+
+Operator: Grok Build · Grok 4.6 · high
+
+- Hex on swaps the hamburger glyph to an unarmed Lucide skull (`skeleton cut`, `#111111`). Glyph swap is not an arm. Rem stays empty stock; virgin hex packer stays Cut 2; hole D is ignored. Skull click arms skeleton (`#16A34A`): init card, red cutouts, pockets, skeleton ticket faces, min-rem clamp. Skull off returns to virgin hex.
+- Init card uses preset chrome: skeleton W × H, cutout D default `2.000`, lattice gap, new part D, don't-show-this-again. After OK, values stay live. `Hmin = B+D_cut+T`, `Wmin = L+D_cut+R`. Circle-off sits left of the hex PART SIZE diameter.
+- One hex lattice for pockets and every blue row. Pockets are a subset of the same-stagger columns as row 3. Ticket X ORIGIN is row 3 col 1, not the first pocket. Ticket adds POCKET COLS. Y GAP keeps the Cut 2 signed law. No second cutout row. No NC.
+- Implement `d16f9ec`. Pushed origin/docs/hex-rem-inset so Owner Look can ff. Unpushed GB commits are not Look.
