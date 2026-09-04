@@ -93,3 +93,11 @@ Operator: Codex App · GPT-5.6 Terra · High
 - `JOG X` / `JOG Y` remain the first painted pocket from rem `0,0`, for the machine work offset. Skeleton hides `X OFFSET`; the virgin hex ticket is unchanged.
 - Browser proof: default skeleton rendered `X GAP 1.750` with rem `X ROW GAP 0.125`, `Y GAP 0.000`, `JOG X 2.313`, and `JOG Y 3.624`; X OFFSET was hidden.
 - Implement `5311ff4`. Ready to push origin/docs/hex-rem-inset.
+
+## Seq 5i2 Cut 6c2 — hide skeleton X OFFSET
+
+Operator: Codex App · GPT-5.6 Terra · High
+
+- The ticket-face `hidden` state now resolves to `display: none`. `X OFFSET` is hidden by default and only revealed for the unchanged virgin-hex ticket; skull-armed skeleton shows `COLUMNS`, `ROWS`, `X GAP`, `Y GAP`, `JOG X`, `JOG Y`, and `POCKET COLS`.
+- Browser proof: virgin hex showed `X OFFSET 2.344` without JOG or POCKET faces. Default armed skeleton showed `COLUMNS 2`, `ROWS 1`, `X GAP 1.750`, `Y GAP 0.000`, `JOG X 2.313`, `JOG Y 3.624`, and `POCKET COLS 2`, with no `X OFFSET`.
+- Implement `589b805`. Ready to push origin/docs/hex-rem-inset.
