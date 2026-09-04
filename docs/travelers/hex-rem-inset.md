@@ -3,10 +3,10 @@
 Repo: NestCalc
 Owner: wReckless
 Part: FLiPIT hex rem inset
-Description: Inset a new circle into pockets of an already-cut circular rem. Not locked. Spitball.
-PR:
+Description: One red void row from 0,0. New circles inset into those pockets.
+PR: 136
 Branch: docs/hex-rem-inset
-Head: e182daec4e323a73ec2ddbf9c602133d3771dabf
+Head: 7b66aef0440e2cc6ec45cc024a34a31908e5c536
 Session: fresh
 job_id: NGJ-20260903-hex-rem
 flow_id:
@@ -14,8 +14,8 @@ goal_sha256:
 
 Seq  Label              Notes                                              Stamp
 1    Plan               Rem-pocket spitball
-2    Start-branch       Owner local / named Surface later
-3    Cut                1 reserved
+2    Start-branch       Owner local / Grok Build
+3    Cut                1 red void row + pocket inset
 4    Look               Owner. No Codex.
 7    Send for review
 8    Inspection
@@ -29,21 +29,23 @@ When this packets log → docs/travelers/hex-rem-inset-packets.md
 When the host → docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html
 When the living contract → docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.SPEC.md
 When last hex nest → docs/travelers/hex-nest.md
+When PR → https://github.com/TurboFrogLLC/NestCalc/pull/136
 
-Shop: not named until Cut 1 lock
+Shop: Grok Build, Grok 4.6, high
 Grok Build worktree is not Owner Look.
 Owner Look clone: /Users/computer/wrecklesstoddler/vibe/projects/nestcalc
-Worker must push origin. Unpushed GB commits are not Look.
+Worker must push origin/docs/hex-rem-inset after the Cut. Unpushed GB commits are not Look. Do not edit the nestcalc clone.
 
-Management later (not this Cut): Owner-named review of blueprint-lock against this job series.
+## Cut lock
 
-Do not restore picker, calculator, chevron, old popover, or bed.
-Do not emit NC. Do not merge to main from this job.
-Parked from hex-nest stay parked unless a Cut names them: row-grab, red wash, two-blank trim.
+### Cut 1 — red void row + pocket inset
+Hex armed. One existing hole row auto-fills from blank 0,0.
+Inputs: live blank size, rem hole diameter, rem X-row edge-to-edge gap. Those rem faces sit next to the hex ticket. Do not steal PART SIZE or GAP.
+Red disks are voids. Not parts. Not in the blue count.
+First void center = (L + R_h, B + R_h). Equal g_exist across that row. As many red holes as fit blankW − L − R.
 
-## Pin (not Cut 1 lock)
-
-Shop-floor rem already has circular cutouts.
-Inputs named so far: existing hole diameter, existing X-row gap between those holes.
-New part is a different diameter. Packer drops new circles into the pockets. Count per row may differ (5 then 2 is legal). Pocket center is not required to sit on the existing-gap midpoint. Offset into the cusp is legal.
-Blank / rem size still from the live HUD. Hex arm stays the nest mode.
+New PART SIZE circles drop into the cusps of that row, then stack with Cut 2 squeeze. Live GAP is new-to-new and new-to-red-wall: dist(centers) ≥ R_h + R_p + g.
+Pocket center may slide off the existing-gap midpoint. Row counts may differ.
+No extra ticker margin above the void AABB. L/R/T/B still bound the rem outline.
+Do not add a second red row. Do not emit NC. Do not change virgin hex (no rem faces → current packer).
+Done when one red skeleton row is visible from 0,0 and blue parts sit in its pockets. Done only after origin/docs/hex-rem-inset has the implement commit.
