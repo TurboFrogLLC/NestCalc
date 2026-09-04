@@ -3418,61 +3418,50 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       for (var vi = 0; vi < voids.length; vi++) if (dist2(pt, voids[vi]) + FIT_EPSILON < dWall * dWall) return false;
       return true;
     }
-    function inCusp(x) {
-      for (var vi = 0; vi + 1 < voids.length; vi++) {
-        if (x > voids[vi].x + FIT_EPSILON && x < voids[vi + 1].x - FIT_EPSILON) return true;
-      }
-      return false;
-    }
-
-    var yJog = minY;
-    if (voids.length >= 2) {
-      for (var ci = 0; ci + 1 < voids.length; ci++) yJog = Math.max(yJog, yClearOfReds((voids[ci].x + voids[ci + 1].x) / 2));
-    }
-    if (yJog > maxY + FIT_EPSILON) return Object.assign(empty, { voids: voids, yJog: yJog });
-
-    var metrics = hexSqueezeMetrics(minX, maxX, yJog, maxY, pair);
-    var n = metrics.n, h = metrics.h, p = metrics.p;
-    if (p > FIT_EPSILON) {
-      var evenCols = Math.floor((maxX - minX) / p + FIT_EPSILON) + 1;
-      for (var ek = 0; ek < evenCols; ek++) {
-        var ex = minX + ek * p;
-        if (ex > maxX + FIT_EPSILON) break;
-        if (inCusp(ex)) yJog = Math.max(yJog, yClearOfReds(ex));
-      }
-      if (yJog > maxY + FIT_EPSILON) yJog = maxY;
-      metrics = hexSqueezeMetrics(minX, maxX, yJog, maxY, pair);
-      n = metrics.n; h = metrics.h; p = metrics.p;
-    }
-
-    var centers = [];
+    /*
+     * The pocket row is a physical property of the cutout row, not of the
+     * remaining rem height.  Keep those legal cusp centers first, then stack
+     * the ordinary D + GAP lattice above them.  Re-running Cut 2's height
+     * squeeze here would change p/h and make a lifted rem evict row 1.
+     */
+    var p = pair;
+    var h = pair * Math.sqrt(3) / 2;
     var pocketCenters = [];
-    var columns = 0, occupiedRows = 0;
+    for (var ci = 0; ci + 1 < voids.length; ci++) {
+      var pocket = { x: (voids[ci].x + voids[ci + 1].x) / 2, y: 0 };
+      pocket.y = yClearOfReds(pocket.x);
+      if (pocket.x < minX - FIT_EPSILON || pocket.x > maxX + FIT_EPSILON || pocket.y < minY - FIT_EPSILON || pocket.y > maxY + FIT_EPSILON || !clearsReds(pocket)) continue;
+      var clearsPocketRow = true;
+      for (var pi = 0; pi < pocketCenters.length; pi++) {
+        if (dist2(pocket, pocketCenters[pi]) + FIT_EPSILON < pair * pair) { clearsPocketRow = false; break; }
+      }
+      if (clearsPocketRow) pocketCenters.push(pocket);
+    }
+
+    var yJog = pocketCenters.length ? pocketCenters[0].y : minY;
+    var centers = pocketCenters.slice();
+    var columns = pocketCenters.length, occupiedRows = pocketCenters.length ? 1 : 0;
     var xOrigin = minX;
-    for (var row = 0; row < n; row++) {
+    function clearsBlue(pt) {
+      for (var bi = 0; bi < centers.length; bi++) if (dist2(pt, centers[bi]) + FIT_EPSILON < pair * pair) return false;
+      return true;
+    }
+    for (var row = 1; yJog + row * h <= maxY + FIT_EPSILON; row++) {
       var y = yJog + row * h;
-      var startX = minX + (row % 2 ? p / 2 : 0);
+      /* Pocket row and row 3 share the stagger; full rows begin at minX. */
+      var startX = minX + (row % 2 ? 0 : p / 2);
       var rowColumns = 0;
-      var rowFirstX = null;
-      if (y <= maxY + FIT_EPSILON && startX <= maxX + FIT_EPSILON) {
-        var maxCols = p > FIT_EPSILON ? Math.floor((maxX - startX) / p + FIT_EPSILON) + 1 : 1;
-        for (var column = 0; column < maxCols; column++) {
-          var pt = { x: startX + column * (p > FIT_EPSILON ? p : 0), y: y };
-          if (pt.x < minX - FIT_EPSILON || pt.x > maxX + FIT_EPSILON) continue;
-          if (pt.y < minY - FIT_EPSILON || pt.y > maxY + FIT_EPSILON) continue;
-          if (!clearsReds(pt)) continue;
-          if (row === 0 && !inCusp(pt.x)) continue;
-          if (rowFirstX == null) rowFirstX = pt.x;
-          if (row === 0) pocketCenters.push(pt);
-          centers.push(pt);
-          rowColumns++;
-        }
+      var maxCols = p > FIT_EPSILON ? Math.floor((maxX - startX) / p + FIT_EPSILON) + 1 : 1;
+      for (var column = 0; column < maxCols; column++) {
+        var pt = { x: startX + column * (p > FIT_EPSILON ? p : 0), y: y };
+        if (pt.x < minX - FIT_EPSILON || pt.x > maxX + FIT_EPSILON || !clearsReds(pt) || !clearsBlue(pt)) continue;
+        centers.push(pt);
+        rowColumns++;
       }
       if (rowColumns) {
         occupiedRows++;
         columns = Math.max(columns, rowColumns);
       }
-      if (row === 2 && rowFirstX != null) xOrigin = rowFirstX;
     }
 
     return { hex: true, skeleton: true, rem: true, diameter: diameter, radius: radius, holeD: holeD, holeR: holeR, p: p, h: h, columns: columns, rows: occupiedRows, count: centers.length, centers: centers, voids: voids, failedRows: [], xGap: p - diameter, yGap: h - diameter, xOffset: xOrigin, xOrigin: xOrigin, pocketCols: pocketCenters.length, yJog: yJog };
@@ -3480,7 +3469,14 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
   function hexLayout() {
     readRemFaces();
-    if (state.skeletonArmed) return hexSkeletonLayout();
+    if (state.skeletonArmed) {
+      /* HOLE DIA 0 is the documented switch back to the Cut 2 virgin packer. */
+      if (!finitePositive(state.remHoleD)) {
+        var virgin = hexVirginLayout();
+        return Object.assign(virgin, { skeleton: true, rem: true, holeD: state.remHoleD, holeR: 0, xOrigin: virgin.xOffset, pocketCols: 0, yJog: virgin.radius + state.margin.b });
+      }
+      return hexSkeletonLayout();
+    }
     return hexVirginLayout();
   }
 
@@ -5165,7 +5161,13 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       bindBlankTickerInputs(ticker);
       var targetInput = ticker.querySelector('[data-ticker-blank-field="' + (focusAxis || 'x') + '"]');
       if (targetInput) { targetInput.focus(); targetInput.select(); }
-    } else bindChipInputs(ticker, key);
+    } else {
+      bindChipInputs(ticker, key);
+      if (key === 'part' && window.__flipitHexArmed) {
+        var diameterInput = ticker.querySelector('[data-chip-field="x"]');
+        if (diameterInput) { diameterInput.focus(); diameterInput.select(); }
+      }
+    }
   }
   window.__hudOpenChipEditor = openChipEditor;
   window.__hudSetHexArmed = function (armed) {

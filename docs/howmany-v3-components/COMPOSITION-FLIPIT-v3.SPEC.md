@@ -276,6 +276,14 @@ Grid, skull armed only: one hex lattice for pockets and every blue row. Pockets 
 
 Cutouts remain red and out of the blue count. No second cutout row. No NC.
 
+## Cut 4b — pocket lock + review corrections
+
+With skull armed and `HOLE DIA > 0`, every legal cusp insert remains locked as array row 1 when the rem height grows. That row is not re-derived with Cut 2's height squeeze. Rows above use the one `D + GAP` hex grid from the skeleton AABB, skipping only cells that collide with a cutout, locked pocket, or rem edge.
+
+With skull armed and `HOLE DIA = 0`, the layout is the Cut 2 virgin packer: no cutouts or pocket row are painted. The armed rem faces remain available so a positive hole diameter can restore the skeleton layout.
+
+Hex PART SIZE remains one diameter with circle-off at its left. Clicking that closed diameter opens, focuses, and select-alls the inserted input in the same click. Skull glyph swap, init card, and the NC ban remain unchanged.
+
 ## AutoNest Cut 1 — HUD menu + best uniform
 
 The centered HUD order is Lucide `rotate-ccw`, Lucide `rotate-cw`, blank size, Lucide `menu`, then the blue count. Every travel hit is 24px with a 16px glyph, 24px viewBox, and 2px stroke. The menu consists only of `M4 5h16`, `M4 12h16`, and `M4 19h16`.
