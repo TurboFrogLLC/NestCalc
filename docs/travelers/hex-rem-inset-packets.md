@@ -57,3 +57,12 @@ Operator: Grok Build · Grok 4.6 · high
 - A neighbor stays only if it clears cutouts, other parts, and rem L/R/T/B at typed GAP. `HOLE DIA = 0` is still the Cut 2 virgin packer. Arms/chrome from Cut 4 stay. No second cutout row. No NC.
 - Host eval: init-card cutout `2.000` / part `2.500` row 2 landed at pocket valleys `3.625`, `7.875` (not the old rem-origin `4.125`, `9.375`); `p` stayed `2.625` after blank height `8.000 → 12.000`.
 - Implement `2d02875`. Pushed origin/docs/hex-rem-inset so Owner Look can ff. Unpushed GB commits are not Look.
+
+## Seq 5f Cut 5b — pocket row + phantom lattice + count winner
+
+Operator: Codex App · GPT-5.6 Terra · High
+
+- Candidate P keeps every legal cusp pocket as an extra array row and paints the shared B lattice from `x0 = L + R_p`, `y2 = cutout AABB top + GAP + R_p`. Pocket-colliding B cells hide without shifting rows 2–3; later B rows retain their full phase.
+- Candidate H paints the same red-clearing B lattice without pockets or hides. The higher count paints; a tie selects H. Ticket X ORIGIN is `x0`, and POCKET COLS is zero for H.
+- Browser proof: the default armed `12.000 × 8.000` rem kept five red cutouts, painted clear-hex winner H with seven blue parts, `POCKET COLS 0`, and `X ORIGIN 1.500`; no runtime errors.
+- Implement `51545de`. Ready to push origin/docs/hex-rem-inset.
