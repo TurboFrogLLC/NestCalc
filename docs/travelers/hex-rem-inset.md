@@ -16,7 +16,7 @@ Seq  Label              Notes                                              Stamp
 1    Plan               Rem-pocket spitball
 2    Start-branch       Owner local / Grok Build
 3    Cut                1 red void row + pocket inset           2bb43c4
-5    Cut                2 left-refill after cusp row + hex diameter chip
+5    Cut                2 left-refill after cusp row + hex diameter chip  e964f1f
 4    Look               Owner. No Codex.
 7    Send for review
 8    Inspection
