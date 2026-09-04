@@ -27,7 +27,7 @@ Seq  Label              Notes                                              Stamp
 5i   Cut                6c array X GAP + machine jog              5311ff4
 5i2  Cut                6c2 hide skeleton X OFFSET              589b805
 4    Look               Owner. No Codex review until Send.
-7    Send for review
+7    Send for review    PR 136 ready; @codex on a1ca52c
 8    Inspection
 9    Merge
 10   Close

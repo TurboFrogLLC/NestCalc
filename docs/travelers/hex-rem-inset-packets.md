@@ -101,3 +101,11 @@ Operator: Codex App · GPT-5.6 Terra · High
 - The ticket-face `hidden` state now resolves to `display: none`. `X OFFSET` is hidden by default and only revealed for the unchanged virgin-hex ticket; skull-armed skeleton shows `COLUMNS`, `ROWS`, `X GAP`, `Y GAP`, `JOG X`, `JOG Y`, and `POCKET COLS`.
 - Browser proof: virgin hex showed `X OFFSET 2.344` without JOG or POCKET faces. Default armed skeleton showed `COLUMNS 2`, `ROWS 1`, `X GAP 1.750`, `Y GAP 0.000`, `JOG X 2.313`, `JOG Y 3.624`, and `POCKET COLS 2`, with no `X OFFSET`.
 - Implement `589b805`. Ready to push origin/docs/hex-rem-inset.
+
+## Seq 7 Send for review
+
+Operator: Codex App · GPT-5.6 Terra · High
+
+- PR 136 marked ready. Head at request: `a1ca52ceb174d870b597e8948f839e5b7e3de3ef`.
+- Named review posted once: https://github.com/TurboFrogLLC/NestCalc/pull/136#issuecomment-5544745617 (`@codex review`).
+- Companion `agents-pr-review` not posted because it is unavailable in this surface. No second review request. No merge or host implementation change in this Seq.
