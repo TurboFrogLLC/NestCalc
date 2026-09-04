@@ -3367,7 +3367,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     return { hex: true, diameter: diameter, radius: radius, p: p, h: h, columns: columns, rows: rows, count: centers.length, centers: centers, voids: [], failedRows: failedRows, xGap: p - diameter, yGap: h - diameter, xOffset: m.l + p / 2 };
   }
 
-  /* Cut 4: skull arm. One hex lattice for pockets and every blue row. */
+  /* Cut 5: freeze Lattice B after pockets. Later blues are hex neighbors at p, h. */
   function hexSkeletonLayout() {
     var diameter = state.partW;
     var radius = diameter / 2;
@@ -3419,10 +3419,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       return true;
     }
     /*
-     * The pocket row is a physical property of the cutout row, not of the
-     * remaining rem height.  Keep those legal cusp centers first, then stack
-     * the ordinary D + GAP lattice above them.  Re-running Cut 2's height
-     * squeeze here would change p/h and make a lifted rem evict row 1.
+     * Lattice B freezes once the legal cusp inserts exist. p = D_p + g and
+     * h = √3 p / 2 stay put. Later blues are hex neighbors of those pocket
+     * centers. A rem-origin or AABB + GAP restart would skip the valleys.
      */
     var p = pair;
     var h = pair * Math.sqrt(3) / 2;
@@ -3440,29 +3439,48 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
     var yJog = pocketCenters.length ? pocketCenters[0].y : minY;
     var centers = pocketCenters.slice();
-    var columns = pocketCenters.length, occupiedRows = pocketCenters.length ? 1 : 0;
-    var xOrigin = minX;
+    var xOrigin = pocketCenters.length ? pocketCenters[0].x : minX;
     function clearsBlue(pt) {
       for (var bi = 0; bi < centers.length; bi++) if (dist2(pt, centers[bi]) + FIT_EPSILON < pair * pair) return false;
       return true;
     }
-    for (var row = 1; yJog + row * h <= maxY + FIT_EPSILON; row++) {
-      var y = yJog + row * h;
-      /* Pocket row and row 3 share the stagger; full rows begin at minX. */
-      var startX = minX + (row % 2 ? 0 : p / 2);
-      var rowColumns = 0;
-      var maxCols = p > FIT_EPSILON ? Math.floor((maxX - startX) / p + FIT_EPSILON) + 1 : 1;
-      for (var column = 0; column < maxCols; column++) {
-        var pt = { x: startX + column * (p > FIT_EPSILON ? p : 0), y: y };
-        if (pt.x < minX - FIT_EPSILON || pt.x > maxX + FIT_EPSILON || !clearsReds(pt) || !clearsBlue(pt)) continue;
-        centers.push(pt);
-        rowColumns++;
+    function inRem(pt) {
+      return pt.x >= minX - FIT_EPSILON && pt.x <= maxX + FIT_EPSILON && pt.y >= minY - FIT_EPSILON && pt.y <= maxY + FIT_EPSILON;
+    }
+    if (pocketCenters.length && p > FIT_EPSILON && h > FIT_EPSILON) {
+      var dirs = [[p, 0], [-p, 0], [p / 2, h], [-p / 2, h], [p / 2, -h], [-p / 2, -h]];
+      var seen = {};
+      var queue = [];
+      function cellKey(pt) { return Math.round(pt.x * 1e6) + ':' + Math.round(pt.y * 1e6); }
+      for (var si = 0; si < pocketCenters.length; si++) {
+        var seedKey = cellKey(pocketCenters[si]);
+        if (seen[seedKey]) continue;
+        seen[seedKey] = true;
+        queue.push(pocketCenters[si]);
       }
-      if (rowColumns) {
-        occupiedRows++;
-        columns = Math.max(columns, rowColumns);
+      var qi = 0;
+      while (qi < queue.length) {
+        var cur = queue[qi++];
+        for (var di = 0; di < dirs.length; di++) {
+          var neighbor = { x: cur.x + dirs[di][0], y: cur.y + dirs[di][1] };
+          var neighborKey = cellKey(neighbor);
+          if (seen[neighborKey]) continue;
+          seen[neighborKey] = true;
+          if (!inRem(neighbor) || !clearsReds(neighbor) || !clearsBlue(neighbor)) continue;
+          centers.push(neighbor);
+          queue.push(neighbor);
+        }
       }
     }
+    var columns = 0, occupiedRows = 0, rowBuckets = {};
+    for (var oi = 0; oi < centers.length; oi++) {
+      if (centers[oi].x < xOrigin) xOrigin = centers[oi].x;
+      var rowKey = String(Math.round(centers[oi].y * 1e6));
+      rowBuckets[rowKey] = (rowBuckets[rowKey] || 0) + 1;
+    }
+    var rowKeys = Object.keys(rowBuckets);
+    occupiedRows = rowKeys.length;
+    for (var ri = 0; ri < rowKeys.length; ri++) columns = Math.max(columns, rowBuckets[rowKeys[ri]]);
 
     return { hex: true, skeleton: true, rem: true, diameter: diameter, radius: radius, holeD: holeD, holeR: holeR, p: p, h: h, columns: columns, rows: occupiedRows, count: centers.length, centers: centers, voids: voids, failedRows: [], xGap: p - diameter, yGap: h - diameter, xOffset: xOrigin, xOrigin: xOrigin, pocketCols: pocketCenters.length, yJog: yJog };
   }

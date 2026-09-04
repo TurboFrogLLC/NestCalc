@@ -1,6 +1,6 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Cut 4 skeleton arm + one hex grid + init card
+**Status:** Living — Cut 5 two lattices, freeze p after pockets
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
@@ -284,6 +284,23 @@ With skull armed and `HOLE DIA = 0`, the layout is the Cut 2 virgin packer: no c
 
 Hex PART SIZE remains one diameter with circle-off at its left. Clicking that closed diameter opens, focuses, and select-alls the inserted input in the same click. Skull glyph swap, init card, and the NC ban remain unchanged.
 
+## Cut 5 — two lattices, freeze p after pockets
+
+This supersedes Cut 4b's rows-above grid origin only. Skull arm, init card, rem faces, hex diameter chip, and `HOLE DIA = 0` virgin dispatch stay as landed.
+
+Skull armed and `HOLE DIA > 0`.
+
+Lattice A (skeleton): cutout centers. Pitch `p_skel = D_cut + g_skel`. Red. Not parts.
+
+Lattice B (parts): pocket centers sit in every legal cusp of A. That is array row 1. Freeze
+
+- `p = D_p + g`
+- `h = sqrt(3) * p / 2`
+
+Every later blue is a hex neighbor of Lattice B at that `p` and `h`. Do not start a new grid from rem origin or from AABB + GAP. Do not retune `p` on row 3+. Keep a neighbor only if it clears cutouts, other parts, and rem L/R/T/B at typed GAP.
+
+`HOLE DIA = 0` still restores the Cut 2 virgin packer. No second cutout row. No NC.
+
 ## AutoNest Cut 1 — HUD menu + best uniform
 
 The centered HUD order is Lucide `rotate-ccw`, Lucide `rotate-cw`, blank size, Lucide `menu`, then the blue count. Every travel hit is 24px with a 16px glyph, 24px viewBox, and 2px stroke. The menu consists only of `M4 5h16`, `M4 12h16`, and `M4 19h16`.
@@ -510,3 +527,4 @@ Do not require `file://`.
 | 2026-09-03 | **Cut 2** hex rem inset: rows after the cusp re-pack from the origin and eat leftover width; PART SIZE is one diameter + Lucide circle-off while hex is armed. |
 | 2026-09-03 | **Cut 3** hex rem inset: lock cusp inserts; hex grid from origin X above the red AABB; no leftover greedy refill. |
 | 2026-09-03 | **Cut 4** hex rem inset: hex-on skull glyph; skull click arms skeleton; init card; one lattice with pocket columns; circle-off left of diameter. |
+| 2026-09-03 | **Cut 5** hex rem inset: freeze part lattice after pockets; later blues are hex neighbors at `p = D_p + g`; no AABB+GAP restart. |
