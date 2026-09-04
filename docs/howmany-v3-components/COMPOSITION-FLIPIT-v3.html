@@ -272,8 +272,41 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     border-radius: 4px;
     background: rgba(255,255,255,.76);
   }
+  .hex-array-face[hidden] { display: none; }
   .hex-array-face b { font: 650 9px/1 var(--font); letter-spacing: .04em; }
   .hex-array-face span { font: 650 11px/1.2 var(--font-mono); font-variant-numeric: tabular-nums; }
+
+  /* Cut 1 rem: hole dia + X-row gap sit next to the hex ticket. Do not steal PART SIZE or GAP. */
+  .hex-rem-faces {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4.4px;
+    width: 154px;
+    min-width: 154px;
+    max-width: 154px;
+    padding: 7px 8.8px;
+    border: 1.1px solid rgba(220, 48, 48, 0.35);
+    border-radius: 7.26px;
+    background: rgba(220, 48, 48, 0.22);
+    box-shadow: 0 0.5px 1px rgba(0,0,0,.25);
+    color: #1A1428;
+    font-family: var(--font-mono);
+    pointer-events: auto;
+  }
+  .hex-rem-faces[hidden] { display: none; }
+  .hex-rem-faces .hex-array-face { cursor: text; }
+  .hex-rem-faces .hex-array-face input {
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: 650 11px/1.2 var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    outline: none;
+  }
 
 /* ── Numeric HUD (NUMERIC-HUD-v3) ── */
 :root {
@@ -2311,6 +2344,16 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       font-variant-numeric: tabular-nums; text-align: left; white-space: nowrap; overflow: hidden; cursor: text;
     }
     #hud .chip-editor-by { flex: 0 0 auto; color: inherit; font: 650 13.31px/1 var(--font-mono); padding: 0 0.35em; display: inline-flex; align-items: center; height: 100%; }
+    #hud .param-ticker .chip-hex-diameter {
+      display: inline-flex; align-items: center;
+      width: 6ch; min-width: 6ch; max-width: 6ch; height: 100%;
+      font: inherit; font-variant-numeric: tabular-nums;
+      white-space: nowrap; overflow: hidden;
+    }
+    #hud .param-ticker .chip-hex-circle-off {
+      flex: 0 0 16px; width: 16px; height: 16px; margin-right: 0.35em;
+      display: block; pointer-events: none; color: inherit;
+    }
     #hud .param-row[data-param="margin"] .param-ticker.is-chip-editing {
       height: auto; min-height: 31.46px; max-height: none; flex-direction: column;
       justify-content: center; align-items: stretch;
@@ -2379,6 +2422,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     .margin-preset-delete-alert__footer { display: flex; justify-content: flex-end; gap: 8.8px; margin-top: 20px; }
     .margin-preset-delete-alert__button { height: 31.46px; padding: 0 12px; border: 1.1px solid rgba(17,17,17,.2); border-radius: 6px; background: #fff; color: var(--ink); font: 650 13.31px/1 var(--font); cursor: pointer; }
     .margin-preset-delete-alert__button--destructive { border-color: #B42318; background: #B42318; color: #fff; }
+    .skeleton-init-card-layer { position: fixed; inset: 0; z-index: 201; display: grid; place-items: center; visibility: hidden; pointer-events: none; background: rgba(17,17,17,.28); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+    .skeleton-init-card-layer.is-open { visibility: visible; pointer-events: auto; }
+    .skeleton-init-card-layer .margin-preset-card__option { display: flex; align-items: center; gap: 4.4px; margin-top: 8.8px; font: 650 11px/1 var(--font-mono); }
+    .skeleton-init-card-layer .margin-preset-card__option input { accent-color: #111111; }
+    .skeleton-init-card-layer .margin-preset-card__pair.is-single { grid-template-columns: 106.8px; }
 </style>
 </head>
 <body>
@@ -2440,6 +2488,57 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       </div>
     </section>
     </div>
+  </div>
+  <div class="skeleton-init-card-layer" data-skeleton-init-layer aria-hidden="true">
+    <section class="margin-preset-card" role="dialog" aria-modal="true" aria-labelledby="skeleton-init-title">
+      <div class="margin-preset-card__header">
+        <span class="margin-preset-card__title" id="skeleton-init-title">Skeleton</span>
+        <div class="margin-preset-card__actions">
+          <button type="button" class="margin-preset-card__action" data-skeleton-init-ok title="Save skeleton" aria-label="Save skeleton"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button>
+          <button type="button" class="margin-preset-card__action" data-skeleton-init-cancel title="Cancel skeleton" aria-label="Cancel skeleton"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+        </div>
+      </div>
+      <div class="margin-preset-card__fields">
+        <section class="margin-preset-card__section" aria-label="Skeleton size">
+          <div class="margin-preset-card__section-head"><span class="margin-preset-card__section-label">Skeleton</span></div>
+          <div class="margin-preset-card__pair">
+            <label class="margin-preset-card__field"><input data-skeleton-init="blank-w" type="text" inputmode="decimal" autocomplete="off" aria-label="Skeleton width" /></label>
+            <label class="margin-preset-card__field"><input data-skeleton-init="blank-h" type="text" inputmode="decimal" autocomplete="off" aria-label="Skeleton height" /></label>
+          </div>
+        </section>
+        <section class="margin-preset-card__section" aria-label="Cutout diameter">
+          <div class="margin-preset-card__section-head"><span class="margin-preset-card__section-label">Cutout D</span></div>
+          <div class="margin-preset-card__pair is-single">
+            <label class="margin-preset-card__field"><input data-skeleton-init="cutout" type="text" inputmode="decimal" autocomplete="off" aria-label="Cutout diameter" /></label>
+          </div>
+        </section>
+        <section class="margin-preset-card__section" aria-label="Skeleton lattice gap">
+          <div class="margin-preset-card__section-head"><span class="margin-preset-card__section-label">Lattice gap</span></div>
+          <div class="margin-preset-card__pair is-single">
+            <label class="margin-preset-card__field"><input data-skeleton-init="gap" type="text" inputmode="decimal" autocomplete="off" aria-label="Skeleton lattice gap" /></label>
+          </div>
+        </section>
+        <section class="margin-preset-card__section" aria-label="Skeleton left inset">
+          <div class="margin-preset-card__section-head"><span class="margin-preset-card__section-label">SKEL L</span></div>
+          <div class="margin-preset-card__pair is-single">
+            <label class="margin-preset-card__field"><input data-skeleton-init="skel-l" type="text" inputmode="decimal" autocomplete="off" aria-label="Skeleton left edge to first cutout" /></label>
+          </div>
+        </section>
+        <section class="margin-preset-card__section" aria-label="Skeleton bottom inset">
+          <div class="margin-preset-card__section-head"><span class="margin-preset-card__section-label">SKEL B</span></div>
+          <div class="margin-preset-card__pair is-single">
+            <label class="margin-preset-card__field"><input data-skeleton-init="skel-b" type="text" inputmode="decimal" autocomplete="off" aria-label="Skeleton bottom edge to cutout row" /></label>
+          </div>
+        </section>
+        <section class="margin-preset-card__section" aria-label="New part diameter">
+          <div class="margin-preset-card__section-head"><span class="margin-preset-card__section-label">New part D</span></div>
+          <div class="margin-preset-card__pair is-single">
+            <label class="margin-preset-card__field"><input data-skeleton-init="part" type="text" inputmode="decimal" autocomplete="off" aria-label="New part diameter" /></label>
+          </div>
+        </section>
+      </div>
+      <label class="margin-preset-card__option"><input type="checkbox" data-skeleton-init-skip /> <span>Don't show this again</span></label>
+    </section>
   </div>
   <div class="margin-preset-delete-alert" data-margin-preset-delete-alert>
     <div class="margin-preset-delete-alert__overlay"></div>
@@ -2621,9 +2720,19 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
             <div class="hex-array-ticket" id="hex-array-ticket" aria-label="Hex array ticket" hidden>
               <div class="hex-array-face"><b>COLUMNS</b><span data-hex-ticket="columns">0</span></div>
               <div class="hex-array-face"><b>ROWS</b><span data-hex-ticket="rows">0</span></div>
-              <div class="hex-array-face"><b>X GAP</b><span data-hex-ticket="x-gap">0.000</span></div>
-              <div class="hex-array-face"><b>Y GAP</b><span data-hex-ticket="y-gap">0.000</span></div>
-              <div class="hex-array-face"><b>X OFFSET</b><span data-hex-ticket="x-offset">0.000</span></div>
+              <div class="hex-array-face" data-hex-ticket-face="x-gap"><b>X GAP</b><span data-hex-ticket="x-gap">0.000</span></div>
+              <div class="hex-array-face" data-hex-ticket-face="y-gap"><b>Y GAP</b><span data-hex-ticket="y-gap">0.000</span></div>
+              <div class="hex-array-face" data-hex-ticket-face="x-offset" hidden><b>X OFFSET</b><span data-hex-ticket="x-offset">0.000</span></div>
+              <div class="hex-array-face" data-hex-ticket-face="jog-x" hidden><b>JOG X</b><span data-hex-ticket="jog-x">0.000</span></div>
+              <div class="hex-array-face" data-hex-ticket-face="jog-y" hidden><b>JOG Y</b><span data-hex-ticket="jog-y">0.000</span></div>
+              <div class="hex-array-face" data-hex-ticket-face="pocket-cols" hidden><b>POCKET COLS</b><span data-hex-ticket="pocket-cols">0</span></div>
+            </div>
+
+            <div class="hex-rem-faces" id="hex-rem-faces" aria-label="Rem hole faces" hidden>
+              <label class="hex-array-face"><b>HOLE DIA</b><input data-hex-rem="hole" type="text" inputmode="decimal" autocomplete="off" value="2.500" aria-label="Rem hole diameter" /></label>
+              <label class="hex-array-face"><b>X ROW GAP</b><input data-hex-rem="x-gap" type="text" inputmode="decimal" autocomplete="off" value="0.125" aria-label="Rem X-row edge-to-edge gap" /></label>
+              <label class="hex-array-face"><b>SKEL L</b><input data-hex-rem="skel-l" type="text" inputmode="decimal" autocomplete="off" value="0.250" aria-label="Skeleton left edge to first cutout" /></label>
+              <label class="hex-array-face"><b>SKEL B</b><input data-hex-rem="skel-b" type="text" inputmode="decimal" autocomplete="off" value="0.500" aria-label="Skeleton bottom edge to cutout row" /></label>
             </div>
 
             <section class="margin-presets" aria-label="Margin presets">
@@ -2875,7 +2984,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     blankW: 12, blankH: 8, snap: 0.125, zoom: 1, fitScale: null, panX: 0, panY: 0, dragging: null, start: null,
     partW: 2.5, partH: 3.5, partRot: 0,
     margin: { l: 0.25, r: 0.25, t: 0.25, b: 0.5 },
-    gap: { x: 0.125, y: 0.125 }, autoNestArmed: false, hexArmed: false, marginBandsVisible: true
+    gap: { x: 0.125, y: 0.125 }, remHoleD: 2.5, remGapX: 0.125, remSkelL: 0.25, remSkelB: 0.5, autoNestArmed: false, hexArmed: false, skeletonArmed: false, marginBandsVisible: true
   };
 
   var svg = document.getElementById('lb-world');
@@ -2899,6 +3008,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   var btMenu = document.getElementById('bt-menu');
   var btParts = document.getElementById('bt-parts');
   var hexArrayTicket = document.getElementById('hex-array-ticket');
+  var hexRemFaces = document.getElementById('hex-rem-faces');
   var marginBandToggle = document.getElementById('margin-band-toggle');
   if (!svg || !camera || !blank) return;
 
@@ -3214,20 +3324,33 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     return nestLayoutForRotation(state.partRot);
   }
 
-  /* Cut 2: largest N at the D+g pair. Leftover height buys a squeezed row; it does not open the nest. */
-  function hexLayout() {
-    var diameter = state.partW;
-    var radius = diameter / 2;
-    var m = state.margin;
-    var clearance = state.gap.x;
-    var empty = { hex: true, columns: 0, rows: 0, count: 0, centers: [], failedRows: [], p: 0, h: 0, xGap: 0, yGap: 0, xOffset: 0 };
-    if (!finitePositive(diameter) || !finiteNonNegative(clearance)) return empty;
-    var pair = diameter + clearance;
+  function readRemFaces() {
+    if (!hexRemFaces) return;
+    var holeEl = hexRemFaces.querySelector('[data-hex-rem="hole"]');
+    var gapEl = hexRemFaces.querySelector('[data-hex-rem="x-gap"]');
+    var skelLEl = hexRemFaces.querySelector('[data-hex-rem="skel-l"]');
+    var skelBEl = hexRemFaces.querySelector('[data-hex-rem="skel-b"]');
+    if (holeEl) {
+      var hole = parseFloat(holeEl.value);
+      if (Number.isFinite(hole)) state.remHoleD = hole;
+    }
+    if (gapEl) {
+      var gap = parseFloat(gapEl.value);
+      if (Number.isFinite(gap)) state.remGapX = gap;
+    }
+    if (skelLEl) {
+      var skelL = parseFloat(skelLEl.value);
+      if (Number.isFinite(skelL)) state.remSkelL = skelL;
+    }
+    if (skelBEl) {
+      var skelB = parseFloat(skelBEl.value);
+      if (Number.isFinite(skelB)) state.remSkelB = skelB;
+    }
+  }
+
+  function hexSqueezeMetrics(minX, maxX, y0, maxY, pair) {
     var hcp = pair * Math.sqrt(3) / 2;
-    var availableRise = state.blankH - m.t - m.b - diameter;
-    var minX = m.l + radius, maxX = state.blankW - m.r - radius;
-    var minY = m.b + radius, maxY = state.blankH - m.t - radius;
-    if (minX > maxX + FIT_EPSILON || minY > maxY + FIT_EPSILON) return empty;
+    var availableRise = maxY - y0;
     var n = 1, h = 0, p = pair;
     if (availableRise > FIT_EPSILON) {
       var maxN = Math.max(2, 1 + Math.floor(2 * availableRise / pair + FIT_EPSILON));
@@ -3242,6 +3365,23 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         break;
       }
     }
+    return { n: n, h: h, p: p };
+  }
+
+  /* Cut 2: largest N at the D+g pair. Leftover height buys a squeezed row; it does not open the nest. */
+  function hexVirginLayout() {
+    var diameter = state.partW;
+    var radius = diameter / 2;
+    var m = state.margin;
+    var clearance = state.gap.x;
+    var empty = { hex: true, columns: 0, rows: 0, count: 0, centers: [], voids: [], failedRows: [], p: 0, h: 0, xGap: 0, yGap: 0, xOffset: 0 };
+    if (!finitePositive(diameter) || !finiteNonNegative(clearance)) return empty;
+    var pair = diameter + clearance;
+    var minX = m.l + radius, maxX = state.blankW - m.r - radius;
+    var minY = m.b + radius, maxY = state.blankH - m.t - radius;
+    if (minX > maxX + FIT_EPSILON || minY > maxY + FIT_EPSILON) return empty;
+    var metrics = hexSqueezeMetrics(minX, maxX, minY, maxY, pair);
+    var n = metrics.n, h = metrics.h, p = metrics.p;
     var centers = [], rows = n, columns = 0, failedRows = [];
     for (var row = 0; row < rows; row++) {
       var y = minY + row * h;
@@ -3251,7 +3391,131 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       columns = Math.max(columns, rowColumns);
       for (var column = 0; column < rowColumns; column++) centers.push({ x: startX + column * p, y: y });
     }
-    return { hex: true, diameter: diameter, radius: radius, p: p, h: h, columns: columns, rows: rows, count: centers.length, centers: centers, failedRows: failedRows, xGap: p - diameter, yGap: h - diameter, xOffset: m.l + p / 2 };
+    return { hex: true, diameter: diameter, radius: radius, p: p, h: h, columns: columns, rows: rows, count: centers.length, centers: centers, voids: [], failedRows: failedRows, xGap: p - diameter, yGap: h - diameter, xOffset: m.l + p / 2 };
+  }
+
+  /* Cut 6: the skeleton is one cutout row and its legal cusp pockets only. */
+  function hexSkeletonLayout() {
+    var diameter = state.partW;
+    var radius = diameter / 2;
+    var holeD = state.remHoleD;
+    var holeR = holeD / 2;
+    var gExist = state.remGapX;
+    var skelL = state.remSkelL;
+    var skelB = state.remSkelB;
+    var m = state.margin;
+    var clearance = state.gap.x;
+    var empty = { hex: true, skeleton: true, rem: true, columns: 0, rows: 1, count: 0, centers: [], voids: [], failedRows: [], p: 0, h: 0, xGap: 0, yGap: 0, pocketCols: 0, jogX: 0, jogY: 0, diameter: diameter, radius: radius, holeD: holeD, holeR: holeR };
+    if (!finitePositive(diameter) || !finiteNonNegative(clearance) || !finitePositive(holeD) || !finiteNonNegative(gExist) || !finiteNonNegative(skelL) || !finiteNonNegative(skelB)) return empty;
+    if (finitePositive(holeD)) {
+      var minW = skelL + holeD;
+      var minH = skelB + holeD;
+      if (state.blankW + FIT_EPSILON < minW) state.blankW = minW;
+      if (state.blankH + FIT_EPSILON < minH) state.blankH = minH;
+    }
+    var pair = diameter + clearance;
+    var dWall = holeR + radius + clearance;
+    var pitchExist = holeD + gExist;
+    var holeMinX = skelL + holeR;
+    var holeMaxX = state.blankW - holeR;
+    var holeY = skelB + holeR;
+    var voids = [];
+    /* SKEL L/B place the cutout row from rem 0,0; nest margins do not. */
+    if (holeY + holeR <= state.blankH + FIT_EPSILON && holeMinX <= holeMaxX + FIT_EPSILON && pitchExist > FIT_EPSILON) {
+      var holeN = Math.floor((holeMaxX - holeMinX) / pitchExist + FIT_EPSILON) + 1;
+      for (var hi = 0; hi < holeN; hi++) {
+        var vx = holeMinX + hi * pitchExist;
+        if (vx > holeMaxX + FIT_EPSILON) break;
+        voids.push({ x: vx, y: holeY });
+      }
+    }
+    var minX = m.l + radius, maxX = state.blankW - m.r - radius;
+    var minY = m.b + radius, maxY = state.blankH - m.t - radius;
+    if (minX > maxX + FIT_EPSILON || minY > maxY + FIT_EPSILON) return Object.assign(empty, { voids: voids });
+
+    function dist2(a, b) { var dx = a.x - b.x, dy = a.y - b.y; return dx * dx + dy * dy; }
+    function yClearOfReds(x) {
+      var y = minY;
+      for (var vi = 0; vi < voids.length; vi++) {
+        var dx = Math.abs(x - voids[vi].x);
+        if (dx + FIT_EPSILON >= dWall) continue;
+        y = Math.max(y, voids[vi].y + Math.sqrt(Math.max(0, dWall * dWall - dx * dx)));
+      }
+      return y;
+    }
+    function clearsReds(pt) {
+      for (var vi = 0; vi < voids.length; vi++) if (dist2(pt, voids[vi]) + FIT_EPSILON < dWall * dWall) return false;
+      return true;
+    }
+    /* Keep a cusp when its midpoint misses a nest edge but a legal offset remains. */
+    function offsetCuspPocket(leftVoid, rightVoid) {
+      var lo = Math.max(minX, Math.min(leftVoid.x, rightVoid.x));
+      var hi = Math.min(maxX, Math.max(leftVoid.x, rightVoid.x));
+      if (lo > hi + FIT_EPSILON) return null;
+
+      /* At maxY, each red cutout forbids the X interval that still needs a higher Y. */
+      var blocked = [];
+      for (var vi = 0; vi < voids.length; vi++) {
+        var vertical = maxY - voids[vi].y;
+        if (vertical >= dWall - FIT_EPSILON) continue;
+        var reach = vertical <= 0 ? dWall : Math.sqrt(Math.max(0, dWall * dWall - vertical * vertical));
+        var start = Math.max(lo, voids[vi].x - reach);
+        var end = Math.min(hi, voids[vi].x + reach);
+        if (start < end - FIT_EPSILON) blocked.push({ start: start, end: end });
+      }
+      blocked.sort(function(a, b) { return a.start - b.start; });
+
+      var mid = (leftVoid.x + rightVoid.x) / 2;
+      var cursor = lo;
+      var candidate = null;
+      function consider(start, end) {
+        if (start > end + FIT_EPSILON) return;
+        var x = Math.max(start, Math.min(end, mid));
+        if (candidate === null || Math.abs(x - mid) < Math.abs(candidate - mid) - FIT_EPSILON || (Math.abs(x - mid) <= Math.abs(candidate - mid) + FIT_EPSILON && x < candidate)) candidate = x;
+      }
+      for (var bi = 0; bi < blocked.length; bi++) {
+        if (blocked[bi].start > cursor + FIT_EPSILON) consider(cursor, blocked[bi].start);
+        cursor = Math.max(cursor, blocked[bi].end);
+        if (cursor > hi + FIT_EPSILON) break;
+      }
+      if (cursor < hi - FIT_EPSILON) consider(cursor, hi);
+      if (candidate === null) return null;
+
+      var pocket = { x: candidate, y: yClearOfReds(candidate) };
+      if (pocket.y < minY - FIT_EPSILON || pocket.y > maxY + FIT_EPSILON || !clearsReds(pocket)) return null;
+      return pocket;
+    }
+    /* A legal cusp is the lowest pocket center that clears every cutout and rem edge. */
+    var pocketCenters = [];
+    for (var ci = 0; ci + 1 < voids.length; ci++) {
+      var pocket = offsetCuspPocket(voids[ci], voids[ci + 1]);
+      if (!pocket) continue;
+      var clearsPocketRow = true;
+      for (var pi = 0; pi < pocketCenters.length; pi++) {
+        if (dist2(pocket, pocketCenters[pi]) + FIT_EPSILON < pair * pair) { clearsPocketRow = false; break; }
+      }
+      if (clearsPocketRow) pocketCenters.push(pocket);
+    }
+    var firstPocket = pocketCenters[0] || { x: 0, y: 0 };
+    var pocketXGap = 0;
+    for (var pocketIndex = 1; pocketIndex < pocketCenters.length; pocketIndex++) {
+      var edgeGap = (pocketCenters[pocketIndex].x - pocketCenters[pocketIndex - 1].x) - diameter;
+      if (pocketIndex === 1 || edgeGap < pocketXGap) pocketXGap = edgeGap;
+    }
+    return { hex: true, skeleton: true, rem: true, diameter: diameter, radius: radius, holeD: holeD, holeR: holeR, p: pitchExist, h: 0, columns: pocketCenters.length, rows: 1, count: pocketCenters.length, centers: pocketCenters, voids: voids, failedRows: [], xGap: pocketXGap, yGap: 0, pocketCols: pocketCenters.length, jogX: firstPocket.x, jogY: firstPocket.y };
+  }
+
+  function hexLayout() {
+    readRemFaces();
+    if (state.skeletonArmed) {
+      /* HOLE DIA 0 is the documented switch back to the Cut 2 virgin packer. */
+      if (!finitePositive(state.remHoleD)) {
+        var virgin = hexVirginLayout();
+        return Object.assign(virgin, { rem: true, holeD: state.remHoleD, holeR: 0 });
+      }
+      return hexSkeletonLayout();
+    }
+    return hexVirginLayout();
   }
 
   /* The Cut 1 uniform result remains the fallback and preserves its 90° state write. */
@@ -3372,7 +3636,32 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         partG.appendChild(aabb);
         partG.appendChild(circle);
       }
+      function appendVoidTile(center) {
+        var holeR = layout.holeR;
+        var holeD = layout.holeD;
+        var aabb = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        aabb.setAttribute('x', center.x - holeR);
+        aabb.setAttribute('y', center.y - holeR);
+        aabb.setAttribute('width', holeD);
+        aabb.setAttribute('height', holeD);
+        aabb.setAttribute('fill', 'none');
+        aabb.setAttribute('stroke', '#C62828');
+        aabb.setAttribute('stroke-width', '1');
+        aabb.setAttribute('stroke-dasharray', '2 2');
+        aabb.setAttribute('vector-effect', 'non-scaling-stroke');
+        var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', center.x);
+        circle.setAttribute('cy', center.y);
+        circle.setAttribute('r', holeR);
+        circle.setAttribute('fill', 'rgba(220,48,48,0.22)');
+        circle.setAttribute('stroke', '#C62828');
+        circle.setAttribute('stroke-width', '1.15');
+        circle.setAttribute('vector-effect', 'non-scaling-stroke');
+        partG.appendChild(aabb);
+        partG.appendChild(circle);
+      }
       if (layout.hex) {
+        (layout.voids || []).forEach(appendVoidTile);
         layout.failedRows.forEach(function (y) {
           var wash = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
           wash.setAttribute('x', Math.max(0, m.l));
@@ -3469,18 +3758,39 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     positionHexArrayTicket(layout);
   }
   function positionHexArrayTicket(layout) {
+    var hexOn = !!(layout && layout.hex);
+    var skeletonOn = !!(hexOn && layout.skeleton);
+    if (hexRemFaces) hexRemFaces.hidden = !(hexOn && layout.rem);
     if (!hexArrayTicket) return;
-    if (!layout || !layout.hex) { hexArrayTicket.hidden = true; return; }
+    if (!hexOn) { hexArrayTicket.hidden = true; return; }
     hexArrayTicket.hidden = false;
     function face(name, value) {
       var el = hexArrayTicket.querySelector('[data-hex-ticket="' + name + '"]');
       if (el) el.textContent = value;
     }
+    var pocketFace = hexArrayTicket.querySelector('[data-hex-ticket-face="pocket-cols"]');
+    var xGapFace = hexArrayTicket.querySelector('[data-hex-ticket-face="x-gap"]');
+    var yGapFace = hexArrayTicket.querySelector('[data-hex-ticket-face="y-gap"]');
+    var xOffsetFace = hexArrayTicket.querySelector('[data-hex-ticket-face="x-offset"]');
+    var jogXFace = hexArrayTicket.querySelector('[data-hex-ticket-face="jog-x"]');
+    var jogYFace = hexArrayTicket.querySelector('[data-hex-ticket-face="jog-y"]');
+    if (pocketFace) pocketFace.hidden = !skeletonOn;
+    if (xGapFace) xGapFace.hidden = false;
+    if (yGapFace) yGapFace.hidden = false;
+    if (xOffsetFace) xOffsetFace.hidden = skeletonOn;
+    if (jogXFace) jogXFace.hidden = !skeletonOn;
+    if (jogYFace) jogYFace.hidden = !skeletonOn;
     face('columns', String(layout.columns));
     face('rows', String(layout.rows));
     face('x-gap', layout.xGap.toFixed(3));
     face('y-gap', layout.yGap.toFixed(3));
-    face('x-offset', layout.xOffset.toFixed(3));
+    if (skeletonOn) {
+      face('jog-x', (layout.jogX || 0).toFixed(3));
+      face('jog-y', (layout.jogY || 0).toFixed(3));
+      face('pocket-cols', String(layout.pocketCols || 0));
+    } else {
+      face('x-offset', layout.xOffset.toFixed(3));
+    }
   }
   function syncHudBlankFromBed() {
     if (typeof window.__hudSyncBlank === 'function') window.__hudSyncBlank(state.blankW, state.blankH);
@@ -3541,6 +3851,25 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     if (Number.isFinite(y)) state.gap.y = y;
     render();
   };
+  if (hexRemFaces) {
+    hexRemFaces.addEventListener('input', function (e) {
+      var field = e.target && e.target.getAttribute && e.target.getAttribute('data-hex-rem');
+      if (!field) return;
+      var n = parseFloat(e.target.value);
+      if (!Number.isFinite(n)) return;
+      if (field === 'hole') state.remHoleD = n;
+      if (field === 'x-gap') state.remGapX = n;
+      if (field === 'skel-l') state.remSkelL = n;
+      if (field === 'skel-b') state.remSkelB = n;
+      render();
+    });
+    hexRemFaces.addEventListener('focusout', function (e) {
+      var field = e.target && e.target.getAttribute && e.target.getAttribute('data-hex-rem');
+      if (!field) return;
+      var n = field === 'hole' ? state.remHoleD : field === 'x-gap' ? state.remGapX : field === 'skel-l' ? state.remSkelL : state.remSkelB;
+      e.target.value = (Number.isFinite(n) ? n : 0).toFixed(3);
+    });
+  }
   document.getElementById('bt-rot-ccw').addEventListener('click', function () {
     state.partRot = (state.partRot - 90 + 360) % 360;
     render();
@@ -3549,25 +3878,109 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     state.partRot = (state.partRot + 90) % 360;
     render();
   });
+  var BT_HAMBURGER_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16H4a2 2 0 1 1 0-4h16a2 2 0 1 1 0 4h-4.25"/><path d="M5 12a2 2 0 0 1-2-2 9 7 0 0 1 18 0 2 2 0 0 1-2 2"/><path d="M5 16a2 2 0 0 0-2 2 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 2 2 0 0 0-2-2q0 0 0 0"/><path d="m6.67 12 6.13 4.6a2 2 0 0 0 2.8-.4l3.15-4.2"/></svg>';
+  var BT_SKULL_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12.5 17-.5-1-.5 1h1z"/><path d="M15 22a1 1 0 0 0 1-1v-1a2 2 0 0 0 1.56-3.25 8 8 0 1 0-11.12 0A2 2 0 0 0 8 20v1a1 1 0 0 0 1 1z"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="12" r="1"/></svg>';
+  var SKELETON_INIT_SKIP = 'howmany.flipit.v3.skeletonInitSkip';
+  function syncMenuGlyph() {
+    if (!btMenu) return;
+    if (state.hexArmed) {
+      btMenu.innerHTML = BT_SKULL_SVG;
+      btMenu.setAttribute('title', 'skeleton cut');
+      btMenu.setAttribute('aria-label', 'skeleton cut');
+      btMenu.setAttribute('aria-pressed', String(!!state.skeletonArmed));
+    } else {
+      btMenu.innerHTML = BT_HAMBURGER_SVG;
+      btMenu.setAttribute('title', 'AutoNest');
+      btMenu.setAttribute('aria-label', 'AutoNest');
+      btMenu.setAttribute('aria-pressed', String(!!state.autoNestArmed));
+    }
+  }
+  function setSkeletonArmed(armed) {
+    state.skeletonArmed = !!armed;
+    window.__flipitSkeletonArmed = state.skeletonArmed;
+    if (!state.skeletonArmed && typeof window.__hudCloseSkeletonInit === 'function') window.__hudCloseSkeletonInit();
+    syncMenuGlyph();
+    render();
+  }
+  window.__bedSetSkeletonArmed = setSkeletonArmed;
+  window.__bedGetRemHole = function () { return state.remHoleD; };
+  window.__bedSetRemHole = function (d) {
+    if (!Number.isFinite(d)) return;
+    state.remHoleD = d;
+    if (hexRemFaces) {
+      var holeEl = hexRemFaces.querySelector('[data-hex-rem="hole"]');
+      if (holeEl) holeEl.value = (d).toFixed(3);
+    }
+    if (state.hexArmed) render();
+  };
+  window.__bedGetRemSkelL = function () { return state.remSkelL; };
+  window.__bedSetRemSkelL = function (value) {
+    if (!Number.isFinite(value)) return;
+    state.remSkelL = value;
+    if (hexRemFaces) {
+      var skelLEl = hexRemFaces.querySelector('[data-hex-rem="skel-l"]');
+      if (skelLEl) skelLEl.value = value.toFixed(3);
+    }
+    if (state.hexArmed) render();
+  };
+  window.__bedGetRemSkelB = function () { return state.remSkelB; };
+  window.__bedSetRemSkelB = function (value) {
+    if (!Number.isFinite(value)) return;
+    state.remSkelB = value;
+    if (hexRemFaces) {
+      var skelBEl = hexRemFaces.querySelector('[data-hex-rem="skel-b"]');
+      if (skelBEl) skelBEl.value = value.toFixed(3);
+    }
+    if (state.hexArmed) render();
+  };
   if (btMenu) btMenu.addEventListener('click', function () {
+    if (state.hexArmed) {
+      if (state.skeletonArmed) {
+        setSkeletonArmed(false);
+        return;
+      }
+      if (typeof window.__hudSkeletonInitIsOpen === 'function' && window.__hudSkeletonInitIsOpen()) {
+        if (typeof window.__hudCloseSkeletonInit === 'function') window.__hudCloseSkeletonInit();
+        return;
+      }
+      var skip = false;
+      try { skip = localStorage.getItem(SKELETON_INIT_SKIP) === 'true'; } catch (_) {}
+      if (skip) {
+        setSkeletonArmed(true);
+        return;
+      }
+      if (typeof window.__hudOpenSkeletonInit === 'function') window.__hudOpenSkeletonInit();
+      else setSkeletonArmed(true);
+      return;
+    }
     state.autoNestArmed = !state.autoNestArmed;
     if (state.autoNestArmed) {
       state.hexArmed = false;
+      state.skeletonArmed = false;
       window.__flipitHexArmed = false;
+      window.__flipitSkeletonArmed = false;
       if (btHex) btHex.setAttribute('aria-pressed', 'false');
       if (typeof window.__hudSetHexArmed === 'function') window.__hudSetHexArmed(false);
+      if (typeof window.__hudCloseSkeletonInit === 'function') window.__hudCloseSkeletonInit();
     }
-    btMenu.setAttribute('aria-pressed', String(state.autoNestArmed));
+    syncMenuGlyph();
     render();
   });
   if (btHex) btHex.addEventListener('click', function () {
     state.hexArmed = !state.hexArmed;
     if (state.hexArmed) {
       state.autoNestArmed = false;
-      if (btMenu) btMenu.setAttribute('aria-pressed', 'false');
+      state.skeletonArmed = false;
+      window.__flipitSkeletonArmed = false;
+      if (typeof window.__hudCloseSkeletonInit === 'function') window.__hudCloseSkeletonInit();
+    } else {
+      state.skeletonArmed = false;
+      window.__flipitSkeletonArmed = false;
+      if (typeof window.__hudCloseSkeletonInit === 'function') window.__hudCloseSkeletonInit();
     }
     window.__flipitHexArmed = state.hexArmed;
     btHex.setAttribute('aria-pressed', String(state.hexArmed));
+    syncMenuGlyph();
     if (typeof window.__hudSetHexArmed === 'function') window.__hudSetHexArmed(state.hexArmed);
     render();
   });
@@ -4116,16 +4529,24 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       '</span>';
   }
 
+  var HEX_CIRCLE_OFF = '<svg class="chip-hex-circle-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 2l20 20"/><path d="M8.35 2.69A10 10 0 0 1 21.3 15.65"/><path d="M19.08 19.08A10 10 0 1 1 4.92 4.92"/></svg>';
+  function hexDiameterChipHTML(value, editing) {
+    if (editing) return HEX_CIRCLE_OFF + chipField('', 'x', value);
+    return HEX_CIRCLE_OFF + '<span class="chip-hex-diameter">' + fmt3(value) + '</span>';
+  }
+
   function refreshTickers() {
     const p = paramState.part, b = paramState.blank, g = paramState.gap, m = paramState.margin;
-    if (window.__flipitHexArmed) { p.linked = true; p.y = p.x; }
     const tPart = document.querySelector('[data-ticker="part"]');
     const tPartCollapsed = document.querySelector('[data-ticker="part-collapsed"]');
     const tBlank = document.querySelector('[data-ticker="blank"]');
     const tGap = document.querySelector('[data-ticker="gap"]');
     const tMar = document.querySelector('[data-ticker="margin"]');
     const partText = fmt3(p.x) + ' × ' + fmt3(p.y);
-    if (tPart && !tPart.classList.contains('is-chip-editing')) tPart.textContent = partText;
+    if (tPart && !tPart.classList.contains('is-chip-editing')) {
+      if (window.__flipitHexArmed) tPart.innerHTML = hexDiameterChipHTML(p.x, false);
+      else tPart.textContent = partText;
+    }
     if (tPartCollapsed) tPartCollapsed.textContent = partText;
     if (tBlank && !tBlank.classList.contains('is-chip-editing')) tBlank.textContent = fmt3(b.x) + ' × ' + fmt3(b.y);
     if (tGap && !tGap.classList.contains('is-chip-editing')) tGap.textContent = fmt3(g.x) + ' × ' + fmt3(g.y);
@@ -4706,10 +5127,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
           var peer = ticker.querySelector('[data-chip-field="' + peerAxis + '"]');
           if (peer && peer !== input) { peer.value = input.value; sizeChipInput(peer); }
         } else if (key === 'part' && window.__flipitHexArmed) {
-          paramState.part.x = value; paramState.part.y = value;
-          var partPeerAxis = axis === 'x' ? 'y' : 'x';
-          var partPeer = ticker.querySelector('[data-chip-field="' + partPeerAxis + '"]');
-          if (partPeer && partPeer !== input) { partPeer.value = input.value; sizeChipInput(partPeer); }
+          paramState.part.x = value;
         } else paramState[key][axis] = value;
         refreshTickers();
       });
@@ -4805,6 +5223,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     } else if (key === 'margin') {
       var m = paramState.margin;
       ticker.innerHTML = '<span class="m-grid">' + chipField('L', 'l', m.l) + chipField('R', 'r', m.r) + chipField('B', 'b', m.b) + chipField('T', 't', m.t) + '</span>';
+    } else if (key === 'part' && window.__flipitHexArmed) {
+      ticker.innerHTML = hexDiameterChipHTML(paramState.part.x, true);
     } else {
       var bag = paramState[key];
       ticker.innerHTML = chipField('', 'x', bag.x) + '<span class="chip-editor-by">×</span>' + chipField('', 'y', bag.y);
@@ -4814,19 +5234,139 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       bindBlankTickerInputs(ticker);
       var targetInput = ticker.querySelector('[data-ticker-blank-field="' + (focusAxis || 'x') + '"]');
       if (targetInput) { targetInput.focus(); targetInput.select(); }
-    } else bindChipInputs(ticker, key);
+    } else {
+      bindChipInputs(ticker, key);
+      if (key === 'part' && window.__flipitHexArmed) {
+        var diameterInput = ticker.querySelector('[data-chip-field="x"]');
+        if (diameterInput) { diameterInput.focus(); diameterInput.select(); }
+      }
+    }
   }
   window.__hudOpenChipEditor = openChipEditor;
   window.__hudSetHexArmed = function (armed) {
-    if (armed) {
-      paramState.part.linked = true;
-      paramState.part.y = paramState.part.x;
-      var x = document.querySelector('[data-part="x"]'), y = document.querySelector('[data-part="y"]');
-      if (x) x.value = fmt3(paramState.part.x);
-      if (y) y.value = fmt3(paramState.part.y);
+    var ticker = document.querySelector('[data-ticker="part"]');
+    if (chipEditor.key === 'part' && ticker) {
+      ticker.innerHTML = armed
+        ? hexDiameterChipHTML(paramState.part.x, true)
+        : chipField('', 'x', paramState.part.x) + '<span class="chip-editor-by">×</span>' + chipField('', 'y', paramState.part.y);
+      bindChipInputs(ticker, 'part');
+      var focus = ticker.querySelector('[data-chip-field="x"]');
+      if (focus) focus.focus();
     }
     refreshTickers();
   };
+  var SKELETON_INIT_SKIP = 'howmany.flipit.v3.skeletonInitSkip';
+  var skeletonInitLayer = document.querySelector('[data-skeleton-init-layer]');
+  var skeletonInitBound = false;
+  var skeletonInitCommitted = false;
+  function skeletonInitField(name) {
+    return skeletonInitLayer && skeletonInitLayer.querySelector('[data-skeleton-init="' + name + '"]');
+  }
+  function parseSkeletonInitField(name, fallback) {
+    var el = skeletonInitField(name);
+    var n = el ? parseFloat(el.value) : NaN;
+    return Number.isFinite(n) ? n : fallback;
+  }
+  function closeSkeletonInitCard() {
+    if (!skeletonInitLayer) return;
+    skeletonInitLayer.classList.remove('is-open');
+    skeletonInitLayer.setAttribute('aria-hidden', 'true');
+  }
+  function applySkeletonInitValues(values) {
+    if (Number.isFinite(values.w)) paramState.blank.x = values.w;
+    if (Number.isFinite(values.h)) paramState.blank.y = values.h;
+    if (Number.isFinite(values.gap)) {
+      paramState.gap.x = values.gap;
+      if (paramState.gap.linked) paramState.gap.y = values.gap;
+    }
+    if (Number.isFinite(values.part)) paramState.part.x = values.part;
+    if (Number.isFinite(values.cutout) && typeof window.__bedSetRemHole === 'function') window.__bedSetRemHole(values.cutout);
+    if (Number.isFinite(values.skelL) && typeof window.__bedSetRemSkelL === 'function') window.__bedSetRemSkelL(values.skelL);
+    if (Number.isFinite(values.skelB) && typeof window.__bedSetRemSkelB === 'function') window.__bedSetRemSkelB(values.skelB);
+    refreshTickers();
+  }
+  function openSkeletonInitCard() {
+    if (!skeletonInitLayer) {
+      if (typeof window.__bedSetSkeletonArmed === 'function') window.__bedSetSkeletonArmed(true);
+      return;
+    }
+    var cutoutEl = skeletonInitField('cutout');
+    var gapEl = skeletonInitField('gap');
+    var partEl = skeletonInitField('part');
+    var wEl = skeletonInitField('blank-w');
+    var hEl = skeletonInitField('blank-h');
+    var skelLEl = skeletonInitField('skel-l');
+    var skelBEl = skeletonInitField('skel-b');
+    if (wEl) wEl.value = fmt3(paramState.blank.x);
+    if (hEl) hEl.value = fmt3(paramState.blank.y);
+    if (gapEl) gapEl.value = fmt3(paramState.gap.x);
+    if (partEl) partEl.value = fmt3(paramState.part.x);
+    var liveCutout = typeof window.__bedGetRemHole === 'function' ? window.__bedGetRemHole() : 2;
+    if (cutoutEl) cutoutEl.value = fmt3(skeletonInitCommitted && Number.isFinite(liveCutout) ? liveCutout : 2);
+    var liveSkelL = typeof window.__bedGetRemSkelL === 'function' ? window.__bedGetRemSkelL() : 0.25;
+    var liveSkelB = typeof window.__bedGetRemSkelB === 'function' ? window.__bedGetRemSkelB() : 0.5;
+    if (skelLEl) skelLEl.value = fmt3(skeletonInitCommitted && Number.isFinite(liveSkelL) ? liveSkelL : 0.25);
+    if (skelBEl) skelBEl.value = fmt3(skeletonInitCommitted && Number.isFinite(liveSkelB) ? liveSkelB : 0.5);
+    var skip = skeletonInitLayer.querySelector('[data-skeleton-init-skip]');
+    if (skip) skip.checked = false;
+    skeletonInitLayer.classList.add('is-open');
+    skeletonInitLayer.setAttribute('aria-hidden', 'false');
+    if (!skeletonInitBound) {
+      skeletonInitBound = true;
+      skeletonInitLayer.querySelectorAll('[data-skeleton-init]').forEach(function (input) {
+        bindSelectAllOnClick(input);
+        input.addEventListener('input', function () { sanitizeNumericLive(input); });
+        input.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') { e.preventDefault(); commitSkeletonInit(); }
+          if (e.key === 'Escape') { e.preventDefault(); cancelSkeletonInit(); }
+        });
+      });
+      skeletonInitLayer.addEventListener('click', function (e) {
+        if (e.target === skeletonInitLayer) cancelSkeletonInit();
+      });
+    }
+    var focus = cutoutEl || wEl;
+    if (focus) { focus.focus(); focus.select(); }
+  }
+  function commitSkeletonInit() {
+    var cutout = parseSkeletonInitField('cutout', 2);
+    var gap = parseSkeletonInitField('gap', paramState.gap.x);
+    var part = parseSkeletonInitField('part', paramState.part.x);
+    var w = parseSkeletonInitField('blank-w', paramState.blank.x);
+    var h = parseSkeletonInitField('blank-h', paramState.blank.y);
+    var skelL = parseSkeletonInitField('skel-l', 0.25);
+    var skelB = parseSkeletonInitField('skel-b', 0.5);
+    if (cutout < 0) cutout = 0;
+    if (gap < 0) gap = 0;
+    if (part < 0) part = 0;
+    if (skelL < 0) skelL = 0;
+    if (skelB < 0) skelB = 0;
+    if (cutout > 0) {
+      w = Math.max(w, skelL + cutout);
+      h = Math.max(h, skelB + cutout);
+    }
+    applySkeletonInitValues({ w: w, h: h, gap: gap, part: part, cutout: cutout, skelL: skelL, skelB: skelB });
+    skeletonInitCommitted = true;
+    var skip = skeletonInitLayer && skeletonInitLayer.querySelector('[data-skeleton-init-skip]');
+    if (skip && skip.checked) {
+      try { localStorage.setItem(SKELETON_INIT_SKIP, 'true'); } catch (_) {}
+    }
+    closeSkeletonInitCard();
+    if (typeof window.__bedSetSkeletonArmed === 'function') window.__bedSetSkeletonArmed(true);
+  }
+  function cancelSkeletonInit() {
+    closeSkeletonInitCard();
+    if (typeof window.__bedSetSkeletonArmed === 'function') window.__bedSetSkeletonArmed(false);
+  }
+  window.__hudOpenSkeletonInit = openSkeletonInitCard;
+  window.__hudCloseSkeletonInit = closeSkeletonInitCard;
+  window.__hudSkeletonInitIsOpen = function () {
+    return !!(skeletonInitLayer && skeletonInitLayer.classList.contains('is-open'));
+  };
+  var skeletonInitOk = document.querySelector('[data-skeleton-init-ok]');
+  if (skeletonInitOk) skeletonInitOk.addEventListener('click', function (e) { e.preventDefault(); commitSkeletonInit(); });
+  var skeletonInitCancel = document.querySelector('[data-skeleton-init-cancel]');
+  if (skeletonInitCancel) skeletonInitCancel.addEventListener('click', function (e) { e.preventDefault(); cancelSkeletonInit(); });
   hud.addEventListener('click', onChipAction);
   var blankClusterEl = document.getElementById('blank-ticker-cluster');
   if (blankClusterEl) blankClusterEl.addEventListener('click', onChipAction);

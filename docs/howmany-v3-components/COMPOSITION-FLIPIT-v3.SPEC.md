@@ -1,11 +1,11 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Cut 2 max-squeezed rows, GAP held
+**Status:** Living — Cut 7 skeleton cusp-offset pocket retention
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
-**Branch:** `docs/hex-nest`
-**Trace:** `NGJ-20260903-hex-nest`
+**Branch:** `docs/hex-rem-inset`
+**Trace:** `NGJ-20260903-hex-rem`
 **Host tip blob:** `55a1688ec9720fdb34409435fa56b46f3a5783ec` (Seq 3 composition commit)
 **Class:** Exploratory composition host only · not product GOAL · not a shared import  
 
@@ -13,6 +13,48 @@
 This file is the **host only**. The four individual HTML tips stay standalone lock files. Do not overwrite them from this assembly. Do not add `flipit-v3-align.js` or `@import` into the tips.
 
 Prior composition/lock archives (`COMPOSITION-HUD-DECODER-v3.*`, `DE-CODER-v3-LOCKED.*`) stay on disk. They are not this host.
+
+---
+
+## Seq 8 Cut 7 — retain a feasible offset cusp pocket
+
+With skull armed, each adjacent cutout pair first proposes its midpoint, but a midpoint outside a nest L/R margin is not an automatic reject. The skeleton searches the feasible X span within that cutout pair and the nest L/R bounds, then uses the lowest Y that clears every cutout and the nest B/T bounds. It keeps the closest legal center when one exists; it still drops the pocket when no center clears the red cutouts, rem edges, and earlier pocket centers.
+
+This remains the pockets-only skeleton: no Lattice B, phantom cells, clear-hex candidate, or blue row above the cutouts returns. Part-to-part separation remains `pair = D_p + GAP`; `X GAP` remains the minimum consecutive painted-pocket edge clearance; and `JOG X` / `JOG Y` remain the first painted pocket from rem `0,0`.
+
+---
+
+## Seq 5i2 Cut 6c2 — hide the skeleton X OFFSET face
+
+`X OFFSET` is hidden by default in the ticket markup and is revealed only for the unchanged virgin-hex ticket. The face-level `hidden` contract resolves to `display: none`, so with skull armed the skeleton ticket has no `X OFFSET` face at any render point; it retains `COLUMNS`, `ROWS`, `X GAP`, `Y GAP`, `JOG X`, `JOG Y`, and `POCKET COLS`.
+
+This is display-only: skeleton `X GAP` remains the minimum consecutive-pocket edge clearance, and `JOG X` / `JOG Y` remain the first painted pocket measured from rem `0,0`.
+
+---
+
+## Seq 5i Cut 6c — array X GAP and machine jog are different inputs
+
+With skull armed, the pockets-only skeleton ticket treats the one-row array and the machine work offset as separate inputs. `COLUMNS` and `POCKET COLS` are the painted pocket count; `ROWS` is `1`; `X GAP` is the minimum consecutive-pocket edge clearance on X, `center_x[i+1] − center_x[i] − D_p`; and `Y GAP` is `0`. It is neither the FLiPIT global GAP chip nor `X ROW GAP`.
+
+`JOG X` and `JOG Y` are the first painted pocket center measured from rem `0,0`, for the machine work offset before running that one-row array. `X OFFSET` is absent from the skeleton ticket and remains on the unchanged virgin-hex ticket.
+
+---
+
+## Seq 5h Cut 6b — SKEL L / SKEL B on the init card
+
+The skull-arm init card includes `SKEL L` and `SKEL B` with the same input chrome as its other skeleton measures. They default to `0.250` and `0.500`, render to three decimal places, and select all on click. On OK, they write to the existing live rem faces and place the cutout row from rem `0,0`; the live `SKEL L` / `SKEL B` faces remain present.
+
+Nest L/R/T/B do not appear on the card and remain pocket-to-rem clearances only. The Cut 6 pockets-only paint remains unchanged: one red cutout row and legal blue cusp pockets, with no Lattice B, clear-hex candidate, phantom row, or blue parts above the cutouts.
+
+---
+
+## Seq 5g Cut 6 — skeleton pockets only + SKEL L/B jog
+
+With hex on, skull armed, and `HOLE DIA > 0`, the skeleton paints only one row of red cutouts and the legal blue cusp pockets between them. It paints no Lattice B, clear-hex candidate, phantom row, or blue parts above the cutouts. The displayed count is the pocket count only.
+
+The rem faces add `SKEL L` and `SKEL B`, defaulting to `0.250` and `0.500`. They measure rem edge to the first cutout and rem bottom to the cutout row: `x = SKEL L + R_cut + i × (D_cut + g_skel)` and `y = SKEL B + R_cut`. Nest L/R/T/B remain clearance for new pocket parts against the rem edges; they do not position the cutouts.
+
+The skeleton ticket reports `COLUMNS` as the pocket count, `ROWS` as `1`, and unitless three-decimal `JOG X` / `JOG Y` from rem `0,0` to the first pocket. `POCKET COLS` reports the pocket count. `X ORIGIN` is absent for the skeleton ticket. With skull off, hex remains the virgin full-sheet packer with no red cutouts; `HOLE DIA 0` also returns that virgin layout while retaining the armed rem faces.
 
 ---
 
@@ -225,6 +267,76 @@ For `N ≥ 2`:
 The host picks the largest `N` whose `p_N` still places one even-row center and one odd-row center inside `blankW − L − R`. Copied rows (row 3 of row 1, row 4 of row 2) also stay at `≥ D + g`. Origin stays at `(L + R, B + R)`. Spread is `+X` only. Row 3 copies row 1; row 4 copies row 2; same `h` and half-stagger.
 
 Ticket faces from that lattice: `COLUMNS`, `ROWS = N`, `X GAP = p − D`, `Y GAP = h − D` signed, `X OFFSET = L + p / 2`. Three decimals, no unit suffix.
+
+## Cut 1 — red void row + pocket inset
+
+Hex arm stays the nest mode. Two rem faces sit next to the hex ticket in the left stack: **HOLE DIA** (existing rem hole diameter) and **X ROW GAP** (existing X-row edge-to-edge gap). They do not steal PART SIZE or GAP. Boot values are `2.500` and `0.125`, then independent. `HOLE DIA > 0` with a non-negative X-row gap is live rem inset. `HOLE DIA = 0` restores the Cut 2 virgin packer.
+
+One existing hole row auto-fills from blank `(0, 0)`. Red disks are voids, not parts, and are not in the blue count. First void center is `(L + R_h, B + R_h)` with equal `g_exist` across that row and as many red holes as fit `blankW − L − R`. There is no second red row.
+
+New PART SIZE circles drop into the cusps of that row. Live GAP is new-to-new and new-to-red-wall: `dist(centers) ≥ R_h + R_p + g`. A pocket center may slide off the existing-gap midpoint to stay inside L/R/T/B. Further blue rows stack with the Cut 2 squeeze from that pocket row. Row counts may differ. L/R/T/B still bound the rem outline. No extra ticker margin is added above the void AABB. No NC is emitted.
+
+## Cut 2 — left-refill after cusp row + hex diameter chip
+
+This supersedes Cut 1 rem's further-row stack and the hex PART SIZE X=Y link.
+
+Cusp row is blue row 1 only: one new disk per pocket between reds, offset into the cusp legal.
+
+Rows 2+ re-pack from the origin (`L + R_p`) in +X. They eat leftover width at typed GAP to red walls and to other blues. They do not inherit the cusp-row X origin or pitch. Row counts may differ. Leftover height still buys squeezed rows at the Cut 2 `D + g` pair; it does not freeze later rows to the pocket lattice. A left-packed center that still clears GAP occupies the previous right-side waste on a wide rem.
+
+Hex armed: PART SIZE stays the same 154 × 31.46 chip. One diameter number in the current 6ch tabular seat. Lucide `circle-off` only, `viewBox="0 0 24 24"`, paths `M2 2l20 20`, `M8.35 2.69A10 10 0 0 1 21.3 15.65`, and `M19.08 19.08A10 10 0 1 1 4.92 4.92`. Hex off restores `X × Y`. Linked X=Y while hex is on is not the hex readout — drop the second number. Y is not overwritten.
+
+`HOLE DIA = 0` still restores the Cut 2 virgin packer. No second red row. No NC.
+
+## Cut 3 — pocket lock + hex grid above void AABB
+
+This supersedes Cut 2 rem's further-row left-refill only. Hex diameter chip, rem faces, and `HOLE DIA = 0` stay as landed.
+
+Red voids stay inside the rem. If `B + D_h + T > blankH`, do not paint a void row through the blank stroke.
+
+Pocket inserts sit in the cusps and lock. Ticket row 1 is those locked inserts.
+
+Ticket row 2 is not another cusp copy. It starts above the red AABB: `Y = redAABB.top + g + R_p`, and runs from origin X across the rem. That row and every row above sit on one hex grid (`p`, `h` from `D_p` + typed GAP). A cell is occupied if it clears red walls, locked pockets, rem L/R/T/B, and typed GAP. Empty cells stay empty only when a neighbor would collide. Do not greedy-scatter leftover width. Do not leave walkable hex holes. Dodge the locked pocket parts, then stack the same grid.
+
+Do not add a second red row. Do not emit NC. Do not steal PART SIZE or GAP.
+
+## Cut 4 — skeleton arm + one hex grid + init card
+
+This supersedes Cut 3 rem occupancy and hex-on rem-face visibility. The hex diameter chip stays; Lucide circle-off moves to the LEFT of the number. Glyph swap is not an arm.
+
+Hex off + hamburger on is rectangle AutoNest. The hamburger glyph stays the Lucide hamburger.
+
+Hex on replaces the hamburger glyph with the Lucide skull: `viewBox="0 0 24 24"`, paths `m12.5 17-.5-1-.5 1h1z` and `M15 22a1 1 0 0 0 1-1v-1a2 2 0 0 0 1.56-3.25 8 8 0 1 0-11.12 0A2 2 0 0 0 8 20v1a1 1 0 0 0 1 1z`, circles `15,12 r1` and `9,12 r1`. Tooltip `skeleton cut`. The skull starts off (`#111111`). Rem is empty stock. The live packer is the Cut 2 virgin hex. No cutouts. No init card. Hole D is ignored.
+
+Skull click while hex is on arms skeleton (`#16A34A`). Only then: the init card, red cutouts, pockets, skeleton ticket faces, and min-rem clamp. Skull off while hex is on returns to virgin hex; rem is empty again.
+
+Init card uses the preset card chrome. Fields: skeleton W × H, cutout D default `2.000`, skeleton lattice gap, new part D. Don't-show-this-again checkbox. After OK, values stay live and clamp. `Hmin = B + D_cut + T`. `Wmin = L + D_cut + R`. Do not paint a cutout through the blank stroke.
+
+Hex PART SIZE (virgin or skeleton): one diameter, Lucide circle-off to the LEFT of the number. One click on any dimension opens + select-all.
+
+Grid, skull armed only: one hex lattice for pockets and every blue row. Pockets occupy a subset of columns on the same-stagger line as row 3. Array X origin is the leftmost part of a FULL same-stagger row (row 3 col 1), not the first pocket. Ticket: COLUMNS, ROWS, X GAP, Y GAP, X ORIGIN (that leftmost full-row X from rem 0,0), POCKET COLS. Y jog is pocket center Y from rem 0,0. Array negative Y GAP uses the Cut 2 virgin law. Row 2+ fill legal hex cells. No swiss cheese when a cell clears GAP, cutouts, and rem edges.
+
+Cutouts remain red and out of the blue count. No second cutout row. No NC.
+
+## Cut 4b — pocket lock + review corrections
+
+With skull armed and `HOLE DIA > 0`, every legal cusp insert remains locked as array row 1 when the rem height grows. That row is not re-derived with Cut 2's height squeeze. Rows above use the one `D + GAP` hex grid from the skeleton AABB, skipping only cells that collide with a cutout, locked pocket, or rem edge.
+
+With skull armed and `HOLE DIA = 0`, the layout is the Cut 2 virgin packer: no cutouts or pocket row are painted. The armed rem faces remain available so a positive hole diameter can restore the skeleton layout.
+
+Hex PART SIZE remains one diameter with circle-off at its left. Clicking that closed diameter opens, focuses, and select-alls the inserted input in the same click. Skull glyph swap, init card, and the NC ban remain unchanged.
+
+## Cut 5b — pocket row + phantom lattice + count winner
+
+This supersedes Cut 5's pocket-seeded later-blue layout only. Skull arm, init card, rem faces, hex diameter chip, and `HOLE DIA = 0` virgin dispatch stay as landed.
+
+Skull armed and `HOLE DIA > 0`: cutouts always paint. Lattice A is the red cutout row and is not counted. The part candidates see the same rem and reds.
+
+Candidate P paints every legal cusp pocket as array row 1. Pockets are extra parts, not Lattice B seeds. Lattice B begins at `x0 = L + R_p` and `y2 = cutout AABB top + g + R_p`, with `p = D_p + g` and `h = sqrt(3) * p / 2`. Its row 2 begins at `x0`; later rows retain that alternating hex phase. A B cell that is closer than `D_p + g` to a pocket is hidden but remains a lattice point, so rows 2–3 retain their phase despite those gaps and later rows are full B rows. `N_P` is painted pockets plus painted B cells.
+
+Candidate H paints no pockets and paints the same red-clearing Lattice B with no pocket hides. `N_H` is its painted B-cell count. The host paints the larger count; a tie selects H. Ticket faces come from the selected B lattice with `X ORIGIN = x0`; `POCKET COLS` is zero when H wins.
+
+`HOLE DIA = 0` still restores the Cut 2 virgin packer. No pocket toggle, second cutout row, or NC.
 
 ## AutoNest Cut 1 — HUD menu + best uniform
 
@@ -448,3 +560,11 @@ Do not require `file://`.
 | 2026-09-01 | **R31** ticker-door chrome port: retained the 127 blank-in-space stage and moved only the ticker-door menu bar onto it. The picker opens above the −90/+90, blank-size, calculator, chevron travel row; no bed, grid, ruler, nest box, or Numeric HUD card is restored. |
 | 2026-09-01 | **R32** review remediation: selecting Part exposes its retained calculator controls; ticker placement uses the live cluster height rather than the former 34px constant. |
 | 2026-09-03 | **Cut 2** hex nest: largest N at the D+g pair. Leftover height adds a squeezed row; GAP is never undercut. |
+| 2026-09-03 | **Cut 1** hex rem inset: one red void row from `(L + R_h, B + R_h)`; PART SIZE circles drop into those pockets; rem faces sit next to the hex ticket. |
+| 2026-09-03 | **Cut 2** hex rem inset: rows after the cusp re-pack from the origin and eat leftover width; PART SIZE is one diameter + Lucide circle-off while hex is armed. |
+| 2026-09-03 | **Cut 3** hex rem inset: lock cusp inserts; hex grid from origin X above the red AABB; no leftover greedy refill. |
+| 2026-09-03 | **Cut 4** hex rem inset: hex-on skull glyph; skull click arms skeleton; init card; one lattice with pocket columns; circle-off left of diameter. |
+| 2026-09-03 | **Cut 5** hex rem inset: freeze part lattice after pockets; later blues are hex neighbors at `p = D_p + g`; no AABB+GAP restart. |
+| 2026-09-04 | **Cut 5b** hex rem inset: compare pocket extras against the independent phantom B lattice; paint the higher count, with clear-hex on a tie. |
+| 2026-09-04 | **Cut 6b** hex rem inset: SKEL L and SKEL B join the skeleton init card and write through to the retained rem faces. |
+| 2026-09-04 | **Cut 6c** hex rem inset: skeleton array X GAP measures painted-pocket edge clearance; machine JOG stays the first-pocket rem offset. |
