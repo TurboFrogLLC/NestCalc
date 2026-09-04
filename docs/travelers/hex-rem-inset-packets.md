@@ -118,3 +118,43 @@ Operator: Codex App · GPT-5.6 Terra · High
 - Pockets-only behavior remains: Lattice B is absent, while the ticket `X GAP` and `JOG X` / `JOG Y` laws are unchanged.
 - Browser proof of the P1 case: `5.000 × 8.000` rem, cutout D `2.000`, part D `3.000`, GAP `0.125`, SKEL L/B `0.250` / `0.500`, and nest L `1.000` yielded `COLUMNS 1`, `POCKET COLS 1`, `JOG X 2.500`, `JOG Y 3.975`; browser console errors: none.
 - Implement `3158867a21e9bd822d219babce3e902b2a13baf7`. Pushed origin/docs/hex-rem-inset; only P1 is to be resolved.
+
+## Seq 9 Merge
+
+Operator: Codex App · GPT-5.6 Terra · High
+
+- PR 136 merge-committed into `docs/autonest-host` at `26d3f5bd5be33d83f40585ac04d8db10fb250e98`; `main` was not touched.
+- Before merge, `npm run lint`, `npm run build`, `npm run test` (110 passed), `npm run governance:check`, `npm run test:governance`, `python3 scripts/nestcalc-governance.py check`, and `git diff --check origin/docs/autonest-host...HEAD` passed.
+
+## Seq 10 Close
+
+Operator: Codex App · GPT-5.6 Terra · High
+
+- The specified P1 cusp-offset thread is resolved. The P2 diameter-focus thread remains unresolved and unimplemented, as instructed. The feature branch is retained.
+- Packslip printed and posted on PR 136.
+
+### Packslip
+
+```text
+Repo: NestCalc
+Owner: wReckless
+Part: FLiPIT hex rem inset
+Description: Cut 7 cusp offset + merge close PR 136
+PR: 136
+Branch: docs/hex-rem-inset
+Head: 26d3f5bd5be33d83f40585ac04d8db10fb250e98
+Session: continuous
+job_id: NGJ-20260903-hex-rem
+flow_id:
+goal_sha256:
+Date: 2026-09-04
+
+Seq  Label              Notes                                              Stamp
+8    Inspection         Cut 7 feasible cusp offset P1           3158867
+9    Merge              PR 136 into docs/autonest-host           26d3f5b
+10   Close              packslip posted                          26d3f5b
+
+Closed Corrective Action: none
+Still open: P2 diameter-focus review thread intentionally unresolved and unimplemented.
+Next: none
+```
