@@ -84,3 +84,12 @@ Operator: Codex App · GPT-5.6 Terra · High
 - OK writes both values through to the retained live rem faces before arming the skeleton; the rem-face values continue to place the cutout row from rem `0,0`.
 - Browser proof: after entering `SKEL L 1.000` and `SKEL B 1.125`, the retained rem faces showed those values at three decimals. The resulting skeleton ticket had `ROWS 1`, `POCKET COLS 2`, and no Candidate P/H markup.
 - Implement `3cf0f62`. Ready to push origin/docs/hex-rem-inset.
+
+## Seq 5i Cut 6c — array X GAP + machine jog
+
+Operator: Codex App · GPT-5.6 Terra · High
+
+- The skeleton ticket now reports the one-row array as `COLUMNS`, `ROWS 1`, minimum painted-pocket edge-to-edge `X GAP`, and `Y GAP 0.000`; it does not reuse global GAP or X ROW GAP.
+- `JOG X` / `JOG Y` remain the first painted pocket from rem `0,0`, for the machine work offset. Skeleton hides `X OFFSET`; the virgin hex ticket is unchanged.
+- Browser proof: default skeleton rendered `X GAP 1.750` with rem `X ROW GAP 0.125`, `Y GAP 0.000`, `JOG X 2.313`, and `JOG Y 3.624`; X OFFSET was hidden.
+- Implement `5311ff4`. Ready to push origin/docs/hex-rem-inset.

@@ -24,7 +24,7 @@ Seq  Label              Notes                                              Stamp
 5f   Cut                5b phantom lattice + count winner       46d5c8c
 5g   Cut                6 pockets only + SKEL L/B jog           45d1db2
 5h   Cut                6b SKEL L/B on init card                11d6818
-5i   Cut                6c array X GAP + machine jog
+5i   Cut                6c array X GAP + machine jog              5311ff4
 4    Look               Owner. No Codex review until Send.
 7    Send for review
 8    Inspection
