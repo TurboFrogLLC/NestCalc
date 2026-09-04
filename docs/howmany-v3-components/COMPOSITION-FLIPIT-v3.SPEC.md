@@ -1,6 +1,6 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Cut 3 pocket lock + hex grid above void AABB
+**Status:** Living — Cut 4 skeleton arm + one hex grid + init card
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
@@ -258,6 +258,24 @@ Ticket row 2 is not another cusp copy. It starts above the red AABB: `Y = redAAB
 
 Do not add a second red row. Do not emit NC. Do not steal PART SIZE or GAP.
 
+## Cut 4 — skeleton arm + one hex grid + init card
+
+This supersedes Cut 3 rem occupancy and hex-on rem-face visibility. The hex diameter chip stays; Lucide circle-off moves to the LEFT of the number. Glyph swap is not an arm.
+
+Hex off + hamburger on is rectangle AutoNest. The hamburger glyph stays the Lucide hamburger.
+
+Hex on replaces the hamburger glyph with the Lucide skull: `viewBox="0 0 24 24"`, paths `m12.5 17-.5-1-.5 1h1z` and `M15 22a1 1 0 0 0 1-1v-1a2 2 0 0 0 1.56-3.25 8 8 0 1 0-11.12 0A2 2 0 0 0 8 20v1a1 1 0 0 0 1 1z`, circles `15,12 r1` and `9,12 r1`. Tooltip `skeleton cut`. The skull starts off (`#111111`). Rem is empty stock. The live packer is the Cut 2 virgin hex. No cutouts. No init card. Hole D is ignored.
+
+Skull click while hex is on arms skeleton (`#16A34A`). Only then: the init card, red cutouts, pockets, skeleton ticket faces, and min-rem clamp. Skull off while hex is on returns to virgin hex; rem is empty again.
+
+Init card uses the preset card chrome. Fields: skeleton W × H, cutout D default `2.000`, skeleton lattice gap, new part D. Don't-show-this-again checkbox. After OK, values stay live and clamp. `Hmin = B + D_cut + T`. `Wmin = L + D_cut + R`. Do not paint a cutout through the blank stroke.
+
+Hex PART SIZE (virgin or skeleton): one diameter, Lucide circle-off to the LEFT of the number. One click on any dimension opens + select-all.
+
+Grid, skull armed only: one hex lattice for pockets and every blue row. Pockets occupy a subset of columns on the same-stagger line as row 3. Array X origin is the leftmost part of a FULL same-stagger row (row 3 col 1), not the first pocket. Ticket: COLUMNS, ROWS, X GAP, Y GAP, X ORIGIN (that leftmost full-row X from rem 0,0), POCKET COLS. Y jog is pocket center Y from rem 0,0. Array negative Y GAP uses the Cut 2 virgin law. Row 2+ fill legal hex cells. No swiss cheese when a cell clears GAP, cutouts, and rem edges.
+
+Cutouts remain red and out of the blue count. No second cutout row. No NC.
+
 ## AutoNest Cut 1 — HUD menu + best uniform
 
 The centered HUD order is Lucide `rotate-ccw`, Lucide `rotate-cw`, blank size, Lucide `menu`, then the blue count. Every travel hit is 24px with a 16px glyph, 24px viewBox, and 2px stroke. The menu consists only of `M4 5h16`, `M4 12h16`, and `M4 19h16`.
@@ -483,3 +501,4 @@ Do not require `file://`.
 | 2026-09-03 | **Cut 1** hex rem inset: one red void row from `(L + R_h, B + R_h)`; PART SIZE circles drop into those pockets; rem faces sit next to the hex ticket. |
 | 2026-09-03 | **Cut 2** hex rem inset: rows after the cusp re-pack from the origin and eat leftover width; PART SIZE is one diameter + Lucide circle-off while hex is armed. |
 | 2026-09-03 | **Cut 3** hex rem inset: lock cusp inserts; hex grid from origin X above the red AABB; no leftover greedy refill. |
+| 2026-09-03 | **Cut 4** hex rem inset: hex-on skull glyph; skull click arms skeleton; init card; one lattice with pocket columns; circle-off left of diameter. |

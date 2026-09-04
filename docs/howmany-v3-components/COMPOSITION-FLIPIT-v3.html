@@ -2350,7 +2350,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       white-space: nowrap; overflow: hidden;
     }
     #hud .param-ticker .chip-hex-circle-off {
-      flex: 0 0 16px; width: 16px; height: 16px; margin-left: 0.35em;
+      flex: 0 0 16px; width: 16px; height: 16px; margin-right: 0.35em;
       display: block; pointer-events: none; color: inherit;
     }
     #hud .param-row[data-param="margin"] .param-ticker.is-chip-editing {
@@ -2421,6 +2421,11 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     .margin-preset-delete-alert__footer { display: flex; justify-content: flex-end; gap: 8.8px; margin-top: 20px; }
     .margin-preset-delete-alert__button { height: 31.46px; padding: 0 12px; border: 1.1px solid rgba(17,17,17,.2); border-radius: 6px; background: #fff; color: var(--ink); font: 650 13.31px/1 var(--font); cursor: pointer; }
     .margin-preset-delete-alert__button--destructive { border-color: #B42318; background: #B42318; color: #fff; }
+    .skeleton-init-card-layer { position: fixed; inset: 0; z-index: 201; display: grid; place-items: center; visibility: hidden; pointer-events: none; background: rgba(17,17,17,.28); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+    .skeleton-init-card-layer.is-open { visibility: visible; pointer-events: auto; }
+    .skeleton-init-card-layer .margin-preset-card__option { display: flex; align-items: center; gap: 4.4px; margin-top: 8.8px; font: 650 11px/1 var(--font-mono); }
+    .skeleton-init-card-layer .margin-preset-card__option input { accent-color: #111111; }
+    .skeleton-init-card-layer .margin-preset-card__pair.is-single { grid-template-columns: 106.8px; }
 </style>
 </head>
 <body>
@@ -2482,6 +2487,45 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       </div>
     </section>
     </div>
+  </div>
+  <div class="skeleton-init-card-layer" data-skeleton-init-layer aria-hidden="true">
+    <section class="margin-preset-card" role="dialog" aria-modal="true" aria-labelledby="skeleton-init-title">
+      <div class="margin-preset-card__header">
+        <span class="margin-preset-card__title" id="skeleton-init-title">Skeleton</span>
+        <div class="margin-preset-card__actions">
+          <button type="button" class="margin-preset-card__action" data-skeleton-init-ok title="Save skeleton" aria-label="Save skeleton"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button>
+          <button type="button" class="margin-preset-card__action" data-skeleton-init-cancel title="Cancel skeleton" aria-label="Cancel skeleton"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+        </div>
+      </div>
+      <div class="margin-preset-card__fields">
+        <section class="margin-preset-card__section" aria-label="Skeleton size">
+          <div class="margin-preset-card__section-head"><span class="margin-preset-card__section-label">Skeleton</span></div>
+          <div class="margin-preset-card__pair">
+            <label class="margin-preset-card__field"><input data-skeleton-init="blank-w" type="text" inputmode="decimal" autocomplete="off" aria-label="Skeleton width" /></label>
+            <label class="margin-preset-card__field"><input data-skeleton-init="blank-h" type="text" inputmode="decimal" autocomplete="off" aria-label="Skeleton height" /></label>
+          </div>
+        </section>
+        <section class="margin-preset-card__section" aria-label="Cutout diameter">
+          <div class="margin-preset-card__section-head"><span class="margin-preset-card__section-label">Cutout D</span></div>
+          <div class="margin-preset-card__pair is-single">
+            <label class="margin-preset-card__field"><input data-skeleton-init="cutout" type="text" inputmode="decimal" autocomplete="off" aria-label="Cutout diameter" /></label>
+          </div>
+        </section>
+        <section class="margin-preset-card__section" aria-label="Skeleton lattice gap">
+          <div class="margin-preset-card__section-head"><span class="margin-preset-card__section-label">Lattice gap</span></div>
+          <div class="margin-preset-card__pair is-single">
+            <label class="margin-preset-card__field"><input data-skeleton-init="gap" type="text" inputmode="decimal" autocomplete="off" aria-label="Skeleton lattice gap" /></label>
+          </div>
+        </section>
+        <section class="margin-preset-card__section" aria-label="New part diameter">
+          <div class="margin-preset-card__section-head"><span class="margin-preset-card__section-label">New part D</span></div>
+          <div class="margin-preset-card__pair is-single">
+            <label class="margin-preset-card__field"><input data-skeleton-init="part" type="text" inputmode="decimal" autocomplete="off" aria-label="New part diameter" /></label>
+          </div>
+        </section>
+      </div>
+      <label class="margin-preset-card__option"><input type="checkbox" data-skeleton-init-skip /> <span>Don't show this again</span></label>
+    </section>
   </div>
   <div class="margin-preset-delete-alert" data-margin-preset-delete-alert>
     <div class="margin-preset-delete-alert__overlay"></div>
@@ -2665,7 +2709,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
               <div class="hex-array-face"><b>ROWS</b><span data-hex-ticket="rows">0</span></div>
               <div class="hex-array-face"><b>X GAP</b><span data-hex-ticket="x-gap">0.000</span></div>
               <div class="hex-array-face"><b>Y GAP</b><span data-hex-ticket="y-gap">0.000</span></div>
-              <div class="hex-array-face"><b>X OFFSET</b><span data-hex-ticket="x-offset">0.000</span></div>
+              <div class="hex-array-face"><b data-hex-ticket-label="x-origin">X OFFSET</b><span data-hex-ticket="x-offset">0.000</span></div>
+              <div class="hex-array-face" data-hex-ticket-face="pocket-cols" hidden><b>POCKET COLS</b><span data-hex-ticket="pocket-cols">0</span></div>
             </div>
 
             <div class="hex-rem-faces" id="hex-rem-faces" aria-label="Rem hole faces" hidden>
@@ -2922,7 +2967,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     blankW: 12, blankH: 8, snap: 0.125, zoom: 1, fitScale: null, panX: 0, panY: 0, dragging: null, start: null,
     partW: 2.5, partH: 3.5, partRot: 0,
     margin: { l: 0.25, r: 0.25, t: 0.25, b: 0.5 },
-    gap: { x: 0.125, y: 0.125 }, remHoleD: 2.5, remGapX: 0.125, autoNestArmed: false, hexArmed: false, marginBandsVisible: true
+    gap: { x: 0.125, y: 0.125 }, remHoleD: 2.5, remGapX: 0.125, autoNestArmed: false, hexArmed: false, skeletonArmed: false, marginBandsVisible: true
   };
 
   var svg = document.getElementById('lb-world');
@@ -3276,20 +3321,9 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }
   }
 
-  /* Cut 2: largest N at the D+g pair. Leftover height buys a squeezed row; it does not open the nest. */
-  function hexVirginLayout() {
-    var diameter = state.partW;
-    var radius = diameter / 2;
-    var m = state.margin;
-    var clearance = state.gap.x;
-    var empty = { hex: true, columns: 0, rows: 0, count: 0, centers: [], voids: [], failedRows: [], p: 0, h: 0, xGap: 0, yGap: 0, xOffset: 0 };
-    if (!finitePositive(diameter) || !finiteNonNegative(clearance)) return empty;
-    var pair = diameter + clearance;
+  function hexSqueezeMetrics(minX, maxX, y0, maxY, pair) {
     var hcp = pair * Math.sqrt(3) / 2;
-    var availableRise = state.blankH - m.t - m.b - diameter;
-    var minX = m.l + radius, maxX = state.blankW - m.r - radius;
-    var minY = m.b + radius, maxY = state.blankH - m.t - radius;
-    if (minX > maxX + FIT_EPSILON || minY > maxY + FIT_EPSILON) return empty;
+    var availableRise = maxY - y0;
     var n = 1, h = 0, p = pair;
     if (availableRise > FIT_EPSILON) {
       var maxN = Math.max(2, 1 + Math.floor(2 * availableRise / pair + FIT_EPSILON));
@@ -3304,6 +3338,23 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         break;
       }
     }
+    return { n: n, h: h, p: p };
+  }
+
+  /* Cut 2: largest N at the D+g pair. Leftover height buys a squeezed row; it does not open the nest. */
+  function hexVirginLayout() {
+    var diameter = state.partW;
+    var radius = diameter / 2;
+    var m = state.margin;
+    var clearance = state.gap.x;
+    var empty = { hex: true, columns: 0, rows: 0, count: 0, centers: [], voids: [], failedRows: [], p: 0, h: 0, xGap: 0, yGap: 0, xOffset: 0 };
+    if (!finitePositive(diameter) || !finiteNonNegative(clearance)) return empty;
+    var pair = diameter + clearance;
+    var minX = m.l + radius, maxX = state.blankW - m.r - radius;
+    var minY = m.b + radius, maxY = state.blankH - m.t - radius;
+    if (minX > maxX + FIT_EPSILON || minY > maxY + FIT_EPSILON) return empty;
+    var metrics = hexSqueezeMetrics(minX, maxX, minY, maxY, pair);
+    var n = metrics.n, h = metrics.h, p = metrics.p;
     var centers = [], rows = n, columns = 0, failedRows = [];
     for (var row = 0; row < rows; row++) {
       var y = minY + row * h;
@@ -3316,8 +3367,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     return { hex: true, diameter: diameter, radius: radius, p: p, h: h, columns: columns, rows: rows, count: centers.length, centers: centers, voids: [], failedRows: failedRows, xGap: p - diameter, yGap: h - diameter, xOffset: m.l + p / 2 };
   }
 
-  /* Cut 3: locked cusp inserts; one hex grid above the red AABB. No leftover greedy refill. */
-  function hexRemInsetLayout() {
+  /* Cut 4: skull arm. One hex lattice for pockets and every blue row. */
+  function hexSkeletonLayout() {
     var diameter = state.partW;
     var radius = diameter / 2;
     var holeD = state.remHoleD;
@@ -3325,8 +3376,14 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var gExist = state.remGapX;
     var m = state.margin;
     var clearance = state.gap.x;
-    var empty = { hex: true, rem: true, columns: 0, rows: 0, count: 0, centers: [], voids: [], failedRows: [], p: 0, h: 0, xGap: 0, yGap: 0, xOffset: 0, diameter: diameter, radius: radius, holeD: holeD, holeR: holeR };
-    if (!finitePositive(diameter) || !finiteNonNegative(clearance) || !finitePositive(holeD) || !finiteNonNegative(gExist)) return hexVirginLayout();
+    var empty = { hex: true, skeleton: true, rem: true, columns: 0, rows: 0, count: 0, centers: [], voids: [], failedRows: [], p: 0, h: 0, xGap: 0, yGap: 0, xOffset: 0, xOrigin: 0, pocketCols: 0, yJog: 0, diameter: diameter, radius: radius, holeD: holeD, holeR: holeR };
+    if (!finitePositive(diameter) || !finiteNonNegative(clearance)) return empty;
+    if (finitePositive(holeD)) {
+      var minW = m.l + holeD + m.r;
+      var minH = m.b + holeD + m.t;
+      if (state.blankW + FIT_EPSILON < minW) state.blankW = minW;
+      if (state.blankH + FIT_EPSILON < minH) state.blankH = minH;
+    }
     var pair = diameter + clearance;
     var dWall = holeR + radius + clearance;
     var pitchExist = holeD + gExist;
@@ -3334,8 +3391,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     var holeMaxX = state.blankW - m.r - holeR;
     var holeY = m.b + holeR;
     var voids = [];
-    /* Red voids stay inside the rem. Do not paint a void row through the blank stroke. */
-    if (m.b + holeD + m.t <= state.blankH + FIT_EPSILON && holeMinX <= holeMaxX + FIT_EPSILON && pitchExist > FIT_EPSILON) {
+    /* Red cutouts stay inside the rem. Min-rem clamp keeps them off the blank stroke. */
+    if (finitePositive(holeD) && finiteNonNegative(gExist) && m.b + holeD + m.t <= state.blankH + FIT_EPSILON && holeMinX <= holeMaxX + FIT_EPSILON && pitchExist > FIT_EPSILON) {
       var holeN = Math.floor((holeMaxX - holeMinX) / pitchExist + FIT_EPSILON) + 1;
       for (var hi = 0; hi < holeN; hi++) {
         var vx = holeMinX + hi * pitchExist;
@@ -3343,7 +3400,6 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         voids.push({ x: vx, y: holeY });
       }
     }
-    if (!voids.length) return hexVirginLayout();
     var minX = m.l + radius, maxX = state.blankW - m.r - radius;
     var minY = m.b + radius, maxY = state.blankH - m.t - radius;
     if (minX > maxX + FIT_EPSILON || minY > maxY + FIT_EPSILON) return Object.assign(empty, { voids: voids });
@@ -3362,55 +3418,52 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       for (var vi = 0; vi < voids.length; vi++) if (dist2(pt, voids[vi]) + FIT_EPSILON < dWall * dWall) return false;
       return true;
     }
-    function clearsParts(pt, list) {
-      for (var pi = 0; pi < list.length; pi++) if (dist2(pt, list[pi]) + FIT_EPSILON < pair * pair) return false;
-      return true;
+    function inCusp(x) {
+      for (var vi = 0; vi + 1 < voids.length; vi++) {
+        if (x > voids[vi].x + FIT_EPSILON && x < voids[vi + 1].x - FIT_EPSILON) return true;
+      }
+      return false;
     }
 
-    var pocketCenters = [];
-    for (var vi = 0; vi + 1 < voids.length; vi++) {
-      var px = (voids[vi].x + voids[vi + 1].x) / 2;
-      if (px < minX) px = minX;
-      if (px > maxX) px = maxX;
-      var py = yClearOfReds(px);
-      var pocket = { x: px, y: py };
-      if (px < minX - FIT_EPSILON || px > maxX + FIT_EPSILON) continue;
-      if (py > maxY + FIT_EPSILON) continue;
-      if (!clearsReds(pocket) || !clearsParts(pocket, pocketCenters)) continue;
-      pocketCenters.push(pocket);
+    var yJog = minY;
+    if (voids.length >= 2) {
+      for (var ci = 0; ci + 1 < voids.length; ci++) yJog = Math.max(yJog, yClearOfReds((voids[ci].x + voids[ci + 1].x) / 2));
     }
+    if (yJog > maxY + FIT_EPSILON) return Object.assign(empty, { voids: voids, yJog: yJog });
 
-    var usedPockets = pocketCenters.length > 0;
-    var redTop = holeY + holeR;
-    var gridY0 = redTop + clearance + radius;
-    var p = pair;
-    var h = pair * Math.sqrt(3) / 2;
-    var n = 0;
-    if (gridY0 <= maxY + FIT_EPSILON) {
-      n = 1;
-      var availableRise = maxY - gridY0;
-      if (h > FIT_EPSILON && availableRise > FIT_EPSILON) n += Math.floor(availableRise / h + FIT_EPSILON);
+    var metrics = hexSqueezeMetrics(minX, maxX, yJog, maxY, pair);
+    var n = metrics.n, h = metrics.h, p = metrics.p;
+    if (p > FIT_EPSILON) {
+      var evenCols = Math.floor((maxX - minX) / p + FIT_EPSILON) + 1;
+      for (var ek = 0; ek < evenCols; ek++) {
+        var ex = minX + ek * p;
+        if (ex > maxX + FIT_EPSILON) break;
+        if (inCusp(ex)) yJog = Math.max(yJog, yClearOfReds(ex));
+      }
+      if (yJog > maxY + FIT_EPSILON) yJog = maxY;
+      metrics = hexSqueezeMetrics(minX, maxX, yJog, maxY, pair);
+      n = metrics.n; h = metrics.h; p = metrics.p;
     }
 
     var centers = [];
+    var pocketCenters = [];
     var columns = 0, occupiedRows = 0;
-    if (usedPockets) {
-      for (var pk = 0; pk < pocketCenters.length; pk++) centers.push(pocketCenters[pk]);
-      columns = pocketCenters.length;
-      occupiedRows = 1;
-    }
+    var xOrigin = minX;
     for (var row = 0; row < n; row++) {
-      var y = gridY0 + row * h;
+      var y = yJog + row * h;
       var startX = minX + (row % 2 ? p / 2 : 0);
       var rowColumns = 0;
-      if (y <= maxY + FIT_EPSILON && startX <= maxX + FIT_EPSILON && p > FIT_EPSILON) {
-        var maxCols = Math.floor((maxX - startX) / p + FIT_EPSILON) + 1;
+      var rowFirstX = null;
+      if (y <= maxY + FIT_EPSILON && startX <= maxX + FIT_EPSILON) {
+        var maxCols = p > FIT_EPSILON ? Math.floor((maxX - startX) / p + FIT_EPSILON) + 1 : 1;
         for (var column = 0; column < maxCols; column++) {
-          var pt = { x: startX + column * p, y: y };
+          var pt = { x: startX + column * (p > FIT_EPSILON ? p : 0), y: y };
           if (pt.x < minX - FIT_EPSILON || pt.x > maxX + FIT_EPSILON) continue;
           if (pt.y < minY - FIT_EPSILON || pt.y > maxY + FIT_EPSILON) continue;
-          /* Occupancy on the lattice. Do not slide off-grid to eat leftover width. */
-          if (!clearsReds(pt) || !clearsParts(pt, pocketCenters)) continue;
+          if (!clearsReds(pt)) continue;
+          if (row === 0 && !inCusp(pt.x)) continue;
+          if (rowFirstX == null) rowFirstX = pt.x;
+          if (row === 0) pocketCenters.push(pt);
           centers.push(pt);
           rowColumns++;
         }
@@ -3419,14 +3472,15 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
         occupiedRows++;
         columns = Math.max(columns, rowColumns);
       }
+      if (row === 2 && rowFirstX != null) xOrigin = rowFirstX;
     }
 
-    return { hex: true, rem: true, diameter: diameter, radius: radius, holeD: holeD, holeR: holeR, p: p, h: h, columns: columns, rows: occupiedRows, count: centers.length, centers: centers, voids: voids, failedRows: [], xGap: p - diameter, yGap: h - diameter, xOffset: m.l + p / 2 };
+    return { hex: true, skeleton: true, rem: true, diameter: diameter, radius: radius, holeD: holeD, holeR: holeR, p: p, h: h, columns: columns, rows: occupiedRows, count: centers.length, centers: centers, voids: voids, failedRows: [], xGap: p - diameter, yGap: h - diameter, xOffset: xOrigin, xOrigin: xOrigin, pocketCols: pocketCenters.length, yJog: yJog };
   }
 
   function hexLayout() {
     readRemFaces();
-    if (finitePositive(state.remHoleD) && finiteNonNegative(state.remGapX)) return hexRemInsetLayout();
+    if (state.skeletonArmed) return hexSkeletonLayout();
     return hexVirginLayout();
   }
 
@@ -3671,7 +3725,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
   }
   function positionHexArrayTicket(layout) {
     var hexOn = !!(layout && layout.hex);
-    if (hexRemFaces) hexRemFaces.hidden = !hexOn;
+    var skeletonOn = !!(hexOn && layout.skeleton);
+    if (hexRemFaces) hexRemFaces.hidden = !skeletonOn;
     if (!hexArrayTicket) return;
     if (!hexOn) { hexArrayTicket.hidden = true; return; }
     hexArrayTicket.hidden = false;
@@ -3679,11 +3734,16 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       var el = hexArrayTicket.querySelector('[data-hex-ticket="' + name + '"]');
       if (el) el.textContent = value;
     }
+    var originLabel = hexArrayTicket.querySelector('[data-hex-ticket-label="x-origin"]');
+    var pocketFace = hexArrayTicket.querySelector('[data-hex-ticket-face="pocket-cols"]');
+    if (originLabel) originLabel.textContent = skeletonOn ? 'X ORIGIN' : 'X OFFSET';
+    if (pocketFace) pocketFace.hidden = !skeletonOn;
     face('columns', String(layout.columns));
     face('rows', String(layout.rows));
     face('x-gap', layout.xGap.toFixed(3));
     face('y-gap', layout.yGap.toFixed(3));
-    face('x-offset', layout.xOffset.toFixed(3));
+    face('x-offset', (skeletonOn ? layout.xOrigin : layout.xOffset).toFixed(3));
+    if (skeletonOn) face('pocket-cols', String(layout.pocketCols || 0));
   }
   function syncHudBlankFromBed() {
     if (typeof window.__hudSyncBlank === 'function') window.__hudSyncBlank(state.blankW, state.blankH);
@@ -3769,25 +3829,89 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     state.partRot = (state.partRot + 90) % 360;
     render();
   });
+  var BT_HAMBURGER_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16H4a2 2 0 1 1 0-4h16a2 2 0 1 1 0 4h-4.25"/><path d="M5 12a2 2 0 0 1-2-2 9 7 0 0 1 18 0 2 2 0 0 1-2 2"/><path d="M5 16a2 2 0 0 0-2 2 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 2 2 0 0 0-2-2q0 0 0 0"/><path d="m6.67 12 6.13 4.6a2 2 0 0 0 2.8-.4l3.15-4.2"/></svg>';
+  var BT_SKULL_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12.5 17-.5-1-.5 1h1z"/><path d="M15 22a1 1 0 0 0 1-1v-1a2 2 0 0 0 1.56-3.25 8 8 0 1 0-11.12 0A2 2 0 0 0 8 20v1a1 1 0 0 0 1 1z"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="12" r="1"/></svg>';
+  var SKELETON_INIT_SKIP = 'howmany.flipit.v3.skeletonInitSkip';
+  function syncMenuGlyph() {
+    if (!btMenu) return;
+    if (state.hexArmed) {
+      btMenu.innerHTML = BT_SKULL_SVG;
+      btMenu.setAttribute('title', 'skeleton cut');
+      btMenu.setAttribute('aria-label', 'skeleton cut');
+      btMenu.setAttribute('aria-pressed', String(!!state.skeletonArmed));
+    } else {
+      btMenu.innerHTML = BT_HAMBURGER_SVG;
+      btMenu.setAttribute('title', 'AutoNest');
+      btMenu.setAttribute('aria-label', 'AutoNest');
+      btMenu.setAttribute('aria-pressed', String(!!state.autoNestArmed));
+    }
+  }
+  function setSkeletonArmed(armed) {
+    state.skeletonArmed = !!armed;
+    window.__flipitSkeletonArmed = state.skeletonArmed;
+    if (!state.skeletonArmed && typeof window.__hudCloseSkeletonInit === 'function') window.__hudCloseSkeletonInit();
+    syncMenuGlyph();
+    render();
+  }
+  window.__bedSetSkeletonArmed = setSkeletonArmed;
+  window.__bedGetRemHole = function () { return state.remHoleD; };
+  window.__bedSetRemHole = function (d) {
+    if (!Number.isFinite(d)) return;
+    state.remHoleD = d;
+    if (hexRemFaces) {
+      var holeEl = hexRemFaces.querySelector('[data-hex-rem="hole"]');
+      if (holeEl) holeEl.value = (d).toFixed(3);
+    }
+    if (state.hexArmed) render();
+  };
   if (btMenu) btMenu.addEventListener('click', function () {
+    if (state.hexArmed) {
+      if (state.skeletonArmed) {
+        setSkeletonArmed(false);
+        return;
+      }
+      if (typeof window.__hudSkeletonInitIsOpen === 'function' && window.__hudSkeletonInitIsOpen()) {
+        if (typeof window.__hudCloseSkeletonInit === 'function') window.__hudCloseSkeletonInit();
+        return;
+      }
+      var skip = false;
+      try { skip = localStorage.getItem(SKELETON_INIT_SKIP) === 'true'; } catch (_) {}
+      if (skip) {
+        setSkeletonArmed(true);
+        return;
+      }
+      if (typeof window.__hudOpenSkeletonInit === 'function') window.__hudOpenSkeletonInit();
+      else setSkeletonArmed(true);
+      return;
+    }
     state.autoNestArmed = !state.autoNestArmed;
     if (state.autoNestArmed) {
       state.hexArmed = false;
+      state.skeletonArmed = false;
       window.__flipitHexArmed = false;
+      window.__flipitSkeletonArmed = false;
       if (btHex) btHex.setAttribute('aria-pressed', 'false');
       if (typeof window.__hudSetHexArmed === 'function') window.__hudSetHexArmed(false);
+      if (typeof window.__hudCloseSkeletonInit === 'function') window.__hudCloseSkeletonInit();
     }
-    btMenu.setAttribute('aria-pressed', String(state.autoNestArmed));
+    syncMenuGlyph();
     render();
   });
   if (btHex) btHex.addEventListener('click', function () {
     state.hexArmed = !state.hexArmed;
     if (state.hexArmed) {
       state.autoNestArmed = false;
-      if (btMenu) btMenu.setAttribute('aria-pressed', 'false');
+      state.skeletonArmed = false;
+      window.__flipitSkeletonArmed = false;
+      if (typeof window.__hudCloseSkeletonInit === 'function') window.__hudCloseSkeletonInit();
+    } else {
+      state.skeletonArmed = false;
+      window.__flipitSkeletonArmed = false;
+      if (typeof window.__hudCloseSkeletonInit === 'function') window.__hudCloseSkeletonInit();
     }
     window.__flipitHexArmed = state.hexArmed;
     btHex.setAttribute('aria-pressed', String(state.hexArmed));
+    syncMenuGlyph();
     if (typeof window.__hudSetHexArmed === 'function') window.__hudSetHexArmed(state.hexArmed);
     render();
   });
@@ -4338,8 +4462,8 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
 
   var HEX_CIRCLE_OFF = '<svg class="chip-hex-circle-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 2l20 20"/><path d="M8.35 2.69A10 10 0 0 1 21.3 15.65"/><path d="M19.08 19.08A10 10 0 1 1 4.92 4.92"/></svg>';
   function hexDiameterChipHTML(value, editing) {
-    if (editing) return chipField('', 'x', value) + HEX_CIRCLE_OFF;
-    return '<span class="chip-hex-diameter">' + fmt3(value) + '</span>' + HEX_CIRCLE_OFF;
+    if (editing) return HEX_CIRCLE_OFF + chipField('', 'x', value);
+    return HEX_CIRCLE_OFF + '<span class="chip-hex-diameter">' + fmt3(value) + '</span>';
   }
 
   function refreshTickers() {
@@ -5056,6 +5180,107 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     }
     refreshTickers();
   };
+  var SKELETON_INIT_SKIP = 'howmany.flipit.v3.skeletonInitSkip';
+  var skeletonInitLayer = document.querySelector('[data-skeleton-init-layer]');
+  var skeletonInitBound = false;
+  var skeletonInitCommitted = false;
+  function skeletonInitField(name) {
+    return skeletonInitLayer && skeletonInitLayer.querySelector('[data-skeleton-init="' + name + '"]');
+  }
+  function parseSkeletonInitField(name, fallback) {
+    var el = skeletonInitField(name);
+    var n = el ? parseFloat(el.value) : NaN;
+    return Number.isFinite(n) ? n : fallback;
+  }
+  function closeSkeletonInitCard() {
+    if (!skeletonInitLayer) return;
+    skeletonInitLayer.classList.remove('is-open');
+    skeletonInitLayer.setAttribute('aria-hidden', 'true');
+  }
+  function applySkeletonInitValues(values) {
+    if (Number.isFinite(values.w)) paramState.blank.x = values.w;
+    if (Number.isFinite(values.h)) paramState.blank.y = values.h;
+    if (Number.isFinite(values.gap)) {
+      paramState.gap.x = values.gap;
+      if (paramState.gap.linked) paramState.gap.y = values.gap;
+    }
+    if (Number.isFinite(values.part)) paramState.part.x = values.part;
+    if (Number.isFinite(values.cutout) && typeof window.__bedSetRemHole === 'function') window.__bedSetRemHole(values.cutout);
+    refreshTickers();
+  }
+  function openSkeletonInitCard() {
+    if (!skeletonInitLayer) {
+      if (typeof window.__bedSetSkeletonArmed === 'function') window.__bedSetSkeletonArmed(true);
+      return;
+    }
+    var cutoutEl = skeletonInitField('cutout');
+    var gapEl = skeletonInitField('gap');
+    var partEl = skeletonInitField('part');
+    var wEl = skeletonInitField('blank-w');
+    var hEl = skeletonInitField('blank-h');
+    if (wEl) wEl.value = fmt3(paramState.blank.x);
+    if (hEl) hEl.value = fmt3(paramState.blank.y);
+    if (gapEl) gapEl.value = fmt3(paramState.gap.x);
+    if (partEl) partEl.value = fmt3(paramState.part.x);
+    var liveCutout = typeof window.__bedGetRemHole === 'function' ? window.__bedGetRemHole() : 2;
+    if (cutoutEl) cutoutEl.value = fmt3(skeletonInitCommitted && Number.isFinite(liveCutout) ? liveCutout : 2);
+    var skip = skeletonInitLayer.querySelector('[data-skeleton-init-skip]');
+    if (skip) skip.checked = false;
+    skeletonInitLayer.classList.add('is-open');
+    skeletonInitLayer.setAttribute('aria-hidden', 'false');
+    if (!skeletonInitBound) {
+      skeletonInitBound = true;
+      skeletonInitLayer.querySelectorAll('[data-skeleton-init]').forEach(function (input) {
+        bindSelectAllOnClick(input);
+        input.addEventListener('input', function () { sanitizeNumericLive(input); });
+        input.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') { e.preventDefault(); commitSkeletonInit(); }
+          if (e.key === 'Escape') { e.preventDefault(); cancelSkeletonInit(); }
+        });
+      });
+      skeletonInitLayer.addEventListener('click', function (e) {
+        if (e.target === skeletonInitLayer) cancelSkeletonInit();
+      });
+    }
+    var focus = cutoutEl || wEl;
+    if (focus) { focus.focus(); focus.select(); }
+  }
+  function commitSkeletonInit() {
+    var cutout = parseSkeletonInitField('cutout', 2);
+    var gap = parseSkeletonInitField('gap', paramState.gap.x);
+    var part = parseSkeletonInitField('part', paramState.part.x);
+    var w = parseSkeletonInitField('blank-w', paramState.blank.x);
+    var h = parseSkeletonInitField('blank-h', paramState.blank.y);
+    if (cutout < 0) cutout = 0;
+    if (gap < 0) gap = 0;
+    if (part < 0) part = 0;
+    var m = paramState.margin;
+    if (cutout > 0) {
+      w = Math.max(w, m.l + cutout + m.r);
+      h = Math.max(h, m.b + cutout + m.t);
+    }
+    applySkeletonInitValues({ w: w, h: h, gap: gap, part: part, cutout: cutout });
+    skeletonInitCommitted = true;
+    var skip = skeletonInitLayer && skeletonInitLayer.querySelector('[data-skeleton-init-skip]');
+    if (skip && skip.checked) {
+      try { localStorage.setItem(SKELETON_INIT_SKIP, 'true'); } catch (_) {}
+    }
+    closeSkeletonInitCard();
+    if (typeof window.__bedSetSkeletonArmed === 'function') window.__bedSetSkeletonArmed(true);
+  }
+  function cancelSkeletonInit() {
+    closeSkeletonInitCard();
+    if (typeof window.__bedSetSkeletonArmed === 'function') window.__bedSetSkeletonArmed(false);
+  }
+  window.__hudOpenSkeletonInit = openSkeletonInitCard;
+  window.__hudCloseSkeletonInit = closeSkeletonInitCard;
+  window.__hudSkeletonInitIsOpen = function () {
+    return !!(skeletonInitLayer && skeletonInitLayer.classList.contains('is-open'));
+  };
+  var skeletonInitOk = document.querySelector('[data-skeleton-init-ok]');
+  if (skeletonInitOk) skeletonInitOk.addEventListener('click', function (e) { e.preventDefault(); commitSkeletonInit(); });
+  var skeletonInitCancel = document.querySelector('[data-skeleton-init-cancel]');
+  if (skeletonInitCancel) skeletonInitCancel.addEventListener('click', function (e) { e.preventDefault(); cancelSkeletonInit(); });
   hud.addEventListener('click', onChipAction);
   var blankClusterEl = document.getElementById('blank-ticker-cluster');
   if (blankClusterEl) blankClusterEl.addEventListener('click', onChipAction);
