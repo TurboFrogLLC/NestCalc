@@ -1,6 +1,6 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Cut 5 two lattices, freeze p after pockets
+**Status:** Living — Cut 5b pocket row, phantom lattice, count winner
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
@@ -284,22 +284,17 @@ With skull armed and `HOLE DIA = 0`, the layout is the Cut 2 virgin packer: no c
 
 Hex PART SIZE remains one diameter with circle-off at its left. Clicking that closed diameter opens, focuses, and select-alls the inserted input in the same click. Skull glyph swap, init card, and the NC ban remain unchanged.
 
-## Cut 5 — two lattices, freeze p after pockets
+## Cut 5b — pocket row + phantom lattice + count winner
 
-This supersedes Cut 4b's rows-above grid origin only. Skull arm, init card, rem faces, hex diameter chip, and `HOLE DIA = 0` virgin dispatch stay as landed.
+This supersedes Cut 5's pocket-seeded later-blue layout only. Skull arm, init card, rem faces, hex diameter chip, and `HOLE DIA = 0` virgin dispatch stay as landed.
 
-Skull armed and `HOLE DIA > 0`.
+Skull armed and `HOLE DIA > 0`: cutouts always paint. Lattice A is the red cutout row and is not counted. The part candidates see the same rem and reds.
 
-Lattice A (skeleton): cutout centers. Pitch `p_skel = D_cut + g_skel`. Red. Not parts.
+Candidate P paints every legal cusp pocket as array row 1. Pockets are extra parts, not Lattice B seeds. Lattice B begins at `x0 = L + R_p` and `y2 = cutout AABB top + g + R_p`, with `p = D_p + g` and `h = sqrt(3) * p / 2`. Its row 2 begins at `x0`; later rows retain that alternating hex phase. A B cell that is closer than `D_p + g` to a pocket is hidden but remains a lattice point, so rows 2–3 retain their phase despite those gaps and later rows are full B rows. `N_P` is painted pockets plus painted B cells.
 
-Lattice B (parts): pocket centers sit in every legal cusp of A. That is array row 1. Freeze
+Candidate H paints no pockets and paints the same red-clearing Lattice B with no pocket hides. `N_H` is its painted B-cell count. The host paints the larger count; a tie selects H. Ticket faces come from the selected B lattice with `X ORIGIN = x0`; `POCKET COLS` is zero when H wins.
 
-- `p = D_p + g`
-- `h = sqrt(3) * p / 2`
-
-Every later blue is a hex neighbor of Lattice B at that `p` and `h`. Do not start a new grid from rem origin or from AABB + GAP. Do not retune `p` on row 3+. Keep a neighbor only if it clears cutouts, other parts, and rem L/R/T/B at typed GAP.
-
-`HOLE DIA = 0` still restores the Cut 2 virgin packer. No second cutout row. No NC.
+`HOLE DIA = 0` still restores the Cut 2 virgin packer. No pocket toggle, second cutout row, or NC.
 
 ## AutoNest Cut 1 — HUD menu + best uniform
 
@@ -528,3 +523,4 @@ Do not require `file://`.
 | 2026-09-03 | **Cut 3** hex rem inset: lock cusp inserts; hex grid from origin X above the red AABB; no leftover greedy refill. |
 | 2026-09-03 | **Cut 4** hex rem inset: hex-on skull glyph; skull click arms skeleton; init card; one lattice with pocket columns; circle-off left of diameter. |
 | 2026-09-03 | **Cut 5** hex rem inset: freeze part lattice after pockets; later blues are hex neighbors at `p = D_p + g`; no AABB+GAP restart. |
+| 2026-09-04 | **Cut 5b** hex rem inset: compare pocket extras against the independent phantom B lattice; paint the higher count, with clear-hex on a tie. |

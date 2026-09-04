@@ -3367,7 +3367,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     return { hex: true, diameter: diameter, radius: radius, p: p, h: h, columns: columns, rows: rows, count: centers.length, centers: centers, voids: [], failedRows: failedRows, xGap: p - diameter, yGap: h - diameter, xOffset: m.l + p / 2 };
   }
 
-  /* Cut 5: freeze Lattice B after pockets. Later blues are hex neighbors at p, h. */
+  /* Cut 5b: compare a pocket row against the independent phantom Lattice B. */
   function hexSkeletonLayout() {
     var diameter = state.partW;
     var radius = diameter / 2;
@@ -3418,11 +3418,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       for (var vi = 0; vi < voids.length; vi++) if (dist2(pt, voids[vi]) + FIT_EPSILON < dWall * dWall) return false;
       return true;
     }
-    /*
-     * Lattice B freezes once the legal cusp inserts exist. p = D_p + g and
-     * h = √3 p / 2 stay put. Later blues are hex neighbors of those pocket
-     * centers. A rem-origin or AABB + GAP restart would skip the valleys.
-     */
+    /* Pockets are extras. Lattice B begins from its own rem origin. */
     var p = pair;
     var h = pair * Math.sqrt(3) / 2;
     var pocketCenters = [];
@@ -3436,53 +3432,42 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
       }
       if (clearsPocketRow) pocketCenters.push(pocket);
     }
-
-    var yJog = pocketCenters.length ? pocketCenters[0].y : minY;
-    var centers = pocketCenters.slice();
-    var xOrigin = pocketCenters.length ? pocketCenters[0].x : minX;
-    function clearsBlue(pt) {
-      for (var bi = 0; bi < centers.length; bi++) if (dist2(pt, centers[bi]) + FIT_EPSILON < pair * pair) return false;
-      return true;
-    }
-    function inRem(pt) {
-      return pt.x >= minX - FIT_EPSILON && pt.x <= maxX + FIT_EPSILON && pt.y >= minY - FIT_EPSILON && pt.y <= maxY + FIT_EPSILON;
-    }
-    if (pocketCenters.length && p > FIT_EPSILON && h > FIT_EPSILON) {
-      var dirs = [[p, 0], [-p, 0], [p / 2, h], [-p / 2, h], [p / 2, -h], [-p / 2, -h]];
-      var seen = {};
-      var queue = [];
-      function cellKey(pt) { return Math.round(pt.x * 1e6) + ':' + Math.round(pt.y * 1e6); }
-      for (var si = 0; si < pocketCenters.length; si++) {
-        var seedKey = cellKey(pocketCenters[si]);
-        if (seen[seedKey]) continue;
-        seen[seedKey] = true;
-        queue.push(pocketCenters[si]);
+    var xOrigin = minX;
+    var y2 = holeY + holeR + clearance + radius;
+    var lattice = [], latticeRows = 0, latticeColumns = 0;
+    /*
+     * Lattice B has no pocket seed. Its hidden P cells remain in this list,
+     * so the row-3 stagger cannot shift when a row-2 cell is obscured.
+     */
+    for (var row = 0, y = y2; y <= maxY + FIT_EPSILON; row++, y += h) {
+      var startX = xOrigin + (row % 2 ? p / 2 : 0);
+      var rowColumns = 0;
+      for (var x = startX; x <= maxX + FIT_EPSILON; x += p) {
+        var cell = { x: x, y: y, row: row + 2 };
+        if (!clearsReds(cell)) continue;
+        lattice.push(cell);
+        rowColumns++;
       }
-      var qi = 0;
-      while (qi < queue.length) {
-        var cur = queue[qi++];
-        for (var di = 0; di < dirs.length; di++) {
-          var neighbor = { x: cur.x + dirs[di][0], y: cur.y + dirs[di][1] };
-          var neighborKey = cellKey(neighbor);
-          if (seen[neighborKey]) continue;
-          seen[neighborKey] = true;
-          if (!inRem(neighbor) || !clearsReds(neighbor) || !clearsBlue(neighbor)) continue;
-          centers.push(neighbor);
-          queue.push(neighbor);
-        }
+      latticeRows++;
+      latticeColumns = Math.max(latticeColumns, rowColumns);
+    }
+    function collidesPocket(cell) {
+      for (var pi = 0; pi < pocketCenters.length; pi++) {
+        if (dist2(cell, pocketCenters[pi]) + FIT_EPSILON < pair * pair) return true;
       }
+      return false;
     }
-    var columns = 0, occupiedRows = 0, rowBuckets = {};
-    for (var oi = 0; oi < centers.length; oi++) {
-      if (centers[oi].x < xOrigin) xOrigin = centers[oi].x;
-      var rowKey = String(Math.round(centers[oi].y * 1e6));
-      rowBuckets[rowKey] = (rowBuckets[rowKey] || 0) + 1;
-    }
-    var rowKeys = Object.keys(rowBuckets);
-    occupiedRows = rowKeys.length;
-    for (var ri = 0; ri < rowKeys.length; ri++) columns = Math.max(columns, rowBuckets[rowKeys[ri]]);
+    var clearCells = lattice.slice();
+    var pocketCells = lattice.filter(function (cell) { return cell.row > 3 || !collidesPocket(cell); });
+    var pocketCount = pocketCenters.length + pocketCells.length;
+    var clearCount = clearCells.length;
+    /* A tie deliberately paints the clear-hex candidate. */
+    var pocketWins = pocketCount > clearCount;
+    var paintedCells = pocketWins ? pocketCells : clearCells;
+    var centers = pocketWins ? pocketCenters.concat(paintedCells) : paintedCells;
+    var paintedRows = latticeRows + (pocketWins && pocketCenters.length ? 1 : 0);
 
-    return { hex: true, skeleton: true, rem: true, diameter: diameter, radius: radius, holeD: holeD, holeR: holeR, p: p, h: h, columns: columns, rows: occupiedRows, count: centers.length, centers: centers, voids: voids, failedRows: [], xGap: p - diameter, yGap: h - diameter, xOffset: xOrigin, xOrigin: xOrigin, pocketCols: pocketCenters.length, yJog: yJog };
+    return { hex: true, skeleton: true, rem: true, diameter: diameter, radius: radius, holeD: holeD, holeR: holeR, p: p, h: h, columns: latticeColumns, rows: paintedRows, count: centers.length, centers: centers, voids: voids, failedRows: [], xGap: p - diameter, yGap: h - diameter, xOffset: xOrigin, xOrigin: xOrigin, pocketCols: pocketWins ? pocketCenters.length : 0, yJog: y2, candidate: pocketWins ? 'P' : 'H', pocketCount: pocketCount, clearCount: clearCount };
   }
 
   function hexLayout() {
