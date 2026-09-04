@@ -75,3 +75,12 @@ Operator: Codex App · GPT-5.6 Terra · High
 - `SKEL L` / `SKEL B` rem faces default to `0.250` / `0.500` and place the cutout centers from rem `0,0`. Nest L/R/T/B remain only pocket-to-rem clearances. The skeleton ticket reports `JOG X` / `JOG Y` for the first pocket and omits X ORIGIN; hole-zero remains the virgin hex layout with armed rem faces retained.
 - Host-side static proof: `git diff --check` passed; all five inline scripts parsed; Cut 6 contract assertions confirmed SKEL faces, JOG faces, a one-row pocket-only layout, and removal of the prior candidate/lattice code. Controlled browser local-file proof was blocked by browser URL policy.
 - Implement `631521f`. Pushed origin/docs/hex-rem-inset so Owner Look can ff.
+
+## Seq 5h Cut 6b — SKEL L / SKEL B on the init card
+
+Operator: Codex App · GPT-5.6 Terra · High
+
+- The skull-arm init card adds `SKEL L` and `SKEL B` with the existing card chrome, three-decimal defaults `0.250` / `0.500`, and select-all-on-click behavior. Nest L/R/T/B remain off the card.
+- OK writes both values through to the retained live rem faces before arming the skeleton; the rem-face values continue to place the cutout row from rem `0,0`.
+- Browser proof: after entering `SKEL L 1.000` and `SKEL B 1.125`, the retained rem faces showed those values at three decimals. The resulting skeleton ticket had `ROWS 1`, `POCKET COLS 2`, and no Candidate P/H markup.
+- Implement `3cf0f62`. Ready to push origin/docs/hex-rem-inset.
