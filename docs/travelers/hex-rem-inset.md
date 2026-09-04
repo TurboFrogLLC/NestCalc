@@ -3,10 +3,10 @@
 Repo: NestCalc
 Owner: wReckless
 Part: FLiPIT hex rem inset
-Description: Pocket row + phantom lattice. Winner by count.
+Description: Skeleton measured Lx / By → machine jog.
 PR: 136
 Branch: docs/hex-rem-inset
-Head: bbfc070661bef2b738cd297cac01c72e72cb328e
+Head: 46d5c8c
 Session: continuous
 job_id: NGJ-20260903-hex-rem
 flow_id:
@@ -21,7 +21,8 @@ Seq  Label              Notes                                              Stamp
 5c   Cut                4 skeleton arm + init card              d16f9ec
 5d   Cut                4b pocket lock + Codex P1/P2            83fd67c
 5e   Cut                5 freeze part lattice                   2d02875
-5f   Cut                5b pocket row + phantom lattice         51545de
+5f   Cut                5b phantom lattice + count winner       46d5c8c
+5g   Cut                6 skeleton Lx By machine jog
 4    Look               Owner. No Codex review until Send.
 7    Send for review
 8    Inspection
@@ -41,23 +42,23 @@ Worker worktree is not Owner Look. Push origin/docs/hex-rem-inset.
 
 ## Cut lock
 
-### Cut 5b — pocket row + phantom lattice + count winner
-Skull armed and HOLE DIA > 0. Cutouts always paint. Not perfect hex. Saturate the rem.
+### Cut 6 — skeleton Lx / By → machine jog
+Skull armed. HOLE DIA > 0.
 
-Candidate P
-Array row 1: every legal cusp pocket. Those are extra parts, not lattice B seeds.
-Lattice B origin: x0 = L + R_p, y2 = (cutout AABB top) + g + R_p.
-Pitch p = D_p + g. Hex h = √3 p / 2. Array row 2 sits on y2, left to right from x0.
-A Lattice B cell that collides with a pocket (dist < D_p + g) is hidden. It is still a lattice point.
-Array row 3+ hex-nests from Lattice B including hidden points. Only rows 2–3 show gaps from those hides. Later rows are full hex on B.
-Count N_P = painted pockets + painted B cells.
+Nest L/R/T/B stay the clearance for NEW parts. They do not move the cutout row.
 
-Candidate H
-No pockets. Same Lattice B. No hidden cells. Count N_H.
+New rem faces next to HOLE DIA / X ROW GAP:
+- SKEL L = measured left edge → first cutout (edge to circle). Default 0.250.
+- SKEL B = measured bottom edge → cutout row (edge to circle). Default 0.500.
 
-Winner max(N_P, N_H). Tie → H. Paint only the winner.
-POCKET COLS = 0 when H wins.
-Ticket faces from the painted lattice. X ORIGIN = x0.
+Cutout centers: x = SKEL L + R_cut + i * (D_cut + g_skel), y = SKEL B + R_cut.
+Pockets stay in legal cusps of that row.
 
-HOLE DIA 0 → virgin hex. Arms/chrome stay. No pocket toggle. No NC.
+Ticket adds, unitless 3 dp, no suffix:
+- JOG X = first painted pocket X from rem 0,0. If H wins and no pockets, JOG X = Lattice B x0.
+- JOG Y = that same part Y from rem 0,0.
+Those two are the machine jog before array row 1.
+
+Array still uses COLUMNS / ROWS / X GAP / Y GAP / X ORIGIN / POCKET COLS.
+Cut 5b winner law stays. No NC.
 Done only after origin has the implement commit.
