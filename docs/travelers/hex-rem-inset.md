@@ -3,7 +3,7 @@
 Repo: NestCalc
 Owner: wReckless
 Part: FLiPIT hex rem inset
-Description: Cut 6c skeleton ticket faces for the array.
+Description: Cut 6c array X GAP vs machine jog.
 PR: 136
 Branch: docs/hex-rem-inset
 Head: 11d68184321e6ba12e6bf60abe267254cf488f7d
@@ -24,7 +24,7 @@ Seq  Label              Notes                                              Stamp
 5f   Cut                5b phantom lattice + count winner       46d5c8c
 5g   Cut                6 pockets only + SKEL L/B jog           45d1db2
 5h   Cut                6b SKEL L/B on init card                11d6818
-5i   Cut                6c ticket X GAP min-X + drop X OFFSET
+5i   Cut                6c array X GAP + machine jog
 4    Look               Owner. No Codex review until Send.
 7    Send for review
 8    Inspection
@@ -44,17 +44,24 @@ Worker worktree is not Owner Look. Push origin/docs/hex-rem-inset.
 
 ## Cut lock
 
-### Cut 6c — skeleton ticket X GAP is min X, drop X OFFSET
+### Cut 6c — array X GAP and machine jog are different inputs
 Skull armed. Pockets-only from Cut 6 stays.
 
-Ticket X GAP is the HMI array X gap. It is the minimum edge-to-edge distance on the X axis between consecutive painted pockets:
-  X GAP = (center_x[i+1] - center_x[i]) - D_p
-It is not the FLiPIT global GAP field. It is not X ROW GAP.
-On this Look that is (D_cut + g_skel) - D_p.
-If only one pocket, X GAP = 0.
-Y GAP stays 0 on one row.
+Two shop inputs. Do not mix them.
 
-Drop X OFFSET from the skeleton ticket. JOG X / JOG Y stay first-pocket from rem 0,0.
-COLUMNS = pocket count. ROWS = 1.
+Array (HMI grid):
+- COLUMNS = pocket count
+- ROWS = 1
+- X GAP = minimum edge-to-edge on X between consecutive painted pockets
+  X GAP = (center_x[i+1] - center_x[i]) - D_p
+  Not the FLiPIT global GAP chip. Not X ROW GAP.
+- Y GAP = 0
+Do not put JOG X or JOG Y in the array.
+
+Machine offset (global jog, not the array):
+- JOG X / JOG Y = first painted pocket from rem 0,0
+Type those on the machine as the work offset, then run the 1-row array.
+
+Drop X OFFSET from the skeleton ticket.
 Virgin hex ticket is unchanged when skull is off.
 No NC. Done only after origin has the implement commit.
