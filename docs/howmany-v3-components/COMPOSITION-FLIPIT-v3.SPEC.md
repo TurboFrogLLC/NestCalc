@@ -1,6 +1,6 @@
 # FlipIt — blank-in-space composition host — Living SPEC
 
-**Status:** Living — Cut 6c skeleton array gap and machine jog
+**Status:** Living — Cut 6c2 skeleton X OFFSET face removal
 **Product:** **FlipIt**  
 **Repo:** `TurboFrogLLC/NestCalc` (do not rename)  
 **HTML:** `docs/howmany-v3-components/COMPOSITION-FLIPIT-v3.html`  
@@ -13,6 +13,14 @@
 This file is the **host only**. The four individual HTML tips stay standalone lock files. Do not overwrite them from this assembly. Do not add `flipit-v3-align.js` or `@import` into the tips.
 
 Prior composition/lock archives (`COMPOSITION-HUD-DECODER-v3.*`, `DE-CODER-v3-LOCKED.*`) stay on disk. They are not this host.
+
+---
+
+## Seq 5i2 Cut 6c2 — hide the skeleton X OFFSET face
+
+`X OFFSET` is hidden by default in the ticket markup and is revealed only for the unchanged virgin-hex ticket. The face-level `hidden` contract resolves to `display: none`, so with skull armed the skeleton ticket has no `X OFFSET` face at any render point; it retains `COLUMNS`, `ROWS`, `X GAP`, `Y GAP`, `JOG X`, `JOG Y`, and `POCKET COLS`.
+
+This is display-only: skeleton `X GAP` remains the minimum consecutive-pocket edge clearance, and `JOG X` / `JOG Y` remain the first painted pocket measured from rem `0,0`.
 
 ---
 

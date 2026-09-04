@@ -272,6 +272,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
     border-radius: 4px;
     background: rgba(255,255,255,.76);
   }
+  .hex-array-face[hidden] { display: none; }
   .hex-array-face b { font: 650 9px/1 var(--font); letter-spacing: .04em; }
   .hex-array-face span { font: 650 11px/1.2 var(--font-mono); font-variant-numeric: tabular-nums; }
 
@@ -2721,7 +2722,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--font); color: va
               <div class="hex-array-face"><b>ROWS</b><span data-hex-ticket="rows">0</span></div>
               <div class="hex-array-face" data-hex-ticket-face="x-gap"><b>X GAP</b><span data-hex-ticket="x-gap">0.000</span></div>
               <div class="hex-array-face" data-hex-ticket-face="y-gap"><b>Y GAP</b><span data-hex-ticket="y-gap">0.000</span></div>
-              <div class="hex-array-face" data-hex-ticket-face="x-offset"><b>X OFFSET</b><span data-hex-ticket="x-offset">0.000</span></div>
+              <div class="hex-array-face" data-hex-ticket-face="x-offset" hidden><b>X OFFSET</b><span data-hex-ticket="x-offset">0.000</span></div>
               <div class="hex-array-face" data-hex-ticket-face="jog-x" hidden><b>JOG X</b><span data-hex-ticket="jog-x">0.000</span></div>
               <div class="hex-array-face" data-hex-ticket-face="jog-y" hidden><b>JOG Y</b><span data-hex-ticket="jog-y">0.000</span></div>
               <div class="hex-array-face" data-hex-ticket-face="pocket-cols" hidden><b>POCKET COLS</b><span data-hex-ticket="pocket-cols">0</span></div>
