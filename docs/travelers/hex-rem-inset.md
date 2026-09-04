@@ -28,7 +28,7 @@ Seq  Label              Notes                                              Stamp
 5i2  Cut                6c2 hide skeleton X OFFSET              589b805
 4    Look               Owner. No Codex review until Send.
 7    Send for review    PR 136 ready; @codex on a1ca52c
-8    Inspection
+8    Inspection         Cut 7 feasible cusp offset P1           3158867
 9    Merge
 10   Close
 

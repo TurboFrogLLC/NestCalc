@@ -109,3 +109,12 @@ Operator: Codex App · GPT-5.6 Terra · High
 - PR 136 marked ready. Head at request: `a1ca52ceb174d870b597e8948f839e5b7e3de3ef`.
 - Named review posted once: https://github.com/TurboFrogLLC/NestCalc/pull/136#issuecomment-5544745617 (`@codex review`).
 - Companion `agents-pr-review` not posted because it is unavailable in this surface. No second review request. No merge or host implementation change in this Seq.
+
+## Seq 8 Cut 7 — feasible cusp offset
+
+Operator: Codex App · GPT-5.6 Terra · High
+
+- For each adjacent cutout pair, the skeleton now searches the legal X span inside the pair and rem L/R bounds before it drops a cusp pocket. It selects the nearest feasible center to the cusp midpoint, sets the lowest Y that clears every red cutout, and retains the pocket only when it also clears rem B/T and earlier pockets at `pair = D_p + GAP`.
+- Pockets-only behavior remains: Lattice B is absent, while the ticket `X GAP` and `JOG X` / `JOG Y` laws are unchanged.
+- Browser proof of the P1 case: `5.000 × 8.000` rem, cutout D `2.000`, part D `3.000`, GAP `0.125`, SKEL L/B `0.250` / `0.500`, and nest L `1.000` yielded `COLUMNS 1`, `POCKET COLS 1`, `JOG X 2.500`, `JOG Y 3.975`; browser console errors: none.
+- Implement `3158867a21e9bd822d219babce3e902b2a13baf7`. Pushed origin/docs/hex-rem-inset; only P1 is to be resolved.
