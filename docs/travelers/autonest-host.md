@@ -33,8 +33,8 @@ Seq  Label              Notes                                              Stamp
 6    Look               Owner htmlpreview. No Codex.
 7    Send for review                                                  7aa8b3909f33d035574a0b4d23eaa0b641f688a6
 8    Inspection
-9    Merge
-10   Close
+9    Merge                                                            dd2949c853887651e294ef3449caf155d36b97f4
+10   Close                                                            dd2949c853887651e294ef3449caf155d36b97f4
 
 When a term → docs/GLOSSARY.md
 When this visit → docs/templates/packet.md

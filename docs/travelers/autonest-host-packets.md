@@ -66,3 +66,52 @@ Implementation commit: 106b1905401af2286476aadbf31e50b819be35ad
 
 ## Seq 7 Send for review
 Worker: Grok Build. Confirmed `origin/docs/autonest-host` at `7aa8b3909f33d035574a0b4d23eaa0b641f688a6`, PR 133 already ready for review, and posted exactly one `@codex review` request on that stacked tip. PR remains open; no merge was performed.
+
+## Seq 9 Merge
+Worker: Grok Build. Merged PR 133 into `main` at `dd2949c853887651e294ef3449caf155d36b97f4`. Did not implement the three open P2 threads. Did not post a second `@codex review`.
+
+## Seq 10 Close
+Worker: Grok Build. Stamped Seq 9 and Seq 10. Packslip printed and posted on PR 133. Parked for the next branch: disabled-preset hydrate, hex diameter Y sync, margin-band thread.
+
+```text
+Repo: NestCalc
+Owner: wReckless
+Part: AutoNest on FLiPIT host
+Description: Port V2 autoNestEngine onto COMPOSITION-FLIPIT-v3. Menu hit on the center HUD arms AutoNest. Cut 1 is best uniform orientation. Cut 2 is two-group plus trim. No picker. No calc. No bed.
+PR: 133
+Branch: docs/autonest-host
+Head: dd2949c853887651e294ef3449caf155d36b97f4
+Session: continuous
+job_id: NGJ-20260904-land-main
+flow_id:
+goal_sha256:
+Date: 2026-09-04
+
+Seq  Label              Notes                                              Stamp
+1    Plan               Cut 1 best-orientation; Cut 2 two-group + trim     0eb6d636ecc666ed18bd152a3279bf1bc37b628c
+2    Start-branch       Owner remote / Codex App
+3    Cut                1 HUD menu + calculateBestUniformNest             7effe2693b246cedaca8d32818d78967ce8322d3
+3b   Cut                1b Lucide menu glyph                              verified at 1f47aeb7aab8db331b4624c562ac2f5eb4ba3ab2
+3c   Cut                1c Lucide hamburger glyph                         applied from efd416e27148f969c0c3cea31ba333cfaf3248a0
+3d   Cut                1d hamburger amber when armed                     applied from 59855c8e5c8a919291f7d01836c3902c114e3513
+4    Look               Owner htmlpreview. No Codex.
+5    Cut                2 calculateAutoNest two-group + trim line          d034a1ee4f9edf4d3f41c43633f2e1e1e79e22dc
+5b   Cut                3 isolated blanks full margins                    33a252a622285bc859d57cd9b529e22af1799473
+5c   Cut                4 isolated blank bottom-left origin; bands later  81c731411e9bdb53e7592dff1d68be39438fc3bc
+5d   Cut                5 true-inch scale                                 872f46b87d496e1b3ba253918a40ebf3e318043b
+5e   Cut                6 red margin band                                 c9180ba1328a09ade53f908df44eaebde7369383
+5f   Cut                7 eye toggle, green arm, count-slot pin           5fc2ed7450ea3d431744fb19c42a04cef42e3e70
+5g   Cut                8 side inset + fixed 999 count well               3e2ea36d9f448f2d1976d05fef072ba917205d7f
+5h   Cut                8b measured count well + drawn arc inset          6f29bfc8e8542aecfe93c3be4f241533198f7ce7
+5i   Cut                8c HUD inner seats                                2749f1137c04310a73996ceee6bbbdf38798cc27
+5j   Cut                9 clamp margin bands                              106b1905401af2286476aadbf31e50b819be35ad
+6    Look               Owner htmlpreview. No Codex.
+7    Send for review                                                  7aa8b3909f33d035574a0b4d23eaa0b641f688a6
+8    Inspection
+9    Merge                                                            dd2949c853887651e294ef3449caf155d36b97f4
+10   Close                                                            dd2949c853887651e294ef3449caf155d36b97f4
+
+Closed Corrective Action: none
+Still open: disabled-preset hydrate; hex diameter Y sync; margin-band thread
+Next: P2s on the next branch, not this land
+```
