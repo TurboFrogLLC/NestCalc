@@ -22,7 +22,7 @@ Seq  Label              Notes                                              Stamp
 5d   Cut                4b pocket lock + Codex P1/P2            83fd67c
 5e   Cut                5 freeze part lattice                   2d02875
 5f   Cut                5b phantom lattice + count winner       46d5c8c
-5g   Cut                6 pockets only + SKEL L/B jog
+5g   Cut                6 pockets only + SKEL L/B jog          631521f
 4    Look               Owner. No Codex review until Send.
 7    Send for review
 8    Inspection

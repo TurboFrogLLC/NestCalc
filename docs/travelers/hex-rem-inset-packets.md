@@ -66,3 +66,12 @@ Operator: Codex App · GPT-5.6 Terra · High
 - Candidate H paints the same red-clearing B lattice without pockets or hides. The higher count paints; a tie selects H. Ticket X ORIGIN is `x0`, and POCKET COLS is zero for H.
 - Browser proof: the default armed `12.000 × 8.000` rem kept five red cutouts, painted clear-hex winner H with seven blue parts, `POCKET COLS 0`, and `X ORIGIN 1.500`; no runtime errors.
 - Implement `51545de`. Ready to push origin/docs/hex-rem-inset.
+
+## Seq 5g Cut 6 — pockets only + SKEL L/B jog
+
+Operator: Codex App · GPT-5.6 Terra · High
+
+- Skull armed with `HOLE DIA > 0` now paints only the cutout row and legal cusp pockets. Lattice B, the clear-hex candidate, phantom cells, and every blue row above the cutouts are removed; count, COLUMNS, and POCKET COLS are the pocket count, with ROWS fixed at `1`.
+- `SKEL L` / `SKEL B` rem faces default to `0.250` / `0.500` and place the cutout centers from rem `0,0`. Nest L/R/T/B remain only pocket-to-rem clearances. The skeleton ticket reports `JOG X` / `JOG Y` for the first pocket and omits X ORIGIN; hole-zero remains the virgin hex layout with armed rem faces retained.
+- Host-side static proof: `git diff --check` passed; all five inline scripts parsed; Cut 6 contract assertions confirmed SKEL faces, JOG faces, a one-row pocket-only layout, and removal of the prior candidate/lattice code. Controlled browser local-file proof was blocked by browser URL policy.
+- Implement `631521f`. Pushed origin/docs/hex-rem-inset so Owner Look can ff.
