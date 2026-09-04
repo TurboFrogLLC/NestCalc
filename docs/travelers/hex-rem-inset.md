@@ -20,7 +20,7 @@ Seq  Label              Notes                                              Stamp
 5b   Cut                3 pocket lock + hex grid                8a7d533
 5c   Cut                4 skeleton arm + init card              d16f9ec
 5d   Cut                4b pocket lock + Codex P1/P2            83fd67c
-5e   Cut                5 freeze part lattice after pockets
+5e   Cut                5 freeze part lattice after pockets     2d02875
 4    Look               Owner. No Codex review until Send.
 7    Send for review
 8    Inspection

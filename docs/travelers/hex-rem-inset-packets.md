@@ -47,3 +47,13 @@ Operator: Codex App · GPT-5.6 Terra · High
 - Opening the hex PART SIZE diameter focuses and select-alls its inserted field in that same click. Skull glyph swap, init card, circle-off-left, and NC ban are unchanged.
 - Browser proof: positive-hole `POCKET COLS` stayed `2` after blank height grew `8.000 → 12.000`; zero-hole returned the virgin layout with `POCKET COLS 0`; one-click typing replaced `2.500` with `3.000` before cancel.
 - Implement `6ce0d55`. Pushed origin/docs/hex-rem-inset so Owner Look can ff. GitHub review threads left unresolved.
+
+## Seq 5e Cut 5 — freeze part lattice after pockets
+
+Operator: Grok Build · Grok 4.6 · high
+
+- Skull armed with `HOLE DIA > 0` still locks legal cusp inserts as ticket row 1. Lattice B freezes there: `p = D_p + g`, `h = √3 p / 2`. Every later blue is a hex neighbor of those pocket centers at that `p` and `h`.
+- Row 2 sits in the pocket valleys (`± p/2`, `+h`). It does not restart from rem origin or from AABB + GAP. Later rows keep the same `p`; lifting the rem adds neighbors without retuning pitch.
+- A neighbor stays only if it clears cutouts, other parts, and rem L/R/T/B at typed GAP. `HOLE DIA = 0` is still the Cut 2 virgin packer. Arms/chrome from Cut 4 stay. No second cutout row. No NC.
+- Host eval: init-card cutout `2.000` / part `2.500` row 2 landed at pocket valleys `3.625`, `7.875` (not the old rem-origin `4.125`, `9.375`); `p` stayed `2.625` after blank height `8.000 → 12.000`.
+- Implement `2d02875`. Pushed origin/docs/hex-rem-inset so Owner Look can ff. Unpushed GB commits are not Look.
